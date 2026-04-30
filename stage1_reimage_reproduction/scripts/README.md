@@ -2,9 +2,29 @@
 
 ## English
 
-Executable Stage 1 scripts will be added only after the corresponding checklist
+Executable Stage 1 scripts are added only after the corresponding checklist
 item is confirmed.
+
+Current scripts:
+- `check_scaffold.py`: verifies the 1-I1 package/config scaffold without
+  loading image data or training a model.
+
+Example:
+
+```bash
+python scripts/check_scaffold.py --config configs/env_local.yaml --create-output-dirs
+```
 
 ## 한국어
 
 각 체크리스트 항목이 확인된 뒤에만 1단계 실행 스크립트를 추가합니다.
+
+현재 script:
+- `check_scaffold.py`: image data loading이나 model training 없이 1-I1
+  package/config scaffold를 확인합니다.
+
+예시:
+
+```bash
+python scripts/check_scaffold.py --config configs/env_local.yaml --create-output-dirs
+```

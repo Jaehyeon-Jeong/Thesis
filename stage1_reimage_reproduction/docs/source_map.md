@@ -16,7 +16,7 @@ Status:
 - Stage 1-8 Grad-CAM detail plan completed on 2026-04-30.
 - Stage 1-9 report plan completed on 2026-04-30.
 - Stage 1-I0 implementation readiness review completed on 2026-04-30.
-- Implementation file references will be added only after code is written.
+- Stage 1-I1 shared code/config scaffold implementation completed on 2026-04-30.
 
 Stage 1 gate structure:
 - Planning/design gates: `1-0` through `1-9`.
@@ -70,6 +70,22 @@ Stage 1 gate structure:
 | Paper discusses softmax probabilities; GitHub returns logits. | Train on logits; compute softmax only for prediction/evaluation outputs. |
 | Paper/table dimension notation can mix width/height order. | Use explicit tensor convention `(batch, 1, height=64, width=60)`. |
 | Current data cannot support all paper windows/spec ablations. | Report Stage 1 as public I20 full-spec reproduction, not full paper-wide reproduction. |
+
+## Implementation File References
+
+| Gate | File | Purpose |
+| --- | --- | --- |
+| 1-I1 | `src/stage1_reimage/config.py` | Load and validate environment YAML config sections. |
+| 1-I1 | `src/stage1_reimage/paths.py` | Build explicit local/Kaggle path objects and output-directory helpers. |
+| 1-I1 | `src/stage1_reimage/runtime.py` | Select runtime device from config. |
+| 1-I1 | `src/stage1_reimage/seed.py` | Apply one selected run seed to Python, NumPy, and PyTorch. |
+| 1-I1 | `scripts/check_scaffold.py` | Local smoke check for package import, config, paths, seed, and device selection. |
+
+1-I1 source note:
+- These files implement only the shared execution scaffold required by root
+  `PLAN.md`.
+- No Re-image model architecture, label rule, loss, optimizer, evaluation, or
+  Grad-CAM algorithm is implemented in 1-I1.
 
 ## 1-1 Source and Constraint Re-check
 

@@ -20,7 +20,9 @@ Execution environment:
 
 Current status:
 - Folder and planning documents are created.
-- No model, training, data-loader, or Grad-CAM code has been implemented yet.
+- Shared code/config scaffold is implemented.
+- No data-loader, model, training, evaluation, or Grad-CAM code has been
+  implemented yet.
 
 Required pre-work before every Stage 1 task:
 - Read the root `../PLAN.md`.
@@ -53,8 +55,9 @@ Primary limitation:
 - Colab은 나중에 Hugging Face나 LLM-heavy 단계에서 optional runner로 추가할 수 있습니다.
 
 현재 상태:
-- 폴더와 계획 문서만 만들었습니다.
-- 모델, 학습, data loader, Grad-CAM 코드는 아직 구현하지 않았습니다.
+- 폴더와 계획 문서를 만들었습니다.
+- 공통 code/config scaffold를 구현했습니다.
+- data loader, model, training, evaluation, Grad-CAM 코드는 아직 구현하지 않았습니다.
 
 1단계의 모든 작업 전에 반드시 확인할 것:
 - 루트 `../PLAN.md`

@@ -22,7 +22,7 @@ Planning phase:
 
 Implementation phase:
 - [x] 1-I0. Implementation readiness review
-- [ ] 1-I1. Shared code/config scaffold implementation
+- [x] 1-I1. Shared code/config scaffold implementation
 - [ ] 1-I2. Data loading implementation
 - [ ] 1-I3. Label, split, and normalization implementation
 - [ ] 1-I4. Baseline CNN model implementation
@@ -308,6 +308,22 @@ Output:
 - Importable project scaffold
 - Config files for local/Kaggle paths
 
+Status:
+- Completed on 2026-04-30.
+
+Output produced:
+- `src/stage1_reimage/__init__.py`
+- `src/stage1_reimage/config.py`
+- `src/stage1_reimage/paths.py`
+- `src/stage1_reimage/runtime.py`
+- `src/stage1_reimage/seed.py`
+- `scripts/check_scaffold.py`
+- `docs/shared_code_config_scaffold.md`
+
+Validation:
+- `python scripts/check_scaffold.py --config configs/env_local.yaml --create-output-dirs`
+- `python -m compileall src scripts/check_scaffold.py`
+
 ## 1-I2. Data Loading Implementation
 
 Purpose:
@@ -484,7 +500,7 @@ Output:
 
 구현 단계:
 - [x] 1-I0. 구현 시작 전 readiness review
-- [ ] 1-I1. 공통 code/config scaffold 구현
+- [x] 1-I1. 공통 code/config scaffold 구현
 - [ ] 1-I2. Data loading 구현
 - [ ] 1-I3. Label, split, normalization 구현
 - [ ] 1-I4. Baseline CNN model 구현

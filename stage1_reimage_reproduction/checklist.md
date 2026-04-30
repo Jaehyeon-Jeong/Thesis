@@ -23,6 +23,7 @@
 | 1-I5 Training loop and checkpoint | Done | [1-I5 result](checklist_results/1-I5_training_loop_checkpoint.md) |
 | 1-I6 Kaggle/local runner | Done | [1-I6 result](checklist_results/1-I6_kaggle_local_runner.md) |
 | 1-I7 Evaluation and prediction output | Done | [1-I7 result](checklist_results/1-I7_evaluation_prediction_output.md) |
+| 1-I7R Code annotation/readability pass | Done | [1-I7R result](checklist_results/1-I7R_code_annotation.md) |
 
 ## 한국어
 
@@ -47,3 +48,4 @@
 | 1-I5 Training loop와 checkpoint | 완료 | [1-I5 결과](checklist_results/1-I5_training_loop_checkpoint.md) |
 | 1-I6 Kaggle/local runner | 완료 | [1-I6 결과](checklist_results/1-I6_kaggle_local_runner.md) |
 | 1-I7 Evaluation과 prediction output | 완료 | [1-I7 결과](checklist_results/1-I7_evaluation_prediction_output.md) |
+| 1-I7R 코드 주석/가독성 보강 | 완료 | [1-I7R 결과](checklist_results/1-I7R_code_annotation.md) |

@@ -36,6 +36,11 @@ audit:
 - Full training/evaluation runs target Kaggle Notebook.
 - One shared codebase is used across local and Kaggle; runtime differences are
   handled by config.
+- All code should include explanatory comments/docstrings:
+  - explain each important function's input, output, and role in the pipeline;
+  - document important tensor/DataFrame shapes;
+  - explain where important values move next;
+  - explain leakage-sensitive fields and why they are not model inputs.
 
 ## Upload Policy
 
@@ -92,6 +97,11 @@ Do not track:
 - local 실행은 기본적으로 smoke test입니다.
 - full training/evaluation은 Kaggle Notebook을 기준으로 합니다.
 - local/Kaggle은 하나의 shared codebase를 쓰고, runtime 차이는 config로 처리합니다.
+- 모든 코드에는 자세한 설명 주석/docstring을 남깁니다.
+  - 중요한 함수가 무엇을 입력받고 무엇을 반환하는지 설명합니다.
+  - 중요한 tensor/DataFrame shape를 적습니다.
+  - 중요한 값이 다음 단계의 어느 함수나 파일로 넘어가는지 설명합니다.
+  - leakage에 민감한 field는 왜 model input이 아닌지 설명합니다.
 
 ## 업로드 정책
 

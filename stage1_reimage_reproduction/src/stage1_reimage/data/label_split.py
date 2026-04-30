@@ -9,6 +9,11 @@ Paper/source context:
 Leakage rule:
     Future-return columns are labels/evaluation metadata only. They are never
     model inputs. Pixel normalization is fitted on the training split only.
+
+How to read this file:
+    `monthly20.py` knows how to read images. This file turns those images into
+    trainable samples by adding a binary label, assigning a split, and applying
+    train-only pixel normalization.
 """
 
 from __future__ import annotations
@@ -28,6 +33,8 @@ from stage1_reimage.config import get_config_section
 from stage1_reimage.data.monthly20 import Monthly20MemmapDataset, ShardInfo
 
 TARGET_COLUMNS: dict[str, str] = {
+    # Each experiment uses the same I20 image but a different future-return
+    # horizon as the target. Example: stage1_i20_r20 uses future Ret_20d.
     "stage1_i20_r5": "Ret_5d",
     "stage1_i20_r20": "Ret_20d",
     "stage1_i20_r60": "Ret_60d",
@@ -44,7 +51,11 @@ HORIZON_SPECS: dict[str, dict[str, str]] = {
 
 @dataclass(frozen=True)
 class SplitSettings:
-    """Split parameters for Stage 1."""
+    """Split parameters for Stage 1.
+
+    These are not data rows. They are rules used by `assign_splits()` to mark
+    every sample as train, validation, or test.
+    """
 
     train_val_year_start: int
     train_val_year_end: int
@@ -58,7 +69,11 @@ class SplitSettings:
 
 @dataclass(frozen=True)
 class NormalizationSettings:
-    """Pixel normalization parameters."""
+    """Pixel normalization parameters.
+
+    The raw image reader returns pixels in `[0, 1]`. This settings object tells
+    normalization code to compute mean/std only from train images.
+    """
 
     pixel_scale: float
     epsilon: float
@@ -68,7 +83,12 @@ class NormalizationSettings:
 
 @dataclass(frozen=True)
 class PixelNormalizationStats:
-    """Train-only scalar pixel normalization statistics."""
+    """Train-only scalar pixel normalization statistics.
+
+    These values are computed once per horizon from train images. Later,
+    `HorizonSplitImageDataset.__getitem__()` uses them to transform every image:
+    `(image - train_pixel_mean) / train_pixel_std`.
+    """
 
     target_return_name: str
     train_pixel_mean: float
@@ -117,8 +137,12 @@ class HorizonSplitImageDataset(Dataset):
         normalization_stats: PixelNormalizationStats,
         max_rows: int | None = None,
     ) -> None:
+        # `split_frame` contains all valid rows for one horizon. This line keeps
+        # only the rows requested by the caller, e.g. train or validation.
         selected = split_frame[split_frame["split"].eq(split_name)].copy()
         if max_rows is not None and max_rows > 0:
+            # `max_rows` is only for smoke tests. It lets us verify code paths
+            # without running over millions of samples locally.
             selected = selected.head(max_rows).copy()
         if selected.empty:
             raise ValueError(f"No rows available for split: {split_name}")
@@ -134,16 +158,31 @@ class HorizonSplitImageDataset(Dataset):
         return int(len(self.frame))
 
     def __getitem__(self, index: int) -> dict[str, Any]:
-        """Return normalized image, integer label, and metadata."""
+        """Return normalized image, integer label, and metadata.
+
+        Output for one row:
+            image: tensor `(1, 64, 60)`, float32, normalized by train mean/std.
+            label: scalar tensor, 0 or 1.
+            metadata: dictionary used later for prediction CSV interpretation.
+        """
 
         row = self.frame.iloc[index]
+
+        # Use the saved shard/local row ids to fetch the exact image row from
+        # the memmap dataset. This preserves alignment with the label row.
         image = self.base_dataset.get_image_tensor(
             int(row["shard_index"]),
             int(row["local_row"]),
         )
+
+        # Train-only normalization. This does not use validation/test pixels to
+        # estimate mean/std, so it avoids normalization leakage.
         image = (image - self.normalization_stats.train_pixel_mean) / (
             self.normalization_stats.train_pixel_std
         )
+
+        # Metadata keeps Date/StockID/returns so the later evaluation CSV can
+        # say which stock-date image produced each probability.
         metadata = row.to_dict()
         date_value = metadata.get("Date")
         if hasattr(date_value, "isoformat"):
@@ -157,7 +196,11 @@ class HorizonSplitImageDataset(Dataset):
 
 
 def split_settings_from_config(config: Mapping[str, Any]) -> SplitSettings:
-    """Build split settings from the `split` config section."""
+    """Build split settings from the `split` config section.
+
+    Output:
+        A small settings object consumed by `assign_splits()`.
+    """
 
     split_config = get_config_section(config, "split")
     train_val_years = _parse_year_range(split_config["train_val_years"])
@@ -181,7 +224,11 @@ def split_settings_from_config(config: Mapping[str, Any]) -> SplitSettings:
 
 
 def normalization_settings_from_config(config: Mapping[str, Any]) -> NormalizationSettings:
-    """Build normalization settings from the `normalization` config section."""
+    """Build normalization settings from the `normalization` config section.
+
+    Output:
+        A settings object consumed by `compute_pixel_normalization()`.
+    """
 
     normalization_config = get_config_section(config, "normalization")
     return NormalizationSettings(
@@ -202,10 +249,17 @@ def build_base_metadata(shards: Sequence[ShardInfo]) -> pd.DataFrame:
     - `global_index`
     """
 
+    # The final metadata frame has one row per image across all years. It does
+    # not contain image pixels; it contains Date, StockID, returns, and row ids.
     frames: list[pd.DataFrame] = []
     global_offset = 0
     for shard_index, shard in enumerate(shards):
         frame = pd.read_feather(shard.label_path).copy()
+
+        # Add row ids that let us find the matching image later:
+        #   shard_index -> which yearly `.dat` file
+        #   local_row   -> which row inside that file
+        #   global_index -> stable id across all years
         frame["year"] = int(shard.year)
         frame["local_row"] = np.arange(len(frame), dtype=np.int64)
         frame["shard_index"] = int(shard_index)
@@ -226,17 +280,33 @@ def build_horizon_frame(
     base_metadata: pd.DataFrame,
     horizon_name: str,
 ) -> pd.DataFrame:
-    """Create horizon-specific labels after target-return NaN filtering."""
+    """Create horizon-specific labels after target-return NaN filtering.
+
+    Input:
+        `base_metadata`: all rows from all label files.
+        `horizon_name`: one of `stage1_i20_r5`, `stage1_i20_r20`, `stage1_i20_r60`.
+
+    Output:
+        DataFrame with one row per usable sample. It includes:
+        `target_return`, binary `label`, and all row ids needed to fetch images.
+    """
 
     if horizon_name not in TARGET_COLUMNS:
         available = ", ".join(TARGET_COLUMNS)
         raise KeyError(f"Unknown horizon {horizon_name}. Available: {available}")
 
+    # Example: horizon_name `stage1_i20_r20` maps to target column `Ret_20d`.
     target_column = TARGET_COLUMNS[horizon_name]
+
+    # Rows with missing future returns cannot be used for supervised training.
     valid = base_metadata[target_column].notna()
     horizon_frame = base_metadata.loc[valid].copy()
     horizon_frame["target_return_name"] = target_column
     horizon_frame["target_return"] = horizon_frame[target_column].astype(float)
+
+    # Binary classification target:
+    #   future return > 0 -> class 1 (Up)
+    #   future return <= 0 -> class 0 (Down/non-positive)
     horizon_frame["label"] = (horizon_frame["target_return"] > 0.0).astype(np.int8)
     horizon_frame["horizon_name"] = horizon_name
     return horizon_frame
@@ -246,7 +316,13 @@ def assign_splits(
     horizon_frame: pd.DataFrame,
     settings: SplitSettings,
 ) -> pd.DataFrame:
-    """Assign train/validation/test split after horizon filtering."""
+    """Assign train/validation/test split after horizon filtering.
+
+    Output:
+        Same rows as `horizon_frame`, with a new `split` column. Later,
+        `HorizonSplitImageDataset` filters this column to build train/val/test
+        datasets.
+    """
 
     frame = horizon_frame.copy()
     frame["split"] = ""
@@ -264,6 +340,8 @@ def assign_splits(
     if int((train_val_mask & test_mask).sum()) != 0:
         raise ValueError("Train/validation years overlap with test years.")
 
+    # Only 1993-2000 rows are randomly divided into train/validation. Test
+    # years are never shuffled into training.
     train_val_indices = frame.index[train_val_mask].to_numpy()
     rng = np.random.default_rng(settings.split_seed)
     shuffled = rng.permutation(train_val_indices)
@@ -290,6 +368,8 @@ def make_split_summary(
 ) -> dict[str, Any]:
     """Summarize counts and class balance after split assignment."""
 
+    # This summary is written to JSON so we can later verify how many rows and
+    # positives each split contained without rebuilding the whole dataset.
     target_return_name = TARGET_COLUMNS[horizon_name]
     by_split: dict[str, dict[str, Any]] = {}
     for split_name in ["train", "validation", "test"]:
@@ -338,6 +418,12 @@ def compute_pixel_normalization(
     If `max_images` is provided, only the first `max_images` training rows are
     used. This is intended for local smoke checks and is marked in the output.
     Full Kaggle runs should pass `max_images=None`.
+
+    Tensor/data movement:
+        raw shard images `(N, 64, 60)` uint8
+        -> float32 in `[0, 1]`
+        -> scalar mean/std across all selected train pixels
+        -> `PixelNormalizationStats`
     """
 
     if settings.fit_on != "train":
@@ -347,6 +433,8 @@ def compute_pixel_normalization(
     if chunk_size <= 0:
         raise ValueError("chunk_size must be positive.")
 
+    # Only train rows are used. Validation/test pixels cannot influence the
+    # normalization parameters because that would leak future evaluation data.
     train_rows = split_frame[split_frame["split"].eq("train")]
     num_train_available = int(len(train_rows))
     if num_train_available == 0:
@@ -364,6 +452,9 @@ def compute_pixel_normalization(
         local_rows = shard_rows["local_row"].to_numpy(dtype=np.int64)
         for start in range(0, len(local_rows), chunk_size):
             row_chunk = local_rows[start : start + chunk_size]
+
+            # `images` shape here is `(chunk_size, 64, 60)`. It has no channel
+            # dimension because normalization only needs pixel values.
             images = (
                 dataset.get_image_arrays(int(shard_index), row_chunk).astype(np.float32)
                 / settings.pixel_scale
@@ -372,6 +463,7 @@ def compute_pixel_normalization(
             pixel_square_sum += float(np.square(images, dtype=np.float32).sum(dtype=np.float64))
             pixel_count += int(images.size)
 
+    # Compute std from E[x^2] - E[x]^2 to avoid keeping all pixels in memory.
     mean = pixel_sum / pixel_count
     variance = max(pixel_square_sum / pixel_count - mean * mean, 0.0)
     std = max(float(np.sqrt(variance)), settings.epsilon)
@@ -396,7 +488,11 @@ def write_horizon_metadata(
     split_frame: pd.DataFrame | None = None,
     write_split_index: bool = False,
 ) -> dict[str, str]:
-    """Write split and normalization metadata for one horizon."""
+    """Write split and normalization metadata for one horizon.
+
+    These JSON files are audit outputs. They explain how labels/splits and
+    normalization were created for a horizon, but they are not model inputs.
+    """
 
     horizon_dir = Path(output_dir)
     horizon_dir.mkdir(parents=True, exist_ok=True)

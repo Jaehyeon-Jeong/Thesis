@@ -5,6 +5,11 @@ Source policy:
     runtime/path differences controlled by config. This module implements only
     that config boundary. It does not define model, label, split, or evaluation
     behavior; those decisions stay in their own checklist gates.
+
+How to read this file:
+    The YAML config is the experiment control panel. Code reads values such as
+    data paths, batch size, seed list, and evaluation threshold from that file
+    instead of hardcoding them inside model/training functions.
 """
 
 from __future__ import annotations
@@ -42,13 +47,19 @@ def load_config(config_path: str | Path) -> dict[str, Any]:
     Returns
     -------
     dict[str, Any]
-        Parsed YAML config.
+        Parsed YAML config. The returned object is passed into path builders,
+        data loaders, model builders, training code, and evaluation code.
     """
 
+    # Convert strings such as "configs/env_local.yaml" into a Path object.
+    # `expanduser()` lets paths like "~/..." work if they are used later.
     path = Path(config_path).expanduser()
     if not path.exists():
         raise FileNotFoundError(f"Config file does not exist: {path}")
 
+    # YAML becomes a nested Python dictionary. Example:
+    #   config["training"]["batch_size"] -> 128
+    #   config["model"]["input_height"] -> 64
     with path.open("r", encoding="utf-8") as file:
         config = yaml.safe_load(file)
 
@@ -63,7 +74,11 @@ def require_config_keys(
     config: Mapping[str, Any],
     required_keys: Sequence[str] = REQUIRED_TOP_LEVEL_KEYS,
 ) -> None:
-    """Raise a clear error if required top-level config sections are missing."""
+    """Raise a clear error if required top-level config sections are missing.
+
+    This catches mistakes early. For example, evaluation code expects an
+    `evaluation` section, so a missing section should fail before training starts.
+    """
 
     missing = [key for key in required_keys if key not in config]
     if missing:
@@ -72,7 +87,12 @@ def require_config_keys(
 
 
 def get_config_section(config: Mapping[str, Any], section_name: str) -> Mapping[str, Any]:
-    """Return a named config section and ensure it is a mapping."""
+    """Return one config section and ensure it is a dictionary-like object.
+
+    Example:
+        `get_config_section(config, "training")` returns the training block,
+        which includes batch size, optimizer settings, and early stopping.
+    """
 
     section = config.get(section_name)
     if not isinstance(section, Mapping):

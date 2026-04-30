@@ -45,10 +45,22 @@ class StockCNNI20(nn.Module):
 
     The forward pass intentionally returns logits and does not apply softmax.
     Evaluation code will convert logits to class probabilities later.
+
+    How to read this model:
+        Input image batch: `(batch_size, 1, 64, 60)`.
+        After layer1: `(batch_size, 64, 13, 60)`.
+        After layer2: `(batch_size, 128, 5, 60)`.
+        After layer3: `(batch_size, 256, 3, 60)`.
+        Flatten: `(batch_size, 46080)`.
+        Output logits: `(batch_size, 2)`.
     """
 
     def __init__(self) -> None:
         super().__init__()
+
+        # Block 1 receives the grayscale image. The GitHub I20 baseline uses
+        # vertical stride/dilation to compress the height direction while
+        # preserving the 60-pixel time axis width.
         self.layer1 = nn.Sequential(
             nn.Conv2d(
                 1,
@@ -62,6 +74,9 @@ class StockCNNI20(nn.Module):
             nn.LeakyReLU(negative_slope=0.01, inplace=True),
             nn.MaxPool2d((2, 1), stride=(2, 1)),
         )
+
+        # Block 2 receives 64 feature channels and learns 128 channels. Its
+        # output still keeps width 60, so temporal position remains aligned.
         self.layer2 = nn.Sequential(
             nn.Conv2d(
                 64,
@@ -75,6 +90,9 @@ class StockCNNI20(nn.Module):
             nn.LeakyReLU(negative_slope=0.01, inplace=True),
             nn.MaxPool2d((2, 1), stride=(2, 1)),
         )
+
+        # Block 3 receives 128 channels and produces 256 channels. After this
+        # block the spatial tensor is `(batch, 256, 3, 60)`.
         self.layer3 = nn.Sequential(
             nn.Conv2d(
                 128,
@@ -88,10 +106,16 @@ class StockCNNI20(nn.Module):
             nn.LeakyReLU(negative_slope=0.01, inplace=True),
             nn.MaxPool2d((2, 1), stride=(2, 1)),
         )
+
+        # The classifier sees every value in the final feature map. Because
+        # `256 * 3 * 60 = 46080`, the linear layer input size is 46080.
         self.fc1 = nn.Sequential(
             nn.Dropout(p=0.5),
             nn.Linear(46_080, 2),
         )
+
+        # Kept for reference compatibility. We do not call this inside
+        # `forward()` because `CrossEntropyLoss` expects raw logits.
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -105,12 +129,20 @@ class StockCNNI20(nn.Module):
             logits: `(batch_size, 2)`, where class index 1 is the Up class.
         """
 
+        # Ensure the batch has the CNN input convention:
+        # `(batch_size, channel=1, height=64, width=60)`.
         x = x.reshape(-1, 1, 64, 60)
-        x = self.layer1(x)
-        x = self.layer2(x)
-        x = self.layer3(x)
+
+        # Each CNN block turns pixels into increasingly abstract chart-pattern
+        # feature maps. The tensor keeps batch dimension first.
+        x = self.layer1(x)  # `(batch_size, 64, 13, 60)`
+        x = self.layer2(x)  # `(batch_size, 128, 5, 60)`
+        x = self.layer3(x)  # `(batch_size, 256, 3, 60)`
+
+        # Flatten all channel/height/width values into one vector per image so
+        # the final linear classifier can produce two class scores.
         x = x.reshape(-1, 46_080)
-        x = self.fc1(x)
+        x = self.fc1(x)  # `(batch_size, 2)` = `[down_logit, up_logit]`
         return x
 
     def forward_with_shapes(self, x: torch.Tensor) -> dict[str, tuple[int, ...]]:
@@ -133,7 +165,12 @@ class StockCNNI20(nn.Module):
         return shapes
 
     def gradcam_target_layers(self) -> dict[str, nn.Module]:
-        """Return named convolution layers planned for Stage 1 Grad-CAM."""
+        """Return named convolution layers planned for Stage 1 Grad-CAM.
+
+        Grad-CAM will attach hooks to these Conv2d modules, not to the whole
+        sequential block. That lets it collect convolution activations and
+        gradients before later pooling changes the spatial map.
+        """
 
         return {
             "layer1_conv": self.layer1[0],
@@ -143,7 +180,11 @@ class StockCNNI20(nn.Module):
 
 
 def build_stock_cnn_i20_from_config(config: Mapping[str, Any]) -> StockCNNI20:
-    """Build the Stage 1 I20 model after checking the model config name."""
+    """Build the Stage 1 I20 model after checking the model config name.
+
+    This function is a guardrail. If the config requests a different model,
+    Stage 1 should fail clearly instead of silently training the wrong network.
+    """
 
     model_config = get_config_section(config, "model")
     model_name = str(model_config.get("name"))
@@ -153,7 +194,11 @@ def build_stock_cnn_i20_from_config(config: Mapping[str, Any]) -> StockCNNI20:
 
 
 def count_parameters(model: nn.Module, trainable_only: bool = False) -> int:
-    """Count model parameters."""
+    """Count model parameters.
+
+    This is used by smoke checks to verify that our local model still matches
+    the expected GitHub-style I20 parameter count.
+    """
 
     parameters = model.parameters()
     if trainable_only:

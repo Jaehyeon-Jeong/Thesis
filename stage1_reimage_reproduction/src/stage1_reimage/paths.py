@@ -2,6 +2,11 @@
 
 The helpers keep filesystem layout explicit and centralized. They create only
 output directories; they never create or modify raw data directories.
+
+How to read this file:
+    `Stage1Paths` is a small object that carries all important folders through
+    the pipeline. Runners pass it around so code does not repeatedly rebuild
+    strings like `outputs/checkpoints/...` in different files.
 """
 
 from __future__ import annotations
@@ -27,7 +32,12 @@ PATH_SECTION_KEYS: tuple[str, ...] = (
 
 @dataclass(frozen=True)
 class Stage1Paths:
-    """Resolved filesystem paths used by Stage 1 runners."""
+    """Resolved filesystem paths used by Stage 1 runners.
+
+    These paths are not tensors or data frames. They are filesystem locations.
+    Training writes checkpoints under `checkpoint_root`, metrics under
+    `metrics_root`, and prediction CSVs under `predictions_root`.
+    """
 
     project_root: Path
     data_root: Path
@@ -54,7 +64,14 @@ class Stage1Paths:
 
 
 def build_stage1_paths(config: Mapping[str, Any]) -> Stage1Paths:
-    """Build `Stage1Paths` from the `paths` config section."""
+    """Build `Stage1Paths` from the `paths` config section.
+
+    Input:
+        Parsed config dictionary from `load_config()`.
+
+    Output:
+        `Stage1Paths`, which is passed into runner/training/evaluation code.
+    """
 
     paths_section = get_config_section(config, "paths")
     missing = [key for key in PATH_SECTION_KEYS if key not in paths_section]
@@ -62,6 +79,8 @@ def build_stage1_paths(config: Mapping[str, Any]) -> Stage1Paths:
         missing_list = ", ".join(missing)
         raise KeyError(f"Missing required path config key(s): {missing_list}")
 
+    # Each YAML path string becomes a `Path` object so later code can safely do
+    # operations such as `paths.checkpoint_root / horizon / seed_dir`.
     path_values = {
         key: Path(str(paths_section[key])).expanduser()
         for key in PATH_SECTION_KEYS
@@ -70,7 +89,12 @@ def build_stage1_paths(config: Mapping[str, Any]) -> Stage1Paths:
 
 
 def ensure_stage1_output_dirs(paths: Stage1Paths) -> list[Path]:
-    """Create Stage 1 output directories if needed and return verified paths."""
+    """Create Stage 1 output directories if needed and return verified paths.
+
+    This prepares folders for files that will be generated later:
+    checkpoints, metric JSONs, prediction CSVs, figures, and run manifests.
+    Raw data folders are intentionally not created here.
+    """
 
     output_dirs = [
         paths.output_root,

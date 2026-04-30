@@ -10,6 +10,11 @@ Shape contract:
     Raw image row: (64, 60) uint8
     Returned image tensor: (1, 64, 60) float32, scaled to [0, 1]
     Batch shape after PyTorch collation: (batch_size, 1, 64, 60)
+
+How to read this file:
+    The `.dat` files are not JPEG/PNG files. They are flat byte arrays. Because
+    every image has exactly `64 * 60` pixels, the loader can reshape bytes into
+    `(num_images, 64, 60)` without decoding an image format.
 """
 
 from __future__ import annotations
@@ -46,7 +51,12 @@ REQUIRED_LABEL_COLUMNS: tuple[str, ...] = (
 
 @dataclass(frozen=True)
 class ShardInfo:
-    """Metadata for one year of image and label files."""
+    """Metadata for one year of image and label files.
+
+    One shard corresponds to one calendar year, e.g. 1993. The image `.dat`
+    file and label `.feather` file must have the same number of rows so row `i`
+    in both files describes the same stock/date sample.
+    """
 
     year: int
     image_path: Path
@@ -79,6 +89,8 @@ def years_from_config(config: Mapping[str, Any]) -> list[int]:
     config provides a longer list, it is treated as the explicit year list.
     """
 
+    # Config stores `[1993, 2019]`. For Stage 1 this means every year from
+    # 1993 through 2019, not just two years.
     data_config = get_config_section(config, "data")
     raw_years = data_config.get("expected_years", [1993, 2019])
     if not isinstance(raw_years, Sequence) or isinstance(raw_years, str):
@@ -91,13 +103,18 @@ def years_from_config(config: Mapping[str, Any]) -> list[int]:
 
 
 def infer_image_row_count(image_path: Path) -> tuple[int, int]:
-    """Infer row count from a raw uint8 `.dat` image file."""
+    """Infer row count from a raw uint8 `.dat` image file.
+
+    If a file has `N * 64 * 60` bytes, then it contains `N` images. This is why
+    divisibility by `IMAGE_PIXELS` is checked before creating a memmap.
+    """
 
     file_size = image_path.stat().st_size
     if file_size % IMAGE_PIXELS != 0:
         raise ValueError(
             f"Image file size is not divisible by {IMAGE_PIXELS}: {image_path}"
         )
+    # Example: file_size 384000 means 100 images because 384000 / 3840 = 100.
     return file_size // IMAGE_PIXELS, file_size
 
 
@@ -127,6 +144,8 @@ def discover_monthly20_shards(
             raise ValueError(f"Duplicate year in shard discovery: {year}")
         seen_years.add(year)
 
+        # Build the exact file names fixed by the public monthly_20d dataset.
+        # These names also encode that the image contains volume bars and MA.
         image_path = root / IMAGE_FILE_TEMPLATE.format(year=year)
         label_path = root / LABEL_FILE_TEMPLATE.format(year=year)
         if not image_path.exists():
@@ -134,6 +153,7 @@ def discover_monthly20_shards(
         if not label_path.exists():
             raise FileNotFoundError(f"Missing label file for {year}: {label_path}")
 
+        # `image_rows` is the number of samples that the `.dat` file can yield.
         image_rows, image_file_size = infer_image_row_count(image_path)
         label_frame = pd.read_feather(label_path)
         if validate:
@@ -162,7 +182,12 @@ def discover_monthly20_shards(
 
 
 def build_dataset_from_config(config: Mapping[str, Any]) -> "Monthly20MemmapDataset":
-    """Build a `Monthly20MemmapDataset` using the environment config."""
+    """Build a `Monthly20MemmapDataset` using the environment config.
+
+    Output:
+        A dataset object that can later return one sample as:
+        `{"image": tensor(1, 64, 60), "metadata": {...}}`.
+    """
 
     data_config = get_config_section(config, "data")
     data_root = Path(str(data_config["monthly20_root"])).expanduser()
@@ -195,7 +220,14 @@ class Monthly20MemmapDataset(Dataset):
         if not shards:
             raise ValueError("At least one shard is required.")
         self.shards = list(shards)
+
+        # Label metadata is loaded into memory because it is small compared to
+        # image bytes and is needed often for Date/StockID/return columns.
         self._label_frames = [pd.read_feather(shard.label_path) for shard in self.shards]
+
+        # Image bytes stay on disk and are accessed through memory maps. This
+        # avoids loading all rendered images into RAM at once. Each memmap has
+        # shape `(num_rows_for_year, 64, 60)` and dtype `uint8`.
         self._image_maps = [
             np.memmap(
                 shard.image_path,
@@ -205,6 +237,9 @@ class Monthly20MemmapDataset(Dataset):
             )
             for shard in self.shards
         ]
+        # `_cumulative_end_rows` lets a global dataset index map back to a
+        # `(year shard, row inside that year)` pair. Example:
+        #   index 150000 -> shard_index for 1995, local_row inside 1995 file.
         cumulative_total = 0
         self._cumulative_end_rows: list[int] = []
         for shard in self.shards:
@@ -225,7 +260,11 @@ class Monthly20MemmapDataset(Dataset):
                 and `local_row`
         """
 
+        # Convert one global index into the exact year file and row number.
         shard_index, local_row = self.locate(index)
+
+        # This image tensor is the only model input created by this dataset.
+        # Metadata travels with the sample but must not be fed into the CNN.
         image_tensor = self.get_image_tensor(shard_index, local_row)
         metadata = self.get_metadata(shard_index, local_row)
         return {"image": image_tensor, "metadata": metadata}
@@ -238,15 +277,28 @@ class Monthly20MemmapDataset(Dataset):
         if index < 0 or index >= len(self):
             raise IndexError(f"Dataset index out of range: {index}")
 
+        # `bisect_right` finds the first cumulative row boundary greater than
+        # `index`, which is exactly the year shard containing that row.
         shard_index = bisect_right(self._cumulative_end_rows, index)
         previous_end = 0 if shard_index == 0 else self._cumulative_end_rows[shard_index - 1]
         return shard_index, index - previous_end
 
     def get_image_tensor(self, shard_index: int, local_row: int) -> torch.Tensor:
-        """Read one image lazily and return `(1, 64, 60)` float32 tensor."""
+        """Read one image lazily and return `(1, 64, 60)` float32 tensor.
+
+        Data movement:
+            disk memmap uint8 `(64, 60)`
+            -> NumPy float32 `(64, 60)` scaled to `[0, 1]`
+            -> add channel dimension `(1, 64, 60)`
+            -> PyTorch tensor for DataLoader batching.
+        """
 
         image = self.get_image_array(shard_index, local_row).astype(np.float32, copy=True)
+        # Raw pixels are 0-255. Dividing by 255 makes them comparable across
+        # samples before the later train-only mean/std normalization.
         image /= 255.0
+        # CNNs expect a channel dimension. Because images are grayscale, channel
+        # count is 1, so `(64, 60)` becomes `(1, 64, 60)`.
         image = image[np.newaxis, :, :]
         return torch.from_numpy(image)
 
@@ -256,12 +308,21 @@ class Monthly20MemmapDataset(Dataset):
         return self._image_maps[shard_index][local_row]
 
     def get_image_arrays(self, shard_index: int, local_rows: np.ndarray) -> np.ndarray:
-        """Read raw `(N, 64, 60)` uint8 images from one shard memmap."""
+        """Read raw `(N, 64, 60)` uint8 images from one shard memmap.
+
+        This batch-style reader is used for computing normalization statistics
+        efficiently; it does not return PyTorch tensors.
+        """
 
         return np.asarray(self._image_maps[shard_index][local_rows])
 
     def get_metadata(self, shard_index: int, local_row: int) -> dict[str, Any]:
-        """Return original label metadata plus shard identifiers."""
+        """Return original label metadata plus shard identifiers.
+
+        This dictionary includes future-return columns such as `Ret_20d`, but
+        those values are labels/evaluation fields only. They are kept so
+        prediction CSVs can be interpreted later.
+        """
 
         row = self._label_frames[shard_index].iloc[local_row]
         metadata = row.to_dict()

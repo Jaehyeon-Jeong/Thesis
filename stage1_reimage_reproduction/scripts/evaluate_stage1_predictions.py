@@ -31,7 +31,11 @@ from torch.utils.data import DataLoader
 
 
 def add_stage1_src_to_path() -> Path:
-    """Add local Stage 1 `src/` directory to `sys.path`."""
+    """Add local Stage 1 `src/` directory to `sys.path`.
+
+    This makes local source imports work when running the script directly:
+    `from stage1_reimage.evaluation import predict_loader`.
+    """
 
     stage_root = Path(__file__).resolve().parents[1]
     sys.path.insert(0, str(stage_root / "src"))
@@ -39,7 +43,13 @@ def add_stage1_src_to_path() -> Path:
 
 
 def parse_args(stage_root: Path) -> argparse.Namespace:
-    """Parse CLI arguments."""
+    """Parse CLI arguments.
+
+    Important modes:
+        normal mode loads one checkpoint and writes seed-level predictions.
+        `--average-seed-predictions` skips model loading and averages existing
+        prediction CSV files.
+    """
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -75,7 +85,14 @@ def parse_args(stage_root: Path) -> argparse.Namespace:
 
 
 def main() -> int:
-    """Run seed-level prediction export or average existing seed predictions."""
+    """Run seed-level prediction export or average existing seed predictions.
+
+    Seed-level path:
+        checkpoint -> model -> DataLoader -> prediction DataFrame -> CSV/JSON.
+
+    Averaging path:
+        seed prediction CSVs -> mean probabilities -> averaged CSV/JSON.
+    """
 
     stage_root = add_stage1_src_to_path()
     args = parse_args(stage_root)
@@ -110,12 +127,15 @@ def main() -> int:
     )
     from stage1_reimage.runtime import select_device  # pylint: disable=import-outside-toplevel
 
+    # Config controls data paths, device, split settings, and evaluation rule.
     config = load_config(args.config)
     paths = build_stage1_paths(config)
     ensure_stage1_output_dirs(paths)
     settings = evaluation_settings_from_config(config)
 
     if args.average_seed_predictions is not None:
+        # This branch does not run the CNN. It only reads existing seed
+        # prediction CSV files and averages their softmax probabilities.
         summary = _run_average_predictions(
             paths=paths,
             horizon=args.horizon,
@@ -133,17 +153,27 @@ def main() -> int:
     if args.horizon not in TARGET_COLUMNS:
         raise KeyError(f"Unknown horizon: {args.horizon}")
 
+    # By default, evaluation uses the best validation-loss checkpoint created by
+    # `run_stage1_baseline.py`.
     checkpoint_path = args.checkpoint_path or (
         paths.checkpoint_root / args.horizon / f"seed_{args.run_seed}" / "best.pt"
     )
     device = select_device(config)
+
+    # Create an empty model object first, then load learned weights from the
+    # checkpoint into it.
     model = StockCNNI20()
     checkpoint = load_checkpoint_into_model(model, checkpoint_path, device)
+
+    # Training saved the exact mean/std used for image normalization. Reusing it
+    # keeps evaluation data transformed exactly like validation during training.
     normalization_stats = _normalization_stats_from_checkpoint(
         checkpoint=checkpoint,
         target_return_name=TARGET_COLUMNS[args.horizon],
     )
 
+    # Rebuild the same row index used in training so prediction rows align with
+    # original Date/StockID/return metadata.
     base_dataset = build_dataset_from_config(config)
     base_metadata = build_base_metadata(base_dataset.shards)
     horizon_frame = build_horizon_frame(base_metadata, args.horizon)
@@ -157,6 +187,8 @@ def main() -> int:
             max_images=args.normalization_max_images,
         )
 
+    # Evaluation dataset returns normalized images `(1,64,60)`, labels, and
+    # metadata. DataLoader stacks them into batches `(B,1,64,60)`.
     dataset = HorizonSplitImageDataset(
         base_dataset=base_dataset,
         split_frame=split_frame,
@@ -166,6 +198,8 @@ def main() -> int:
     )
     loader = _build_eval_loader(config=config, dataset=dataset, batch_size=settings.batch_size)
     horizon_spec = HORIZON_SPECS[args.horizon]
+    # Run the checkpoint over the selected split and build one prediction row
+    # per image.
     predictions = predict_loader(
         model=model,
         data_loader=loader,
@@ -178,11 +212,14 @@ def main() -> int:
         settings=settings,
         device=device,
     )
+    # Metrics are computed from the prediction DataFrame, not from the model
+    # directly. This makes saved CSVs and metrics auditable.
     classification_metrics = compute_classification_metrics(predictions)
     correlation_metrics = compute_correlation_metrics(
         predictions,
         min_group_size=settings.min_correlation_group_size,
     )
+    # Write CSV/JSON files under outputs/predictions and outputs/metrics.
     written = write_evaluation_outputs(
         predictions=predictions,
         classification_metrics=classification_metrics,
@@ -212,7 +249,11 @@ def _build_eval_loader(
     dataset: torch.utils.data.Dataset,
     batch_size: int,
 ) -> DataLoader:
-    """Build a deterministic evaluation DataLoader."""
+    """Build a deterministic evaluation DataLoader.
+
+    Evaluation must keep row order stable because prediction CSV rows should
+    align with metadata and later seed averaging.
+    """
 
     from stage1_reimage.config import get_config_section  # pylint: disable=import-outside-toplevel
 
@@ -234,7 +275,12 @@ def _normalization_stats_from_checkpoint(
     checkpoint: dict[str, Any],
     target_return_name: str,
 ) -> Any:
-    """Restore normalization stats from checkpoint metadata when available."""
+    """Restore normalization stats from checkpoint metadata when available.
+
+    Output:
+        `PixelNormalizationStats` used by `HorizonSplitImageDataset`, or `None`
+        if an older checkpoint did not store normalization metadata.
+    """
 
     from stage1_reimage.data import PixelNormalizationStats  # pylint: disable=import-outside-toplevel
 
@@ -281,8 +327,14 @@ def _run_average_predictions(
     write_evaluation_outputs: Any,
     average_seed_predictions: Any,
 ) -> dict[str, Any]:
-    """Average already-written seed prediction files."""
+    """Average already-written seed prediction files.
 
+    This is used after five independent training runs. It checks that all seed
+    files describe the same rows, then averages `prob_up` and recomputes metrics.
+    """
+
+    # Expected file pattern:
+    # outputs/predictions/<horizon>/seed_<seed>/<split>_predictions.csv
     prediction_paths = [
         paths.predictions_root / horizon / f"seed_{run_seed}" / f"{split_name}_predictions.csv"
         for run_seed in run_seeds

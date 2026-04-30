@@ -27,15 +27,29 @@ from pathlib import Path
 
 
 def add_stage1_src_to_path() -> Path:
-    """Add local Stage 1 `src/` directory to `sys.path`."""
+    """Add local Stage 1 `src/` directory to `sys.path`.
 
+    Why this exists:
+        This script is executed from the `scripts/` folder, while reusable code
+        lives under `src/stage1_reimage/`. Adding `src/` to `sys.path` lets
+        Python import `stage1_reimage.*` without installing a package first.
+    """
+
+    # `__file__` is this script path. `parents[1]` moves from
+    # `.../stage1_reimage_reproduction/scripts/run_stage1_baseline.py` to
+    # `.../stage1_reimage_reproduction`.
     stage_root = Path(__file__).resolve().parents[1]
     sys.path.insert(0, str(stage_root / "src"))
     return stage_root
 
 
 def parse_args(stage_root: Path) -> argparse.Namespace:
-    """Parse CLI arguments."""
+    """Parse CLI arguments.
+
+    Output:
+        Namespace object with values such as config path, run mode, horizons,
+        seed list, and smoke-test row limits.
+    """
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -70,7 +84,11 @@ def parse_args(stage_root: Path) -> argparse.Namespace:
 
 
 def main() -> int:
-    """Run Stage 1 baseline runner and print a JSON summary."""
+    """Run Stage 1 baseline runner and print a JSON summary.
+
+    This is the command-line entrypoint:
+        CLI args -> config -> paths -> RunSelection -> run_stage1_baseline().
+    """
 
     stage_root = add_stage1_src_to_path()
     args = parse_args(stage_root)
@@ -83,13 +101,19 @@ def main() -> int:
         run_stage1_baseline,
     )
 
+    # Read YAML config and convert path strings to `Stage1Paths`.
     config = load_config(args.config)
     paths = build_stage1_paths(config)
     run_config = config["run"]
+
+    # CLI arguments override config defaults. If the user does not pass
+    # `--run-mode`, the config decides whether this is smoke or full.
     run_mode = args.run_mode or str(run_config["default_run_mode"])
     horizons = tuple(args.horizons or _default_horizons(run_mode, TARGET_COLUMNS))
     run_seeds = tuple(args.run_seeds or _default_run_seeds(run_mode, run_config))
 
+    # `RunSelection` is passed to the runner so it knows which horizon/seed
+    # combinations to train and whether row caps are active for smoke checks.
     selection = RunSelection(
         run_mode=run_mode,
         horizons=horizons,
@@ -100,6 +124,8 @@ def main() -> int:
         max_epochs=args.max_epochs,
         allow_local_full=bool(args.allow_local_full),
     )
+    # Actual training happens inside `run_stage1_baseline()`. This script only
+    # prepares arguments and prints the returned run summary.
     summary = run_stage1_baseline(config=config, paths=paths, selection=selection)
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     return 0

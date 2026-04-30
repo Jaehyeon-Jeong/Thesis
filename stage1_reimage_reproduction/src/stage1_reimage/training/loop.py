@@ -12,6 +12,11 @@ Scope:
     This module implements the generic training loop. It does not implement
     final prediction CSVs, evaluation metrics beyond loss/accuracy, portfolio
     results, or Grad-CAM.
+
+How to read this file:
+    `fit_model()` is the main function. It receives a model and DataLoaders,
+    repeatedly calls `_run_epoch()`, saves `best.pt` when validation loss
+    improves, and writes training history files for later review.
 """
 
 from __future__ import annotations
@@ -55,7 +60,11 @@ class EarlyStoppingSettings:
 
 @dataclass(frozen=True)
 class TrainingSettings:
-    """Stage 1 training settings parsed from config."""
+    """Stage 1 training settings parsed from config.
+
+    This object freezes training hyperparameters after reading YAML, so the
+    training loop uses explicit values instead of repeatedly indexing config.
+    """
 
     run_mode: str
     report_as_reproduction: bool
@@ -90,7 +99,11 @@ class TrainingResult:
 
 
 def training_settings_from_config(config: Mapping[str, Any]) -> TrainingSettings:
-    """Build `TrainingSettings` from the `training` config section."""
+    """Build `TrainingSettings` from the `training` config section.
+
+    Output:
+        A settings object passed into `fit_model()` and `_run_epoch()`.
+    """
 
     training_config = get_config_section(config, "training")
     optimizer_config = training_config["optimizer"]
@@ -129,7 +142,12 @@ def training_settings_from_config(config: Mapping[str, Any]) -> TrainingSettings
 
 
 def initialize_model_weights(model: nn.Module, variant: str = "xavier_uniform") -> None:
-    """Apply Stage 1 Xavier initialization in-place."""
+    """Apply Stage 1 Xavier initialization in-place.
+
+    The model object is modified directly. After this function returns, Conv2d
+    and Linear weights have fresh Xavier values, and BatchNorm starts with
+    weight=1 and bias=0.
+    """
 
     if variant != "xavier_uniform":
         raise ValueError(f"Unsupported initialization variant: {variant}")
@@ -144,7 +162,12 @@ def initialize_model_weights(model: nn.Module, variant: str = "xavier_uniform") 
 
 
 def build_loss(settings: TrainingSettings) -> nn.Module:
-    """Build the configured training loss."""
+    """Build the configured training loss.
+
+    Input to this loss during training:
+        logits: `(batch_size, 2)` from `StockCNNI20`.
+        labels: `(batch_size,)`, integer class ids 0 or 1.
+    """
 
     if settings.loss != "cross_entropy":
         raise ValueError(f"Unsupported loss: {settings.loss}")
@@ -152,7 +175,11 @@ def build_loss(settings: TrainingSettings) -> nn.Module:
 
 
 def build_optimizer(model: nn.Module, settings: TrainingSettings) -> torch.optim.Optimizer:
-    """Build the configured optimizer."""
+    """Build the configured optimizer.
+
+    The optimizer owns references to model parameters. Later, `optimizer.step()`
+    updates those parameters after `loss.backward()` computes gradients.
+    """
 
     if settings.optimizer.name.lower() != "adam":
         raise ValueError(f"Unsupported optimizer: {settings.optimizer.name}")
@@ -178,7 +205,17 @@ def fit_model(
     normalization_metadata: Mapping[str, Any] | None = None,
     source_reference_metadata: Mapping[str, Any] | None = None,
 ) -> TrainingResult:
-    """Train a model and write best/last checkpoints plus history/metadata."""
+    """Train a model and write best/last checkpoints plus history/metadata.
+
+    Input:
+        model: `StockCNNI20`, not yet necessarily moved to device.
+        train_loader: batches of image `(B, 1, 64, 60)` and label `(B,)`.
+        val_loader: same batch structure, but no gradient update.
+
+    Output:
+        `TrainingResult` with file paths to `best.pt`, `last.pt`,
+        `train_history.csv`, and `train_metadata.json`.
+    """
 
     device = torch.device(device)
     checkpoint_path = Path(checkpoint_dir)
@@ -186,7 +223,12 @@ def fit_model(
     checkpoint_path.mkdir(parents=True, exist_ok=True)
     metrics_path.mkdir(parents=True, exist_ok=True)
 
+    # Reset model weights before training this seed. This is why independent
+    # seed runs can produce different checkpoints.
     initialize_model_weights(model, settings.initialization_name)
+
+    # Move model parameters to CPU/GPU. Every batch tensor must later be moved
+    # to the same device before calling `model(images)`.
     model.to(device)
     loss_fn = build_loss(settings)
     optimizer = build_optimizer(model, settings)
@@ -200,6 +242,7 @@ def fit_model(
 
     for epoch in range(1, settings.max_epochs + 1):
         epoch_start = time.perf_counter()
+        # Training epoch: gradients are enabled and optimizer updates weights.
         train_loss, train_accuracy = _run_epoch(
             model=model,
             data_loader=train_loader,
@@ -209,6 +252,8 @@ def fit_model(
             train=True,
             settings=settings,
         )
+        # Validation epoch: no gradients and no optimizer step. This estimates
+        # whether the current checkpoint generalizes better than previous ones.
         val_loss, val_accuracy = _run_epoch(
             model=model,
             data_loader=val_loader,
@@ -219,11 +264,13 @@ def fit_model(
             settings=settings,
         )
 
+        # Lower validation loss means the current model is the new best model.
         improved = val_loss < (best_val_loss - settings.early_stopping.min_delta)
         if improved:
             best_val_loss = val_loss
             best_epoch = epoch
             epochs_without_improvement = 0
+            # `best.pt` is the checkpoint used later for prediction export.
             _save_checkpoint(
                 checkpoint_path / "best.pt",
                 model=model,
@@ -238,6 +285,7 @@ def fit_model(
         else:
             epochs_without_improvement += 1
 
+        # One dictionary becomes one row in `train_history.csv`.
         history.append(
             {
                 "epoch": epoch,
@@ -256,6 +304,7 @@ def fit_model(
             break
 
     stopped_epoch = history[-1]["epoch"] if history else 0
+    # `last.pt` records the final training state even if it is not the best.
     _save_checkpoint(
         checkpoint_path / "last.pt",
         model=model,
@@ -270,6 +319,7 @@ def fit_model(
 
     train_history_path = metrics_path / "train_history.csv"
     train_metadata_path = metrics_path / "train_metadata.json"
+    # These metadata files are for audit/review; they are not read by the model.
     _write_history_csv(train_history_path, history)
     _write_json(
         train_metadata_path,
@@ -310,7 +360,15 @@ def _run_epoch(
     train: bool,
     settings: TrainingSettings,
 ) -> tuple[float, float]:
-    """Run one train or validation epoch and return `(loss, accuracy)`."""
+    """Run one train or validation epoch and return `(loss, accuracy)`.
+
+    Batch data path:
+        DataLoader batch
+        -> images `(B, 1, 64, 60)`, labels `(B,)`
+        -> model logits `(B, 2)`
+        -> loss scalar
+        -> if training, gradients update model weights
+    """
 
     model.train(mode=train)
     loss_total = 0.0
@@ -320,22 +378,40 @@ def _run_epoch(
     context = torch.enable_grad() if train else torch.no_grad()
     with context:
         for batch_index, batch in enumerate(data_loader, start=1):
+            # Extract tensors from the dataset batch. Metadata is ignored in
+            # training because future returns/StockID/Date must not be inputs.
             images, labels = _unpack_batch(batch)
+
+            # Move tensors to the same device as the model. Shape remains:
+            # images `(B, 1, 64, 60)`, labels `(B,)`.
             images = images.to(device=device, dtype=torch.float32)
             labels = labels.to(device=device, dtype=torch.long)
 
             if train and optimizer is not None:
                 optimizer.zero_grad(set_to_none=True)
+
+            # Forward pass. `logits` shape is `(B, 2)`, where column 0 is
+            # Down/non-positive score and column 1 is Up score.
             logits = model(images)
+
+            # CrossEntropyLoss internally applies log-softmax, so logits should
+            # be raw scores, not probabilities.
             loss = loss_fn(logits, labels)
             if train and optimizer is not None:
+                # Backward computes gradients for every trainable parameter.
                 loss.backward()
                 if settings.gradient_clipping is not None:
                     torch.nn.utils.clip_grad_norm_(model.parameters(), settings.gradient_clipping)
+
+                # Optimizer uses gradients to update model weights.
                 optimizer.step()
 
             batch_size = int(labels.shape[0])
             loss_total += float(loss.detach().cpu().item()) * batch_size
+
+            # During training history we use argmax over logits as the predicted
+            # class. Final paper-style probability outputs are computed later in
+            # evaluation code.
             predictions = torch.argmax(logits.detach(), dim=1)
             correct_total += int((predictions == labels).sum().cpu().item())
             sample_total += batch_size
@@ -354,7 +430,13 @@ def _run_epoch(
 
 
 def _unpack_batch(batch: Any) -> tuple[torch.Tensor, torch.Tensor]:
-    """Extract image and label tensors from common batch formats."""
+    """Extract image and label tensors from common batch formats.
+
+    Expected Stage 1 batch:
+        `{"image": tensor(B,1,64,60), "label": tensor(B), "metadata": ...}`.
+    This function returns only image and label because training must ignore
+    metadata fields.
+    """
 
     if isinstance(batch, Mapping):
         image = batch.get("image")
@@ -380,7 +462,12 @@ def _save_checkpoint(
     normalization_metadata: Mapping[str, Any] | None,
     source_reference_metadata: Mapping[str, Any] | None,
 ) -> None:
-    """Write a model checkpoint."""
+    """Write a model checkpoint.
+
+    The checkpoint is a PyTorch file containing model weights, optimizer state,
+    current epoch, best validation loss, config snapshot, and normalization
+    metadata. Evaluation later loads `model_state_dict` from this file.
+    """
 
     torch.save(
         {
@@ -398,7 +485,11 @@ def _save_checkpoint(
 
 
 def _write_history_csv(path: Path, history: list[dict[str, Any]]) -> None:
-    """Write per-epoch training history."""
+    """Write per-epoch training history.
+
+    Each row describes one completed epoch: train loss/accuracy, validation
+    loss/accuracy, learning rate, elapsed time, and whether it became best.
+    """
 
     fieldnames = [
         "epoch",

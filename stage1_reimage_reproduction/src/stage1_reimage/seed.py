@@ -1,4 +1,9 @@
-"""Reproducibility helpers for Stage 1."""
+"""Reproducibility helpers for Stage 1.
+
+This file controls random number generators. It does not change model structure;
+it makes random operations such as train/validation shuffling, weight
+initialization, and PyTorch sampling easier to reproduce.
+"""
 
 from __future__ import annotations
 
@@ -14,6 +19,8 @@ def set_global_seed(seed: int, deterministic: bool = True) -> dict[str, Any]:
     applies one selected seed to the current process.
     """
 
+    # Python hash randomization can affect some ordering behavior. Setting this
+    # environment variable is part of a reproducibility setup.
     os.environ["PYTHONHASHSEED"] = str(seed)
     random.seed(seed)
 
@@ -31,6 +38,7 @@ def set_global_seed(seed: int, deterministic: bool = True) -> dict[str, Any]:
     except ImportError:
         pass
     else:
+        # NumPy is used for split shuffling and normalization sampling logic.
         np.random.seed(seed)
         applied["numpy"] = True
 
@@ -39,6 +47,7 @@ def set_global_seed(seed: int, deterministic: bool = True) -> dict[str, Any]:
     except ImportError:
         return applied
 
+    # PyTorch uses this seed for weight initialization and DataLoader generators.
     torch.manual_seed(seed)
     applied["torch"] = True
     if torch.cuda.is_available():

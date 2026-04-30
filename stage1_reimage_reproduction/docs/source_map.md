@@ -516,6 +516,27 @@ Validation:
   convention is rechecked.
 - Grad-CAM sample selection can now consume prediction CSVs in `1-I8`.
 
+## 1-I7R Code Annotation/Readability Pass
+
+Updated on:
+- 2026-05-01
+
+Output:
+- `checklist_results/1-I7R_code_annotation.md`
+
+Source/policy mapping:
+
+| Topic | Source | Stage 1 code action |
+| --- | --- | --- |
+| Code readability | Root `PLAN.md`, code-writing principles | Added a permanent rule that all code should include detailed explanatory comments. |
+| Tensor shape comments | Root `PLAN.md`, user review request | Added comments/docstrings for image tensors `(1,64,60)`, DataLoader batches `(B,1,64,60)`, CNN feature maps, logits `(B,2)`, and probability outputs. |
+| Leakage comments | Root `PLAN.md`, Stage 1 leakage rule | Added comments where metadata/returns are preserved but not fed into the CNN. |
+| Data movement comments | User review request | Added comments describing how values move from config to loader, loader to dataset, dataset to model, model to loss, and model to prediction CSV. |
+
+1-I7R conclusion:
+- The code behavior is unchanged.
+- The code now carries more reader-facing explanations for how each stage works.
+
 ## 1-8 Grad-CAM Detail Plan
 
 Checked on:
@@ -1082,6 +1103,27 @@ Metric 결정:
 - `outputs/` 아래 smoke output은 reproduction result가 아니며 GitHub에서 제외합니다.
 - portfolio/decile H-L metric은 최종 report convention 재확인 전까지 보류합니다.
 - 이제 `1-I8` Grad-CAM sample selection이 prediction CSV를 사용할 수 있습니다.
+
+## 1-I7R 코드 주석/가독성 보강
+
+수정 일자:
+- 2026-05-01
+
+산출물:
+- `checklist_results/1-I7R_code_annotation.md`
+
+근거/policy mapping:
+
+| 항목 | 근거 | Stage 1 코드 조치 |
+| --- | --- | --- |
+| 코드 가독성 | Root `PLAN.md`, 코드 작성 원칙 | 모든 코드에 자세한 설명 주석을 남긴다는 고정 규칙을 추가. |
+| Tensor shape 주석 | Root `PLAN.md`, 사용자 review 요청 | image tensor `(1,64,60)`, DataLoader batch `(B,1,64,60)`, CNN feature map, logits `(B,2)`, probability output 설명 추가. |
+| Leakage 주석 | Root `PLAN.md`, Stage 1 leakage rule | metadata/return은 보존하지만 CNN input으로 넣지 않는 지점에 설명 추가. |
+| Data movement 주석 | 사용자 review 요청 | config -> loader -> dataset -> model -> loss -> prediction CSV로 값이 이동하는 방식 설명 추가. |
+
+1-I7R 결론:
+- 코드 동작은 바뀌지 않았습니다.
+- 각 단계가 어떻게 작동하는지 읽을 수 있도록 코드 안 설명을 보강했습니다.
 
 ## 1-8 Grad-CAM 세부계획
 

@@ -1,4 +1,9 @@
-"""Runtime helpers shared by local and Kaggle Stage 1 runs."""
+"""Runtime helpers shared by local and Kaggle Stage 1 runs.
+
+This file decides where tensors will be placed during training/evaluation:
+`cpu`, `cuda`, or another supported device. The selected value is later passed
+to PyTorch calls such as `images.to(device)`.
+"""
 
 from __future__ import annotations
 
@@ -16,6 +21,8 @@ def select_device(config: Mapping[str, Any]) -> str:
     to `torch.device`.
     """
 
+    # Read `runtime.device` from the environment config. Local config usually
+    # uses `auto`; Kaggle config requests `cuda`.
     runtime_config = get_config_section(config, "runtime")
     requested = str(runtime_config.get("device", "auto")).lower()
     fail_if_cuda_unavailable = bool(
@@ -29,6 +36,8 @@ def select_device(config: Mapping[str, Any]) -> str:
             raise RuntimeError("CUDA was requested, but PyTorch is not importable.") from exc
         return "cpu"
 
+    # CUDA availability determines whether tensors/model can actually move to
+    # GPU. If CUDA is unavailable locally, smoke tests fall back to CPU.
     cuda_available = bool(torch.cuda.is_available())
     if requested == "auto":
         return "cuda" if cuda_available else "cpu"

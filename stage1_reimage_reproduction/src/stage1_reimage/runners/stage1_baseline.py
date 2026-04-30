@@ -7,8 +7,14 @@ This runner connects the already implemented pieces:
 - StockCNNI20,
 - training loop and checkpoints.
 
-It intentionally stops before final evaluation, prediction CSV export, portfolio
-tables, and Grad-CAM because those belong to later checklist gates.
+Evaluation and Grad-CAM are separate scripts/gates, but this runner prepares
+the checkpoints and metadata those later steps need.
+
+How to read this file:
+    This is the orchestration layer. It does not define how images are read or
+    how the CNN computes logits. Instead, it calls the specialized modules in
+    the correct order: data -> labels/splits -> normalization -> DataLoader ->
+    model -> training -> manifest.
 """
 
 from __future__ import annotations
@@ -51,7 +57,11 @@ RUN_MODES = ("smoke", "full_single_seed", "full_paper_style")
 
 @dataclass(frozen=True)
 class RunSelection:
-    """Runtime matrix selected by CLI/config."""
+    """Runtime matrix selected by CLI/config.
+
+    This object describes what to run now: which horizon(s), which seed(s),
+    whether this is a tiny smoke run, and whether local full runs are allowed.
+    """
 
     run_mode: str
     horizons: tuple[str, ...]
@@ -68,7 +78,12 @@ def run_stage1_baseline(
     paths: Stage1Paths,
     selection: RunSelection,
 ) -> dict[str, Any]:
-    """Run Stage 1 baseline training for the selected horizon/seed matrix."""
+    """Run Stage 1 baseline training for the selected horizon/seed matrix.
+
+    Output:
+        A summary dictionary printed by `scripts/run_stage1_baseline.py`. The
+        actual learned model is saved to checkpoint files, not returned here.
+    """
 
     if selection.run_mode not in RUN_MODES:
         raise ValueError(f"Unsupported run mode: {selection.run_mode}")
@@ -83,7 +98,13 @@ def run_stage1_baseline(
 
     ensure_stage1_output_dirs(paths)
     device = select_device(config)
+
+    # `base_dataset` can read raw images. It does not yet know which future
+    # return horizon is the label.
     base_dataset = build_dataset_from_config(config)
+
+    # `base_metadata` is one DataFrame containing all label rows and row ids.
+    # It does not contain image tensors.
     base_metadata = build_base_metadata(base_dataset.shards)
     split_settings = split_settings_from_config(config)
     normalization_settings = normalization_settings_from_config(config)
@@ -94,9 +115,15 @@ def run_stage1_baseline(
         if horizon_name not in TARGET_COLUMNS:
             raise KeyError(f"Unknown horizon: {horizon_name}")
 
+        # Convert one target return column, such as Ret_20d, into binary labels.
         horizon_frame = build_horizon_frame(base_metadata, horizon_name)
+
+        # Add a `split` column: train, validation, or test.
         split_frame = assign_splits(horizon_frame, split_settings)
         split_summary = make_split_summary(split_frame, split_settings, horizon_name)
+
+        # Compute train-only pixel mean/std for this horizon's train rows.
+        # The resulting stats are reused by both training and validation data.
         normalization_stats = compute_pixel_normalization(
             dataset=base_dataset,
             split_frame=split_frame,
@@ -105,6 +132,7 @@ def run_stage1_baseline(
             max_images=selection.normalization_max_images,
         )
         horizon_metrics_dir = paths.metrics_root / horizon_name
+        # Save split/normalization audit JSONs before training starts.
         write_horizon_metadata(
             output_dir=horizon_metrics_dir,
             split_summary=split_summary,
@@ -114,6 +142,7 @@ def run_stage1_baseline(
         )
 
         for run_seed in selection.run_seeds:
+            # Seed affects weight initialization and DataLoader train shuffling.
             set_global_seed(run_seed)
             training_settings = training_settings_base
             if selection.max_epochs is not None:
@@ -121,6 +150,10 @@ def run_stage1_baseline(
 
                 training_settings = replace(training_settings, max_epochs=selection.max_epochs)
 
+            # DataLoaders convert row-level datasets into batches:
+            #   images `(B, 1, 64, 60)`
+            #   labels `(B,)`
+            # Training consumes train_loader; validation consumes val_loader.
             train_loader, val_loader = _build_train_val_loaders(
                 config=config,
                 base_dataset=base_dataset,
@@ -140,6 +173,8 @@ def run_stage1_baseline(
                 "run_seed": run_seed,
                 "split_seed": split_settings.split_seed,
             }
+            # `fit_model` trains one model for one horizon and one seed. It
+            # writes `best.pt`, `last.pt`, and training history files.
             result = fit_model(
                 model=StockCNNI20(),
                 train_loader=train_loader,
@@ -190,7 +225,12 @@ def write_run_manifest(
     run_results: Sequence[Mapping[str, Any]],
     device: str,
 ) -> str:
-    """Write `outputs/run_manifests/run_manifest.json`."""
+    """Write `outputs/run_manifests/run_manifest.json`.
+
+    The manifest is the run receipt. It records config, package versions, seed
+    choices, paths, and produced checkpoint/metric locations so a run can be
+    audited later.
+    """
 
     manifest_path = paths.run_manifest_root / "run_manifest.json"
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
@@ -234,7 +274,12 @@ def _build_train_val_loaders(
     max_train_rows: int | None,
     max_val_rows: int | None,
 ) -> tuple[DataLoader, DataLoader]:
-    """Build train/validation dataloaders from split metadata."""
+    """Build train/validation dataloaders from split metadata.
+
+    Output:
+        train_loader batches dictionaries with image `(B,1,64,60)`, label `(B,)`,
+        and metadata. The training loop only uses image and label.
+    """
 
     runtime_config = get_config_section(config, "runtime")
     training_config = get_config_section(config, "training")
@@ -244,6 +289,8 @@ def _build_train_val_loaders(
     persistent_workers = bool(runtime_config.get("persistent_workers", False)) and num_workers > 0
     pin_memory = bool(runtime_config.get("pin_memory", False))
 
+    # Dataset reads one normalized sample at a time. DataLoader below stacks
+    # those samples into batch tensors.
     train_dataset = HorizonSplitImageDataset(
         base_dataset=base_dataset,
         split_frame=split_frame,
@@ -258,6 +305,7 @@ def _build_train_val_loaders(
         normalization_stats=normalization_stats,
         max_rows=max_val_rows,
     )
+    # Train loader shuffles rows because SGD benefits from random batch order.
     train_loader = DataLoader(
         train_dataset,
         batch_size=batch_size,
@@ -268,6 +316,8 @@ def _build_train_val_loaders(
         persistent_workers=persistent_workers,
         generator=torch.Generator().manual_seed(run_seed),
     )
+    # Validation loader does not shuffle so validation outputs are deterministic
+    # and easier to align with row metadata.
     val_loader = DataLoader(
         val_dataset,
         batch_size=batch_size,

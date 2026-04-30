@@ -1,0 +1,18 @@
+{
+  "status": "ok",
+  "stage_root": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction",
+  "config_path": "configs/env_local.yaml",
+  "environment": "local",
+  "selected_device": "cpu",
+  "data_root_exists": true,
+  "output_root": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs",
+  "created_or_verified_dirs": [],
+  "seed_info": {
+    "seed": 42,
+    "python_random": true,
+    "numpy": true,
+    "torch": true,
+    "torch_cuda": false,
+    "deterministic": true
+  }
+}

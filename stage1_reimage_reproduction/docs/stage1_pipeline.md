@@ -411,8 +411,10 @@ Implementation gates:
 - `1-I12`: Stage 1 report outputs
 
 Current implementation status:
-- `1-I0` completed in `docs/implementation_readiness_review.md`.
-- `1-I1` is the next gate.
+- `1-I0` through `1-I9` are completed.
+- `1-I9` local smoke test passed through data loading, training, evaluation,
+  and Grad-CAM generation on tiny non-reproduction settings.
+- The next gate is `1-I10. Kaggle full single-seed run`.
 - The readiness decision is limited to the public `monthly_20d` I20 full-spec
   reproduction path. Raw OHLC image-generator work remains a separate gate if
   needed before claiming a paper-wide pipeline.
@@ -838,8 +840,10 @@ Figure 13 스타일 산출물:
 - `1-I12`: 1단계 report outputs
 
 현재 구현 상태:
-- `1-I0`은 `docs/implementation_readiness_review.md`에서 완료했습니다.
-- 다음 gate는 `1-I1`입니다.
+- `1-I0`부터 `1-I9`까지 완료했습니다.
+- `1-I9` local smoke test는 작은 non-reproduction 설정에서 data loading,
+  training, evaluation, Grad-CAM 생성까지 통과했습니다.
+- 다음 gate는 `1-I10. Kaggle full single-seed run`입니다.
 - readiness 판정은 public `monthly_20d` I20 full-spec reproduction 경로에
   한정됩니다. paper-wide pipeline을 주장하려면 raw OHLC image generator 작업은
   별도 gate로 추가해야 합니다.

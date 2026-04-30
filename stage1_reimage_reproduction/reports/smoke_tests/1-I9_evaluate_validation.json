@@ -1,0 +1,16 @@
+{
+  "status": "ok",
+  "horizon": "stage1_i20_r20",
+  "split": "validation",
+  "run_seed": 42,
+  "checkpoint_path": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/checkpoints/stage1_i20_r20/seed_42/best.pt",
+  "num_predictions": 4,
+  "accuracy": 0.25,
+  "positive_rate": 0.5,
+  "predicted_positive_rate": 0.25,
+  "written": {
+    "predictions": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/predictions/stage1_i20_r20/seed_42/validation_predictions.csv",
+    "classification_metrics": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/metrics/stage1_i20_r20/seed_42/validation_metrics.json",
+    "correlation_metrics": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/metrics/stage1_i20_r20/seed_42/validation_correlation_metrics.json"
+  }
+}

@@ -47,6 +47,19 @@ python scripts/evaluate_stage1_predictions.py \
   --split test
 ```
 
+Generate Figure 13-style Grad-CAM after test predictions exist:
+
+```bash
+python scripts/generate_stage1_gradcam.py \
+  --config configs/env_kaggle.yaml \
+  --horizon stage1_i20_r20 \
+  --run-seed 42 \
+  --split test \
+  --year 2019 \
+  --samples-per-class 10 \
+  --write-report-copy
+```
+
 For the final paper-style run:
 
 ```bash
@@ -124,6 +137,19 @@ python scripts/evaluate_stage1_predictions.py \
   --horizon stage1_i20_r20 \
   --run-seed 42 \
   --split test
+```
+
+test prediction이 생긴 뒤 Figure 13-style Grad-CAM을 생성합니다.
+
+```bash
+python scripts/generate_stage1_gradcam.py \
+  --config configs/env_kaggle.yaml \
+  --horizon stage1_i20_r20 \
+  --run-seed 42 \
+  --split test \
+  --year 2019 \
+  --samples-per-class 10 \
+  --write-report-copy
 ```
 
 최종 paper-style run은 아래처럼 실행합니다.

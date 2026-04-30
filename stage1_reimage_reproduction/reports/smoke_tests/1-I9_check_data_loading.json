@@ -1,0 +1,86 @@
+{
+  "status": "ok",
+  "config_path": "configs/env_local.yaml",
+  "num_shards": 27,
+  "num_rows": 2196994,
+  "first_shard": {
+    "year": 1993,
+    "image_path": "/Users/jaehyeonjeong/Desktop/논문/테스트/Test/img_data/monthly_20d/20d_month_has_vb_20_ma_1993_images.dat",
+    "label_path": "/Users/jaehyeonjeong/Desktop/논문/테스트/Test/img_data/monthly_20d/20d_month_has_vb_20_ma_1993_labels_w_delay.feather",
+    "num_rows": 85644,
+    "image_file_size": 328872960,
+    "label_num_rows": 85644,
+    "date_min": "1993-01-29",
+    "date_max": "1993-12-31"
+  },
+  "last_shard": {
+    "year": 2019,
+    "image_path": "/Users/jaehyeonjeong/Desktop/논문/테스트/Test/img_data/monthly_20d/20d_month_has_vb_20_ma_2019_images.dat",
+    "label_path": "/Users/jaehyeonjeong/Desktop/논문/테스트/Test/img_data/monthly_20d/20d_month_has_vb_20_ma_2019_labels_w_delay.feather",
+    "num_rows": 68637,
+    "image_file_size": 263566080,
+    "label_num_rows": 68637,
+    "date_min": "2019-01-31",
+    "date_max": "2019-12-31"
+  },
+  "inspected_samples": [
+    {
+      "requested_index": 0,
+      "sample": {
+        "image_shape": [
+          1,
+          64,
+          60
+        ],
+        "image_dtype": "torch.float32",
+        "image_min": 0.0,
+        "image_max": 1.0,
+        "year": 1993,
+        "local_row": 0,
+        "date": "1993-01-29T00:00:00",
+        "stock_id": "10001",
+        "metadata_columns": [
+          "Date",
+          "EWMA_vol",
+          "MarketCap",
+          "Ret_20d",
+          "Ret_5d",
+          "Ret_60d",
+          "Ret_month",
+          "StockID",
+          "local_row",
+          "year"
+        ]
+      }
+    },
+    {
+      "requested_index": -1,
+      "sample": {
+        "image_shape": [
+          1,
+          64,
+          60
+        ],
+        "image_dtype": "torch.float32",
+        "image_min": 0.0,
+        "image_max": 1.0,
+        "year": 2019,
+        "local_row": 68636,
+        "date": "2019-12-31T00:00:00",
+        "stock_id": "93436",
+        "metadata_columns": [
+          "Date",
+          "EWMA_vol",
+          "MarketCap",
+          "Ret_20d",
+          "Ret_5d",
+          "Ret_60d",
+          "Ret_month",
+          "StockID",
+          "local_row",
+          "year"
+        ]
+      }
+    }
+  ]
+}

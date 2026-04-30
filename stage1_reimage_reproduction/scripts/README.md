@@ -23,6 +23,8 @@ Current scripts:
 - `evaluate_stage1_predictions.py`: runs the 1-I7 checkpoint evaluation path,
   writes prediction CSVs, metric JSONs, correlation JSONs, and averaged
   probability files.
+- `generate_stage1_gradcam.py`: runs the 1-I8 Grad-CAM path, selecting Up/Down
+  samples from prediction CSVs and writing Figure 13-style heatmap grids.
 
 Example:
 
@@ -51,6 +53,8 @@ python scripts/check_scaffold.py --config configs/env_local.yaml --create-output
 - `evaluate_stage1_predictions.py`: 1-I7 checkpoint evaluation path를 실행해
   prediction CSV, metric JSON, correlation JSON, averaged probability file을
   작성합니다.
+- `generate_stage1_gradcam.py`: 1-I8 Grad-CAM path를 실행해 prediction CSV에서
+  Up/Down sample을 고르고 Figure 13-style heatmap grid를 작성합니다.
 
 예시:
 

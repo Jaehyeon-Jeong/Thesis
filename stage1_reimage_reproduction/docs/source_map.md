@@ -22,6 +22,10 @@ Status:
 - Stage 1-I4 baseline CNN model implementation completed on 2026-04-30.
 - Stage 1-I5 training loop and checkpoint implementation completed on 2026-04-30.
 - Stage 1-I6 Kaggle/local runner implementation completed on 2026-05-01.
+- Stage 1-I7 evaluation and prediction-output implementation completed on 2026-05-01.
+- Stage 1-I7R code annotation/readability pass completed on 2026-05-01.
+- Stage 1-I8 Grad-CAM implementation completed on 2026-05-01.
+- Stage 1-I9 local smoke test completed on 2026-05-01.
 
 Stage 1 gate structure:
 - Planning/design gates: `1-0` through `1-9`.
@@ -96,6 +100,9 @@ Stage 1 gate structure:
 | 1-I6 | `src/stage1_reimage/runners/stage1_baseline.py` | Config-driven local/Kaggle baseline runner, dataloaders, training matrix, and run manifest. |
 | 1-I6 | `scripts/run_stage1_baseline.py` | CLI runner for local smoke and Kaggle full modes. |
 | 1-I6 | `notebooks/kaggle_stage1_runner.md` | Kaggle command skeleton and expected input layout. |
+| 1-I8 | `src/stage1_reimage/interpretability/gradcam.py` | Grad-CAM hooks, heatmap computation, sample selection, and Figure 13-style grid writer. |
+| 1-I8 | `scripts/generate_stage1_gradcam.py` | CLI script for seed checkpoint Grad-CAM generation from prediction CSVs. |
+| 1-I9 | `reports/smoke_tests/1-I9_*.json` | Local smoke-test logs for data, model, training, prediction, and Grad-CAM checks. |
 
 1-I1 source note:
 - These files implement only the shared execution scaffold required by root
@@ -539,6 +546,63 @@ Source/policy mapping:
 - The code now carries more reader-facing explanations for how each stage works.
 - Reader-facing comments/docstrings are now primarily Korean.
 
+## 1-I8 Grad-CAM Implementation
+
+Completed on:
+- 2026-05-01
+
+Outputs:
+- `src/stage1_reimage/interpretability/__init__.py`
+- `src/stage1_reimage/interpretability/gradcam.py`
+- `scripts/generate_stage1_gradcam.py`
+- `docs/gradcam_implementation.md`
+- `checklist_results/1-I8_gradcam_implementation.md`
+- `reports/figures/gradcam/stage1_i20_r20_seed_42_validation_1993_figure13_style.png`
+
+Source/policy mapping:
+
+| Topic | Source | Stage 1 code action |
+| --- | --- | --- |
+| Grad-CAM target score | `자료조사/Grad-CAM요약.md`, method pp.4-6 | Uses pre-softmax target class logit, not softmax probability. |
+| Channel weights | Grad-CAM Eq. (1) | Computes spatial mean of gradients for each channel. |
+| Heatmap | Grad-CAM Eq. (2) | Computes `ReLU(sum_k alpha_k^c A^k)`. |
+| Upsampling | Grad-CAM method pp.4-6 | Bilinearly upsamples layer heatmaps to `(64, 60)`. |
+| Figure layout | Re-image Figure 13 | Saves original image row plus one Grad-CAM row per CNN convolution layer. |
+| Target layers | `StockCNNI20.gradcam_target_layers()` | Hooks `layer1_conv`, `layer2_conv`, and `layer3_conv`. |
+
+Validation:
+- `python -m compileall src scripts`
+- `python scripts/generate_stage1_gradcam.py --config configs/env_local.yaml --horizon stage1_i20_r20 --run-seed 42 --split validation --year 1993 --samples-per-class 1 --write-report-copy`
+
+1-I8 conclusion:
+- Grad-CAM code is implemented and smoke-tested.
+- The local validation figure is not a reproduction result; final Figure 13-style
+  output still requires Kaggle full test predictions from 2019.
+
+## 1-I9 Local Smoke Test
+
+Completed on:
+- 2026-05-01
+
+Outputs:
+- `docs/local_smoke_test.md`
+- `checklist_results/1-I9_local_smoke_test.md`
+- `reports/smoke_tests/1-I9_check_scaffold.json`
+- `reports/smoke_tests/1-I9_check_data_loading.json`
+- `reports/smoke_tests/1-I9_check_label_split_normalization.json`
+- `reports/smoke_tests/1-I9_check_model.json`
+- `reports/smoke_tests/1-I9_check_training_loop.json`
+- `reports/smoke_tests/1-I9_run_stage1_baseline.json`
+- `reports/smoke_tests/1-I9_evaluate_validation.json`
+- `reports/smoke_tests/1-I9_generate_gradcam.json`
+- `reports/smoke_tests/1-I9_compileall.log`
+
+1-I9 conclusion:
+- Local tiny smoke path passes through data loading, labels/splits, model,
+  training/checkpointing, prediction/metrics, and Grad-CAM.
+- Outputs are explicitly non-reproduction artifacts.
+- Next gate is `1-I10. Kaggle full single-seed run`.
+
 ## 1-8 Grad-CAM Detail Plan
 
 Checked on:
@@ -679,7 +743,16 @@ Readiness caveats:
 - 2026-04-30에 1-8 Grad-CAM 세부계획을 완료했습니다.
 - 2026-04-30에 1-9 report plan을 완료했습니다.
 - 2026-04-30에 1-I0 implementation readiness review를 완료했습니다.
-- 구현 파일 reference는 실제 코드를 작성한 뒤에만 추가합니다.
+- 2026-04-30에 1-I1 공통 code/config scaffold 구현을 완료했습니다.
+- 2026-04-30에 1-I2 data loading 구현을 완료했습니다.
+- 2026-04-30에 1-I3 label, split, normalization 구현을 완료했습니다.
+- 2026-04-30에 1-I4 baseline CNN model 구현을 완료했습니다.
+- 2026-04-30에 1-I5 training loop와 checkpoint 구현을 완료했습니다.
+- 2026-05-01에 1-I6 Kaggle/local runner 구현을 완료했습니다.
+- 2026-05-01에 1-I7 evaluation과 prediction-output 구현을 완료했습니다.
+- 2026-05-01에 1-I7R 코드 주석/가독성 보강을 완료했습니다.
+- 2026-05-01에 1-I8 Grad-CAM 구현을 완료했습니다.
+- 2026-05-01에 1-I9 local smoke test를 완료했습니다.
 
 1단계 gate 구조:
 - Planning/design gate: `1-0`부터 `1-9`.
@@ -1128,6 +1201,63 @@ Metric 결정:
 - 코드 동작은 바뀌지 않았습니다.
 - 각 단계가 어떻게 작동하는지 읽을 수 있도록 코드 안 설명을 보강했습니다.
 - 읽는 사람을 위한 주석과 docstring은 기본적으로 한국어로 정리했습니다.
+
+## 1-I8 Grad-CAM 구현
+
+완료 일자:
+- 2026-05-01
+
+산출물:
+- `src/stage1_reimage/interpretability/__init__.py`
+- `src/stage1_reimage/interpretability/gradcam.py`
+- `scripts/generate_stage1_gradcam.py`
+- `docs/gradcam_implementation.md`
+- `checklist_results/1-I8_gradcam_implementation.md`
+- `reports/figures/gradcam/stage1_i20_r20_seed_42_validation_1993_figure13_style.png`
+
+근거/policy mapping:
+
+| 항목 | 근거 | Stage 1 코드 조치 |
+| --- | --- | --- |
+| Grad-CAM target score | `자료조사/Grad-CAM요약.md`, 방법 pp.4-6 | softmax probability가 아니라 softmax 이전 target class logit 사용. |
+| Channel weight | Grad-CAM Eq. (1) | channel별 gradient spatial mean 계산. |
+| Heatmap | Grad-CAM Eq. (2) | `ReLU(sum_k alpha_k^c A^k)` 계산. |
+| Upsampling | Grad-CAM 방법 pp.4-6 | layer heatmap을 `(64, 60)`으로 bilinear upsampling. |
+| Figure layout | Re-image Figure 13 | 원본 이미지 row + CNN convolution layer별 Grad-CAM row 저장. |
+| Target layer | `StockCNNI20.gradcam_target_layers()` | `layer1_conv`, `layer2_conv`, `layer3_conv`에 hook. |
+
+검증:
+- `python -m compileall src scripts`
+- `python scripts/generate_stage1_gradcam.py --config configs/env_local.yaml --horizon stage1_i20_r20 --run-seed 42 --split validation --year 1993 --samples-per-class 1 --write-report-copy`
+
+1-I8 결론:
+- Grad-CAM 코드를 구현하고 smoke test까지 통과했습니다.
+- local validation figure는 재현 결과가 아니며, 최종 Figure 13-style output은
+  Kaggle full test prediction에서 2019년 sample로 생성해야 합니다.
+
+## 1-I9 Local Smoke Test
+
+완료 일자:
+- 2026-05-01
+
+산출물:
+- `docs/local_smoke_test.md`
+- `checklist_results/1-I9_local_smoke_test.md`
+- `reports/smoke_tests/1-I9_check_scaffold.json`
+- `reports/smoke_tests/1-I9_check_data_loading.json`
+- `reports/smoke_tests/1-I9_check_label_split_normalization.json`
+- `reports/smoke_tests/1-I9_check_model.json`
+- `reports/smoke_tests/1-I9_check_training_loop.json`
+- `reports/smoke_tests/1-I9_run_stage1_baseline.json`
+- `reports/smoke_tests/1-I9_evaluate_validation.json`
+- `reports/smoke_tests/1-I9_generate_gradcam.json`
+- `reports/smoke_tests/1-I9_compileall.log`
+
+1-I9 결론:
+- local tiny smoke path가 data loading, label/split, model, training/checkpoint,
+  prediction/metric, Grad-CAM까지 통과했습니다.
+- 산출물은 재현 결과가 아니라 non-reproduction artifact입니다.
+- 다음 gate는 `1-I10. Kaggle full single-seed run`입니다.
 
 ## 1-8 Grad-CAM 세부계획
 

@@ -1,0 +1,200 @@
+{
+  "status": "ok",
+  "config_path": "configs/env_local.yaml",
+  "num_base_rows": 2196994,
+  "normalization_max_images": 128,
+  "horizon_results": {
+    "stage1_i20_r5": {
+      "target_return_name": "Ret_5d",
+      "split_summary": {
+        "horizon_name": "stage1_i20_r5",
+        "target_return_name": "Ret_5d",
+        "label_rule": "1 if target_return > 0 else 0",
+        "zero_return_class": 0,
+        "train_val_years": [
+          1993,
+          2000
+        ],
+        "test_years": [
+          2001,
+          2019
+        ],
+        "train_ratio": 0.7,
+        "validation_ratio": 0.3,
+        "split_seed": 42,
+        "stratify": false,
+        "total_valid_rows": 2190724,
+        "by_split": {
+          "train": {
+            "num_rows": 553554,
+            "positive_rows": 276542,
+            "non_positive_rows": 277012,
+            "positive_rate": 0.4995754705051359,
+            "year_min": 1993,
+            "year_max": 2000
+          },
+          "validation": {
+            "num_rows": 237237,
+            "positive_rows": 118352,
+            "non_positive_rows": 118885,
+            "positive_rate": 0.49887665077538496,
+            "year_min": 1993,
+            "year_max": 2000
+          },
+          "test": {
+            "num_rows": 1399933,
+            "positive_rows": 710950,
+            "non_positive_rows": 688983,
+            "positive_rate": 0.5078457326172038,
+            "year_min": 2001,
+            "year_max": 2019
+          }
+        }
+      },
+      "normalization": {
+        "target_return_name": "Ret_5d",
+        "train_pixel_mean": 0.126416015625,
+        "train_pixel_std": 0.3323176291118179,
+        "pixel_scale": 255.0,
+        "epsilon": 1e-08,
+        "num_train_images_available": 553554,
+        "num_train_images_used": 128,
+        "num_pixels_used": 491520,
+        "sampled_for_smoke": true,
+        "fit_on": "train"
+      },
+      "written_files": {
+        "split_summary": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/metrics/stage1_i20_r5/split_summary.json",
+        "normalization": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/metrics/stage1_i20_r5/normalization.json"
+      }
+    },
+    "stage1_i20_r20": {
+      "target_return_name": "Ret_20d",
+      "split_summary": {
+        "horizon_name": "stage1_i20_r20",
+        "target_return_name": "Ret_20d",
+        "label_rule": "1 if target_return > 0 else 0",
+        "zero_return_class": 0,
+        "train_val_years": [
+          1993,
+          2000
+        ],
+        "test_years": [
+          2001,
+          2019
+        ],
+        "train_ratio": 0.7,
+        "validation_ratio": 0.3,
+        "split_seed": 42,
+        "stratify": false,
+        "total_valid_rows": 2180610,
+        "by_split": {
+          "train": {
+            "num_rows": 550736,
+            "positive_rows": 272444,
+            "non_positive_rows": 278292,
+            "positive_rate": 0.4946907411173412,
+            "year_min": 1993,
+            "year_max": 2000
+          },
+          "validation": {
+            "num_rows": 236029,
+            "positive_rows": 116844,
+            "non_positive_rows": 119185,
+            "positive_rate": 0.49504086362269045,
+            "year_min": 1993,
+            "year_max": 2000
+          },
+          "test": {
+            "num_rows": 1393845,
+            "positive_rows": 727814,
+            "non_positive_rows": 666031,
+            "positive_rate": 0.5221627942848739,
+            "year_min": 2001,
+            "year_max": 2019
+          }
+        }
+      },
+      "normalization": {
+        "target_return_name": "Ret_20d",
+        "train_pixel_mean": 0.126416015625,
+        "train_pixel_std": 0.3323176291118179,
+        "pixel_scale": 255.0,
+        "epsilon": 1e-08,
+        "num_train_images_available": 550736,
+        "num_train_images_used": 128,
+        "num_pixels_used": 491520,
+        "sampled_for_smoke": true,
+        "fit_on": "train"
+      },
+      "written_files": {
+        "split_summary": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/metrics/stage1_i20_r20/split_summary.json",
+        "normalization": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/metrics/stage1_i20_r20/normalization.json"
+      }
+    },
+    "stage1_i20_r60": {
+      "target_return_name": "Ret_60d",
+      "split_summary": {
+        "horizon_name": "stage1_i20_r60",
+        "target_return_name": "Ret_60d",
+        "label_rule": "1 if target_return > 0 else 0",
+        "zero_return_class": 0,
+        "train_val_years": [
+          1993,
+          2000
+        ],
+        "test_years": [
+          2001,
+          2019
+        ],
+        "train_ratio": 0.7,
+        "validation_ratio": 0.3,
+        "split_seed": 42,
+        "stratify": false,
+        "total_valid_rows": 2151213,
+        "by_split": {
+          "train": {
+            "num_rows": 542499,
+            "positive_rows": 279683,
+            "non_positive_rows": 262816,
+            "positive_rate": 0.5155456507753932,
+            "year_min": 1993,
+            "year_max": 2000
+          },
+          "validation": {
+            "num_rows": 232499,
+            "positive_rows": 119897,
+            "non_positive_rows": 112602,
+            "positive_rate": 0.5156882395193098,
+            "year_min": 1993,
+            "year_max": 2000
+          },
+          "test": {
+            "num_rows": 1376215,
+            "positive_rows": 744274,
+            "non_positive_rows": 631941,
+            "positive_rate": 0.5408123004036434,
+            "year_min": 2001,
+            "year_max": 2019
+          }
+        }
+      },
+      "normalization": {
+        "target_return_name": "Ret_60d",
+        "train_pixel_mean": 0.12948404947916667,
+        "train_pixel_std": 0.3357349109187833,
+        "pixel_scale": 255.0,
+        "epsilon": 1e-08,
+        "num_train_images_available": 542499,
+        "num_train_images_used": 128,
+        "num_pixels_used": 491520,
+        "sampled_for_smoke": true,
+        "fit_on": "train"
+      },
+      "written_files": {
+        "split_summary": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/metrics/stage1_i20_r60/split_summary.json",
+        "normalization": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/metrics/stage1_i20_r60/normalization.json"
+      }
+    }
+  }
+}

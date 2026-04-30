@@ -1,0 +1,57 @@
+{
+  "status": "ok",
+  "config_path": "configs/env_local.yaml",
+  "model_name": "stock_cnn_i20",
+  "reference_repo": "lich99/Stock_CNN",
+  "reference_commit": "415e2acf2a5013afca67e383acd3edc61fced840",
+  "parameter_count": 708866,
+  "trainable_parameter_count": 708866,
+  "shapes": {
+    "input": [
+      2,
+      1,
+      64,
+      60
+    ],
+    "layer1": [
+      2,
+      64,
+      13,
+      60
+    ],
+    "layer2": [
+      2,
+      128,
+      5,
+      60
+    ],
+    "layer3": [
+      2,
+      256,
+      3,
+      60
+    ],
+    "flatten": [
+      2,
+      46080
+    ],
+    "logits": [
+      2,
+      2
+    ]
+  },
+  "logits_shape": [
+    2,
+    2
+  ],
+  "softmax_row_sums": [
+    0.9999999403953552,
+    1.0
+  ],
+  "forward_returns_logits": true,
+  "gradcam_target_layers": {
+    "layer1_conv": "Conv2d",
+    "layer2_conv": "Conv2d",
+    "layer3_conv": "Conv2d"
+  }
+}

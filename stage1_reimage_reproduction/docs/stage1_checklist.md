@@ -30,8 +30,8 @@ Implementation phase:
 - [x] 1-I6. Kaggle/local runner implementation
 - [x] 1-I7. Evaluation and prediction-output implementation
 - [x] 1-I7R. Code annotation/readability pass
-- [ ] 1-I8. Grad-CAM implementation
-- [ ] 1-I9. Local smoke test
+- [x] 1-I8. Grad-CAM implementation
+- [x] 1-I9. Local smoke test
 - [ ] 1-I10. Kaggle full single-seed run
 - [ ] 1-I11. Kaggle full paper-style 5-run reproduction
 - [ ] 1-I12. Stage 1 report outputs
@@ -550,6 +550,21 @@ Output:
 - Grad-CAM figures under `outputs/figures/gradcam/`
 - report figures under `reports/figures/gradcam/`
 
+Status:
+- Completed on 2026-05-01.
+
+Output produced:
+- `src/stage1_reimage/interpretability/__init__.py`
+- `src/stage1_reimage/interpretability/gradcam.py`
+- `scripts/generate_stage1_gradcam.py`
+- `docs/gradcam_implementation.md`
+- `checklist_results/1-I8_gradcam_implementation.md`
+- `reports/figures/gradcam/stage1_i20_r20_seed_42_validation_1993_figure13_style.png`
+
+Validation:
+- `python -m compileall src scripts`
+- `python scripts/generate_stage1_gradcam.py --config configs/env_local.yaml --horizon stage1_i20_r20 --run-seed 42 --split validation --year 1993 --samples-per-class 1 --write-report-copy`
+
 ## 1-I9. Local Smoke Test
 
 Purpose:
@@ -564,6 +579,26 @@ Must verify:
 
 Output:
 - Smoke-test logs and outputs clearly marked as non-reproduction results
+
+Status:
+- Completed on 2026-05-01.
+
+Output produced:
+- `docs/local_smoke_test.md`
+- `checklist_results/1-I9_local_smoke_test.md`
+- `reports/smoke_tests/1-I9_*.json`
+- `reports/smoke_tests/1-I9_compileall.log`
+
+Validation:
+- `python scripts/check_scaffold.py --config configs/env_local.yaml`
+- `python scripts/check_data_loading.py --config configs/env_local.yaml --sample-indices 0 -1`
+- `python scripts/check_label_split_normalization.py --config configs/env_local.yaml --normalization-max-images 128`
+- `python scripts/check_model.py --config configs/env_local.yaml --batch-size 2`
+- `python scripts/check_training_loop.py --config configs/env_local.yaml --max-epochs 2 --train-samples 8 --val-samples 4 --batch-size 2`
+- `python scripts/run_stage1_baseline.py --config configs/env_local.yaml --run-mode smoke --horizons stage1_i20_r20 --max-train-rows 8 --max-val-rows 4 --normalization-max-images 128 --max-epochs 1`
+- `python scripts/evaluate_stage1_predictions.py --config configs/env_local.yaml --horizon stage1_i20_r20 --run-seed 42 --split validation --max-rows 4`
+- `python scripts/generate_stage1_gradcam.py --config configs/env_local.yaml --horizon stage1_i20_r20 --run-seed 42 --split validation --year 1993 --samples-per-class 1 --write-report-copy`
+- `python -m compileall src scripts`
 
 ## 1-I10. Kaggle Full Single-seed Run
 
@@ -622,8 +657,8 @@ Output:
 - [x] 1-I6. Kaggle/local runner 구현
 - [x] 1-I7. Evaluation과 prediction-output 구현
 - [x] 1-I7R. 코드 주석/가독성 보강
-- [ ] 1-I8. Grad-CAM 구현
-- [ ] 1-I9. Local smoke test
+- [x] 1-I8. Grad-CAM 구현
+- [x] 1-I9. Local smoke test
 - [ ] 1-I10. Kaggle full single-seed run
 - [ ] 1-I11. Kaggle full paper-style 5-run reproduction
 - [ ] 1-I12. 1단계 report outputs

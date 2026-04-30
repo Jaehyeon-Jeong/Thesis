@@ -1,0 +1,43 @@
+{
+  "status": "ok",
+  "run_mode": "smoke",
+  "device": "cpu",
+  "horizons": [
+    "stage1_i20_r20"
+  ],
+  "run_seeds": [
+    42
+  ],
+  "run_results": [
+    {
+      "horizon_name": "stage1_i20_r20",
+      "target_return_name": "Ret_20d",
+      "run_seed": 42,
+      "result": {
+        "best_epoch": 1,
+        "best_val_loss": 0.6984584331512451,
+        "stopped_epoch": 1,
+        "stopped_early": false,
+        "best_checkpoint_path": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/checkpoints/stage1_i20_r20/seed_42/best.pt",
+        "last_checkpoint_path": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/checkpoints/stage1_i20_r20/seed_42/last.pt",
+        "train_history_path": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/metrics/stage1_i20_r20/seed_42/train_history.csv",
+        "train_metadata_path": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/metrics/stage1_i20_r20/seed_42/train_metadata.json"
+      },
+      "train_rows_used": 8,
+      "validation_rows_used": 4,
+      "normalization": {
+        "target_return_name": "Ret_20d",
+        "train_pixel_mean": 0.126416015625,
+        "train_pixel_std": 0.3323176291118179,
+        "pixel_scale": 255.0,
+        "epsilon": 1e-08,
+        "num_train_images_available": 550736,
+        "num_train_images_used": 128,
+        "num_pixels_used": 491520,
+        "sampled_for_smoke": true,
+        "fit_on": "train"
+      }
+    }
+  ],
+  "run_manifest": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/run_manifests/run_manifest.json"
+}

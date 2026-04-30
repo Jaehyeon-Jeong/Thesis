@@ -1,0 +1,18 @@
+{
+  "status": "ok",
+  "device": "cpu",
+  "result": {
+    "best_epoch": 1,
+    "best_val_loss": 0.7042124569416046,
+    "stopped_epoch": 2,
+    "stopped_early": false,
+    "best_checkpoint_path": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/checkpoints/_smoke_training/seed_42/best.pt",
+    "last_checkpoint_path": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/checkpoints/_smoke_training/seed_42/last.pt",
+    "train_history_path": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/metrics/_smoke_training/seed_42/train_history.csv",
+    "train_metadata_path": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/metrics/_smoke_training/seed_42/train_metadata.json"
+  },
+  "best_checkpoint_exists": true,
+  "last_checkpoint_exists": true,
+  "history_exists": true,
+  "metadata_exists": true
+}

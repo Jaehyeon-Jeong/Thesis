@@ -1,0 +1,17 @@
+{
+  "status": "ok",
+  "horizon": "stage1_i20_r20",
+  "split": "validation",
+  "year": 1993,
+  "run_seed": 42,
+  "num_samples": 2,
+  "prediction_path": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/predictions/stage1_i20_r20/seed_42/validation_predictions.csv",
+  "checkpoint_path": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/checkpoints/stage1_i20_r20/seed_42/best.pt",
+  "written": {
+    "figure": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/figures/gradcam/stage1_i20_r20/seed_42/validation/figure13_style_1993_validation.png",
+    "samples": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/figures/gradcam/stage1_i20_r20/seed_42/validation/samples.csv",
+    "heatmaps_dir": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/figures/gradcam/stage1_i20_r20/seed_42/validation/heatmaps",
+    "report_figure": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/reports/figures/gradcam/stage1_i20_r20_seed_42_validation_1993_figure13_style.png",
+    "summary": "/Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/figures/gradcam/stage1_i20_r20/seed_42/validation/summary.json"
+  }
+}

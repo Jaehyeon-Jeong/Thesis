@@ -37,12 +37,40 @@ python scripts/run_stage1_baseline.py \
   --run-mode full_single_seed
 ```
 
-For the final paper-style run after evaluation output is implemented:
+Export predictions and metrics after training:
+
+```bash
+python scripts/evaluate_stage1_predictions.py \
+  --config configs/env_kaggle.yaml \
+  --horizon stage1_i20_r20 \
+  --run-seed 42 \
+  --split test
+```
+
+For the final paper-style run:
 
 ```bash
 python scripts/run_stage1_baseline.py \
   --config configs/env_kaggle.yaml \
   --run-mode full_paper_style
+```
+
+Then export each seed prediction and average probabilities:
+
+```bash
+for seed in 42 43 44 45 46; do
+  python scripts/evaluate_stage1_predictions.py \
+    --config configs/env_kaggle.yaml \
+    --horizon stage1_i20_r20 \
+    --run-seed "$seed" \
+    --split test
+done
+
+python scripts/evaluate_stage1_predictions.py \
+  --config configs/env_kaggle.yaml \
+  --horizon stage1_i20_r20 \
+  --split test \
+  --average-seed-predictions 42 43 44 45 46
 ```
 
 Outputs are written under:
@@ -88,12 +116,40 @@ python scripts/run_stage1_baseline.py \
   --run-mode full_single_seed
 ```
 
-evaluation output 구현 이후 최종 paper-style run은 아래처럼 실행합니다.
+학습 이후 prediction과 metric을 export합니다.
+
+```bash
+python scripts/evaluate_stage1_predictions.py \
+  --config configs/env_kaggle.yaml \
+  --horizon stage1_i20_r20 \
+  --run-seed 42 \
+  --split test
+```
+
+최종 paper-style run은 아래처럼 실행합니다.
 
 ```bash
 python scripts/run_stage1_baseline.py \
   --config configs/env_kaggle.yaml \
   --run-mode full_paper_style
+```
+
+그 다음 seed별 prediction을 export하고 probability를 평균합니다.
+
+```bash
+for seed in 42 43 44 45 46; do
+  python scripts/evaluate_stage1_predictions.py \
+    --config configs/env_kaggle.yaml \
+    --horizon stage1_i20_r20 \
+    --run-seed "$seed" \
+    --split test
+done
+
+python scripts/evaluate_stage1_predictions.py \
+  --config configs/env_kaggle.yaml \
+  --horizon stage1_i20_r20 \
+  --split test \
+  --average-seed-predictions 42 43 44 45 46
 ```
 
 출력은 아래에 저장됩니다.

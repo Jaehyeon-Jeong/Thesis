@@ -115,6 +115,35 @@ training:
   gradient_clipping: null
   log_every_batches: 100
 
+evaluation:
+  threshold: 0.5
+  tie_break_class: 1
+  probability_source: softmax_logits
+  average_probabilities_across_seeds: true
+  batch_size: 128
+  min_correlation_group_size: 3
+  metrics:
+    classification:
+      - accuracy
+      - majority_class_accuracy
+      - precision
+      - recall
+      - f1
+      - roc_auc
+      - average_precision
+      - brier_score
+      - log_loss
+      - confusion_matrix
+    correlation:
+      - pearson_prob_return
+      - spearman_prob_return
+      - datewise_pearson_prob_return
+      - datewise_spearman_prob_return
+  prediction_output:
+    save_logits: true
+    save_probabilities: true
+    save_correctness: true
+
 reproducibility:
   require_run_manifest: true
   record_kaggle_dataset_version: true

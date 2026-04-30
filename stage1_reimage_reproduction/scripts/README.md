@@ -20,6 +20,9 @@ Current scripts:
   best/last checkpoints, history CSV, and metadata JSON on synthetic smoke data.
 - `run_stage1_baseline.py`: runs the 1-I6 config-driven local/Kaggle baseline
   runner and writes checkpoints, train histories, and `run_manifest.json`.
+- `evaluate_stage1_predictions.py`: runs the 1-I7 checkpoint evaluation path,
+  writes prediction CSVs, metric JSONs, correlation JSONs, and averaged
+  probability files.
 
 Example:
 
@@ -45,6 +48,9 @@ python scripts/check_scaffold.py --config configs/env_local.yaml --create-output
   backward pass, best/last checkpoint, history CSV, metadata JSON을 확인합니다.
 - `run_stage1_baseline.py`: 1-I6 config 기반 local/Kaggle baseline runner를
   실행하고 checkpoint, train history, `run_manifest.json`을 작성합니다.
+- `evaluate_stage1_predictions.py`: 1-I7 checkpoint evaluation path를 실행해
+  prediction CSV, metric JSON, correlation JSON, averaged probability file을
+  작성합니다.
 
 예시:
 

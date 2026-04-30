@@ -19,9 +19,10 @@ Current package:
   early stopping, checkpoint, history, and metadata helpers.
 - `stage1_reimage.runners.stage1_baseline`: config-driven local/Kaggle runner
   and run manifest writer.
+- `stage1_reimage.evaluation.prediction`: checkpoint prediction export,
+  classification/correlation metrics, and seed-probability averaging.
 
 Not implemented yet:
-- evaluation
 - Grad-CAM
 
 ## 한국어
@@ -43,7 +44,8 @@ Not implemented yet:
   early stopping, checkpoint, history, metadata helper.
 - `stage1_reimage.runners.stage1_baseline`: config 기반 local/Kaggle runner와
   run manifest writer.
+- `stage1_reimage.evaluation.prediction`: checkpoint prediction export,
+  classification/correlation metrics, seed probability averaging.
 
 아직 구현하지 않은 것:
-- evaluation
 - Grad-CAM

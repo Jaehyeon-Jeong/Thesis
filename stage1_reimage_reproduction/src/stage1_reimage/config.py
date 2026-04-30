@@ -25,6 +25,7 @@ REQUIRED_TOP_LEVEL_KEYS: tuple[str, ...] = (
     "normalization",
     "model",
     "training",
+    "evaluation",
     "reproducibility",
 )
 

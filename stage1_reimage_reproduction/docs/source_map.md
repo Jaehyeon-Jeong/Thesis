@@ -479,6 +479,43 @@ Metric decisions:
 - Stage 1 evaluation includes both classification metrics and stock cross-sectional ranking outputs.
 - Exact implementation remains deferred to `1-I7`; Grad-CAM sample selection remains deferred to `1-8`.
 
+## 1-I7 Evaluation and Prediction-output Implementation
+
+Implemented on:
+- 2026-05-01
+
+Output:
+- `docs/evaluation_prediction_implementation.md`
+- `src/stage1_reimage/evaluation/prediction.py`
+- `scripts/evaluate_stage1_predictions.py`
+
+Implementation source mapping:
+
+| Topic | Source | Code location |
+| --- | --- | --- |
+| Model output interface | `lich99/Stock_CNN/models/baseline.py`, commit `415e2acf2a5013afca67e383acd3edc61fced840`; local model implementation in `src/stage1_reimage/models/stock_cnn.py` | `predict_loader()` keeps `model(images)` as logits. |
+| Softmax probability | Re-image summary maps CNN/training probability interpretation to pp.20-22; `docs/evaluation_prediction_plan.md` | `predict_loader()` applies `torch.softmax(logits, dim=1)` only during evaluation. |
+| Threshold | `docs/evaluation_prediction_plan.md`; 50% threshold from local Re-image summary pp.20-22 mapping | `prob_up >= 0.5` when `tie_break_class: 1`. |
+| Tie rule | Implementation convention because the paper does not separately report exact `0.5` behavior | `evaluation.threshold` and `evaluation.tie_break_class` in config. |
+| Averaging | `docs/evaluation_prediction_plan.md` | `average_seed_predictions()` averages softmax probabilities, not logits. |
+| Prediction metadata | Stage 1 data-loading and label plans | Prediction CSV preserves `Date`, `StockID`, `MarketCap`, target returns, labels, logits/probabilities, and correctness. |
+| Metrics | `docs/evaluation_prediction_plan.md` | `compute_classification_metrics()` and `compute_correlation_metrics()`. |
+
+Validation:
+- `python -m compileall src scripts`
+- `python scripts/check_scaffold.py --config configs/env_local.yaml`
+- `python scripts/evaluate_stage1_predictions.py --config configs/env_local.yaml --horizon stage1_i20_r20 --run-seed 42 --split validation --max-rows 4`
+- `python scripts/evaluate_stage1_predictions.py --config configs/env_local.yaml --horizon stage1_i20_r20 --split validation --average-seed-predictions 42`
+
+1-I7 conclusion:
+- Seed-level and averaged prediction export is now implemented.
+- Classification and prediction-return correlation metrics are now implemented.
+- Smoke outputs under `outputs/` are not reproduction results and are excluded
+  from GitHub.
+- Portfolio/decile H-L metrics remain deferred until the final report
+  convention is rechecked.
+- Grad-CAM sample selection can now consume prediction CSVs in `1-I8`.
+
 ## 1-8 Grad-CAM Detail Plan
 
 Checked on:
@@ -1010,6 +1047,41 @@ Metric 결정:
 - prediction file은 `Date`, `StockID`, `MarketCap`, target returns, labels, logits/probabilities, correctness를 보존해야 합니다.
 - 1단계 evaluation은 classification metric과 stock cross-sectional ranking output을 모두 포함합니다.
 - 실제 구현은 `1-I7`, Grad-CAM sample selection은 `1-8`로 넘깁니다.
+
+## 1-I7 Evaluation과 Prediction-output 구현
+
+구현 일자:
+- 2026-05-01
+
+산출물:
+- `docs/evaluation_prediction_implementation.md`
+- `src/stage1_reimage/evaluation/prediction.py`
+- `scripts/evaluate_stage1_predictions.py`
+
+구현 근거 mapping:
+
+| 항목 | 근거 | 코드 위치 |
+| --- | --- | --- |
+| Model output interface | `lich99/Stock_CNN/models/baseline.py`, commit `415e2acf2a5013afca67e383acd3edc61fced840`; local model implementation `src/stage1_reimage/models/stock_cnn.py` | `predict_loader()`는 `model(images)`를 logits로 유지합니다. |
+| Softmax probability | Re-image 요약은 CNN/training probability 해석을 pp.20-22로 매핑; `docs/evaluation_prediction_plan.md` | `predict_loader()`에서 evaluation 시에만 `torch.softmax(logits, dim=1)` 적용. |
+| Threshold | `docs/evaluation_prediction_plan.md`; local Re-image 요약 pp.20-22 mapping의 50% threshold | `tie_break_class: 1`일 때 `prob_up >= 0.5`. |
+| Tie rule | 논문이 정확히 `0.5`인 경우를 별도 보고하지 않으므로 implementation convention | config의 `evaluation.threshold`, `evaluation.tie_break_class`. |
+| Averaging | `docs/evaluation_prediction_plan.md` | `average_seed_predictions()`는 logits가 아니라 softmax probability를 평균합니다. |
+| Prediction metadata | Stage 1 data-loading/label plan | Prediction CSV는 `Date`, `StockID`, `MarketCap`, target returns, labels, logits/probabilities, correctness를 보존합니다. |
+| Metrics | `docs/evaluation_prediction_plan.md` | `compute_classification_metrics()`, `compute_correlation_metrics()`. |
+
+검증:
+- `python -m compileall src scripts`
+- `python scripts/check_scaffold.py --config configs/env_local.yaml`
+- `python scripts/evaluate_stage1_predictions.py --config configs/env_local.yaml --horizon stage1_i20_r20 --run-seed 42 --split validation --max-rows 4`
+- `python scripts/evaluate_stage1_predictions.py --config configs/env_local.yaml --horizon stage1_i20_r20 --split validation --average-seed-predictions 42`
+
+1-I7 결론:
+- seed별 prediction export와 averaged prediction export를 구현했습니다.
+- classification metric과 prediction-return correlation metric을 구현했습니다.
+- `outputs/` 아래 smoke output은 reproduction result가 아니며 GitHub에서 제외합니다.
+- portfolio/decile H-L metric은 최종 report convention 재확인 전까지 보류합니다.
+- 이제 `1-I8` Grad-CAM sample selection이 prediction CSV를 사용할 수 있습니다.
 
 ## 1-8 Grad-CAM 세부계획
 

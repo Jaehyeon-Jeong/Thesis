@@ -28,7 +28,7 @@ Implementation phase:
 - [x] 1-I4. Baseline CNN model implementation
 - [x] 1-I5. Training loop and checkpoint implementation
 - [x] 1-I6. Kaggle/local runner implementation
-- [ ] 1-I7. Evaluation and prediction-output implementation
+- [x] 1-I7. Evaluation and prediction-output implementation
 - [ ] 1-I8. Grad-CAM implementation
 - [ ] 1-I9. Local smoke test
 - [ ] 1-I10. Kaggle full single-seed run
@@ -493,6 +493,23 @@ Output:
 - `metrics.json`
 - tables under `reports/tables/`
 
+Status:
+- Completed on 2026-05-01.
+
+Output produced:
+- `src/stage1_reimage/evaluation/__init__.py`
+- `src/stage1_reimage/evaluation/prediction.py`
+- `scripts/evaluate_stage1_predictions.py`
+- `docs/evaluation_prediction_implementation.md`
+- Updated `configs/env_local.yaml`
+- Updated `configs/env_kaggle.yaml`
+
+Validation:
+- `python -m compileall src scripts`
+- `python scripts/check_scaffold.py --config configs/env_local.yaml`
+- `python scripts/evaluate_stage1_predictions.py --config configs/env_local.yaml --horizon stage1_i20_r20 --run-seed 42 --split validation --max-rows 4`
+- `python scripts/evaluate_stage1_predictions.py --config configs/env_local.yaml --horizon stage1_i20_r20 --split validation --average-seed-predictions 42`
+
 ## 1-I8. Grad-CAM Implementation
 
 Purpose:
@@ -578,7 +595,7 @@ Output:
 - [x] 1-I4. Baseline CNN model 구현
 - [x] 1-I5. Training loop와 checkpoint 구현
 - [x] 1-I6. Kaggle/local runner 구현
-- [ ] 1-I7. Evaluation과 prediction-output 구현
+- [x] 1-I7. Evaluation과 prediction-output 구현
 - [ ] 1-I8. Grad-CAM 구현
 - [ ] 1-I9. Local smoke test
 - [ ] 1-I10. Kaggle full single-seed run

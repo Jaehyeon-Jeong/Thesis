@@ -274,6 +274,7 @@ Purpose:
 
 Status:
 - Detail plan completed in `docs/evaluation_prediction_plan.md`.
+- Implementation completed in `docs/evaluation_prediction_implementation.md`.
 
 Required prediction columns:
 - `Date`
@@ -303,6 +304,16 @@ Paper-style outputs to prepare later:
   while portfolio returns are constructed after prediction.
 - BTC later cannot directly reuse this H-L decile setup because BTC is a single
   asset.
+
+Implemented command:
+
+```bash
+python scripts/evaluate_stage1_predictions.py \
+  --config configs/env_kaggle.yaml \
+  --horizon stage1_i20_r20 \
+  --run-seed 42 \
+  --split test
+```
 
 ### 1-8. Grad-CAM Plan
 
@@ -695,6 +706,7 @@ Run modes:
 
 상태:
 - `docs/evaluation_prediction_plan.md`에 세부계획을 완료했습니다.
+- `docs/evaluation_prediction_implementation.md`에 구현 결과를 기록했습니다.
 
 필수 prediction columns:
 - `Date`
@@ -721,6 +733,16 @@ Run modes:
 - 1단계 stock cross-sectional evaluation으로 decile/portfolio-style 분석을 계획합니다.
 - label은 individual stock return이고, portfolio return은 prediction 이후 구성된다는 점을 구분해야 합니다.
 - BTC는 단일 자산이므로 이 H-L decile setup을 그대로 재사용하면 안 됩니다.
+
+구현된 command:
+
+```bash
+python scripts/evaluate_stage1_predictions.py \
+  --config configs/env_kaggle.yaml \
+  --horizon stage1_i20_r20 \
+  --run-seed 42 \
+  --split test
+```
 
 ### 1-8. Grad-CAM 계획
 

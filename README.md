@@ -23,7 +23,6 @@ tracked.
 ### Key documents
 
 - [PLAN.md](PLAN.md)
-- [Github publishing plan](Github_PLAN.md)
 - [Overall pipeline diagram](docs/overall_pipeline_diagram.md)
 - [Execution environment diagram](docs/execution_environment_diagram.md)
 - [Stage 0 checklist](stage0_data_check/checklist.md)
@@ -69,7 +68,6 @@ config, 코드 scaffold만 올립니다. 대용량 데이터, 논문 PDF, checkp
 ### 주요 문서
 
 - [PLAN.md](PLAN.md)
-- [Github publish 운영 규칙](Github_PLAN.md)
 - [전체 파이프라인 다이어그램](docs/overall_pipeline_diagram.md)
 - [실행환경 다이어그램](docs/execution_environment_diagram.md)
 - [Stage 0 체크리스트](stage0_data_check/checklist.md)

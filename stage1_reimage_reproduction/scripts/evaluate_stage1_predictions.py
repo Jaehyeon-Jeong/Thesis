@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Export Stage 1 predictions and evaluation metrics.
+"""1단계 prediction과 evaluation metric을 export한다.
 
-Examples:
-    Local smoke evaluation after `run_stage1_baseline.py`:
+실행 예시:
+    `run_stage1_baseline.py` 이후 local smoke evaluation:
         python scripts/evaluate_stage1_predictions.py \
           --config configs/env_local.yaml \
           --horizon stage1_i20_r20 \
@@ -10,7 +10,7 @@ Examples:
           --split validation \
           --max-rows 4
 
-    Kaggle full test evaluation:
+    Kaggle 전체 test evaluation:
         python scripts/evaluate_stage1_predictions.py \
           --config configs/env_kaggle.yaml \
           --horizon stage1_i20_r20 \
@@ -31,9 +31,9 @@ from torch.utils.data import DataLoader
 
 
 def add_stage1_src_to_path() -> Path:
-    """Add local Stage 1 `src/` directory to `sys.path`.
+    """로컬 1단계 `src/` directory를 `sys.path`에 추가한다.
 
-    This makes local source imports work when running the script directly:
+    script를 직접 실행할 때 local source import가 가능하게 한다:
     `from stage1_reimage.evaluation import predict_loader`.
     """
 
@@ -43,12 +43,12 @@ def add_stage1_src_to_path() -> Path:
 
 
 def parse_args(stage_root: Path) -> argparse.Namespace:
-    """Parse CLI arguments.
+    """명령행 인자를 parsing한다.
 
-    Important modes:
-        normal mode loads one checkpoint and writes seed-level predictions.
-        `--average-seed-predictions` skips model loading and averages existing
-        prediction CSV files.
+    중요한 mode:
+        normal mode는 checkpoint 하나를 load하고 seed-level prediction을 저장한다.
+        `--average-seed-predictions`는 model loading을 건너뛰고 기존 prediction CSV를
+        평균한다.
     """
 
     parser = argparse.ArgumentParser(description=__doc__)
@@ -56,7 +56,7 @@ def parse_args(stage_root: Path) -> argparse.Namespace:
         "--config",
         type=Path,
         default=stage_root / "configs" / "env_local.yaml",
-        help="Stage 1 environment config path.",
+        help="1단계 환경 config 경로.",
     )
     parser.add_argument("--horizon", default="stage1_i20_r20")
     parser.add_argument("--run-seed", type=int, default=42)
@@ -66,31 +66,31 @@ def parse_args(stage_root: Path) -> argparse.Namespace:
         "--max-rows",
         type=int,
         default=None,
-        help="Optional row cap for smoke evaluation. Do not use for reproduction metrics.",
+        help="smoke evaluation용 optional row 제한. 재현 metric 계산에는 사용하지 않는다.",
     )
     parser.add_argument(
         "--normalization-max-images",
         type=int,
         default=None,
-        help="Fallback normalization cap if checkpoint metadata is unavailable.",
+        help="checkpoint metadata가 없을 때만 쓰는 fallback normalization image 제한.",
     )
     parser.add_argument(
         "--average-seed-predictions",
         nargs="*",
         type=int,
         default=None,
-        help="Average existing seed prediction CSVs for the selected horizon/split.",
+        help="선택한 horizon/split의 기존 seed prediction CSV를 평균한다.",
     )
     return parser.parse_args()
 
 
 def main() -> int:
-    """Run seed-level prediction export or average existing seed predictions.
+    """seed-level prediction export 또는 기존 seed prediction 평균을 실행한다.
 
-    Seed-level path:
+    Seed-level 흐름:
         checkpoint -> model -> DataLoader -> prediction DataFrame -> CSV/JSON.
 
-    Averaging path:
+    Seed 평균 흐름:
         seed prediction CSVs -> mean probabilities -> averaged CSV/JSON.
     """
 
@@ -127,15 +127,15 @@ def main() -> int:
     )
     from stage1_reimage.runtime import select_device  # pylint: disable=import-outside-toplevel
 
-    # Config controls data paths, device, split settings, and evaluation rule.
+    # Config는 data path, device, split setting, evaluation rule을 제어한다.
     config = load_config(args.config)
     paths = build_stage1_paths(config)
     ensure_stage1_output_dirs(paths)
     settings = evaluation_settings_from_config(config)
 
     if args.average_seed_predictions is not None:
-        # This branch does not run the CNN. It only reads existing seed
-        # prediction CSV files and averages their softmax probabilities.
+        # 이 branch는 CNN을 실행하지 않는다. 기존 seed prediction CSV를 읽고 softmax
+        # probability만 평균한다.
         summary = _run_average_predictions(
             paths=paths,
             horizon=args.horizon,
@@ -153,27 +153,26 @@ def main() -> int:
     if args.horizon not in TARGET_COLUMNS:
         raise KeyError(f"Unknown horizon: {args.horizon}")
 
-    # By default, evaluation uses the best validation-loss checkpoint created by
-    # `run_stage1_baseline.py`.
+    # 기본적으로 evaluation은 `run_stage1_baseline.py`가 만든 best validation-loss
+    # checkpoint를 사용한다.
     checkpoint_path = args.checkpoint_path or (
         paths.checkpoint_root / args.horizon / f"seed_{args.run_seed}" / "best.pt"
     )
     device = select_device(config)
 
-    # Create an empty model object first, then load learned weights from the
-    # checkpoint into it.
+    # 먼저 빈 model 객체를 만들고, checkpoint에서 학습된 weight를 load한다.
     model = StockCNNI20()
     checkpoint = load_checkpoint_into_model(model, checkpoint_path, device)
 
-    # Training saved the exact mean/std used for image normalization. Reusing it
-    # keeps evaluation data transformed exactly like validation during training.
+    # training은 image normalization에 사용한 정확한 mean/std를 저장했다. 이것을
+    # 재사용해야 evaluation data가 training 중 validation과 같은 방식으로 변환된다.
     normalization_stats = _normalization_stats_from_checkpoint(
         checkpoint=checkpoint,
         target_return_name=TARGET_COLUMNS[args.horizon],
     )
 
-    # Rebuild the same row index used in training so prediction rows align with
-    # original Date/StockID/return metadata.
+    # training에서 사용한 row index를 다시 만들어 prediction row가 원본 Date/StockID/
+    # return metadata와 align되게 한다.
     base_dataset = build_dataset_from_config(config)
     base_metadata = build_base_metadata(base_dataset.shards)
     horizon_frame = build_horizon_frame(base_metadata, args.horizon)
@@ -187,8 +186,8 @@ def main() -> int:
             max_images=args.normalization_max_images,
         )
 
-    # Evaluation dataset returns normalized images `(1,64,60)`, labels, and
-    # metadata. DataLoader stacks them into batches `(B,1,64,60)`.
+    # evaluation dataset은 normalized image `(1,64,60)`, label, metadata를 반환한다.
+    # DataLoader는 이를 `(B,1,64,60)` batch로 stack한다.
     dataset = HorizonSplitImageDataset(
         base_dataset=base_dataset,
         split_frame=split_frame,
@@ -198,8 +197,7 @@ def main() -> int:
     )
     loader = _build_eval_loader(config=config, dataset=dataset, batch_size=settings.batch_size)
     horizon_spec = HORIZON_SPECS[args.horizon]
-    # Run the checkpoint over the selected split and build one prediction row
-    # per image.
+    # 선택된 split에 checkpoint를 적용하고 image 하나당 prediction row 하나를 만든다.
     predictions = predict_loader(
         model=model,
         data_loader=loader,
@@ -212,14 +210,14 @@ def main() -> int:
         settings=settings,
         device=device,
     )
-    # Metrics are computed from the prediction DataFrame, not from the model
-    # directly. This makes saved CSVs and metrics auditable.
+    # metric은 model에서 직접 계산하지 않고 prediction DataFrame에서 계산한다. 이렇게
+    # 해야 저장된 CSV와 metric을 나중에 audit할 수 있다.
     classification_metrics = compute_classification_metrics(predictions)
     correlation_metrics = compute_correlation_metrics(
         predictions,
         min_group_size=settings.min_correlation_group_size,
     )
-    # Write CSV/JSON files under outputs/predictions and outputs/metrics.
+    # CSV/JSON file을 outputs/predictions와 outputs/metrics 아래에 저장한다.
     written = write_evaluation_outputs(
         predictions=predictions,
         classification_metrics=classification_metrics,
@@ -249,10 +247,10 @@ def _build_eval_loader(
     dataset: torch.utils.data.Dataset,
     batch_size: int,
 ) -> DataLoader:
-    """Build a deterministic evaluation DataLoader.
+    """row 순서가 고정된 evaluation DataLoader를 만든다.
 
-    Evaluation must keep row order stable because prediction CSV rows should
-    align with metadata and later seed averaging.
+    prediction CSV row가 metadata와 맞아야 하고 나중 seed averaging에도 쓰이므로
+    evaluation은 row order를 안정적으로 유지해야 한다.
     """
 
     from stage1_reimage.config import get_config_section  # pylint: disable=import-outside-toplevel
@@ -275,11 +273,11 @@ def _normalization_stats_from_checkpoint(
     checkpoint: dict[str, Any],
     target_return_name: str,
 ) -> Any:
-    """Restore normalization stats from checkpoint metadata when available.
+    """가능하면 checkpoint metadata에서 normalization stats를 복원한다.
 
-    Output:
-        `PixelNormalizationStats` used by `HorizonSplitImageDataset`, or `None`
-        if an older checkpoint did not store normalization metadata.
+    출력:
+        `HorizonSplitImageDataset`이 사용하는 `PixelNormalizationStats`. 오래된
+        checkpoint가 normalization metadata를 저장하지 않았다면 `None`.
     """
 
     from stage1_reimage.data import PixelNormalizationStats  # pylint: disable=import-outside-toplevel
@@ -311,7 +309,7 @@ def _normalization_stats_from_checkpoint(
 
 
 def _target_horizon_from_name(horizon_name: str) -> str:
-    """Map `stage1_i20_r20` to `R20` for prediction metadata."""
+    """prediction metadata용으로 `stage1_i20_r20`을 `R20` 표기로 바꾼다."""
 
     return horizon_name.rsplit("_", maxsplit=1)[-1].upper()
 
@@ -327,13 +325,13 @@ def _run_average_predictions(
     write_evaluation_outputs: Any,
     average_seed_predictions: Any,
 ) -> dict[str, Any]:
-    """Average already-written seed prediction files.
+    """이미 저장된 seed prediction file을 평균한다.
 
-    This is used after five independent training runs. It checks that all seed
-    files describe the same rows, then averages `prob_up` and recomputes metrics.
+    5회 independent training 이후 사용한다. 모든 seed file이 같은 row를 설명하는지
+    확인한 뒤 `prob_up`을 평균하고 metric을 다시 계산한다.
     """
 
-    # Expected file pattern:
+    # 기대하는 file pattern:
     # outputs/predictions/<horizon>/seed_<seed>/<split>_predictions.csv
     prediction_paths = [
         paths.predictions_root / horizon / f"seed_{run_seed}" / f"{split_name}_predictions.csv"

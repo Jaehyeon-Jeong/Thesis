@@ -1,4 +1,4 @@
-"""Data-loading utilities for Stage 1 public monthly_20d images."""
+"""1단계 public monthly_20d image용 data-loading utility."""
 
 from stage1_reimage.data.monthly20 import (
     IMAGE_HEIGHT,

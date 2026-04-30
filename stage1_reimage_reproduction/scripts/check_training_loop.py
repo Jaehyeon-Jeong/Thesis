@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Smoke-check Stage 1 training loop and checkpoint writing."""
+"""1단계 training loop와 checkpoint writing을 smoke check한다."""
 
 from __future__ import annotations
 
@@ -14,21 +14,21 @@ from torch.utils.data import DataLoader, Dataset
 
 
 class SyntheticPriceImageDataset(Dataset):
-    """Tiny deterministic image dataset for training-loop smoke checks.
+    """training-loop smoke check용 작은 deterministic image dataset.
 
-    This dataset mimics the real training batch interface:
+    이 dataset은 실제 training batch interface를 흉내 낸다:
         image: `(1,64,60)` tensor
         label: scalar class id 0 or 1
-    It avoids reading real `.dat` files while still exercising the training loop.
+    real `.dat` file을 읽지 않으면서도 training loop를 실제로 통과시킨다.
     """
 
     def __init__(self, num_samples: int, seed: int) -> None:
         generator = torch.Generator().manual_seed(seed)
-        # Shape matches real DataLoader samples after batching will become
+        # batching 이후 real DataLoader sample과 같은 shape가 된다:
         # `(batch_size, 1, 64, 60)`.
         self.images = torch.rand(num_samples, 1, 64, 60, generator=generator)
-        # A simple deterministic label tied to the image mean keeps the smoke
-        # task well-formed without using any real future-return labels.
+        # 실제 future-return label을 쓰지 않기 위해 image 평균값으로 deterministic한
+        # synthetic label을 만든다. 이 label은 smoke test 구조 확인용이다.
         self.labels = (self.images.mean(dim=(1, 2, 3)) > 0.5).long()
 
     def __len__(self) -> int:
@@ -39,7 +39,7 @@ class SyntheticPriceImageDataset(Dataset):
 
 
 def add_stage1_src_to_path() -> Path:
-    """Add local Stage 1 `src/` directory to `sys.path`."""
+    """로컬 1단계 `src/` directory를 `sys.path`에 추가한다."""
 
     stage_root = Path(__file__).resolve().parents[1]
     sys.path.insert(0, str(stage_root / "src"))
@@ -47,14 +47,14 @@ def add_stage1_src_to_path() -> Path:
 
 
 def parse_args(stage_root: Path) -> argparse.Namespace:
-    """Parse CLI arguments."""
+    """명령행 인자를 parsing한다."""
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--config",
         type=Path,
         default=stage_root / "configs" / "env_local.yaml",
-        help="Stage 1 environment config path.",
+        help="1단계 환경 config 경로.",
     )
     parser.add_argument("--experiment-name", default="_smoke_training")
     parser.add_argument("--run-seed", type=int, default=42)
@@ -66,10 +66,10 @@ def parse_args(stage_root: Path) -> argparse.Namespace:
 
 
 def main() -> int:
-    """Run the synthetic training-loop smoke check.
+    """synthetic training-loop smoke check를 실행한다.
 
-    This checks that `fit_model()` can run forward/backward passes, update
-    weights, save checkpoints, and write history/metadata files.
+    `fit_model()`이 forward/backward pass를 실행하고, weight를 업데이트하고,
+    checkpoint를 저장하고, history/metadata file을 쓸 수 있는지 확인한다.
     """
 
     stage_root = add_stage1_src_to_path()
@@ -102,8 +102,8 @@ def main() -> int:
     )
     device = select_device(config)
 
-    # DataLoaders here have the same batch structure as real training, but the
-    # images/labels are synthetic and tiny.
+    # 여기 DataLoader는 실제 training과 같은 batch 구조를 갖지만 image/label은 작고
+    # synthetic이다.
     train_loader = DataLoader(
         SyntheticPriceImageDataset(args.train_samples, seed=args.run_seed),
         batch_size=args.batch_size,
@@ -124,8 +124,8 @@ def main() -> int:
         "run_seed": args.run_seed,
         "split_seed": None,
     }
-    # Train one tiny model. The output paths prove that checkpoint/history
-    # writing works before running the expensive real dataset.
+    # 작은 model 하나를 학습한다. output path는 비싼 real dataset을 돌리기 전에
+    # checkpoint/history writing이 동작한다는 것을 보여준다.
     result = fit_model(
         model=StockCNNI20(),
         train_loader=train_loader,

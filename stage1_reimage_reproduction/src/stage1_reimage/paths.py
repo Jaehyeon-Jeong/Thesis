@@ -1,12 +1,12 @@
-"""Path helpers for Stage 1 local/Kaggle execution.
+"""1단계 local/Kaggle 실행용 path helper.
 
-The helpers keep filesystem layout explicit and centralized. They create only
-output directories; they never create or modify raw data directories.
+이 helper들은 filesystem layout을 한곳에서 관리한다. output directory만 만들고,
+raw data directory는 만들거나 수정하지 않는다.
 
-How to read this file:
-    `Stage1Paths` is a small object that carries all important folders through
-    the pipeline. Runners pass it around so code does not repeatedly rebuild
-    strings like `outputs/checkpoints/...` in different files.
+읽는 법:
+    `Stage1Paths`는 중요한 폴더 위치를 들고 다니는 작은 객체다. runner는 이
+    객체를 여러 함수로 넘기면서 `outputs/checkpoints/...` 같은 경로 문자열을
+    여기저기서 반복해서 만들지 않게 한다.
 """
 
 from __future__ import annotations
@@ -32,11 +32,11 @@ PATH_SECTION_KEYS: tuple[str, ...] = (
 
 @dataclass(frozen=True)
 class Stage1Paths:
-    """Resolved filesystem paths used by Stage 1 runners.
+    """1단계 runner가 사용하는 확정된 filesystem path 모음.
 
-    These paths are not tensors or data frames. They are filesystem locations.
-    Training writes checkpoints under `checkpoint_root`, metrics under
-    `metrics_root`, and prediction CSVs under `predictions_root`.
+    이 값들은 tensor나 DataFrame이 아니라 파일/폴더 위치다. training은
+    `checkpoint_root`에 checkpoint를 쓰고, metric은 `metrics_root`, prediction
+    CSV는 `predictions_root` 아래에 저장한다.
     """
 
     project_root: Path
@@ -49,7 +49,7 @@ class Stage1Paths:
     run_manifest_root: Path
 
     def as_dict(self) -> dict[str, str]:
-        """Return a JSON-serializable path dictionary."""
+        """JSON으로 저장 가능한 path dictionary를 반환한다."""
 
         return {
             "project_root": str(self.project_root),
@@ -64,13 +64,13 @@ class Stage1Paths:
 
 
 def build_stage1_paths(config: Mapping[str, Any]) -> Stage1Paths:
-    """Build `Stage1Paths` from the `paths` config section.
+    """config의 `paths` section으로 `Stage1Paths`를 만든다.
 
-    Input:
-        Parsed config dictionary from `load_config()`.
+    입력:
+        `load_config()`가 반환한 parsing된 config dict.
 
-    Output:
-        `Stage1Paths`, which is passed into runner/training/evaluation code.
+    출력:
+        runner/training/evaluation code로 전달되는 `Stage1Paths`.
     """
 
     paths_section = get_config_section(config, "paths")
@@ -79,8 +79,8 @@ def build_stage1_paths(config: Mapping[str, Any]) -> Stage1Paths:
         missing_list = ", ".join(missing)
         raise KeyError(f"Missing required path config key(s): {missing_list}")
 
-    # Each YAML path string becomes a `Path` object so later code can safely do
-    # operations such as `paths.checkpoint_root / horizon / seed_dir`.
+    # YAML의 각 path 문자열을 Path 객체로 바꾼다. 그래야 뒤에서
+    # `paths.checkpoint_root / horizon / seed_dir`처럼 안전하게 경로를 붙일 수 있다.
     path_values = {
         key: Path(str(paths_section[key])).expanduser()
         for key in PATH_SECTION_KEYS
@@ -89,11 +89,10 @@ def build_stage1_paths(config: Mapping[str, Any]) -> Stage1Paths:
 
 
 def ensure_stage1_output_dirs(paths: Stage1Paths) -> list[Path]:
-    """Create Stage 1 output directories if needed and return verified paths.
+    """필요한 1단계 output directory를 만들고 확인된 path 목록을 반환한다.
 
-    This prepares folders for files that will be generated later:
-    checkpoints, metric JSONs, prediction CSVs, figures, and run manifests.
-    Raw data folders are intentionally not created here.
+    나중에 생성될 checkpoint, metric JSON, prediction CSV, figure, run manifest
+    폴더를 준비한다. raw data folder는 의도적으로 여기서 만들지 않는다.
     """
 
     output_dirs = [

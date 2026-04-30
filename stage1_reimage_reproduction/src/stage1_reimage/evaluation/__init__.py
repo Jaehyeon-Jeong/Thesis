@@ -1,4 +1,4 @@
-"""Evaluation and prediction-output utilities for Stage 1."""
+"""1단계 evaluation과 prediction-output utility."""
 
 from stage1_reimage.evaluation.prediction import (
     EvaluationSettings,

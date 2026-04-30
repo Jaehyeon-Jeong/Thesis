@@ -1,8 +1,8 @@
-"""Runtime helpers shared by local and Kaggle Stage 1 runs.
+"""local과 Kaggle 1단계 실행이 공유하는 runtime helper.
 
-This file decides where tensors will be placed during training/evaluation:
-`cpu`, `cuda`, or another supported device. The selected value is later passed
-to PyTorch calls such as `images.to(device)`.
+이 파일은 training/evaluation 중 tensor를 어디에 올릴지 결정한다:
+`cpu`, `cuda`, 또는 지원되는 다른 device. 선택된 값은 이후
+`images.to(device)` 같은 PyTorch 호출에 전달된다.
 """
 
 from __future__ import annotations
@@ -14,15 +14,14 @@ from stage1_reimage.config import get_config_section
 
 
 def select_device(config: Mapping[str, Any]) -> str:
-    """Select the requested runtime device from config.
+    """config에서 요청한 runtime device를 선택한다.
 
-    Returns a string instead of a `torch.device` so this scaffold remains easy to
-    inspect in smoke checks. Later training code can convert the returned value
-    to `torch.device`.
+    `torch.device`가 아니라 문자열을 반환한다. scaffold/smoke check에서 확인하기
+    쉽도록 하기 위함이다. 이후 training code가 이 값을 `torch.device`로 변환할 수 있다.
     """
 
-    # Read `runtime.device` from the environment config. Local config usually
-    # uses `auto`; Kaggle config requests `cuda`.
+    # 환경 config에서 `runtime.device`를 읽는다. local config는 보통 `auto`,
+    # Kaggle config는 `cuda`를 요청한다.
     runtime_config = get_config_section(config, "runtime")
     requested = str(runtime_config.get("device", "auto")).lower()
     fail_if_cuda_unavailable = bool(
@@ -36,8 +35,8 @@ def select_device(config: Mapping[str, Any]) -> str:
             raise RuntimeError("CUDA was requested, but PyTorch is not importable.") from exc
         return "cpu"
 
-    # CUDA availability determines whether tensors/model can actually move to
-    # GPU. If CUDA is unavailable locally, smoke tests fall back to CPU.
+    # CUDA 사용 가능 여부가 tensor/model을 GPU로 보낼 수 있는지 결정한다.
+    # local에서 CUDA가 없으면 smoke test는 CPU로 fallback한다.
     cuda_available = bool(torch.cuda.is_available())
     if requested == "auto":
         return "cuda" if cuda_available else "cpu"

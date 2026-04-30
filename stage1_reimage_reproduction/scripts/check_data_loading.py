@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Smoke-check Stage 1 monthly_20d data loading.
+"""1단계 monthly_20d data loading을 smoke check한다.
 
-This validates shard discovery, row alignment, memmap-backed image loading, and
-sample tensor shape. It does not construct horizon labels, splits, normalization
-statistics, model inputs beyond the image tensor, or training dataloaders.
+이 script는 shard discovery, row alignment, memmap 기반 image loading, sample
+tensor shape를 검증한다. horizon label, split, normalization statistics, image tensor
+외 model input, training DataLoader는 만들지 않는다.
 """
 
 from __future__ import annotations
@@ -16,10 +16,10 @@ from typing import Any
 
 
 def add_stage1_src_to_path() -> Path:
-    """Add local Stage 1 `src/` directory to `sys.path`.
+    """로컬 1단계 `src/` directory를 `sys.path`에 추가한다.
 
-    This lets the smoke script import local Stage 1 modules without installing
-    the package into the Python environment.
+    package를 Python environment에 설치하지 않아도 smoke script가 로컬 1단계 module을
+    import할 수 있게 한다.
     """
 
     stage_root = Path(__file__).resolve().parents[1]
@@ -28,32 +28,31 @@ def add_stage1_src_to_path() -> Path:
 
 
 def parse_args(stage_root: Path) -> argparse.Namespace:
-    """Parse command line arguments."""
+    """명령행 인자를 parsing한다."""
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--config",
         type=Path,
         default=stage_root / "configs" / "env_local.yaml",
-        help="Stage 1 environment config path.",
+        help="1단계 환경 config 경로.",
     )
     parser.add_argument(
         "--sample-indices",
         nargs="*",
         type=int,
         default=[0, -1],
-        help="Global row indices to inspect after building the dataset.",
+        help="dataset 생성 후 확인할 global row index 목록.",
     )
     return parser.parse_args()
 
 
 def summarize_sample(sample: dict[str, Any]) -> dict[str, Any]:
-    """Return a compact JSON-safe summary of one dataset sample.
+    """dataset sample 하나를 작고 JSON 저장 가능한 summary로 바꾼다.
 
-    Input sample format:
+    입력 sample 형태:
         `{"image": tensor(1,64,60), "metadata": {...}}`.
-    The printed summary shows shape and min/max pixel values without dumping the
-    whole image tensor.
+    출력 summary는 전체 image tensor를 덤프하지 않고 shape와 min/max pixel 값만 보여준다.
     """
 
     image = sample["image"]
@@ -72,7 +71,7 @@ def summarize_sample(sample: dict[str, Any]) -> dict[str, Any]:
 
 
 def main() -> int:
-    """Run the data-loading smoke check and print a JSON summary."""
+    """data-loading smoke check를 실행하고 JSON summary를 출력한다."""
 
     add_stage1_src_to_path()
     args = parse_args(Path(__file__).resolve().parents[1])
@@ -82,14 +81,14 @@ def main() -> int:
         build_dataset_from_config,
     )
 
-    # Build the memmap-backed dataset. At this point images are still read
-    # lazily from disk; only label metadata is loaded into memory.
+    # memmap-backed dataset을 만든다. 이 시점에서 image는 여전히 disk에서 lazy하게
+    # 읽히고, label metadata만 memory에 올라간다.
     config = load_config(args.config)
     dataset = build_dataset_from_config(config)
     inspected_samples = []
     for index in args.sample_indices:
-        # Accessing `dataset[index]` reads exactly one image row and returns a
-        # tensor `(1,64,60)` plus metadata for that row.
+        # `dataset[index]`에 접근하면 image row 하나를 읽고 tensor `(1,64,60)`와
+        # 해당 row metadata를 반환한다.
         inspected_samples.append(
             {
                 "requested_index": index,

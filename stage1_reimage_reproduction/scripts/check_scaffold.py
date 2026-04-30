@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Smoke-check the Stage 1 shared scaffold.
+"""1단계 shared scaffold를 smoke check한다.
 
-This script verifies only the 1-I1 scaffold: package import, config loading,
-path construction, optional output-directory creation, seed setting, and device
-selection. It intentionally does not load `.dat` images or train a model.
+이 script는 1-I1 scaffold만 확인한다: package import, config loading, path 생성,
+선택적 output-directory 생성, seed setting, device 선택. 의도적으로 `.dat` image를
+읽거나 model을 학습하지 않는다.
 """
 
 from __future__ import annotations
@@ -15,10 +15,10 @@ from pathlib import Path
 
 
 def add_stage1_src_to_path() -> Path:
-    """Add the local Stage 1 `src/` directory to `sys.path`.
+    """로컬 1단계 `src/` directory를 `sys.path`에 추가한다.
 
-    This smoke script is not installed as a package. This helper lets it import
-    local modules such as `stage1_reimage.config` directly from `src/`.
+    이 smoke script는 package로 설치되어 있지 않다. 이 helper는 `src/`에서
+    `stage1_reimage.config` 같은 local module을 직접 import할 수 있게 한다.
     """
 
     stage_root = Path(__file__).resolve().parents[1]
@@ -28,35 +28,35 @@ def add_stage1_src_to_path() -> Path:
 
 
 def parse_args(stage_root: Path) -> argparse.Namespace:
-    """Parse CLI arguments for the scaffold smoke check."""
+    """scaffold smoke check용 명령행 인자를 parsing한다."""
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--config",
         type=Path,
         default=stage_root / "configs" / "env_local.yaml",
-        help="Stage 1 environment config path.",
+        help="1단계 환경 config 경로.",
     )
     parser.add_argument(
         "--seed",
         type=int,
         default=42,
-        help="Seed to apply for the current smoke-check process.",
+        help="현재 smoke-check process에 적용할 seed.",
     )
     parser.add_argument(
         "--create-output-dirs",
         action="store_true",
-        help="Create configured output directories if they do not exist.",
+        help="config에 지정된 output directory가 없으면 생성한다.",
     )
     return parser.parse_args()
 
 
 def main() -> int:
-    """Run the scaffold check and print a compact JSON summary.
+    """scaffold check를 실행하고 작은 JSON summary를 출력한다.
 
-    This check verifies infrastructure only:
-        config can be loaded, paths can be resolved, seed can be set, and the
-        runtime device can be selected. It does not touch image tensors.
+    이 check는 infrastructure만 확인한다:
+        config를 load할 수 있는지, path를 resolve할 수 있는지, seed를 설정할 수
+        있는지, runtime device를 선택할 수 있는지 확인한다. image tensor는 다루지 않는다.
     """
 
     stage_root = add_stage1_src_to_path()
@@ -70,8 +70,8 @@ def main() -> int:
         set_global_seed,
     )
 
-    # Config/path helpers are the first dependency for every later pipeline
-    # step, so this smoke check validates them before data/model code is used.
+    # config/path helper는 이후 모든 pipeline step의 첫 dependency다. data/model code를
+    # 사용하기 전에 이 helper들이 정상인지 먼저 확인한다.
     config = load_config(args.config)
     paths = build_stage1_paths(config)
     created_or_verified_dirs = []
@@ -80,8 +80,8 @@ def main() -> int:
             str(path) for path in ensure_stage1_output_dirs(paths)
         ]
 
-    # `seed_info` records which random libraries were actually available and
-    # seeded in this environment.
+    # `seed_info`는 현재 환경에서 어떤 random library가 실제로 사용 가능하고 seed가
+    # 설정되었는지 기록한다.
     seed_info = set_global_seed(args.seed)
     device = select_device(config)
 

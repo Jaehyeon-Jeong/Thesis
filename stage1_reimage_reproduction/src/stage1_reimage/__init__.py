@@ -1,8 +1,8 @@
-"""Shared utilities for Stage 1 Re-image reproduction.
+"""1단계 Re-image 재현에서 공유하는 utility.
 
-This package is intentionally small at the 1-I1 scaffold gate. Data loading,
-model code, training, evaluation, and Grad-CAM are added in later checklist
-items so each implementation step stays auditable.
+이 package는 1-I1 scaffold gate에서는 의도적으로 작게 시작했다. data loading,
+model code, training, evaluation, Grad-CAM은 이후 checklist item에서 하나씩
+추가해 각 구현 단계가 audit 가능하도록 한다.
 """
 
 from stage1_reimage.config import get_config_section, load_config, require_config_keys

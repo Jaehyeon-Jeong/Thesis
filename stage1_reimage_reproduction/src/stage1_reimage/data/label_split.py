@@ -1,19 +1,19 @@
-"""Labels, splits, and train-only normalization for Stage 1.
+"""1단계 label, split, train-only normalization.
 
-Paper/source context:
-    Re-image uses a binary label where positive future return is the Up class.
-    The local Stage 1 plan fixes train/validation years to 1993-2000, test
-    years to 2001-2019, and uses a 70/30 random train/validation split because
-    the paper summary does not report the exact random seed.
+논문/근거 맥락:
+    Re-image는 미래 수익률이 양수이면 Up class로 두는 binary label을 사용한다.
+    로컬 1단계 plan은 train/validation year를 1993-2000, test year를
+    2001-2019로 고정한다. 논문 요약에서 정확한 random seed는 보고되지 않았으므로
+    train/validation은 70/30 random split로 명시했다.
 
 Leakage rule:
-    Future-return columns are labels/evaluation metadata only. They are never
-    model inputs. Pixel normalization is fitted on the training split only.
+    future-return column은 label/evaluation metadata일 뿐 model input이 아니다.
+    pixel normalization은 training split에서만 fit한다.
 
-How to read this file:
-    `monthly20.py` knows how to read images. This file turns those images into
-    trainable samples by adding a binary label, assigning a split, and applying
-    train-only pixel normalization.
+읽는 법:
+    `monthly20.py`는 image를 읽는 방법을 알고 있다. 이 파일은 그 image에 binary
+    label을 붙이고, split을 부여하고, train-only normalization을 적용해서
+    training 가능한 sample로 만든다.
 """
 
 from __future__ import annotations
@@ -33,8 +33,8 @@ from stage1_reimage.config import get_config_section
 from stage1_reimage.data.monthly20 import Monthly20MemmapDataset, ShardInfo
 
 TARGET_COLUMNS: dict[str, str] = {
-    # Each experiment uses the same I20 image but a different future-return
-    # horizon as the target. Example: stage1_i20_r20 uses future Ret_20d.
+    # 각 실험은 같은 I20 image를 사용하지만 target future-return horizon이 다르다.
+    # 예: stage1_i20_r20은 future Ret_20d를 target으로 사용한다.
     "stage1_i20_r5": "Ret_5d",
     "stage1_i20_r20": "Ret_20d",
     "stage1_i20_r60": "Ret_60d",
@@ -51,10 +51,10 @@ HORIZON_SPECS: dict[str, dict[str, str]] = {
 
 @dataclass(frozen=True)
 class SplitSettings:
-    """Split parameters for Stage 1.
+    """1단계 split parameter.
 
-    These are not data rows. They are rules used by `assign_splits()` to mark
-    every sample as train, validation, or test.
+    이 객체는 data row가 아니라 `assign_splits()`가 모든 sample을 train,
+    validation, test 중 하나로 표시할 때 사용하는 규칙이다.
     """
 
     train_val_year_start: int
@@ -69,10 +69,10 @@ class SplitSettings:
 
 @dataclass(frozen=True)
 class NormalizationSettings:
-    """Pixel normalization parameters.
+    """픽셀 정규화 설정값.
 
-    The raw image reader returns pixels in `[0, 1]`. This settings object tells
-    normalization code to compute mean/std only from train images.
+    raw image reader는 pixel을 `[0, 1]` 범위로 반환한다. 이 settings 객체는
+    normalization code가 train image에서만 mean/std를 계산하도록 지정한다.
     """
 
     pixel_scale: float
@@ -83,11 +83,11 @@ class NormalizationSettings:
 
 @dataclass(frozen=True)
 class PixelNormalizationStats:
-    """Train-only scalar pixel normalization statistics.
+    """training split에서만 계산한 scalar pixel normalization 통계값.
 
-    These values are computed once per horizon from train images. Later,
-    `HorizonSplitImageDataset.__getitem__()` uses them to transform every image:
-    `(image - train_pixel_mean) / train_pixel_std`.
+    이 값들은 horizon별로 train image에서 한 번 계산된다. 이후
+    `HorizonSplitImageDataset.__getitem__()`이 모든 image를
+    `(image - train_pixel_mean) / train_pixel_std`로 변환할 때 사용한다.
     """
 
     target_return_name: str
@@ -101,7 +101,7 @@ class PixelNormalizationStats:
     sampled_for_smoke: bool
 
     def as_dict(self) -> dict[str, Any]:
-        """Return JSON-serializable normalization metadata."""
+        """JSON으로 저장 가능한 normalization metadata를 반환한다."""
 
         return {
             "target_return_name": self.target_return_name,
@@ -118,15 +118,15 @@ class PixelNormalizationStats:
 
 
 class HorizonSplitImageDataset(Dataset):
-    """Image/label dataset for one horizon and one split.
+    """하나의 horizon과 하나의 split에 대한 image/label dataset.
 
-    Input source:
-        `Monthly20MemmapDataset` provides raw rendered I20 images and metadata.
+    입력 source:
+        `Monthly20MemmapDataset`이 raw rendered I20 image와 metadata를 제공한다.
 
-    Output:
+    출력:
         `image`: normalized tensor `(1, 64, 60)`.
-        `label`: integer tensor, class 1 means positive future return.
-        `metadata`: row metadata preserved for later prediction outputs.
+        `label`: integer tensor. class 1은 positive future return.
+        `metadata`: 나중 prediction output을 위해 보존하는 row metadata.
     """
 
     def __init__(
@@ -137,12 +137,12 @@ class HorizonSplitImageDataset(Dataset):
         normalization_stats: PixelNormalizationStats,
         max_rows: int | None = None,
     ) -> None:
-        # `split_frame` contains all valid rows for one horizon. This line keeps
-        # only the rows requested by the caller, e.g. train or validation.
+        # `split_frame`에는 한 horizon의 모든 valid row가 들어 있다. 여기서는
+        # caller가 요청한 split, 예를 들어 train 또는 validation row만 남긴다.
         selected = split_frame[split_frame["split"].eq(split_name)].copy()
         if max_rows is not None and max_rows > 0:
-            # `max_rows` is only for smoke tests. It lets us verify code paths
-            # without running over millions of samples locally.
+            # `max_rows`는 smoke test 전용이다. local에서 수백만 sample을 돌리지 않고
+            # code path만 확인할 수 있게 한다.
             selected = selected.head(max_rows).copy()
         if selected.empty:
             raise ValueError(f"No rows available for split: {split_name}")
@@ -153,36 +153,36 @@ class HorizonSplitImageDataset(Dataset):
         self.normalization_stats = normalization_stats
 
     def __len__(self) -> int:
-        """Return number of rows in this split dataset."""
+        """이 split dataset의 row 수를 반환한다."""
 
         return int(len(self.frame))
 
     def __getitem__(self, index: int) -> dict[str, Any]:
-        """Return normalized image, integer label, and metadata.
+        """normalized image, integer label, metadata를 반환한다.
 
-        Output for one row:
-            image: tensor `(1, 64, 60)`, float32, normalized by train mean/std.
-            label: scalar tensor, 0 or 1.
-            metadata: dictionary used later for prediction CSV interpretation.
+        한 row의 출력:
+            image: tensor `(1, 64, 60)`, float32, train mean/std로 normalize됨.
+            label: scalar tensor, 0 또는 1.
+            metadata: prediction CSV 해석에 쓰이는 dictionary.
         """
 
         row = self.frame.iloc[index]
 
-        # Use the saved shard/local row ids to fetch the exact image row from
-        # the memmap dataset. This preserves alignment with the label row.
+        # 저장된 shard/local row id를 사용해서 memmap dataset에서 정확히 같은 image
+        # row를 가져온다. 이렇게 label row와 image row의 alignment를 유지한다.
         image = self.base_dataset.get_image_tensor(
             int(row["shard_index"]),
             int(row["local_row"]),
         )
 
-        # Train-only normalization. This does not use validation/test pixels to
-        # estimate mean/std, so it avoids normalization leakage.
+        # Train-only normalization. validation/test pixel을 mean/std 계산에 쓰지 않으므로
+        # normalization leakage를 방지한다.
         image = (image - self.normalization_stats.train_pixel_mean) / (
             self.normalization_stats.train_pixel_std
         )
 
-        # Metadata keeps Date/StockID/returns so the later evaluation CSV can
-        # say which stock-date image produced each probability.
+        # Metadata는 Date/StockID/return을 보존한다. 나중 evaluation CSV에서 어떤
+        # stock-date image가 어떤 probability를 만들었는지 확인하기 위해 필요하다.
         metadata = row.to_dict()
         date_value = metadata.get("Date")
         if hasattr(date_value, "isoformat"):
@@ -196,10 +196,10 @@ class HorizonSplitImageDataset(Dataset):
 
 
 def split_settings_from_config(config: Mapping[str, Any]) -> SplitSettings:
-    """Build split settings from the `split` config section.
+    """config의 `split` section에서 split setting을 만든다.
 
-    Output:
-        A small settings object consumed by `assign_splits()`.
+    출력:
+        `assign_splits()`가 사용하는 작은 settings 객체.
     """
 
     split_config = get_config_section(config, "split")
@@ -224,10 +224,10 @@ def split_settings_from_config(config: Mapping[str, Any]) -> SplitSettings:
 
 
 def normalization_settings_from_config(config: Mapping[str, Any]) -> NormalizationSettings:
-    """Build normalization settings from the `normalization` config section.
+    """config의 `normalization` section에서 normalization setting을 만든다.
 
-    Output:
-        A settings object consumed by `compute_pixel_normalization()`.
+    출력:
+        `compute_pixel_normalization()`이 사용하는 settings 객체.
     """
 
     normalization_config = get_config_section(config, "normalization")
@@ -240,26 +240,26 @@ def normalization_settings_from_config(config: Mapping[str, Any]) -> Normalizati
 
 
 def build_base_metadata(shards: Sequence[ShardInfo]) -> pd.DataFrame:
-    """Load label metadata and add stable row identifiers.
+    """label metadata를 읽고 안정적인 row identifier를 추가한다.
 
-    Output columns include the original label columns plus:
+    출력 column은 원본 label column에 아래 column을 추가한다:
     - `year`
     - `local_row`
     - `shard_index`
     - `global_index`
     """
 
-    # The final metadata frame has one row per image across all years. It does
-    # not contain image pixels; it contains Date, StockID, returns, and row ids.
+    # 최종 metadata frame은 모든 연도의 image마다 row 하나를 가진다. image pixel은
+    # 포함하지 않고 Date, StockID, return, row id만 포함한다.
     frames: list[pd.DataFrame] = []
     global_offset = 0
     for shard_index, shard in enumerate(shards):
         frame = pd.read_feather(shard.label_path).copy()
 
-        # Add row ids that let us find the matching image later:
-        #   shard_index -> which yearly `.dat` file
-        #   local_row   -> which row inside that file
-        #   global_index -> stable id across all years
+        # 나중에 matching image를 찾을 수 있도록 row id를 추가한다:
+        #   shard_index -> 어느 연도 `.dat` file인지
+        #   local_row   -> 그 file 내부 몇 번째 row인지
+        #   global_index -> 모든 연도를 합친 stable id
         frame["year"] = int(shard.year)
         frame["local_row"] = np.arange(len(frame), dtype=np.int64)
         frame["shard_index"] = int(shard_index)
@@ -280,32 +280,32 @@ def build_horizon_frame(
     base_metadata: pd.DataFrame,
     horizon_name: str,
 ) -> pd.DataFrame:
-    """Create horizon-specific labels after target-return NaN filtering.
+    """target-return NaN filtering 이후 horizon별 label을 만든다.
 
-    Input:
-        `base_metadata`: all rows from all label files.
-        `horizon_name`: one of `stage1_i20_r5`, `stage1_i20_r20`, `stage1_i20_r60`.
+    입력:
+        `base_metadata`: 모든 label file에서 읽은 전체 row.
+        `horizon_name`: `stage1_i20_r5`, `stage1_i20_r20`, `stage1_i20_r60` 중 하나.
 
-    Output:
-        DataFrame with one row per usable sample. It includes:
-        `target_return`, binary `label`, and all row ids needed to fetch images.
+    출력:
+        usable sample마다 row 하나를 갖는 DataFrame. `target_return`, binary `label`,
+        image를 가져오는 데 필요한 row id를 포함한다.
     """
 
     if horizon_name not in TARGET_COLUMNS:
         available = ", ".join(TARGET_COLUMNS)
         raise KeyError(f"Unknown horizon {horizon_name}. Available: {available}")
 
-    # Example: horizon_name `stage1_i20_r20` maps to target column `Ret_20d`.
+    # 예: horizon_name `stage1_i20_r20`은 target column `Ret_20d`로 mapping된다.
     target_column = TARGET_COLUMNS[horizon_name]
 
-    # Rows with missing future returns cannot be used for supervised training.
+    # future return이 missing인 row는 supervised training에 사용할 수 없다.
     valid = base_metadata[target_column].notna()
     horizon_frame = base_metadata.loc[valid].copy()
     horizon_frame["target_return_name"] = target_column
     horizon_frame["target_return"] = horizon_frame[target_column].astype(float)
 
-    # Binary classification target:
-    #   future return > 0 -> class 1 (Up)
+    # 이진분류 target:
+    #   future return > 0  -> class 1 (Up)
     #   future return <= 0 -> class 0 (Down/non-positive)
     horizon_frame["label"] = (horizon_frame["target_return"] > 0.0).astype(np.int8)
     horizon_frame["horizon_name"] = horizon_name
@@ -316,12 +316,12 @@ def assign_splits(
     horizon_frame: pd.DataFrame,
     settings: SplitSettings,
 ) -> pd.DataFrame:
-    """Assign train/validation/test split after horizon filtering.
+    """horizon filtering 이후 train/validation/test split을 부여한다.
 
-    Output:
-        Same rows as `horizon_frame`, with a new `split` column. Later,
-        `HorizonSplitImageDataset` filters this column to build train/val/test
-        datasets.
+    출력:
+        `horizon_frame`과 같은 row에 새 `split` column을 추가한 DataFrame.
+        이후 `HorizonSplitImageDataset`은 이 column을 기준으로 train/val/test
+        dataset을 만든다.
     """
 
     frame = horizon_frame.copy()
@@ -340,8 +340,8 @@ def assign_splits(
     if int((train_val_mask & test_mask).sum()) != 0:
         raise ValueError("Train/validation years overlap with test years.")
 
-    # Only 1993-2000 rows are randomly divided into train/validation. Test
-    # years are never shuffled into training.
+    # 1993-2000 row만 train/validation으로 random 분할한다. test year는 절대
+    # training으로 섞이지 않는다.
     train_val_indices = frame.index[train_val_mask].to_numpy()
     rng = np.random.default_rng(settings.split_seed)
     shuffled = rng.permutation(train_val_indices)
@@ -366,10 +366,10 @@ def make_split_summary(
     settings: SplitSettings,
     horizon_name: str,
 ) -> dict[str, Any]:
-    """Summarize counts and class balance after split assignment."""
+    """split assignment 이후 row count와 class balance를 요약한다."""
 
-    # This summary is written to JSON so we can later verify how many rows and
-    # positives each split contained without rebuilding the whole dataset.
+    # 이 summary는 JSON으로 저장된다. 나중에 dataset을 다시 만들지 않아도 split별
+    # row 수와 positive 수를 확인할 수 있다.
     target_return_name = TARGET_COLUMNS[horizon_name]
     by_split: dict[str, dict[str, Any]] = {}
     for split_name in ["train", "validation", "test"]:
@@ -413,16 +413,16 @@ def compute_pixel_normalization(
     max_images: int | None = None,
     chunk_size: int = 4096,
 ) -> PixelNormalizationStats:
-    """Compute scalar pixel mean/std on the training split only.
+    """training split에서만 scalar pixel mean/std를 계산한다.
 
-    If `max_images` is provided, only the first `max_images` training rows are
-    used. This is intended for local smoke checks and is marked in the output.
-    Full Kaggle runs should pass `max_images=None`.
+    `max_images`가 있으면 첫 `max_images`개 training row만 사용한다. 이는 local
+    smoke check용이며 output에 표시된다. full Kaggle run에서는 `max_images=None`을
+    넘겨야 한다.
 
-    Tensor/data movement:
+    Tensor/data 이동:
         raw shard images `(N, 64, 60)` uint8
-        -> float32 in `[0, 1]`
-        -> scalar mean/std across all selected train pixels
+        -> `[0, 1]` 범위의 float32
+        -> 선택된 train pixel 전체의 scalar mean/std
         -> `PixelNormalizationStats`
     """
 
@@ -433,8 +433,8 @@ def compute_pixel_normalization(
     if chunk_size <= 0:
         raise ValueError("chunk_size must be positive.")
 
-    # Only train rows are used. Validation/test pixels cannot influence the
-    # normalization parameters because that would leak future evaluation data.
+    # train row만 사용한다. validation/test pixel이 normalization parameter에 영향을
+    # 주면 evaluation data가 새는 것이므로 사용하지 않는다.
     train_rows = split_frame[split_frame["split"].eq("train")]
     num_train_available = int(len(train_rows))
     if num_train_available == 0:
@@ -453,8 +453,8 @@ def compute_pixel_normalization(
         for start in range(0, len(local_rows), chunk_size):
             row_chunk = local_rows[start : start + chunk_size]
 
-            # `images` shape here is `(chunk_size, 64, 60)`. It has no channel
-            # dimension because normalization only needs pixel values.
+            # 여기서 `images` shape는 `(chunk_size, 64, 60)`이다. normalization은
+            # pixel 값만 필요하므로 channel dimension은 없다.
             images = (
                 dataset.get_image_arrays(int(shard_index), row_chunk).astype(np.float32)
                 / settings.pixel_scale
@@ -463,7 +463,7 @@ def compute_pixel_normalization(
             pixel_square_sum += float(np.square(images, dtype=np.float32).sum(dtype=np.float64))
             pixel_count += int(images.size)
 
-    # Compute std from E[x^2] - E[x]^2 to avoid keeping all pixels in memory.
+    # 모든 pixel을 memory에 보관하지 않기 위해 E[x^2] - E[x]^2 방식으로 std를 계산한다.
     mean = pixel_sum / pixel_count
     variance = max(pixel_square_sum / pixel_count - mean * mean, 0.0)
     std = max(float(np.sqrt(variance)), settings.epsilon)
@@ -488,10 +488,10 @@ def write_horizon_metadata(
     split_frame: pd.DataFrame | None = None,
     write_split_index: bool = False,
 ) -> dict[str, str]:
-    """Write split and normalization metadata for one horizon.
+    """한 horizon의 split과 normalization metadata를 저장한다.
 
-    These JSON files are audit outputs. They explain how labels/splits and
-    normalization were created for a horizon, but they are not model inputs.
+    이 JSON file은 audit output이다. 특정 horizon에서 label/split/normalization이
+    어떻게 만들어졌는지 설명하지만 model input은 아니다.
     """
 
     horizon_dir = Path(output_dir)
@@ -527,7 +527,7 @@ def write_horizon_metadata(
 
 
 def _parse_year_range(raw_years: Any) -> tuple[int, int]:
-    """Parse an inclusive `[start, end]` year range."""
+    """inclusive `[start, end]` year range를 parsing한다."""
 
     if not isinstance(raw_years, Sequence) or isinstance(raw_years, str):
         raise TypeError("Year range must be a two-item sequence.")
@@ -540,7 +540,7 @@ def _parse_year_range(raw_years: Any) -> tuple[int, int]:
 
 
 def _write_json(path: Path, payload: Mapping[str, Any]) -> None:
-    """Write UTF-8 JSON with stable formatting."""
+    """UTF-8 JSON을 안정적인 formatting으로 저장한다."""
 
     with path.open("w", encoding="utf-8") as file:
         json.dump(payload, file, indent=2, sort_keys=True)

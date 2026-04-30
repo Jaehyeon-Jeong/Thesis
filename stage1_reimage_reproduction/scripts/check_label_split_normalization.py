@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Smoke-check Stage 1 label, split, and normalization implementation.
+"""1단계 label, split, normalization 구현을 smoke check한다.
 
-This script verifies the data-preparation steps before model training:
-future-return labels, deterministic split assignment, and train-only pixel
-normalization. It writes small JSON audit outputs under `outputs/metrics/`.
+이 script는 model training 전에 data preparation step을 검증한다:
+future-return label, deterministic split assignment, train-only pixel normalization.
+작은 JSON audit output을 `outputs/metrics/` 아래에 저장한다.
 """
 
 from __future__ import annotations
@@ -15,7 +15,7 @@ from pathlib import Path
 
 
 def add_stage1_src_to_path() -> Path:
-    """Add local Stage 1 `src/` directory to `sys.path`."""
+    """로컬 1단계 `src/` directory를 `sys.path`에 추가한다."""
 
     stage_root = Path(__file__).resolve().parents[1]
     sys.path.insert(0, str(stage_root / "src"))
@@ -23,48 +23,48 @@ def add_stage1_src_to_path() -> Path:
 
 
 def parse_args(stage_root: Path) -> argparse.Namespace:
-    """Parse command line arguments."""
+    """명령행 인자를 parsing한다."""
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--config",
         type=Path,
         default=stage_root / "configs" / "env_local.yaml",
-        help="Stage 1 environment config path.",
+        help="1단계 환경 config 경로.",
     )
     parser.add_argument(
         "--horizons",
         nargs="*",
         default=["stage1_i20_r5", "stage1_i20_r20", "stage1_i20_r60"],
-        help="Horizon names to check.",
+        help="확인할 horizon 이름.",
     )
     parser.add_argument(
         "--normalization-max-images",
         type=int,
         default=2048,
         help=(
-            "Maximum training images for local normalization smoke check. "
-            "Use 0 to compute on all training images."
+            "local normalization smoke check에서 사용할 최대 training image 수. "
+            "0이면 모든 training image로 계산한다."
         ),
     )
     parser.add_argument(
         "--normalization-chunk-size",
         type=int,
         default=4096,
-        help="Images per memmap chunk while computing pixel statistics.",
+        help="pixel 통계를 계산할 때 memmap chunk 하나에 넣을 image 수.",
     )
     parser.add_argument(
         "--write-split-index",
         action="store_true",
-        help="Write split_index.csv in addition to JSON summaries.",
+        help="JSON summary 외에 split_index.csv도 저장한다.",
     )
     return parser.parse_args()
 
 
 def main() -> int:
-    """Run the label/split/normalization smoke check.
+    """label/split/normalization smoke check를 실행한다.
 
-    Data path:
+    데이터 흐름:
         monthly_20d shards -> base metadata DataFrame -> horizon labels ->
         split frame -> train-only normalization statistics.
     """
@@ -93,8 +93,8 @@ def main() -> int:
     config = load_config(args.config)
     paths = build_stage1_paths(config)
     ensure_stage1_output_dirs(paths)
-    # Dataset reads images; base_metadata holds Date/StockID/future returns and
-    # row ids. No CNN tensor batch is built in this script.
+    # Dataset은 image를 읽고, base_metadata는 Date/StockID/future return과 row id를
+    # 보관한다. 이 script에서는 CNN tensor batch를 만들지 않는다.
     dataset = build_dataset_from_config(config)
     base_metadata = build_base_metadata(dataset.shards)
     split_settings = split_settings_from_config(config)
@@ -106,13 +106,13 @@ def main() -> int:
         if horizon_name not in TARGET_COLUMNS:
             raise KeyError(f"Unknown horizon: {horizon_name}")
 
-        # Build labels for one target horizon, e.g. Ret_20d -> label.
+        # target horizon 하나에 대한 label을 만든다. 예: Ret_20d -> label.
         horizon_frame = build_horizon_frame(base_metadata, horizon_name)
         split_frame = assign_splits(horizon_frame, split_settings)
         split_summary = make_split_summary(split_frame, split_settings, horizon_name)
 
-        # This computes scalar train mean/std from image pixels. The smoke cap
-        # keeps local execution small.
+        # image pixel에서 scalar train mean/std를 계산한다. smoke cap은 local 실행을
+        # 작게 유지한다.
         normalization_stats = compute_pixel_normalization(
             dataset=dataset,
             split_frame=split_frame,

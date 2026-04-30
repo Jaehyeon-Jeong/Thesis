@@ -41,6 +41,8 @@ audit:
   - document important tensor/DataFrame shapes;
   - explain where important values move next;
   - explain leakage-sensitive fields and why they are not model inputs.
+  - write explanatory comments/docstrings primarily in Korean so the project
+    owner can read the implementation line by line.
 
 ## Upload Policy
 
@@ -102,6 +104,7 @@ Do not track:
   - 중요한 tensor/DataFrame shape를 적습니다.
   - 중요한 값이 다음 단계의 어느 함수나 파일로 넘어가는지 설명합니다.
   - leakage에 민감한 field는 왜 model input이 아닌지 설명합니다.
+  - 설명 주석과 docstring은 기본적으로 한국어로 작성합니다.
 
 ## 업로드 정책
 

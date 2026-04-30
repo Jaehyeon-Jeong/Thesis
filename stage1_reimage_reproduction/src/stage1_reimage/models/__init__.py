@@ -1,4 +1,4 @@
-"""Model implementations for Stage 1."""
+"""1단계 model 구현 모음."""
 
 from stage1_reimage.models.stock_cnn import (
     EXPECTED_I20_PARAMETER_COUNT,

@@ -1,22 +1,20 @@
-"""Training loop and checkpoint utilities for Stage 1.
+"""1단계 training loop와 checkpoint utility.
 
-Paper/source context:
-    The local Re-image summary reports cross-entropy loss, Adam with learning
-    rate 1e-5, batch size 128, Xavier initialization, dropout 0.5, and early
-    stopping after validation loss fails to improve for 2 epochs. Exact seeds,
-    epoch count, Adam betas/eps, weight decay, and mixed precision are not
-    reported, so these values are explicit implementation choices recorded in
-    config and metadata.
+논문/근거 맥락:
+    local Re-image summary는 cross-entropy loss, Adam learning rate 1e-5,
+    batch size 128, Xavier initialization, dropout 0.5, validation loss가
+    2 epoch 동안 개선되지 않으면 early stopping을 보고한다. exact seed, epoch 수,
+    Adam betas/eps, weight decay, mixed precision은 보고되지 않았으므로 config와
+    metadata에 implementation choice로 기록한다.
 
-Scope:
-    This module implements the generic training loop. It does not implement
-    final prediction CSVs, evaluation metrics beyond loss/accuracy, portfolio
-    results, or Grad-CAM.
+범위:
+    이 module은 generic training loop를 구현한다. final prediction CSV,
+    loss/accuracy 외 evaluation metric, portfolio result, Grad-CAM은 구현하지 않는다.
 
-How to read this file:
-    `fit_model()` is the main function. It receives a model and DataLoaders,
-    repeatedly calls `_run_epoch()`, saves `best.pt` when validation loss
-    improves, and writes training history files for later review.
+읽는 법:
+    `fit_model()`이 main 함수다. model과 DataLoader를 받아 `_run_epoch()`를 반복
+    호출하고, validation loss가 개선되면 `best.pt`를 저장하며, 나중 review를 위해
+    training history file을 작성한다.
 """
 
 from __future__ import annotations
@@ -38,7 +36,7 @@ from stage1_reimage.config import get_config_section
 
 @dataclass(frozen=True)
 class OptimizerSettings:
-    """Adam optimizer settings for Stage 1."""
+    """1단계 Adam optimizer setting."""
 
     name: str
     learning_rate: float
@@ -49,7 +47,7 @@ class OptimizerSettings:
 
 @dataclass(frozen=True)
 class EarlyStoppingSettings:
-    """Validation-loss early stopping settings."""
+    """validation loss 기반 early stopping 설정."""
 
     monitor: str
     mode: str
@@ -60,10 +58,10 @@ class EarlyStoppingSettings:
 
 @dataclass(frozen=True)
 class TrainingSettings:
-    """Stage 1 training settings parsed from config.
+    """config에서 parsing한 1단계 training setting.
 
-    This object freezes training hyperparameters after reading YAML, so the
-    training loop uses explicit values instead of repeatedly indexing config.
+    YAML을 읽은 뒤 training hyperparameter를 이 객체로 고정한다. training loop는
+    config를 반복해서 indexing하지 않고 이 명시적 값을 사용한다.
     """
 
     run_mode: str
@@ -81,7 +79,7 @@ class TrainingSettings:
 
 @dataclass(frozen=True)
 class TrainingResult:
-    """Summary returned by `fit_model`."""
+    """`fit_model`이 반환하는 학습 결과 요약."""
 
     best_epoch: int
     best_val_loss: float
@@ -93,16 +91,16 @@ class TrainingResult:
     train_metadata_path: str
 
     def as_dict(self) -> dict[str, Any]:
-        """Return JSON-serializable result metadata."""
+        """JSON으로 저장 가능한 result metadata를 반환한다."""
 
         return asdict(self)
 
 
 def training_settings_from_config(config: Mapping[str, Any]) -> TrainingSettings:
-    """Build `TrainingSettings` from the `training` config section.
+    """config의 `training` section에서 `TrainingSettings`를 만든다.
 
-    Output:
-        A settings object passed into `fit_model()` and `_run_epoch()`.
+    출력:
+        `fit_model()`과 `_run_epoch()`에 전달되는 settings 객체.
     """
 
     training_config = get_config_section(config, "training")
@@ -142,11 +140,10 @@ def training_settings_from_config(config: Mapping[str, Any]) -> TrainingSettings
 
 
 def initialize_model_weights(model: nn.Module, variant: str = "xavier_uniform") -> None:
-    """Apply Stage 1 Xavier initialization in-place.
+    """1단계 Xavier initialization을 model에 in-place로 적용한다.
 
-    The model object is modified directly. After this function returns, Conv2d
-    and Linear weights have fresh Xavier values, and BatchNorm starts with
-    weight=1 and bias=0.
+    model 객체를 직접 수정한다. 이 함수가 끝나면 Conv2d와 Linear weight는 새 Xavier
+    값이 되고, BatchNorm은 weight=1, bias=0에서 시작한다.
     """
 
     if variant != "xavier_uniform":
@@ -162,9 +159,9 @@ def initialize_model_weights(model: nn.Module, variant: str = "xavier_uniform") 
 
 
 def build_loss(settings: TrainingSettings) -> nn.Module:
-    """Build the configured training loss.
+    """config에 지정된 training loss를 만든다.
 
-    Input to this loss during training:
+    training 중 이 loss가 받는 입력:
         logits: `(batch_size, 2)` from `StockCNNI20`.
         labels: `(batch_size,)`, integer class ids 0 or 1.
     """
@@ -175,10 +172,10 @@ def build_loss(settings: TrainingSettings) -> nn.Module:
 
 
 def build_optimizer(model: nn.Module, settings: TrainingSettings) -> torch.optim.Optimizer:
-    """Build the configured optimizer.
+    """config에 지정된 optimizer를 만든다.
 
-    The optimizer owns references to model parameters. Later, `optimizer.step()`
-    updates those parameters after `loss.backward()` computes gradients.
+    optimizer는 model parameter 참조를 가진다. 나중에 `loss.backward()`가 gradient를
+    계산한 뒤 `optimizer.step()`이 그 parameter를 업데이트한다.
     """
 
     if settings.optimizer.name.lower() != "adam":
@@ -205,16 +202,16 @@ def fit_model(
     normalization_metadata: Mapping[str, Any] | None = None,
     source_reference_metadata: Mapping[str, Any] | None = None,
 ) -> TrainingResult:
-    """Train a model and write best/last checkpoints plus history/metadata.
+    """model을 학습하고 best/last checkpoint와 history/metadata를 저장한다.
 
-    Input:
-        model: `StockCNNI20`, not yet necessarily moved to device.
-        train_loader: batches of image `(B, 1, 64, 60)` and label `(B,)`.
-        val_loader: same batch structure, but no gradient update.
+    입력:
+        model: `StockCNNI20`. 아직 device로 이동하지 않았을 수 있다.
+        train_loader: image `(B, 1, 64, 60)`, label `(B,)` batch.
+        val_loader: 같은 batch 구조. 단 gradient update는 하지 않는다.
 
-    Output:
-        `TrainingResult` with file paths to `best.pt`, `last.pt`,
-        `train_history.csv`, and `train_metadata.json`.
+    출력:
+        `best.pt`, `last.pt`, `train_history.csv`, `train_metadata.json` 경로가
+        들어 있는 `TrainingResult`.
     """
 
     device = torch.device(device)
@@ -223,12 +220,12 @@ def fit_model(
     checkpoint_path.mkdir(parents=True, exist_ok=True)
     metrics_path.mkdir(parents=True, exist_ok=True)
 
-    # Reset model weights before training this seed. This is why independent
-    # seed runs can produce different checkpoints.
+    # 이 seed의 training을 시작하기 전에 model weight를 새로 초기화한다. 그래서
+    # independent seed run마다 다른 checkpoint가 나올 수 있다.
     initialize_model_weights(model, settings.initialization_name)
 
-    # Move model parameters to CPU/GPU. Every batch tensor must later be moved
-    # to the same device before calling `model(images)`.
+    # model parameter를 CPU/GPU로 이동한다. 이후 batch tensor도 `model(images)` 호출
+    # 전에 같은 device로 이동해야 한다.
     model.to(device)
     loss_fn = build_loss(settings)
     optimizer = build_optimizer(model, settings)
@@ -242,7 +239,7 @@ def fit_model(
 
     for epoch in range(1, settings.max_epochs + 1):
         epoch_start = time.perf_counter()
-        # Training epoch: gradients are enabled and optimizer updates weights.
+        # 학습 epoch: gradient를 켜고 optimizer가 weight를 업데이트한다.
         train_loss, train_accuracy = _run_epoch(
             model=model,
             data_loader=train_loader,
@@ -252,8 +249,8 @@ def fit_model(
             train=True,
             settings=settings,
         )
-        # Validation epoch: no gradients and no optimizer step. This estimates
-        # whether the current checkpoint generalizes better than previous ones.
+        # 검증 epoch: gradient와 optimizer step이 없다. 현재 checkpoint가 이전보다
+        # 더 잘 일반화되는지 추정한다.
         val_loss, val_accuracy = _run_epoch(
             model=model,
             data_loader=val_loader,
@@ -264,13 +261,13 @@ def fit_model(
             settings=settings,
         )
 
-        # Lower validation loss means the current model is the new best model.
+        # validation loss가 낮아지면 현재 model이 새로운 best model이다.
         improved = val_loss < (best_val_loss - settings.early_stopping.min_delta)
         if improved:
             best_val_loss = val_loss
             best_epoch = epoch
             epochs_without_improvement = 0
-            # `best.pt` is the checkpoint used later for prediction export.
+            # `best.pt`는 나중 prediction export에서 사용하는 checkpoint다.
             _save_checkpoint(
                 checkpoint_path / "best.pt",
                 model=model,
@@ -285,7 +282,7 @@ def fit_model(
         else:
             epochs_without_improvement += 1
 
-        # One dictionary becomes one row in `train_history.csv`.
+        # dictionary 하나가 `train_history.csv`의 row 하나가 된다.
         history.append(
             {
                 "epoch": epoch,
@@ -304,7 +301,7 @@ def fit_model(
             break
 
     stopped_epoch = history[-1]["epoch"] if history else 0
-    # `last.pt` records the final training state even if it is not the best.
+    # `last.pt`는 best가 아니더라도 마지막 training state를 기록한다.
     _save_checkpoint(
         checkpoint_path / "last.pt",
         model=model,
@@ -319,7 +316,7 @@ def fit_model(
 
     train_history_path = metrics_path / "train_history.csv"
     train_metadata_path = metrics_path / "train_metadata.json"
-    # These metadata files are for audit/review; they are not read by the model.
+    # 이 metadata file은 audit/review용이다. model이 읽는 input은 아니다.
     _write_history_csv(train_history_path, history)
     _write_json(
         train_metadata_path,
@@ -360,14 +357,14 @@ def _run_epoch(
     train: bool,
     settings: TrainingSettings,
 ) -> tuple[float, float]:
-    """Run one train or validation epoch and return `(loss, accuracy)`.
+    """train 또는 validation epoch 하나를 실행하고 `(loss, accuracy)`를 반환한다.
 
-    Batch data path:
+    Batch 데이터 흐름:
         DataLoader batch
         -> images `(B, 1, 64, 60)`, labels `(B,)`
         -> model logits `(B, 2)`
         -> loss scalar
-        -> if training, gradients update model weights
+        -> training이면 gradient가 model weight를 update
     """
 
     model.train(mode=train)
@@ -378,11 +375,11 @@ def _run_epoch(
     context = torch.enable_grad() if train else torch.no_grad()
     with context:
         for batch_index, batch in enumerate(data_loader, start=1):
-            # Extract tensors from the dataset batch. Metadata is ignored in
-            # training because future returns/StockID/Date must not be inputs.
+            # dataset batch에서 tensor만 꺼낸다. metadata는 future return/StockID/Date를
+            # 포함하므로 training input으로 사용하지 않는다.
             images, labels = _unpack_batch(batch)
 
-            # Move tensors to the same device as the model. Shape remains:
+            # tensor를 model과 같은 device로 옮긴다. shape는 그대로 유지된다:
             # images `(B, 1, 64, 60)`, labels `(B,)`.
             images = images.to(device=device, dtype=torch.float32)
             labels = labels.to(device=device, dtype=torch.long)
@@ -390,28 +387,27 @@ def _run_epoch(
             if train and optimizer is not None:
                 optimizer.zero_grad(set_to_none=True)
 
-            # Forward pass. `logits` shape is `(B, 2)`, where column 0 is
-            # Down/non-positive score and column 1 is Up score.
+            # 순전파. `logits` shape는 `(B, 2)`이고 column 0은 Down/non-positive
+            # score, column 1은 Up score다.
             logits = model(images)
 
-            # CrossEntropyLoss internally applies log-softmax, so logits should
-            # be raw scores, not probabilities.
+            # CrossEntropyLoss는 내부에서 log-softmax를 적용하므로 logits는 probability가
+            # 아니라 raw score여야 한다.
             loss = loss_fn(logits, labels)
             if train and optimizer is not None:
-                # Backward computes gradients for every trainable parameter.
+                # 역전파는 모든 trainable parameter의 gradient를 계산한다.
                 loss.backward()
                 if settings.gradient_clipping is not None:
                     torch.nn.utils.clip_grad_norm_(model.parameters(), settings.gradient_clipping)
 
-                # Optimizer uses gradients to update model weights.
+                # Optimizer는 gradient를 사용해 model weight를 업데이트한다.
                 optimizer.step()
 
             batch_size = int(labels.shape[0])
             loss_total += float(loss.detach().cpu().item()) * batch_size
 
-            # During training history we use argmax over logits as the predicted
-            # class. Final paper-style probability outputs are computed later in
-            # evaluation code.
+            # training history에서는 logits의 argmax를 predicted class로 사용한다.
+            # 최종 paper-style probability output은 나중 evaluation code에서 계산한다.
             predictions = torch.argmax(logits.detach(), dim=1)
             correct_total += int((predictions == labels).sum().cpu().item())
             sample_total += batch_size
@@ -430,12 +426,11 @@ def _run_epoch(
 
 
 def _unpack_batch(batch: Any) -> tuple[torch.Tensor, torch.Tensor]:
-    """Extract image and label tensors from common batch formats.
+    """batch에서 image와 label tensor를 꺼낸다.
 
-    Expected Stage 1 batch:
+    1단계 expected batch:
         `{"image": tensor(B,1,64,60), "label": tensor(B), "metadata": ...}`.
-    This function returns only image and label because training must ignore
-    metadata fields.
+    training은 metadata field를 무시해야 하므로 이 함수는 image와 label만 반환한다.
     """
 
     if isinstance(batch, Mapping):
@@ -462,11 +457,11 @@ def _save_checkpoint(
     normalization_metadata: Mapping[str, Any] | None,
     source_reference_metadata: Mapping[str, Any] | None,
 ) -> None:
-    """Write a model checkpoint.
+    """model checkpoint를 저장한다.
 
-    The checkpoint is a PyTorch file containing model weights, optimizer state,
-    current epoch, best validation loss, config snapshot, and normalization
-    metadata. Evaluation later loads `model_state_dict` from this file.
+    checkpoint는 model weight, optimizer state, 현재 epoch, best validation loss,
+    config snapshot, normalization metadata를 담은 PyTorch file이다. evaluation은
+    나중에 이 file에서 `model_state_dict`를 load한다.
     """
 
     torch.save(
@@ -485,10 +480,10 @@ def _save_checkpoint(
 
 
 def _write_history_csv(path: Path, history: list[dict[str, Any]]) -> None:
-    """Write per-epoch training history.
+    """epoch별 training history를 저장한다.
 
-    Each row describes one completed epoch: train loss/accuracy, validation
-    loss/accuracy, learning rate, elapsed time, and whether it became best.
+    row 하나는 완료된 epoch 하나를 설명한다: train loss/accuracy, validation
+    loss/accuracy, learning rate, elapsed time, best 여부.
     """
 
     fieldnames = [
@@ -509,7 +504,7 @@ def _write_history_csv(path: Path, history: list[dict[str, Any]]) -> None:
 
 
 def _write_json(path: Path, payload: Mapping[str, Any]) -> None:
-    """Write UTF-8 JSON with stable formatting."""
+    """UTF-8 JSON을 안정적인 formatting으로 저장한다."""
 
     with path.open("w", encoding="utf-8") as file:
         json.dump(payload, file, indent=2, sort_keys=True)
@@ -517,7 +512,7 @@ def _write_json(path: Path, payload: Mapping[str, Any]) -> None:
 
 
 def _settings_as_dict(settings: TrainingSettings) -> dict[str, Any]:
-    """Convert nested training settings to plain dictionaries."""
+    """nested training setting을 plain dictionary로 바꾼다."""
 
     payload = asdict(settings)
     payload["optimizer"]["betas"] = list(payload["optimizer"]["betas"])
@@ -525,6 +520,6 @@ def _settings_as_dict(settings: TrainingSettings) -> dict[str, Any]:
 
 
 def _utc_now() -> str:
-    """Return current UTC time as an ISO string."""
+    """현재 UTC 시간을 ISO string으로 반환한다."""
 
     return datetime.now(timezone.utc).isoformat()

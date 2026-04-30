@@ -1,4 +1,4 @@
-"""Training utilities for Stage 1."""
+"""1단계 training utility."""
 
 from stage1_reimage.training.loop import (
     EarlyStoppingSettings,

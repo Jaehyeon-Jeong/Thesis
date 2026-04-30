@@ -1,22 +1,22 @@
-"""Stock_CNN-style I20 baseline for Stage 1 Re-image reproduction.
+"""1단계 Re-image 재현용 Stock_CNN-style I20 baseline.
 
-Reference implementation:
+참고 구현:
     lich99/Stock_CNN, `models/baseline.py`
     commit: 415e2acf2a5013afca67e383acd3edc61fced840
 
-Paper source:
+논문 근거:
     Jiang, Kelly, and Xiu, Re-Imagining Price Trends.
-    Local summary maps CNN architecture/training details to pp. 12-21 and
-    Figure 7 to p. 18.
+    local summary는 CNN architecture/training detail을 pp. 12-21,
+    Figure 7을 p. 18로 mapping한다.
 
-Tensor convention:
+Tensor 규칙:
     images: (batch_size, 1, height=64, width=60)
     logits: (batch_size, 2)
 
-Important mismatch:
-    The local paper summary emphasizes first-layer vertical dilation, while the
-    checked GitHub I20 baseline applies dilation=(2, 1) to all three conv
-    layers. Stage 1 follows the GitHub model core by design.
+중요한 mismatch:
+    local paper summary는 first-layer vertical dilation을 강조하지만, 확인한
+    GitHub I20 baseline은 dilation=(2, 1)을 세 conv layer 모두에 적용한다.
+    1단계는 의도적으로 GitHub model core를 따른다.
 """
 
 from __future__ import annotations
@@ -41,26 +41,25 @@ EXPECTED_I20_SHAPES: dict[str, tuple[int, ...]] = {
 
 
 class StockCNNI20(nn.Module):
-    """I20 baseline CNN matching the checked `lich99/Stock_CNN` implementation.
+    """확인한 `lich99/Stock_CNN` 구현에 맞춘 I20 baseline CNN.
 
-    The forward pass intentionally returns logits and does not apply softmax.
-    Evaluation code will convert logits to class probabilities later.
+    forward pass는 의도적으로 logits를 반환하고 softmax를 적용하지 않는다.
+    class probability 변환은 evaluation code에서 한다.
 
-    How to read this model:
-        Input image batch: `(batch_size, 1, 64, 60)`.
-        After layer1: `(batch_size, 64, 13, 60)`.
-        After layer2: `(batch_size, 128, 5, 60)`.
-        After layer3: `(batch_size, 256, 3, 60)`.
-        Flatten: `(batch_size, 46080)`.
-        Output logits: `(batch_size, 2)`.
+    모델 읽는 법:
+        입력 image batch: `(batch_size, 1, 64, 60)`.
+        layer1 이후: `(batch_size, 64, 13, 60)`.
+        layer2 이후: `(batch_size, 128, 5, 60)`.
+        layer3 이후: `(batch_size, 256, 3, 60)`.
+        flatten 이후: `(batch_size, 46080)`.
+        출력 logits: `(batch_size, 2)`.
     """
 
     def __init__(self) -> None:
         super().__init__()
 
-        # Block 1 receives the grayscale image. The GitHub I20 baseline uses
-        # vertical stride/dilation to compress the height direction while
-        # preserving the 60-pixel time axis width.
+        # 1번 block은 grayscale image를 받는다. GitHub I20 baseline은 vertical
+        # stride/dilation으로 height 방향을 줄이면서 60-pixel time axis width는 유지한다.
         self.layer1 = nn.Sequential(
             nn.Conv2d(
                 1,
@@ -75,8 +74,8 @@ class StockCNNI20(nn.Module):
             nn.MaxPool2d((2, 1), stride=(2, 1)),
         )
 
-        # Block 2 receives 64 feature channels and learns 128 channels. Its
-        # output still keeps width 60, so temporal position remains aligned.
+        # 2번 block은 64개 feature channel을 받아 128개 channel을 학습한다. output도
+        # width 60을 유지하므로 temporal position alignment가 유지된다.
         self.layer2 = nn.Sequential(
             nn.Conv2d(
                 64,
@@ -91,8 +90,8 @@ class StockCNNI20(nn.Module):
             nn.MaxPool2d((2, 1), stride=(2, 1)),
         )
 
-        # Block 3 receives 128 channels and produces 256 channels. After this
-        # block the spatial tensor is `(batch, 256, 3, 60)`.
+        # 3번 block은 128 channel을 받아 256 channel을 만든다. 이 block 이후 spatial
+        # tensor는 `(batch, 256, 3, 60)`이다.
         self.layer3 = nn.Sequential(
             nn.Conv2d(
                 128,
@@ -107,46 +106,46 @@ class StockCNNI20(nn.Module):
             nn.MaxPool2d((2, 1), stride=(2, 1)),
         )
 
-        # The classifier sees every value in the final feature map. Because
-        # `256 * 3 * 60 = 46080`, the linear layer input size is 46080.
+        # classifier는 마지막 feature map의 모든 값을 본다. `256 * 3 * 60 = 46080`
+        # 이므로 linear layer input size는 46080이다.
         self.fc1 = nn.Sequential(
             nn.Dropout(p=0.5),
             nn.Linear(46_080, 2),
         )
 
-        # Kept for reference compatibility. We do not call this inside
-        # `forward()` because `CrossEntropyLoss` expects raw logits.
+        # reference compatibility를 위해 남겨둔다. `CrossEntropyLoss`는 raw logits를
+        # 기대하므로 `forward()` 안에서는 이 softmax를 호출하지 않는다.
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Return class logits.
+        """class logits를 반환한다.
 
-        Input:
-            x: image tensor with shape `(batch_size, 1, 64, 60)` or any shape
-               that can be reshaped to that GitHub-compatible convention.
+        입력:
+            x: `(batch_size, 1, 64, 60)` image tensor, 또는 그 shape로 reshape
+               가능한 tensor.
 
-        Output:
-            logits: `(batch_size, 2)`, where class index 1 is the Up class.
+        출력:
+            logits: `(batch_size, 2)`. class index 1이 Up class다.
         """
 
-        # Ensure the batch has the CNN input convention:
+        # batch가 CNN input convention을 갖도록 보장한다:
         # `(batch_size, channel=1, height=64, width=60)`.
         x = x.reshape(-1, 1, 64, 60)
 
-        # Each CNN block turns pixels into increasingly abstract chart-pattern
-        # feature maps. The tensor keeps batch dimension first.
+        # 각 CNN block은 pixel을 점점 더 추상적인 chart-pattern feature map으로 바꾼다.
+        # tensor는 계속 batch dimension을 첫 번째 축으로 유지한다.
         x = self.layer1(x)  # `(batch_size, 64, 13, 60)`
         x = self.layer2(x)  # `(batch_size, 128, 5, 60)`
         x = self.layer3(x)  # `(batch_size, 256, 3, 60)`
 
-        # Flatten all channel/height/width values into one vector per image so
-        # the final linear classifier can produce two class scores.
+        # channel/height/width의 모든 값을 image 하나당 vector 하나로 flatten한다.
+        # 그래야 마지막 linear classifier가 두 class score를 만들 수 있다.
         x = x.reshape(-1, 46_080)
         x = self.fc1(x)  # `(batch_size, 2)` = `[down_logit, up_logit]`
         return x
 
     def forward_with_shapes(self, x: torch.Tensor) -> dict[str, tuple[int, ...]]:
-        """Run a no-grad forward pass and return intermediate tensor shapes."""
+        """gradient 없이 forward pass를 실행하고 중간 tensor shape를 반환한다."""
 
         self.eval()
         with torch.no_grad():
@@ -165,11 +164,11 @@ class StockCNNI20(nn.Module):
         return shapes
 
     def gradcam_target_layers(self) -> dict[str, nn.Module]:
-        """Return named convolution layers planned for Stage 1 Grad-CAM.
+        """1단계 Grad-CAM에서 사용할 convolution layer를 이름과 함께 반환한다.
 
-        Grad-CAM will attach hooks to these Conv2d modules, not to the whole
-        sequential block. That lets it collect convolution activations and
-        gradients before later pooling changes the spatial map.
+        Grad-CAM은 전체 sequential block이 아니라 이 Conv2d module에 hook을 건다.
+        그래야 뒤의 pooling이 spatial map을 바꾸기 전 convolution activation과
+        gradient를 수집할 수 있다.
         """
 
         return {
@@ -180,10 +179,10 @@ class StockCNNI20(nn.Module):
 
 
 def build_stock_cnn_i20_from_config(config: Mapping[str, Any]) -> StockCNNI20:
-    """Build the Stage 1 I20 model after checking the model config name.
+    """model config name을 확인한 뒤 1단계 I20 model을 만든다.
 
-    This function is a guardrail. If the config requests a different model,
-    Stage 1 should fail clearly instead of silently training the wrong network.
+    이 함수는 guardrail이다. config가 다른 model을 요청하면, 잘못된 network를
+    조용히 학습하지 말고 명확히 실패해야 한다.
     """
 
     model_config = get_config_section(config, "model")
@@ -194,10 +193,10 @@ def build_stock_cnn_i20_from_config(config: Mapping[str, Any]) -> StockCNNI20:
 
 
 def count_parameters(model: nn.Module, trainable_only: bool = False) -> int:
-    """Count model parameters.
+    """model parameter 수를 센다.
 
-    This is used by smoke checks to verify that our local model still matches
-    the expected GitHub-style I20 parameter count.
+    smoke check에서 local model이 기대한 GitHub-style I20 parameter count와
+    일치하는지 확인할 때 사용한다.
     """
 
     parameters = model.parameters()

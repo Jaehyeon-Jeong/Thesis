@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Smoke-check the Stage 1 StockCNNI20 model implementation.
+"""1단계 StockCNNI20 model 구현을 smoke check한다.
 
-This script verifies the model contract without loading real data:
-random input `(batch_size,1,64,60)` -> logits `(batch_size,2)`, expected
-intermediate shapes, expected parameter count, and Grad-CAM target layers.
+이 script는 real data를 load하지 않고 model contract를 검증한다:
+random input `(batch_size,1,64,60)` -> logits `(batch_size,2)`, 기대한
+중간 tensor shape, 기대한 parameter count, Grad-CAM target layer.
 """
 
 from __future__ import annotations
@@ -15,7 +15,7 @@ from pathlib import Path
 
 
 def add_stage1_src_to_path() -> Path:
-    """Add local Stage 1 `src/` directory to `sys.path`."""
+    """로컬 1단계 `src/` directory를 `sys.path`에 추가한다."""
 
     stage_root = Path(__file__).resolve().parents[1]
     sys.path.insert(0, str(stage_root / "src"))
@@ -23,14 +23,14 @@ def add_stage1_src_to_path() -> Path:
 
 
 def parse_args(stage_root: Path) -> argparse.Namespace:
-    """Parse CLI arguments."""
+    """명령행 인자를 parsing한다."""
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--config",
         type=Path,
         default=stage_root / "configs" / "env_local.yaml",
-        help="Stage 1 environment config path.",
+        help="1단계 환경 config 경로.",
     )
     parser.add_argument("--batch-size", type=int, default=2)
     parser.add_argument("--seed", type=int, default=42)
@@ -38,7 +38,7 @@ def parse_args(stage_root: Path) -> argparse.Namespace:
 
 
 def main() -> int:
-    """Run model shape and parameter-count checks."""
+    """model shape와 parameter count check를 실행한다."""
 
     add_stage1_src_to_path()
     args = parse_args(Path(__file__).resolve().parents[1])
@@ -58,11 +58,11 @@ def main() -> int:
     model = build_stock_cnn_i20_from_config(config)
     model.eval()
 
-    # Synthetic batch with the same shape as real I20 images after DataLoader
-    # collation: `(B, channel=1, height=64, width=60)`.
+    # DataLoader collation 이후 real I20 image와 같은 shape를 갖는 synthetic batch:
+    # `(B, channel=1, height=64, width=60)`.
     sample = torch.rand(args.batch_size, 1, 64, 60, dtype=torch.float32)
     with torch.no_grad():
-        # Forward pass returns raw class scores, not probabilities.
+        # 순전파는 probability가 아니라 raw class score를 반환한다.
         logits = model(sample)
         softmax_of_logits = torch.softmax(logits, dim=1)
 
@@ -78,8 +78,8 @@ def main() -> int:
             f"actual={parameter_count}"
         )
 
-    # `forward_with_shapes` runs the same model path and records the tensor
-    # shape after each block so architecture mistakes are caught early.
+    # `forward_with_shapes`는 같은 model path를 실행하면서 각 block 이후 tensor shape를
+    # 기록한다. architecture mistake를 일찍 잡기 위한 check다.
     shapes = model.forward_with_shapes(sample)
     expected_shapes = {
         "input": (args.batch_size, 1, 64, 60),

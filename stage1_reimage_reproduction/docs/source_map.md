@@ -529,6 +529,7 @@ Source/policy mapping:
 | Topic | Source | Stage 1 code action |
 | --- | --- | --- |
 | Code readability | Root `PLAN.md`, code-writing principles | Added a permanent rule that all code should include detailed explanatory comments. |
+| Korean code explanations | Root `PLAN.md`, user review request | Explanatory comments/docstrings are now written primarily in Korean. |
 | Tensor shape comments | Root `PLAN.md`, user review request | Added comments/docstrings for image tensors `(1,64,60)`, DataLoader batches `(B,1,64,60)`, CNN feature maps, logits `(B,2)`, and probability outputs. |
 | Leakage comments | Root `PLAN.md`, Stage 1 leakage rule | Added comments where metadata/returns are preserved but not fed into the CNN. |
 | Data movement comments | User review request | Added comments describing how values move from config to loader, loader to dataset, dataset to model, model to loss, and model to prediction CSV. |
@@ -536,6 +537,7 @@ Source/policy mapping:
 1-I7R conclusion:
 - The code behavior is unchanged.
 - The code now carries more reader-facing explanations for how each stage works.
+- Reader-facing comments/docstrings are now primarily Korean.
 
 ## 1-8 Grad-CAM Detail Plan
 
@@ -1117,6 +1119,7 @@ Metric 결정:
 | 항목 | 근거 | Stage 1 코드 조치 |
 | --- | --- | --- |
 | 코드 가독성 | Root `PLAN.md`, 코드 작성 원칙 | 모든 코드에 자세한 설명 주석을 남긴다는 고정 규칙을 추가. |
+| 한국어 코드 설명 | Root `PLAN.md`, 사용자 review 요청 | 설명 주석/docstring은 기본적으로 한국어로 작성하도록 정리. |
 | Tensor shape 주석 | Root `PLAN.md`, 사용자 review 요청 | image tensor `(1,64,60)`, DataLoader batch `(B,1,64,60)`, CNN feature map, logits `(B,2)`, probability output 설명 추가. |
 | Leakage 주석 | Root `PLAN.md`, Stage 1 leakage rule | metadata/return은 보존하지만 CNN input으로 넣지 않는 지점에 설명 추가. |
 | Data movement 주석 | 사용자 review 요청 | config -> loader -> dataset -> model -> loss -> prediction CSV로 값이 이동하는 방식 설명 추가. |
@@ -1124,6 +1127,7 @@ Metric 결정:
 1-I7R 결론:
 - 코드 동작은 바뀌지 않았습니다.
 - 각 단계가 어떻게 작동하는지 읽을 수 있도록 코드 안 설명을 보강했습니다.
+- 읽는 사람을 위한 주석과 docstring은 기본적으로 한국어로 정리했습니다.
 
 ## 1-8 Grad-CAM 세부계획
 

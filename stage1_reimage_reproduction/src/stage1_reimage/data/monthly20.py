@@ -1,20 +1,20 @@
-"""Lazy loader for the public `monthly_20d` Re-image data.
+"""공개 `monthly_20d` Re-image data를 lazy loading하는 loader.
 
-Paper/source context:
-    Stage 1 uses author-provided rendered 20-day images. The local data audit
-    confirmed these files are I20 full-spec images (`OHLC + 20-day MA +
-    volume`) with labels in matching `.feather` files. The data loader does not
-    construct labels or splits; those are implemented in later gates.
+논문/데이터 맥락:
+    1단계는 저자가 제공한 rendered 20-day image를 사용한다. local data audit에서
+    이 파일들이 I20 full-spec image(`OHLC + 20-day MA + volume`)이고, matching
+    `.feather` label file이 있다는 점을 확인했다. 이 loader는 label이나 split을
+    만들지 않는다. label/split은 다음 단계 파일에서 처리한다.
 
-Shape contract:
-    Raw image row: (64, 60) uint8
-    Returned image tensor: (1, 64, 60) float32, scaled to [0, 1]
-    Batch shape after PyTorch collation: (batch_size, 1, 64, 60)
+Shape 규칙:
+    raw image row: (64, 60) uint8
+    반환 image tensor: (1, 64, 60) float32, [0, 1]로 scaling
+    PyTorch DataLoader batch: (batch_size, 1, 64, 60)
 
-How to read this file:
-    The `.dat` files are not JPEG/PNG files. They are flat byte arrays. Because
-    every image has exactly `64 * 60` pixels, the loader can reshape bytes into
-    `(num_images, 64, 60)` without decoding an image format.
+읽는 법:
+    `.dat` 파일은 JPEG/PNG가 아니라 flat byte array다. 모든 이미지가 정확히
+    `64 * 60` pixel이므로, 별도 image decoding 없이 bytes를
+    `(num_images, 64, 60)`으로 reshape할 수 있다.
 """
 
 from __future__ import annotations
@@ -51,11 +51,11 @@ REQUIRED_LABEL_COLUMNS: tuple[str, ...] = (
 
 @dataclass(frozen=True)
 class ShardInfo:
-    """Metadata for one year of image and label files.
+    """한 연도 image/label file에 대한 metadata.
 
-    One shard corresponds to one calendar year, e.g. 1993. The image `.dat`
-    file and label `.feather` file must have the same number of rows so row `i`
-    in both files describes the same stock/date sample.
+    하나의 shard는 1993 같은 calendar year 하나에 대응한다. image `.dat`와
+    label `.feather`는 같은 row 수를 가져야 하며, 두 파일의 row `i`는 같은
+    stock/date sample을 설명해야 한다.
     """
 
     year: int
@@ -68,7 +68,7 @@ class ShardInfo:
     date_max: str
 
     def as_dict(self) -> dict[str, Any]:
-        """Return a JSON-serializable shard summary."""
+        """JSON으로 저장 가능한 shard summary를 반환한다."""
 
         return {
             "year": self.year,
@@ -83,14 +83,14 @@ class ShardInfo:
 
 
 def years_from_config(config: Mapping[str, Any]) -> list[int]:
-    """Parse the `data.expected_years` config value.
+    """`data.expected_years` config 값을 parsing한다.
 
-    The current config uses `[1993, 2019]` as an inclusive range. If a future
-    config provides a longer list, it is treated as the explicit year list.
+    현재 config의 `[1993, 2019]`는 inclusive range로 해석한다. 미래 config가 더 긴
+    list를 제공하면 explicit year list로 처리한다.
     """
 
-    # Config stores `[1993, 2019]`. For Stage 1 this means every year from
-    # 1993 through 2019, not just two years.
+    # Config에는 `[1993, 2019]`로 저장되어 있다. 1단계에서는 이 값을 두 개의
+    # 연도만 의미하는 것이 아니라 1993부터 2019까지 전체 범위로 해석한다.
     data_config = get_config_section(config, "data")
     raw_years = data_config.get("expected_years", [1993, 2019])
     if not isinstance(raw_years, Sequence) or isinstance(raw_years, str):
@@ -103,10 +103,10 @@ def years_from_config(config: Mapping[str, Any]) -> list[int]:
 
 
 def infer_image_row_count(image_path: Path) -> tuple[int, int]:
-    """Infer row count from a raw uint8 `.dat` image file.
+    """raw uint8 `.dat` image file에서 row 수를 추론한다.
 
-    If a file has `N * 64 * 60` bytes, then it contains `N` images. This is why
-    divisibility by `IMAGE_PIXELS` is checked before creating a memmap.
+    파일 크기가 `N * 64 * 60` byte라면 이 파일에는 `N`개 image가 들어 있다.
+    그래서 memmap을 만들기 전에 `IMAGE_PIXELS`로 나누어떨어지는지 확인한다.
     """
 
     file_size = image_path.stat().st_size
@@ -114,7 +114,7 @@ def infer_image_row_count(image_path: Path) -> tuple[int, int]:
         raise ValueError(
             f"Image file size is not divisible by {IMAGE_PIXELS}: {image_path}"
         )
-    # Example: file_size 384000 means 100 images because 384000 / 3840 = 100.
+    # 예: file_size가 384000이면 384000 / 3840 = 100이므로 image 100개다.
     return file_size // IMAGE_PIXELS, file_size
 
 
@@ -123,14 +123,14 @@ def discover_monthly20_shards(
     years: Iterable[int],
     validate: bool = True,
 ) -> list[ShardInfo]:
-    """Discover and validate year-aligned image/label shards.
+    """연도별 image/label shard를 찾고 검증한다.
 
-    Validation checks:
-    - expected image and label files exist,
-    - image byte count reshapes to `(N, 64, 60)`,
-    - image row count equals label row count,
-    - required label columns exist,
-    - label `Date` values belong to the file year.
+    검증 내용:
+    - 기대한 image/label file이 존재하는지
+    - image byte count가 `(N, 64, 60)`으로 reshape 가능한지
+    - image row count와 label row count가 같은지
+    - 필수 label column이 존재하는지
+    - label `Date` 값이 해당 file year에 속하는지
     """
 
     root = Path(data_root).expanduser()
@@ -144,8 +144,8 @@ def discover_monthly20_shards(
             raise ValueError(f"Duplicate year in shard discovery: {year}")
         seen_years.add(year)
 
-        # Build the exact file names fixed by the public monthly_20d dataset.
-        # These names also encode that the image contains volume bars and MA.
+        # public monthly_20d dataset이 고정한 정확한 file name을 만든다.
+        # file name 자체에도 volume bars와 MA가 포함되어 있다는 정보가 들어 있다.
         image_path = root / IMAGE_FILE_TEMPLATE.format(year=year)
         label_path = root / LABEL_FILE_TEMPLATE.format(year=year)
         if not image_path.exists():
@@ -153,7 +153,7 @@ def discover_monthly20_shards(
         if not label_path.exists():
             raise FileNotFoundError(f"Missing label file for {year}: {label_path}")
 
-        # `image_rows` is the number of samples that the `.dat` file can yield.
+        # `image_rows`는 `.dat` 파일에서 읽을 수 있는 sample 수다.
         image_rows, image_file_size = infer_image_row_count(image_path)
         label_frame = pd.read_feather(label_path)
         if validate:
@@ -182,11 +182,11 @@ def discover_monthly20_shards(
 
 
 def build_dataset_from_config(config: Mapping[str, Any]) -> "Monthly20MemmapDataset":
-    """Build a `Monthly20MemmapDataset` using the environment config.
+    """환경 config를 사용해서 `Monthly20MemmapDataset`을 만든다.
 
-    Output:
-        A dataset object that can later return one sample as:
-        `{"image": tensor(1, 64, 60), "metadata": {...}}`.
+    출력:
+        나중에 sample 하나를
+        `{"image": tensor(1, 64, 60), "metadata": {...}}` 형태로 반환하는 dataset.
     """
 
     data_config = get_config_section(config, "data")
@@ -208,12 +208,11 @@ def build_dataset_from_config(config: Mapping[str, Any]) -> "Monthly20MemmapData
 
 
 class Monthly20MemmapDataset(Dataset):
-    """PyTorch Dataset over validated `monthly_20d` shards.
+    """검증된 `monthly_20d` shard 위에서 동작하는 PyTorch Dataset.
 
-    The image files stay memory-mapped; the label frames are loaded once because
-    they are much smaller than the images and are needed for metadata alignment.
-    This class intentionally returns raw future-return columns only as metadata.
-    They must not be passed into the Stage 1 CNN as input features.
+    image file은 memory-map 상태로 두고, label frame은 image보다 작고 metadata
+    alignment에 자주 필요하므로 한 번만 load한다. 이 class는 raw future-return
+    column을 metadata로만 반환한다. 이 값들은 1단계 CNN input feature로 넣으면 안 된다.
     """
 
     def __init__(self, shards: Sequence[ShardInfo]) -> None:
@@ -221,13 +220,13 @@ class Monthly20MemmapDataset(Dataset):
             raise ValueError("At least one shard is required.")
         self.shards = list(shards)
 
-        # Label metadata is loaded into memory because it is small compared to
-        # image bytes and is needed often for Date/StockID/return columns.
+        # label metadata는 image byte보다 작고 Date/StockID/return column을 자주
+        # 참조하므로 memory에 올려둔다.
         self._label_frames = [pd.read_feather(shard.label_path) for shard in self.shards]
 
-        # Image bytes stay on disk and are accessed through memory maps. This
-        # avoids loading all rendered images into RAM at once. Each memmap has
-        # shape `(num_rows_for_year, 64, 60)` and dtype `uint8`.
+        # image byte는 disk에 둔 채 memory map으로 접근한다. 이렇게 하면 전체
+        # rendered image를 한 번에 RAM에 올리지 않아도 된다. 각 memmap shape는
+        # `(num_rows_for_year, 64, 60)`, dtype은 `uint8`이다.
         self._image_maps = [
             np.memmap(
                 shard.image_path,
@@ -237,9 +236,9 @@ class Monthly20MemmapDataset(Dataset):
             )
             for shard in self.shards
         ]
-        # `_cumulative_end_rows` lets a global dataset index map back to a
-        # `(year shard, row inside that year)` pair. Example:
-        #   index 150000 -> shard_index for 1995, local_row inside 1995 file.
+        # `_cumulative_end_rows`는 전체 dataset index를 `(year shard, 그 연도 내부 row)`
+        # pair로 되돌리는 데 쓴다. 예:
+        #   index 150000 -> 1995 shard_index, 1995 file 내부 local_row
         cumulative_total = 0
         self._cumulative_end_rows: list[int] = []
         for shard in self.shards:
@@ -247,81 +246,80 @@ class Monthly20MemmapDataset(Dataset):
             self._cumulative_end_rows.append(cumulative_total)
 
     def __len__(self) -> int:
-        """Return total number of rows across all shards."""
+        """모든 shard를 합친 전체 row 수를 반환한다."""
 
         return self._cumulative_end_rows[-1]
 
     def __getitem__(self, index: int) -> dict[str, Any]:
-        """Return one sample.
+        """sample 하나를 반환한다.
 
-        Output:
-            image: torch.float32 tensor with shape `(1, 64, 60)`
-            metadata: dictionary containing original label columns plus `year`
-                and `local_row`
+        출력:
+            image: `(1, 64, 60)` shape의 torch.float32 tensor.
+            metadata: 원본 label column에 `year`, `local_row`가 추가된 dictionary
         """
 
-        # Convert one global index into the exact year file and row number.
+        # 전체 dataset index 하나를 정확한 연도 파일과 그 안의 row 번호로 바꾼다.
         shard_index, local_row = self.locate(index)
 
-        # This image tensor is the only model input created by this dataset.
-        # Metadata travels with the sample but must not be fed into the CNN.
+        # 이 image tensor만 model input으로 사용된다. metadata는 sample과 같이
+        # 이동하지만 CNN에 넣으면 안 된다.
         image_tensor = self.get_image_tensor(shard_index, local_row)
         metadata = self.get_metadata(shard_index, local_row)
         return {"image": image_tensor, "metadata": metadata}
 
     def locate(self, index: int) -> tuple[int, int]:
-        """Map a global row index to `(shard_index, local_row)`."""
+        """global row index를 `(shard_index, local_row)`로 mapping한다."""
 
         if index < 0:
             index += len(self)
         if index < 0 or index >= len(self):
             raise IndexError(f"Dataset index out of range: {index}")
 
-        # `bisect_right` finds the first cumulative row boundary greater than
-        # `index`, which is exactly the year shard containing that row.
+        # `bisect_right`는 `index`보다 큰 첫 cumulative row boundary를 찾는다.
+        # 그 boundary가 바로 해당 row가 들어 있는 year shard를 알려준다.
         shard_index = bisect_right(self._cumulative_end_rows, index)
         previous_end = 0 if shard_index == 0 else self._cumulative_end_rows[shard_index - 1]
         return shard_index, index - previous_end
 
     def get_image_tensor(self, shard_index: int, local_row: int) -> torch.Tensor:
-        """Read one image lazily and return `(1, 64, 60)` float32 tensor.
+        """image 하나를 lazy하게 읽고 `(1, 64, 60)` float32 tensor로 반환한다.
 
-        Data movement:
+        데이터 이동:
             disk memmap uint8 `(64, 60)`
-            -> NumPy float32 `(64, 60)` scaled to `[0, 1]`
-            -> add channel dimension `(1, 64, 60)`
-            -> PyTorch tensor for DataLoader batching.
+            -> NumPy float32 `(64, 60)`, `[0, 1]` scaling
+            -> channel dimension 추가 `(1, 64, 60)`
+            -> DataLoader batch 생성을 위한 PyTorch tensor
         """
 
         image = self.get_image_array(shard_index, local_row).astype(np.float32, copy=True)
-        # Raw pixels are 0-255. Dividing by 255 makes them comparable across
-        # samples before the later train-only mean/std normalization.
+        # raw pixel은 0-255다. 255로 나누면 이후 train-only mean/std normalization
+        # 전에 sample 간 scale이 맞춰진다.
         image /= 255.0
-        # CNNs expect a channel dimension. Because images are grayscale, channel
-        # count is 1, so `(64, 60)` becomes `(1, 64, 60)`.
+        # CNN은 channel dimension을 기대한다. 이미지는 grayscale이므로 channel 수는
+        # 1이고, `(64, 60)`이 `(1, 64, 60)`이 된다.
         image = image[np.newaxis, :, :]
         return torch.from_numpy(image)
 
     def get_image_array(self, shard_index: int, local_row: int) -> np.ndarray:
-        """Read one raw `(64, 60)` uint8 image from the memmap."""
+        """memmap에서 raw `(64, 60)` uint8 image 하나를 읽는다."""
 
         return self._image_maps[shard_index][local_row]
 
     def get_image_arrays(self, shard_index: int, local_rows: np.ndarray) -> np.ndarray:
-        """Read raw `(N, 64, 60)` uint8 images from one shard memmap.
+        """하나의 shard memmap에서 raw `(N, 64, 60)` uint8 image를 읽는다.
 
-        This batch-style reader is used for computing normalization statistics
-        efficiently; it does not return PyTorch tensors.
+        이 batch-style reader는 normalization statistic을 효율적으로 계산할 때
+        사용한다. PyTorch tensor를 반환하지 않는다.
         """
 
         return np.asarray(self._image_maps[shard_index][local_rows])
 
     def get_metadata(self, shard_index: int, local_row: int) -> dict[str, Any]:
-        """Return original label metadata plus shard identifiers.
+        """원본 label metadata와 shard 식별자를 반환한다.
 
-        This dictionary includes future-return columns such as `Ret_20d`, but
-        those values are labels/evaluation fields only. They are kept so
-        prediction CSVs can be interpreted later.
+        이 dictionary에는 `Ret_20d` 같은 future-return column도 포함된다. 하지만
+        이 값들은 label/evaluation field일 뿐 model input이 아니다. prediction CSV를
+        나중에 해석하기 위해 보존한다.
         """
 
         row = self._label_frames[shard_index].iloc[local_row]
@@ -335,13 +333,13 @@ class Monthly20MemmapDataset(Dataset):
         return metadata
 
     def shard_summary(self) -> list[dict[str, Any]]:
-        """Return JSON-serializable summaries for all shards."""
+        """모든 shard의 JSON-serializable summary를 반환한다."""
 
         return [shard.as_dict() for shard in self.shards]
 
 
 def _validate_label_frame(label_frame: pd.DataFrame, label_path: Path, year: int) -> None:
-    """Validate label columns and date range for one shard."""
+    """shard 하나의 label column과 date range를 검증한다."""
 
     missing_columns = [
         column for column in REQUIRED_LABEL_COLUMNS if column not in label_frame.columns

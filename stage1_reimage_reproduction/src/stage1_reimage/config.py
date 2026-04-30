@@ -1,15 +1,14 @@
-"""Config loading helpers for Stage 1.
+"""1단계 config loading helper.
 
-Source policy:
-    Root PLAN.md says local and Kaggle runs must share one codebase, with
-    runtime/path differences controlled by config. This module implements only
-    that config boundary. It does not define model, label, split, or evaluation
-    behavior; those decisions stay in their own checklist gates.
+근거/역할:
+    Root PLAN.md는 local과 Kaggle이 같은 codebase를 쓰고, 실행 환경 차이는
+    config로 관리한다고 고정한다. 이 파일은 그 config 경계만 담당한다.
+    모델 구조, label, split, evaluation 로직은 각 단계 파일에서 따로 정의한다.
 
-How to read this file:
-    The YAML config is the experiment control panel. Code reads values such as
-    data paths, batch size, seed list, and evaluation threshold from that file
-    instead of hardcoding them inside model/training functions.
+읽는 법:
+    YAML config는 실험 control panel이다. data path, batch size, seed list,
+    evaluation threshold 같은 값은 model/training 함수 안에 박아두지 않고
+    config에서 읽어온다.
 """
 
 from __future__ import annotations
@@ -36,28 +35,24 @@ REQUIRED_TOP_LEVEL_KEYS: tuple[str, ...] = (
 
 
 def load_config(config_path: str | Path) -> dict[str, Any]:
-    """Load a Stage 1 YAML config and validate its top-level sections.
+    """1단계 YAML config를 읽고 top-level section을 검증한다.
 
-    Parameters
-    ----------
-    config_path:
-        Path to `configs/env_local.yaml`, `configs/env_kaggle.yaml`, or another
-        environment config with the same section contract.
+    입력:
+        `configs/env_local.yaml`, `configs/env_kaggle.yaml`처럼 같은 section 구조를
+        가진 환경별 config 경로.
 
-    Returns
-    -------
-    dict[str, Any]
-        Parsed YAML config. The returned object is passed into path builders,
-        data loaders, model builders, training code, and evaluation code.
+    출력:
+        parsing된 YAML config. 이 dict는 이후 path builder, data loader,
+        model builder, training code, evaluation code로 전달된다.
     """
 
-    # Convert strings such as "configs/env_local.yaml" into a Path object.
-    # `expanduser()` lets paths like "~/..." work if they are used later.
+    # "configs/env_local.yaml" 같은 문자열을 Path 객체로 바꾼다.
+    # `expanduser()`는 나중에 "~/..." 같은 경로를 써도 동작하게 해준다.
     path = Path(config_path).expanduser()
     if not path.exists():
         raise FileNotFoundError(f"Config file does not exist: {path}")
 
-    # YAML becomes a nested Python dictionary. Example:
+    # YAML은 nested Python dictionary가 된다. 예:
     #   config["training"]["batch_size"] -> 128
     #   config["model"]["input_height"] -> 64
     with path.open("r", encoding="utf-8") as file:
@@ -74,10 +69,10 @@ def require_config_keys(
     config: Mapping[str, Any],
     required_keys: Sequence[str] = REQUIRED_TOP_LEVEL_KEYS,
 ) -> None:
-    """Raise a clear error if required top-level config sections are missing.
+    """필수 top-level config section이 없으면 명확한 error를 낸다.
 
-    This catches mistakes early. For example, evaluation code expects an
-    `evaluation` section, so a missing section should fail before training starts.
+    예를 들어 evaluation code는 `evaluation` section을 기대한다.
+    이 section이 없으면 training이 시작되기 전에 바로 실패해야 한다.
     """
 
     missing = [key for key in required_keys if key not in config]
@@ -87,11 +82,11 @@ def require_config_keys(
 
 
 def get_config_section(config: Mapping[str, Any], section_name: str) -> Mapping[str, Any]:
-    """Return one config section and ensure it is a dictionary-like object.
+    """config의 특정 section 하나를 반환하고 dictionary 형태인지 확인한다.
 
-    Example:
-        `get_config_section(config, "training")` returns the training block,
-        which includes batch size, optimizer settings, and early stopping.
+    예:
+        `get_config_section(config, "training")`은 batch size, optimizer,
+        early stopping 정보가 들어 있는 training block을 반환한다.
     """
 
     section = config.get(section_name)

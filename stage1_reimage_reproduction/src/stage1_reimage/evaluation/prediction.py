@@ -1,19 +1,18 @@
-"""Prediction CSV and metric utilities for Stage 1.
+"""1단계 prediction CSV와 metric utility.
 
-Source context:
-    The Stage 1 plan fixes a GitHub-style CNN that returns two logits. Paper
-    interpretation uses the softmax Up probability, so this module applies
-    `softmax(logits, dim=1)` only after training. The `prob_up >= 0.5` tie rule
-    is an explicit implementation convention recorded in config and docs; it is
-    not a separately reported paper detail.
+근거 맥락:
+    1단계 plan은 두 개 logits를 반환하는 GitHub-style CNN을 고정한다. 논문 해석은
+    softmax Up probability를 사용하므로, 이 module은 training 이후에만
+    `softmax(logits, dim=1)`를 적용한다. `prob_up >= 0.5` tie rule은 config와
+    docs에 기록한 implementation convention이며, 논문에 별도로 보고된 detail은 아니다.
 
-How to read this file:
-    Training creates checkpoints. This file turns a checkpoint into human-readable
-    prediction rows and metric JSONs. It is where logits become probabilities.
+읽는 법:
+    training은 checkpoint를 만든다. 이 파일은 checkpoint를 사람이 읽을 수 있는
+    prediction row와 metric JSON으로 바꾼다. logits가 probability로 변환되는 곳이다.
 
 Leakage rule:
-    Future returns are used only as labels/evaluation metadata. They are never
-    passed into the model as inputs.
+    future return은 label/evaluation metadata로만 사용한다. model input으로 절대
+    전달하지 않는다.
 """
 
 from __future__ import annotations
@@ -67,10 +66,10 @@ SEED_PREDICTION_COLUMNS: tuple[str, ...] = (
 
 @dataclass(frozen=True)
 class EvaluationSettings:
-    """Stage 1 evaluation settings parsed from config.
+    """config에서 parsing한 1단계 evaluation setting.
 
-    These settings control how logits are converted into predicted classes and
-    how correlation diagnostics are computed.
+    이 setting은 logits를 predicted class로 바꾸는 방식과 correlation diagnostic
+    계산 방식을 제어한다.
     """
 
     threshold: float
@@ -82,10 +81,10 @@ class EvaluationSettings:
 
 
 def evaluation_settings_from_config(config: Mapping[str, Any]) -> EvaluationSettings:
-    """Build `EvaluationSettings` from the `evaluation` config section.
+    """config의 `evaluation` section에서 `EvaluationSettings`를 만든다.
 
-    Output:
-        Settings object passed into `predict_loader()` and averaging functions.
+    출력:
+        `predict_loader()`와 averaging 함수에 전달되는 settings 객체.
     """
 
     evaluation_config = get_config_section(config, "evaluation")
@@ -107,14 +106,14 @@ def load_checkpoint_into_model(
     checkpoint_path: str | Path,
     device: torch.device | str,
 ) -> dict[str, Any]:
-    """Load a Stage 1 checkpoint into `model` and return checkpoint metadata.
+    """1단계 checkpoint를 `model`에 load하고 checkpoint metadata를 반환한다.
 
-    Input:
-        Empty `StockCNNI20` model and path to `best.pt`.
+    입력:
+        빈 `StockCNNI20` model과 `best.pt` path.
 
-    Effect:
-        The model object is modified in-place so its parameters match the saved
-        checkpoint. After this, `model(images)` uses learned weights.
+    효과:
+        model 객체가 in-place로 수정되어 parameter가 저장된 checkpoint와 같아진다.
+        이후 `model(images)`는 학습된 weight를 사용한다.
     """
 
     checkpoint_file = Path(checkpoint_path).expanduser()
@@ -123,8 +122,8 @@ def load_checkpoint_into_model(
     checkpoint = _torch_load_checkpoint(checkpoint_file, map_location=torch.device(device))
     if "model_state_dict" not in checkpoint:
         raise KeyError(f"Checkpoint missing model_state_dict: {checkpoint_file}")
-    # `model_state_dict` contains tensors for every Conv/BatchNorm/Linear
-    # parameter. Loading it replaces the freshly initialized model weights.
+    # `model_state_dict`에는 모든 Conv/BatchNorm/Linear parameter tensor가 들어 있다.
+    # 이것을 load하면 방금 초기화된 model weight가 학습된 weight로 교체된다.
     model.load_state_dict(checkpoint["model_state_dict"])
     model.to(device)
     model.eval()
@@ -143,15 +142,15 @@ def predict_loader(
     settings: EvaluationSettings,
     device: torch.device | str,
 ) -> pd.DataFrame:
-    """Run model prediction and return a prediction-output frame.
+    """model prediction을 실행하고 prediction-output DataFrame을 반환한다.
 
-    Input:
+    입력:
         batch image tensor: `(batch_size, 1, 64, 60)`.
         model output: logits with shape `(batch_size, 2)`.
 
-    Output:
-        One row per image with metadata, logits, softmax probabilities,
-        predicted class, and correctness.
+    출력:
+        image 하나당 row 하나. metadata, logits, softmax probability, predicted class,
+        correctness를 포함한다.
     """
 
     if settings.probability_source != "softmax_logits":
@@ -161,36 +160,36 @@ def predict_loader(
     rows: list[dict[str, Any]] = []
     with torch.no_grad():
         for batch in data_loader:
-            # Evaluation uses the same image tensor shape as training:
+            # evaluation은 training과 같은 image tensor shape를 사용한다:
             # images `(B, 1, 64, 60)`, labels `(B,)`.
-            # Metadata is kept separately and is not passed to the model.
+            # metadata는 따로 보존하고 model에는 전달하지 않는다.
             images = batch["image"].to(device=device, dtype=torch.float32)
             labels = batch["label"].to(device=device, dtype=torch.long)
 
-            # Forward pass:
+            # 순전파:
             #   images `(B, 1, 64, 60)` -> logits `(B, 2)`.
             logits = model(images)
 
-            # Convert logits to probabilities only for interpretation/output.
-            # Column 0 is Down/non-positive, column 1 is Up.
+            # logits를 interpretation/output용 probability로만 변환한다.
+            # column 0은 Down/non-positive, column 1은 Up이다.
             probabilities = torch.softmax(logits, dim=1)
 
             logit_array = logits.detach().cpu().numpy()
             probability_array = probabilities.detach().cpu().numpy()
             label_array = labels.detach().cpu().numpy()
-            # `pred_array` shape is `(B,)`; values are 0 or 1.
+            # `pred_array` shape는 `(B,)`이고 값은 0 또는 1이다.
             pred_array = _predict_from_prob_up(
                 probability_array[:, 1],
                 threshold=settings.threshold,
                 tie_break_class=settings.tie_break_class,
             )
-            # DataLoader collates metadata into a dict of batched values. Convert
-            # it back to one metadata dictionary per prediction row.
+            # DataLoader는 metadata를 batched value dict로 collate한다. prediction CSV
+            # row를 만들기 위해 sample 하나당 metadata dict 하나로 다시 바꾼다.
             metadata_rows = _metadata_batch_to_records(batch["metadata"])
 
             for row_index, metadata in enumerate(metadata_rows):
-                # Build one CSV row for one stock-date image. This row combines
-                # original metadata, model scores, probabilities, and correctness.
+                # stock-date image 하나에 대한 CSV row 하나를 만든다. 이 row는 원본
+                # metadata, model score, probability, correctness를 합친다.
                 prediction_row = dict(metadata)
                 prediction_row["split"] = split_name
                 prediction_row["experiment_name"] = experiment_name
@@ -216,13 +215,13 @@ def compute_classification_metrics(
     probability_column: str = "prob_up",
     prediction_column: str = "pred_class",
 ) -> dict[str, Any]:
-    """Compute binary classification metrics from prediction rows.
+    """prediction row에서 binary classification metric을 계산한다.
 
-    Input:
-        Prediction DataFrame with `label`, probability column, and `pred_class`.
+    입력:
+        `label`, probability column, `pred_class`가 있는 prediction DataFrame.
 
-    Output:
-        JSON-ready dictionary for `<split>_metrics.json`.
+    출력:
+        `<split>_metrics.json`으로 저장 가능한 JSON-ready dictionary.
     """
 
     _require_columns(predictions, ["label", probability_column, prediction_column])
@@ -239,9 +238,9 @@ def compute_classification_metrics(
     predicted_positive_count = int(pred_classes.sum())
     predicted_negative_count = int(sample_count - predicted_positive_count)
 
-    # Confusion matrix terms:
-    #   TP: predicted Up and actual Up
-    #   TN: predicted Down/non-positive and actual Down/non-positive
+    # 혼동행렬 항목:
+    #   TP: Up으로 예측했고 실제도 Up
+    #   TN: Down/non-positive로 예측했고 실제도 Down/non-positive
     true_positive = int(((labels == 1) & (pred_classes == 1)).sum())
     true_negative = int(((labels == 0) & (pred_classes == 0)).sum())
     false_positive = int(((labels == 0) & (pred_classes == 1)).sum())
@@ -268,7 +267,7 @@ def compute_classification_metrics(
     else:
         f1 = float(2.0 * precision * recall / (precision + recall))
 
-    # Probability diagnostics use `prob_up`, not hard class predictions.
+    # probability diagnostic은 hard class prediction이 아니라 `prob_up`을 사용한다.
     brier_score = float(np.mean(np.square(probabilities - labels)))
     log_loss_value = _binary_log_loss(labels, probabilities)
     roc_auc = _sklearn_metric("roc_auc", labels, probabilities, warnings)
@@ -312,10 +311,10 @@ def compute_correlation_metrics(
     date_column: str = "Date",
     min_group_size: int = 3,
 ) -> dict[str, Any]:
-    """Compute prediction-return correlation diagnostics.
+    """prediction-return correlation diagnostic을 계산한다.
 
-    This checks whether larger Up probabilities are associated with larger
-    realized future returns. It is not the same as classification accuracy.
+    더 큰 Up probability가 더 큰 realized future return과 연결되는지 확인한다.
+    classification accuracy와는 다른 진단이다.
     """
 
     _require_columns(predictions, [probability_column, return_column, date_column])
@@ -323,15 +322,15 @@ def compute_correlation_metrics(
     frame[probability_column] = frame[probability_column].astype(float)
     frame[return_column] = frame[return_column].astype(float)
 
-    # Global correlation pools all stock-date rows together.
+    # global correlation은 모든 stock-date row를 한꺼번에 pooling한다.
     global_pearson = _series_corr(frame[probability_column], frame[return_column], "pearson")
     global_spearman = _series_corr(frame[probability_column], frame[return_column], "spearman")
     datewise_pearson: list[float] = []
     datewise_spearman: list[float] = []
     skipped_dates = 0
 
-    # Date-wise correlation asks: on the same date, do stocks with higher
-    # predicted Up probability have higher realized returns?
+    # date-wise correlation은 같은 날짜에서 predicted Up probability가 높은 stock이
+    # realized return도 더 높은지 묻는다.
     for _, group in frame.groupby(date_column, sort=True):
         if len(group) < min_group_size:
             skipped_dates += 1
@@ -375,9 +374,9 @@ def write_evaluation_outputs(
     metrics_dir: str | Path,
     split_name: str,
 ) -> dict[str, str]:
-    """Write predictions and metric JSON files for one split.
+    """하나의 split에 대한 prediction CSV와 metric JSON을 저장한다.
 
-    Files written:
+    저장 파일:
         `<split>_predictions.csv`
         `<split>_metrics.json`
         `<split>_correlation_metrics.json`
@@ -407,14 +406,14 @@ def average_seed_predictions(
     run_seeds: Sequence[int],
     settings: EvaluationSettings,
 ) -> pd.DataFrame:
-    """Average seed-level softmax probabilities into a paper-style ensemble file.
+    """seed별 softmax probability를 평균해서 paper-style ensemble file을 만든다.
 
-    Input:
-        Multiple seed prediction CSVs with the same rows in the same order.
+    입력:
+        같은 row를 같은 순서로 가진 여러 seed prediction CSV.
 
-    Output:
-        DataFrame with seed probability columns, `mean_prob_up`, `std_prob_up`,
-        averaged `pred_class`, and correctness.
+    출력:
+        seed probability column, `mean_prob_up`, `std_prob_up`, averaged
+        `pred_class`, correctness가 포함된 DataFrame.
     """
 
     if len(prediction_paths) != len(run_seeds):
@@ -422,7 +421,7 @@ def average_seed_predictions(
     if not prediction_paths:
         raise ValueError("At least one seed prediction file is required.")
 
-    # Each seed file contains probabilities from a separately trained model.
+    # 각 seed file에는 독립적으로 학습된 model의 probability가 들어 있다.
     seed_frames = [pd.read_csv(path) for path in prediction_paths]
     base = seed_frames[0].copy()
     _require_columns(base, [*PREDICTION_ID_COLUMNS, "label", "target_return", "prob_up", "prob_down"])
@@ -454,8 +453,8 @@ def average_seed_predictions(
         prob_up_columns.append(prob_up_column)
         prob_down_columns.append(prob_down_column)
 
-    # Paper-style averaging happens after softmax. We do not average logits
-    # because logits are not calibrated across independently initialized models.
+    # paper-style averaging은 softmax 이후 probability에서 수행한다. independent
+    # initialization model 사이에서 logits는 calibration이 맞지 않을 수 있으므로 평균하지 않는다.
     output["mean_prob_up"] = output[prob_up_columns].mean(axis=1)
     output["std_prob_up"] = output[prob_up_columns].std(axis=1, ddof=0)
     output["mean_prob_down"] = output[prob_down_columns].mean(axis=1)
@@ -470,11 +469,10 @@ def average_seed_predictions(
 
 
 def _metadata_batch_to_records(metadata: Mapping[str, Any]) -> list[dict[str, Any]]:
-    """Convert PyTorch default-collated metadata dict into row dictionaries.
+    """PyTorch default-collated metadata dict를 row dictionary로 되돌린다.
 
-    DataLoader turns a list of metadata dictionaries into one dictionary whose
-    values are batches. This function reverses that so prediction CSV writing can
-    create one row per original sample.
+    DataLoader는 metadata dictionary list를 value가 batch인 dictionary 하나로 바꾼다.
+    이 함수는 그 과정을 되돌려 prediction CSV가 원본 sample 하나당 row 하나를 만들게 한다.
     """
 
     if not isinstance(metadata, Mapping):
@@ -491,7 +489,7 @@ def _metadata_batch_to_records(metadata: Mapping[str, Any]) -> list[dict[str, An
 
 
 def _collated_length(value: Any) -> int:
-    """Return batch length for a collated metadata value."""
+    """collated metadata value의 batch length를 반환한다."""
 
     if isinstance(value, torch.Tensor):
         if value.ndim == 0:
@@ -503,7 +501,7 @@ def _collated_length(value: Any) -> int:
 
 
 def _collated_value_at(value: Any, index: int) -> Any:
-    """Extract one scalar metadata value from a collated object."""
+    """collated object에서 scalar metadata value 하나를 꺼낸다."""
 
     if isinstance(value, torch.Tensor):
         element = value[index] if value.ndim > 0 else value
@@ -518,7 +516,7 @@ def _collated_value_at(value: Any, index: int) -> Any:
 
 
 def _python_scalar(value: Any) -> Any:
-    """Convert numpy/torch scalar values into plain Python values."""
+    """numpy/torch scalar 값을 plain Python 값으로 바꾼다."""
 
     if isinstance(value, torch.Tensor):
         if value.numel() == 1:
@@ -536,13 +534,13 @@ def _predict_from_prob_up(
     threshold: float,
     tie_break_class: int,
 ) -> np.ndarray:
-    """Convert Up probability into class labels using the configured tie rule.
+    """설정된 tie rule로 Up probability를 class label로 바꾼다.
 
-    Input:
+    입력:
         `prob_up` array with shape `(num_samples,)`.
 
-    Output:
-        Integer array with shape `(num_samples,)`, values 0 or 1.
+    출력:
+        shape `(num_samples,)`의 integer array. 값은 0 또는 1.
     """
 
     if tie_break_class == 1:
@@ -558,7 +556,7 @@ def _safe_ratio(
     metric_name: str,
     warnings: dict[str, str],
 ) -> float | None:
-    """Return numerator/denominator or record an undefined metric."""
+    """numerator/denominator를 반환하거나 undefined metric을 기록한다."""
 
     if denominator == 0:
         warnings[metric_name] = "Undefined because denominator is zero."
@@ -567,7 +565,7 @@ def _safe_ratio(
 
 
 def _binary_log_loss(labels: np.ndarray, probabilities: np.ndarray) -> float:
-    """Compute binary log loss with clipping for numerical stability."""
+    """수치 안정성을 위해 clipping을 적용해 binary log loss를 계산한다."""
 
     clipped = np.clip(probabilities.astype(float), 1.0e-15, 1.0 - 1.0e-15)
     labels = labels.astype(float)
@@ -580,7 +578,7 @@ def _sklearn_metric(
     probabilities: np.ndarray,
     warnings: dict[str, str],
 ) -> float | None:
-    """Compute optional sklearn metrics while keeping sklearn an optional dependency."""
+    """sklearn을 optional dependency로 유지하면서 optional sklearn metric을 계산한다."""
 
     if len(np.unique(labels)) < 2:
         warnings[metric_name] = "Undefined because y_true has one class."
@@ -601,7 +599,7 @@ def _sklearn_metric(
 
 
 def _series_corr(series_a: pd.Series, series_b: pd.Series, method: str) -> float | None:
-    """Return Pearson/Spearman correlation or None if undefined."""
+    """Pearson/Spearman correlation을 반환하고, undefined이면 None을 반환한다."""
 
     if len(series_a) < 2 or series_a.nunique(dropna=True) < 2 or series_b.nunique(dropna=True) < 2:
         return None
@@ -612,7 +610,7 @@ def _series_corr(series_a: pd.Series, series_b: pd.Series, method: str) -> float
 
 
 def _array_stat(values: Sequence[float], stat_name: str) -> float | None:
-    """Return an aggregate statistic for a possibly empty sequence."""
+    """비어 있을 수 있는 sequence에 대해 aggregate statistic을 반환한다."""
 
     if not values:
         return None
@@ -627,7 +625,7 @@ def _array_stat(values: Sequence[float], stat_name: str) -> float | None:
 
 
 def _same_prediction_identity(left: pd.DataFrame, right: pd.DataFrame) -> bool:
-    """Check whether two prediction frames describe rows in the same order."""
+    """두 prediction frame이 같은 row를 같은 순서로 설명하는지 확인한다."""
 
     if len(left) != len(right):
         return False
@@ -635,7 +633,7 @@ def _same_prediction_identity(left: pd.DataFrame, right: pd.DataFrame) -> bool:
 
 
 def _order_columns(frame: pd.DataFrame, preferred_columns: Sequence[str]) -> pd.DataFrame:
-    """Order known columns first while retaining any extra metadata columns."""
+    """알려진 column을 먼저 배치하고 extra metadata column도 보존한다."""
 
     for column in preferred_columns:
         if column not in frame.columns:
@@ -645,7 +643,7 @@ def _order_columns(frame: pd.DataFrame, preferred_columns: Sequence[str]) -> pd.
 
 
 def _require_columns(frame: pd.DataFrame, columns: Sequence[str]) -> None:
-    """Raise a clear error if a frame is missing required columns."""
+    """필수 column이 없으면 명확한 error를 낸다."""
 
     missing = [column for column in columns if column not in frame.columns]
     if missing:
@@ -653,7 +651,7 @@ def _require_columns(frame: pd.DataFrame, columns: Sequence[str]) -> None:
 
 
 def _write_json(path: Path, payload: Mapping[str, Any]) -> None:
-    """Write JSON with numpy/pandas values converted to plain Python values."""
+    """numpy/pandas 값을 plain Python 값으로 바꾼 뒤 JSON을 저장한다."""
 
     with path.open("w", encoding="utf-8") as file:
         json.dump(_json_ready(payload), file, indent=2, sort_keys=True)
@@ -661,7 +659,7 @@ def _write_json(path: Path, payload: Mapping[str, Any]) -> None:
 
 
 def _json_ready(value: Any) -> Any:
-    """Convert common scientific Python values into JSON-serializable values."""
+    """일반적인 scientific Python 값을 JSON-serializable 값으로 바꾼다."""
 
     if isinstance(value, Mapping):
         return {str(key): _json_ready(item) for key, item in value.items()}
@@ -677,7 +675,7 @@ def _json_ready(value: Any) -> Any:
 
 
 def _torch_load_checkpoint(path: Path, map_location: torch.device) -> dict[str, Any]:
-    """Load a torch checkpoint across PyTorch versions."""
+    """PyTorch version 차이를 고려해서 torch checkpoint를 load한다."""
 
     try:
         return torch.load(path, map_location=map_location, weights_only=False)

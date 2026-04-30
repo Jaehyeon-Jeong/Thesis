@@ -1,8 +1,8 @@
-"""Reproducibility helpers for Stage 1.
+"""1단계 재현성을 위한 seed helper.
 
-This file controls random number generators. It does not change model structure;
-it makes random operations such as train/validation shuffling, weight
-initialization, and PyTorch sampling easier to reproduce.
+이 파일은 random number generator를 제어한다. 모델 구조를 바꾸는 코드는 아니고,
+train/validation shuffling, weight initialization, PyTorch sampling 같은 랜덤
+작업을 더 재현 가능하게 만든다.
 """
 
 from __future__ import annotations
@@ -13,14 +13,14 @@ from typing import Any
 
 
 def set_global_seed(seed: int, deterministic: bool = True) -> dict[str, Any]:
-    """Set Python, NumPy, and PyTorch seeds when the libraries are available.
+    """사용 가능한 경우 Python, NumPy, PyTorch seed를 설정한다.
 
-    The exact seed list is controlled by the run config. This helper only
-    applies one selected seed to the current process.
+    정확한 seed list는 run config가 제어한다. 이 helper는 선택된 seed 하나를 현재
+    process에 적용하는 역할만 한다.
     """
 
-    # Python hash randomization can affect some ordering behavior. Setting this
-    # environment variable is part of a reproducibility setup.
+    # Python hash randomization은 일부 ordering 동작에 영향을 줄 수 있다.
+    # 이 환경변수를 고정하는 것도 재현성 설정의 일부다.
     os.environ["PYTHONHASHSEED"] = str(seed)
     random.seed(seed)
 
@@ -38,7 +38,7 @@ def set_global_seed(seed: int, deterministic: bool = True) -> dict[str, Any]:
     except ImportError:
         pass
     else:
-        # NumPy is used for split shuffling and normalization sampling logic.
+        # NumPy는 split shuffling과 normalization sampling logic에서 쓰인다.
         np.random.seed(seed)
         applied["numpy"] = True
 
@@ -47,7 +47,7 @@ def set_global_seed(seed: int, deterministic: bool = True) -> dict[str, Any]:
     except ImportError:
         return applied
 
-    # PyTorch uses this seed for weight initialization and DataLoader generators.
+    # PyTorch는 이 seed를 weight initialization과 DataLoader generator에 사용한다.
     torch.manual_seed(seed)
     applied["torch"] = True
     if torch.cuda.is_available():

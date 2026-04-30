@@ -1,20 +1,19 @@
-"""Config-driven local/Kaggle runner for Stage 1 baseline training.
+"""1단계 baseline training을 위한 config 기반 local/Kaggle runner.
 
-This runner connects the already implemented pieces:
-- monthly_20d data loading,
-- horizon labels and splits,
-- train-only normalization,
-- StockCNNI20,
-- training loop and checkpoints.
+이 runner는 이미 구현된 조각들을 연결한다:
+- monthly_20d data loading
+- horizon label과 split
+- train-only normalization
+- StockCNNI20
+- training loop와 checkpoint
 
-Evaluation and Grad-CAM are separate scripts/gates, but this runner prepares
-the checkpoints and metadata those later steps need.
+Evaluation과 Grad-CAM은 별도 script/gate지만, 이 runner가 그 단계에 필요한
+checkpoint와 metadata를 준비한다.
 
-How to read this file:
-    This is the orchestration layer. It does not define how images are read or
-    how the CNN computes logits. Instead, it calls the specialized modules in
-    the correct order: data -> labels/splits -> normalization -> DataLoader ->
-    model -> training -> manifest.
+읽는 법:
+    이 파일은 orchestration layer다. image를 어떻게 읽는지, CNN이 logits를 어떻게
+    계산하는지는 여기서 정의하지 않는다. 대신 전문 module을 올바른 순서로 호출한다:
+    data -> label/split -> normalization -> DataLoader -> model -> training -> manifest.
 """
 
 from __future__ import annotations
@@ -57,10 +56,10 @@ RUN_MODES = ("smoke", "full_single_seed", "full_paper_style")
 
 @dataclass(frozen=True)
 class RunSelection:
-    """Runtime matrix selected by CLI/config.
+    """CLI/config가 선택한 runtime matrix.
 
-    This object describes what to run now: which horizon(s), which seed(s),
-    whether this is a tiny smoke run, and whether local full runs are allowed.
+    지금 무엇을 실행할지 담는다: 어떤 horizon, 어떤 seed, tiny smoke run 여부,
+    local full run 허용 여부.
     """
 
     run_mode: str
@@ -78,11 +77,11 @@ def run_stage1_baseline(
     paths: Stage1Paths,
     selection: RunSelection,
 ) -> dict[str, Any]:
-    """Run Stage 1 baseline training for the selected horizon/seed matrix.
+    """선택된 horizon/seed matrix에 대해 1단계 baseline training을 실행한다.
 
-    Output:
-        A summary dictionary printed by `scripts/run_stage1_baseline.py`. The
-        actual learned model is saved to checkpoint files, not returned here.
+    출력:
+        `scripts/run_stage1_baseline.py`가 출력하는 summary dict. 실제 학습된 model은
+        여기서 return되지 않고 checkpoint file로 저장된다.
     """
 
     if selection.run_mode not in RUN_MODES:
@@ -99,12 +98,12 @@ def run_stage1_baseline(
     ensure_stage1_output_dirs(paths)
     device = select_device(config)
 
-    # `base_dataset` can read raw images. It does not yet know which future
-    # return horizon is the label.
+    # `base_dataset`은 raw image를 읽을 수 있다. 아직 어떤 future return horizon을
+    # label로 쓸지는 모른다.
     base_dataset = build_dataset_from_config(config)
 
-    # `base_metadata` is one DataFrame containing all label rows and row ids.
-    # It does not contain image tensors.
+    # `base_metadata`는 모든 label row와 row id를 담은 하나의 DataFrame이다.
+    # image tensor는 포함하지 않는다.
     base_metadata = build_base_metadata(base_dataset.shards)
     split_settings = split_settings_from_config(config)
     normalization_settings = normalization_settings_from_config(config)
@@ -115,15 +114,15 @@ def run_stage1_baseline(
         if horizon_name not in TARGET_COLUMNS:
             raise KeyError(f"Unknown horizon: {horizon_name}")
 
-        # Convert one target return column, such as Ret_20d, into binary labels.
+        # Ret_20d 같은 target return column 하나를 binary label로 변환한다.
         horizon_frame = build_horizon_frame(base_metadata, horizon_name)
 
-        # Add a `split` column: train, validation, or test.
+        # `split` column을 추가한다: train, validation, test 중 하나.
         split_frame = assign_splits(horizon_frame, split_settings)
         split_summary = make_split_summary(split_frame, split_settings, horizon_name)
 
-        # Compute train-only pixel mean/std for this horizon's train rows.
-        # The resulting stats are reused by both training and validation data.
+        # 이 horizon의 train row에서만 pixel mean/std를 계산한다.
+        # 계산된 stats는 training과 validation data 모두에서 재사용된다.
         normalization_stats = compute_pixel_normalization(
             dataset=base_dataset,
             split_frame=split_frame,
@@ -132,7 +131,7 @@ def run_stage1_baseline(
             max_images=selection.normalization_max_images,
         )
         horizon_metrics_dir = paths.metrics_root / horizon_name
-        # Save split/normalization audit JSONs before training starts.
+        # training 시작 전에 split/normalization audit JSON을 저장한다.
         write_horizon_metadata(
             output_dir=horizon_metrics_dir,
             split_summary=split_summary,
@@ -142,7 +141,7 @@ def run_stage1_baseline(
         )
 
         for run_seed in selection.run_seeds:
-            # Seed affects weight initialization and DataLoader train shuffling.
+            # seed는 weight initialization과 DataLoader train shuffling에 영향을 준다.
             set_global_seed(run_seed)
             training_settings = training_settings_base
             if selection.max_epochs is not None:
@@ -150,10 +149,10 @@ def run_stage1_baseline(
 
                 training_settings = replace(training_settings, max_epochs=selection.max_epochs)
 
-            # DataLoaders convert row-level datasets into batches:
+            # DataLoader는 row-level dataset을 batch로 바꾼다:
             #   images `(B, 1, 64, 60)`
             #   labels `(B,)`
-            # Training consumes train_loader; validation consumes val_loader.
+            # training은 train_loader, validation은 val_loader를 사용한다.
             train_loader, val_loader = _build_train_val_loaders(
                 config=config,
                 base_dataset=base_dataset,
@@ -173,8 +172,8 @@ def run_stage1_baseline(
                 "run_seed": run_seed,
                 "split_seed": split_settings.split_seed,
             }
-            # `fit_model` trains one model for one horizon and one seed. It
-            # writes `best.pt`, `last.pt`, and training history files.
+            # `fit_model`은 horizon 하나와 seed 하나에 대해 model 하나를 학습한다.
+            # `best.pt`, `last.pt`, training history file을 저장한다.
             result = fit_model(
                 model=StockCNNI20(),
                 train_loader=train_loader,
@@ -225,11 +224,10 @@ def write_run_manifest(
     run_results: Sequence[Mapping[str, Any]],
     device: str,
 ) -> str:
-    """Write `outputs/run_manifests/run_manifest.json`.
+    """`outputs/run_manifests/run_manifest.json`을 저장한다.
 
-    The manifest is the run receipt. It records config, package versions, seed
-    choices, paths, and produced checkpoint/metric locations so a run can be
-    audited later.
+    manifest는 run receipt다. config, package version, seed 선택, path, 생성된
+    checkpoint/metric 위치를 기록해 나중에 run을 audit할 수 있게 한다.
     """
 
     manifest_path = paths.run_manifest_root / "run_manifest.json"
@@ -274,11 +272,11 @@ def _build_train_val_loaders(
     max_train_rows: int | None,
     max_val_rows: int | None,
 ) -> tuple[DataLoader, DataLoader]:
-    """Build train/validation dataloaders from split metadata.
+    """split metadata에서 train/validation DataLoader를 만든다.
 
-    Output:
-        train_loader batches dictionaries with image `(B,1,64,60)`, label `(B,)`,
-        and metadata. The training loop only uses image and label.
+    출력:
+        train_loader는 image `(B,1,64,60)`, label `(B,)`, metadata가 들어 있는
+        dictionary batch를 만든다. training loop는 image와 label만 사용한다.
     """
 
     runtime_config = get_config_section(config, "runtime")
@@ -289,8 +287,8 @@ def _build_train_val_loaders(
     persistent_workers = bool(runtime_config.get("persistent_workers", False)) and num_workers > 0
     pin_memory = bool(runtime_config.get("pin_memory", False))
 
-    # Dataset reads one normalized sample at a time. DataLoader below stacks
-    # those samples into batch tensors.
+    # Dataset은 normalized sample을 하나씩 읽는다. 아래 DataLoader가 그 sample을
+    # batch tensor로 stack한다.
     train_dataset = HorizonSplitImageDataset(
         base_dataset=base_dataset,
         split_frame=split_frame,
@@ -305,7 +303,7 @@ def _build_train_val_loaders(
         normalization_stats=normalization_stats,
         max_rows=max_val_rows,
     )
-    # Train loader shuffles rows because SGD benefits from random batch order.
+    # SGD는 random batch order에서 이점이 있으므로 train loader는 row를 shuffle한다.
     train_loader = DataLoader(
         train_dataset,
         batch_size=batch_size,
@@ -316,8 +314,8 @@ def _build_train_val_loaders(
         persistent_workers=persistent_workers,
         generator=torch.Generator().manual_seed(run_seed),
     )
-    # Validation loader does not shuffle so validation outputs are deterministic
-    # and easier to align with row metadata.
+    # validation output을 deterministic하게 유지하고 row metadata와 맞추기 쉽도록
+    # validation loader는 shuffle하지 않는다.
     val_loader = DataLoader(
         val_dataset,
         batch_size=batch_size,
@@ -331,7 +329,7 @@ def _build_train_val_loaders(
 
 
 def _source_reference_metadata(config: Mapping[str, Any]) -> dict[str, Any]:
-    """Return source metadata that should travel with manifests/checkpoints."""
+    """manifest/checkpoint에 같이 기록할 source metadata를 반환한다."""
 
     model_config = get_config_section(config, "model")
     return {
@@ -346,7 +344,7 @@ def _source_reference_metadata(config: Mapping[str, Any]) -> dict[str, Any]:
 
 
 def _package_versions(package_names: Sequence[str]) -> dict[str, str | None]:
-    """Collect package versions without failing when a package is absent."""
+    """package가 없어도 실패하지 않고 package version을 수집한다."""
 
     versions: dict[str, str | None] = {}
     for package_name in package_names:
@@ -358,7 +356,7 @@ def _package_versions(package_names: Sequence[str]) -> dict[str, str | None]:
 
 
 def _cuda_info() -> dict[str, Any]:
-    """Return CUDA/GPU environment information."""
+    """CUDA/GPU 환경 정보를 반환한다."""
 
     available = bool(torch.cuda.is_available())
     return {
@@ -369,7 +367,7 @@ def _cuda_info() -> dict[str, Any]:
 
 
 def _git_commit(project_root: Path) -> str | None:
-    """Return git commit for `project_root` when available."""
+    """가능하면 `project_root`의 git commit hash를 반환한다."""
 
     try:
         result = subprocess.run(

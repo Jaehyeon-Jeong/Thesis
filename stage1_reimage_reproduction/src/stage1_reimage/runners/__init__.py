@@ -1,4 +1,4 @@
-"""Runner utilities for Stage 1."""
+"""1단계 runner utility."""
 
 from stage1_reimage.runners.stage1_baseline import (
     RunSelection,

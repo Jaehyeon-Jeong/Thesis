@@ -1,0 +1,44 @@
+# Stage 1 Kaggle environment config skeleton.
+# This file defines paths/runtime only. It is not training implementation code.
+
+environment:
+  name: kaggle
+  run_location: kaggle_notebook
+  full_run_target: true
+
+paths:
+  project_root: /kaggle/working/stage1_reimage_reproduction
+  data_root: /kaggle/input/reimage-monthly-20d/monthly_20d
+  output_root: /kaggle/working/stage1_reimage_reproduction/outputs
+  checkpoint_root: /kaggle/working/stage1_reimage_reproduction/outputs/checkpoints
+  metrics_root: /kaggle/working/stage1_reimage_reproduction/outputs/metrics
+  predictions_root: /kaggle/working/stage1_reimage_reproduction/outputs/predictions
+  figures_root: /kaggle/working/stage1_reimage_reproduction/outputs/figures
+  run_manifest_root: /kaggle/working/stage1_reimage_reproduction/outputs/run_manifests
+
+data:
+  dataset_name: reimage-monthly-20d
+  monthly20_root: /kaggle/input/reimage-monthly-20d/monthly_20d
+  expected_years: [1993, 2019]
+  expected_num_image_files: 27
+  expected_num_label_files: 27
+
+runtime:
+  device: cuda
+  fail_if_cuda_unavailable_for_full_run: true
+  num_workers: 2
+  pin_memory: true
+  persistent_workers: true
+  mixed_precision: false
+
+run:
+  default_run_mode: full_single_seed
+  smoke_run_seeds: [42]
+  full_single_seed_run_seeds: [42]
+  full_paper_style_run_seeds: [42, 43, 44, 45, 46]
+
+reproducibility:
+  require_run_manifest: true
+  record_kaggle_dataset_version: true
+  record_kaggle_notebook_version: true
+  record_package_versions: true

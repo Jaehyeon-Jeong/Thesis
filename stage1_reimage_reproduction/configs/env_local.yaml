@@ -1,0 +1,44 @@
+# Stage 1 local environment config skeleton.
+# Local execution is for smoke tests only unless explicitly marked otherwise.
+
+environment:
+  name: local
+  run_location: local_machine
+  full_run_target: false
+
+paths:
+  project_root: /Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction
+  data_root: /Users/jaehyeonjeong/Desktop/논문/테스트/Test/img_data/monthly_20d
+  output_root: /Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs
+  checkpoint_root: /Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/checkpoints
+  metrics_root: /Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/metrics
+  predictions_root: /Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/predictions
+  figures_root: /Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/figures
+  run_manifest_root: /Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/run_manifests
+
+data:
+  dataset_name: local_monthly_20d
+  monthly20_root: /Users/jaehyeonjeong/Desktop/논문/테스트/Test/img_data/monthly_20d
+  expected_years: [1993, 2019]
+  expected_num_image_files: 27
+  expected_num_label_files: 27
+
+runtime:
+  device: auto
+  fail_if_cuda_unavailable_for_full_run: false
+  num_workers: 0
+  pin_memory: false
+  persistent_workers: false
+  mixed_precision: false
+
+run:
+  default_run_mode: smoke
+  smoke_run_seeds: [42]
+  full_single_seed_run_seeds: [42]
+  full_paper_style_run_seeds: [42, 43, 44, 45, 46]
+
+reproducibility:
+  require_run_manifest: true
+  record_kaggle_dataset_version: false
+  record_kaggle_notebook_version: false
+  record_package_versions: true

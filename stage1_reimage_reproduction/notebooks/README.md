@@ -1,11 +1,15 @@
 # Stage 1 Notebooks
 
-Notebook files are deferred until implementation starts.
-
-Planned notebook:
+The Kaggle runner skeleton is now available as:
 
 ```text
-kaggle_stage1_runner.ipynb
+kaggle_stage1_runner.md
+```
+
+The executable runner is:
+
+```text
+../scripts/run_stage1_baseline.py
 ```
 
 Purpose:
@@ -16,5 +20,5 @@ Purpose:
   `/kaggle/working/stage1_reimage_reproduction/outputs`.
 
 한국어:
-- notebook 파일 자체는 구현 단계에서 만듭니다.
-- 현재는 Kaggle runner 구조와 환경 config만 고정했습니다.
+- Kaggle runner skeleton은 `kaggle_stage1_runner.md`에 있습니다.
+- 실제 실행은 `../scripts/run_stage1_baseline.py`를 사용합니다.

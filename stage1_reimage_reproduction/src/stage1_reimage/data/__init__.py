@@ -15,6 +15,7 @@ from stage1_reimage.data.monthly20 import (
 from stage1_reimage.data.label_split import (
     HORIZON_SPECS,
     TARGET_COLUMNS,
+    HorizonSplitImageDataset,
     NormalizationSettings,
     PixelNormalizationStats,
     SplitSettings,
@@ -30,6 +31,7 @@ from stage1_reimage.data.label_split import (
 
 __all__ = [
     "HORIZON_SPECS",
+    "HorizonSplitImageDataset",
     "IMAGE_HEIGHT",
     "IMAGE_WIDTH",
     "LABEL_FILE_TEMPLATE",

@@ -21,6 +21,7 @@ Status:
 - Stage 1-I3 label, split, and normalization implementation completed on 2026-04-30.
 - Stage 1-I4 baseline CNN model implementation completed on 2026-04-30.
 - Stage 1-I5 training loop and checkpoint implementation completed on 2026-04-30.
+- Stage 1-I6 Kaggle/local runner implementation completed on 2026-05-01.
 
 Stage 1 gate structure:
 - Planning/design gates: `1-0` through `1-9`.
@@ -92,6 +93,9 @@ Stage 1 gate structure:
 | 1-I4 | `scripts/check_model.py` | Local smoke check for model shapes, parameter count, logits output, and Grad-CAM layer lookup. |
 | 1-I5 | `src/stage1_reimage/training/loop.py` | Xavier initialization, CrossEntropyLoss, Adam, training/validation loop, early stopping, checkpoints, history, and metadata. |
 | 1-I5 | `scripts/check_training_loop.py` | Synthetic local smoke check for forward/backward, best/last checkpoints, history CSV, and metadata JSON. |
+| 1-I6 | `src/stage1_reimage/runners/stage1_baseline.py` | Config-driven local/Kaggle baseline runner, dataloaders, training matrix, and run manifest. |
+| 1-I6 | `scripts/run_stage1_baseline.py` | CLI runner for local smoke and Kaggle full modes. |
+| 1-I6 | `notebooks/kaggle_stage1_runner.md` | Kaggle command skeleton and expected input layout. |
 
 1-I1 source note:
 - These files implement only the shared execution scaffold required by root
@@ -128,6 +132,13 @@ Stage 1 gate structure:
   initialization, and validation-loss early stopping patience `2`.
 - Adam betas/eps, weight decay, exact seeds, and epoch cap remain explicit
   implementation choices because the paper summary does not report them.
+- The implementation still does not include final evaluation metrics,
+  prediction CSV writing, portfolio outputs, or Grad-CAM.
+
+1-I6 source note:
+- Runner implementation follows `docs/kaggle_runner_plan.md`.
+- One runner script serves local and Kaggle execution through config.
+- Local non-smoke runs are blocked by default.
 - The implementation still does not include final evaluation metrics,
   prediction CSV writing, portfolio outputs, or Grad-CAM.
 

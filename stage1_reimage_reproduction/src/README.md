@@ -17,6 +17,8 @@ Current package:
   model for public I20 reproduction.
 - `stage1_reimage.training.loop`: training loop, Xavier initialization, Adam,
   early stopping, checkpoint, history, and metadata helpers.
+- `stage1_reimage.runners.stage1_baseline`: config-driven local/Kaggle runner
+  and run manifest writer.
 
 Not implemented yet:
 - evaluation
@@ -39,6 +41,8 @@ Not implemented yet:
   `StockCNNI20` baseline model.
 - `stage1_reimage.training.loop`: training loop, Xavier initialization, Adam,
   early stopping, checkpoint, history, metadata helper.
+- `stage1_reimage.runners.stage1_baseline`: config 기반 local/Kaggle runner와
+  run manifest writer.
 
 아직 구현하지 않은 것:
 - evaluation

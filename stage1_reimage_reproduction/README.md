@@ -25,6 +25,7 @@ Current status:
 - Label, split, and train-only normalization metadata code is implemented.
 - GitHub-style `StockCNNI20` baseline model code is implemented.
 - Training loop and checkpoint code is implemented.
+- Local/Kaggle baseline runner and run manifest code is implemented.
 - No final evaluation or Grad-CAM code has been implemented yet.
 
 Required pre-work before every Stage 1 task:
@@ -64,6 +65,7 @@ Primary limitation:
 - label, split, train-only normalization metadata 코드를 구현했습니다.
 - GitHub식 `StockCNNI20` baseline model 코드를 구현했습니다.
 - training loop와 checkpoint 코드를 구현했습니다.
+- local/Kaggle baseline runner와 run manifest 코드를 구현했습니다.
 - final evaluation, Grad-CAM 코드는 아직 구현하지 않았습니다.
 
 1단계의 모든 작업 전에 반드시 확인할 것:

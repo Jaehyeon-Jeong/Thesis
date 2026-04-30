@@ -27,7 +27,7 @@ Implementation phase:
 - [x] 1-I3. Label, split, and normalization implementation
 - [x] 1-I4. Baseline CNN model implementation
 - [x] 1-I5. Training loop and checkpoint implementation
-- [ ] 1-I6. Kaggle/local runner implementation
+- [x] 1-I6. Kaggle/local runner implementation
 - [ ] 1-I7. Evaluation and prediction-output implementation
 - [ ] 1-I8. Grad-CAM implementation
 - [ ] 1-I9. Local smoke test
@@ -462,6 +462,21 @@ Output:
 - Kaggle runner skeleton
 - `run_manifest.json`
 
+Status:
+- Completed on 2026-05-01.
+
+Output produced:
+- `src/stage1_reimage/runners/__init__.py`
+- `src/stage1_reimage/runners/stage1_baseline.py`
+- `scripts/run_stage1_baseline.py`
+- `notebooks/kaggle_stage1_runner.md`
+- `docs/kaggle_local_runner_implementation.md`
+- Updated `src/stage1_reimage/data/label_split.py`
+
+Validation:
+- `python scripts/run_stage1_baseline.py --config configs/env_local.yaml --run-mode smoke --horizons stage1_i20_r20 --max-train-rows 8 --max-val-rows 4 --normalization-max-images 128 --max-epochs 1`
+- `python -m compileall src scripts/run_stage1_baseline.py`
+
 ## 1-I7. Evaluation and Prediction-output Implementation
 
 Purpose:
@@ -562,7 +577,7 @@ Output:
 - [x] 1-I3. Label, split, normalization 구현
 - [x] 1-I4. Baseline CNN model 구현
 - [x] 1-I5. Training loop와 checkpoint 구현
-- [ ] 1-I6. Kaggle/local runner 구현
+- [x] 1-I6. Kaggle/local runner 구현
 - [ ] 1-I7. Evaluation과 prediction-output 구현
 - [ ] 1-I8. Grad-CAM 구현
 - [ ] 1-I9. Local smoke test

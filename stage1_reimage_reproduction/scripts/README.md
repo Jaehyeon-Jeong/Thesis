@@ -18,6 +18,8 @@ Current scripts:
   parameter count, logits output, and Grad-CAM target-layer lookup.
 - `check_training_loop.py`: verifies the 1-I5 training loop, backward pass,
   best/last checkpoints, history CSV, and metadata JSON on synthetic smoke data.
+- `run_stage1_baseline.py`: runs the 1-I6 config-driven local/Kaggle baseline
+  runner and writes checkpoints, train histories, and `run_manifest.json`.
 
 Example:
 
@@ -41,6 +43,8 @@ python scripts/check_scaffold.py --config configs/env_local.yaml --create-output
   logits output, Grad-CAM target-layer lookup을 확인합니다.
 - `check_training_loop.py`: synthetic smoke data로 1-I5 training loop,
   backward pass, best/last checkpoint, history CSV, metadata JSON을 확인합니다.
+- `run_stage1_baseline.py`: 1-I6 config 기반 local/Kaggle baseline runner를
+  실행하고 checkpoint, train history, `run_manifest.json`을 작성합니다.
 
 예시:
 

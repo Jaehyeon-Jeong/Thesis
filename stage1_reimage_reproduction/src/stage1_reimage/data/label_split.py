@@ -21,6 +21,8 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
+import torch
+from torch.utils.data import Dataset
 
 from stage1_reimage.config import get_config_section
 from stage1_reimage.data.monthly20 import Monthly20MemmapDataset, ShardInfo
@@ -92,6 +94,65 @@ class PixelNormalizationStats:
             "num_pixels_used": self.num_pixels_used,
             "sampled_for_smoke": self.sampled_for_smoke,
             "fit_on": "train",
+        }
+
+
+class HorizonSplitImageDataset(Dataset):
+    """Image/label dataset for one horizon and one split.
+
+    Input source:
+        `Monthly20MemmapDataset` provides raw rendered I20 images and metadata.
+
+    Output:
+        `image`: normalized tensor `(1, 64, 60)`.
+        `label`: integer tensor, class 1 means positive future return.
+        `metadata`: row metadata preserved for later prediction outputs.
+    """
+
+    def __init__(
+        self,
+        base_dataset: Monthly20MemmapDataset,
+        split_frame: pd.DataFrame,
+        split_name: str,
+        normalization_stats: PixelNormalizationStats,
+        max_rows: int | None = None,
+    ) -> None:
+        selected = split_frame[split_frame["split"].eq(split_name)].copy()
+        if max_rows is not None and max_rows > 0:
+            selected = selected.head(max_rows).copy()
+        if selected.empty:
+            raise ValueError(f"No rows available for split: {split_name}")
+
+        self.base_dataset = base_dataset
+        self.frame = selected.reset_index(drop=True)
+        self.split_name = split_name
+        self.normalization_stats = normalization_stats
+
+    def __len__(self) -> int:
+        """Return number of rows in this split dataset."""
+
+        return int(len(self.frame))
+
+    def __getitem__(self, index: int) -> dict[str, Any]:
+        """Return normalized image, integer label, and metadata."""
+
+        row = self.frame.iloc[index]
+        image = self.base_dataset.get_image_tensor(
+            int(row["shard_index"]),
+            int(row["local_row"]),
+        )
+        image = (image - self.normalization_stats.train_pixel_mean) / (
+            self.normalization_stats.train_pixel_std
+        )
+        metadata = row.to_dict()
+        date_value = metadata.get("Date")
+        if hasattr(date_value, "isoformat"):
+            metadata["Date"] = date_value.isoformat()
+        metadata["StockID"] = str(metadata.get("StockID"))
+        return {
+            "image": image,
+            "label": torch.tensor(int(row["label"]), dtype=torch.long),
+            "metadata": metadata,
         }
 
 

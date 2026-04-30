@@ -52,6 +52,33 @@ normalization:
   scope: per_horizon
   epsilon: 1.0e-8
 
+model:
+  name: stock_cnn_i20
+  reference_repo: lich99/Stock_CNN
+  reference_commit: 415e2acf2a5013afca67e383acd3edc61fced840
+  reference_file: models/baseline.py
+  input_channels: 1
+  input_height: 64
+  input_width: 60
+  num_classes: 2
+  reshape_in_forward: true
+  conv_kernel_size: [5, 3]
+  conv_stride: [3, 1]
+  conv_dilation: [2, 1]
+  conv_padding: [12, 1]
+  channels: [64, 128, 256]
+  pool_kernel_size: [2, 1]
+  pool_stride: [2, 1]
+  leaky_relu_negative_slope: 0.01
+  dropout: 0.5
+  flatten_dim: 46080
+  expected_parameter_count: 708866
+  output_type: logits
+  gradcam_target_layers:
+    - layer1_conv
+    - layer2_conv
+    - layer3_conv
+
 reproducibility:
   require_run_manifest: true
   record_kaggle_dataset_version: false

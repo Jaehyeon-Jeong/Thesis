@@ -14,6 +14,8 @@ Current scripts:
 - `check_label_split_normalization.py`: verifies the 1-I3 horizon labels,
   deterministic splits, and train-only normalization metadata writing without
   training a model.
+- `check_model.py`: verifies the 1-I4 `StockCNNI20` model shape contract,
+  parameter count, logits output, and Grad-CAM target-layer lookup.
 
 Example:
 
@@ -33,6 +35,8 @@ python scripts/check_scaffold.py --config configs/env_local.yaml --create-output
   확인합니다.
 - `check_label_split_normalization.py`: model training 없이 1-I3 horizon label,
   deterministic split, train-only normalization metadata writing을 확인합니다.
+- `check_model.py`: 1-I4 `StockCNNI20` model shape contract, parameter count,
+  logits output, Grad-CAM target-layer lookup을 확인합니다.
 
 예시:
 

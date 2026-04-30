@@ -23,6 +23,7 @@ REQUIRED_TOP_LEVEL_KEYS: tuple[str, ...] = (
     "run",
     "split",
     "normalization",
+    "model",
     "reproducibility",
 )
 

@@ -25,7 +25,7 @@ Implementation phase:
 - [x] 1-I1. Shared code/config scaffold implementation
 - [x] 1-I2. Data loading implementation
 - [x] 1-I3. Label, split, and normalization implementation
-- [ ] 1-I4. Baseline CNN model implementation
+- [x] 1-I4. Baseline CNN model implementation
 - [ ] 1-I5. Training loop and checkpoint implementation
 - [ ] 1-I6. Kaggle/local runner implementation
 - [ ] 1-I7. Evaluation and prediction-output implementation
@@ -399,6 +399,21 @@ Output:
 - Model module
 - Local random tensor smoke test
 
+Status:
+- Completed on 2026-04-30.
+
+Output produced:
+- `src/stage1_reimage/models/__init__.py`
+- `src/stage1_reimage/models/stock_cnn.py`
+- `scripts/check_model.py`
+- `docs/baseline_cnn_model_implementation.md`
+- Updated `configs/env_local.yaml`
+- Updated `configs/env_kaggle.yaml`
+
+Validation:
+- `python scripts/check_model.py --config configs/env_local.yaml --batch-size 2`
+- `python -m compileall src scripts/check_model.py`
+
 ## 1-I5. Training Loop and Checkpoint Implementation
 
 Purpose:
@@ -530,7 +545,7 @@ Output:
 - [x] 1-I1. 공통 code/config scaffold 구현
 - [x] 1-I2. Data loading 구현
 - [x] 1-I3. Label, split, normalization 구현
-- [ ] 1-I4. Baseline CNN model 구현
+- [x] 1-I4. Baseline CNN model 구현
 - [ ] 1-I5. Training loop와 checkpoint 구현
 - [ ] 1-I6. Kaggle/local runner 구현
 - [ ] 1-I7. Evaluation과 prediction-output 구현

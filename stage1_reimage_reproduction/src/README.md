@@ -13,9 +13,10 @@ Current package:
   `monthly_20d` image/label shards.
 - `stage1_reimage.data.label_split`: horizon labels, deterministic split
   metadata, and train-only normalization metadata.
+- `stage1_reimage.models.stock_cnn`: GitHub-style `StockCNNI20` baseline
+  model for public I20 reproduction.
 
 Not implemented yet:
-- model
 - training
 - evaluation
 - Grad-CAM
@@ -33,9 +34,10 @@ Not implemented yet:
   lazy/memmap loading.
 - `stage1_reimage.data.label_split`: horizon label, deterministic split
   metadata, train-only normalization metadata.
+- `stage1_reimage.models.stock_cnn`: public I20 재현용 GitHub식
+  `StockCNNI20` baseline model.
 
 아직 구현하지 않은 것:
-- model
 - training
 - evaluation
 - Grad-CAM

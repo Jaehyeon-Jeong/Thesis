@@ -19,6 +19,7 @@ Status:
 - Stage 1-I1 shared code/config scaffold implementation completed on 2026-04-30.
 - Stage 1-I2 data loading implementation completed on 2026-04-30.
 - Stage 1-I3 label, split, and normalization implementation completed on 2026-04-30.
+- Stage 1-I4 baseline CNN model implementation completed on 2026-04-30.
 
 Stage 1 gate structure:
 - Planning/design gates: `1-0` through `1-9`.
@@ -86,6 +87,8 @@ Stage 1 gate structure:
 | 1-I2 | `scripts/check_data_loading.py` | Local smoke check for row alignment, shard count, and sample tensor shape. |
 | 1-I3 | `src/stage1_reimage/data/label_split.py` | Build horizon labels, deterministic splits, split summaries, and train-only pixel normalization metadata. |
 | 1-I3 | `scripts/check_label_split_normalization.py` | Local smoke check for labels, split counts, and normalization JSON writing. |
+| 1-I4 | `src/stage1_reimage/models/stock_cnn.py` | GitHub-style I20 baseline CNN with hookable convolution layers and logits output. |
+| 1-I4 | `scripts/check_model.py` | Local smoke check for model shapes, parameter count, logits output, and Grad-CAM layer lookup. |
 
 1-I1 source note:
 - These files implement only the shared execution scaffold required by root
@@ -104,6 +107,15 @@ Stage 1 gate structure:
 - Split and normalization follow `docs/split_normalization_plan.md`.
 - The implementation still does not include model architecture, training loop,
   evaluation metrics, prediction CSV writing, or Grad-CAM.
+
+1-I4 source note:
+- Model implementation follows `lich99/Stock_CNN/models/baseline.py`, commit
+  `415e2acf2a5013afca67e383acd3edc61fced840`.
+- Re-image local summary maps CNN architecture/training details to pp. 12-21
+  and Figure 7 to p. 18.
+- The known paper/GitHub dilation mismatch remains documented in code and docs.
+- The implementation still does not include loss, optimizer, training loop,
+  checkpointing, evaluation metrics, prediction CSV writing, or Grad-CAM.
 
 ## 1-1 Source and Constraint Re-check
 

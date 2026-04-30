@@ -37,6 +37,21 @@ run:
   full_single_seed_run_seeds: [42]
   full_paper_style_run_seeds: [42, 43, 44, 45, 46]
 
+split:
+  train_val_years: [1993, 2000]
+  test_years: [2001, 2019]
+  train_ratio: 0.70
+  validation_ratio: 0.30
+  split_seed: 42
+  split_unit: sample
+  stratify: false
+
+normalization:
+  pixel_scale: 255.0
+  fit_on: train
+  scope: per_horizon
+  epsilon: 1.0e-8
+
 reproducibility:
   require_run_manifest: true
   record_kaggle_dataset_version: true

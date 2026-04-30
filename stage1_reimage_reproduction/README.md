@@ -22,8 +22,8 @@ Current status:
 - Folder and planning documents are created.
 - Shared code/config scaffold is implemented.
 - Data loading for public `monthly_20d` image/label shards is implemented.
-- No label/split/normalization, model, training, evaluation, or Grad-CAM code
-  has been implemented yet.
+- Label, split, and train-only normalization metadata code is implemented.
+- No model, training, evaluation, or Grad-CAM code has been implemented yet.
 
 Required pre-work before every Stage 1 task:
 - Read the root `../PLAN.md`.
@@ -59,7 +59,8 @@ Primary limitation:
 - 폴더와 계획 문서를 만들었습니다.
 - 공통 code/config scaffold를 구현했습니다.
 - public `monthly_20d` image/label shard data loading을 구현했습니다.
-- label/split/normalization, model, training, evaluation, Grad-CAM 코드는 아직 구현하지 않았습니다.
+- label, split, train-only normalization metadata 코드를 구현했습니다.
+- model, training, evaluation, Grad-CAM 코드는 아직 구현하지 않았습니다.
 
 1단계의 모든 작업 전에 반드시 확인할 것:
 - 루트 `../PLAN.md`

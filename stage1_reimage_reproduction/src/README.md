@@ -11,9 +11,10 @@ Current package:
 - `stage1_reimage.seed`: reproducibility seed helper.
 - `stage1_reimage.data.monthly20`: lazy/memmap loading for public
   `monthly_20d` image/label shards.
+- `stage1_reimage.data.label_split`: horizon labels, deterministic split
+  metadata, and train-only normalization metadata.
 
 Not implemented yet:
-- labels/splits/normalization
 - model
 - training
 - evaluation
@@ -30,9 +31,10 @@ Not implemented yet:
 - `stage1_reimage.seed`: reproducibility seed helper.
 - `stage1_reimage.data.monthly20`: public `monthly_20d` image/label shard
   lazy/memmap loading.
+- `stage1_reimage.data.label_split`: horizon label, deterministic split
+  metadata, train-only normalization metadata.
 
 아직 구현하지 않은 것:
-- label/split/normalization
 - model
 - training
 - evaluation

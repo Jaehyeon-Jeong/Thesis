@@ -11,6 +11,9 @@ Current scripts:
 - `check_data_loading.py`: verifies the 1-I2 monthly_20d shard discovery,
   row alignment, and sample image tensor shape without constructing labels or
   training a model.
+- `check_label_split_normalization.py`: verifies the 1-I3 horizon labels,
+  deterministic splits, and train-only normalization metadata writing without
+  training a model.
 
 Example:
 
@@ -28,6 +31,8 @@ python scripts/check_scaffold.py --config configs/env_local.yaml --create-output
 - `check_data_loading.py`: label 생성이나 model training 없이 1-I2
   monthly_20d shard discovery, row alignment, sample image tensor shape를
   확인합니다.
+- `check_label_split_normalization.py`: model training 없이 1-I3 horizon label,
+  deterministic split, train-only normalization metadata writing을 확인합니다.
 
 예시:
 

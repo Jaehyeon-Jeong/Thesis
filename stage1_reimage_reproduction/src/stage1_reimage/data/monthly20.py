@@ -245,10 +245,20 @@ class Monthly20MemmapDataset(Dataset):
     def get_image_tensor(self, shard_index: int, local_row: int) -> torch.Tensor:
         """Read one image lazily and return `(1, 64, 60)` float32 tensor."""
 
-        image = self._image_maps[shard_index][local_row].astype(np.float32, copy=True)
+        image = self.get_image_array(shard_index, local_row).astype(np.float32, copy=True)
         image /= 255.0
         image = image[np.newaxis, :, :]
         return torch.from_numpy(image)
+
+    def get_image_array(self, shard_index: int, local_row: int) -> np.ndarray:
+        """Read one raw `(64, 60)` uint8 image from the memmap."""
+
+        return self._image_maps[shard_index][local_row]
+
+    def get_image_arrays(self, shard_index: int, local_rows: np.ndarray) -> np.ndarray:
+        """Read raw `(N, 64, 60)` uint8 images from one shard memmap."""
+
+        return np.asarray(self._image_maps[shard_index][local_rows])
 
     def get_metadata(self, shard_index: int, local_row: int) -> dict[str, Any]:
         """Return original label metadata plus shard identifiers."""

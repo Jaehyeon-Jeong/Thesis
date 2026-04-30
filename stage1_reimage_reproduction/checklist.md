@@ -18,6 +18,7 @@
 | 1-I0 Implementation readiness review | Done | [1-I0 result](checklist_results/1-I0_readiness_review.md) |
 | 1-I1 Shared code/config scaffold | Done | [1-I1 result](checklist_results/1-I1_shared_code_config_scaffold.md) |
 | 1-I2 Data loading implementation | Done | [1-I2 result](checklist_results/1-I2_data_loading_implementation.md) |
+| 1-I3 Label, split, and normalization | Done | [1-I3 result](checklist_results/1-I3_label_split_normalization.md) |
 
 ## 한국어
 
@@ -37,3 +38,4 @@
 | 1-I0 구현 readiness review | 완료 | [1-I0 결과](checklist_results/1-I0_readiness_review.md) |
 | 1-I1 공통 code/config scaffold | 완료 | [1-I1 결과](checklist_results/1-I1_shared_code_config_scaffold.md) |
 | 1-I2 Data loading 구현 | 완료 | [1-I2 결과](checklist_results/1-I2_data_loading_implementation.md) |
+| 1-I3 Label, split, normalization | 완료 | [1-I3 결과](checklist_results/1-I3_label_split_normalization.md) |

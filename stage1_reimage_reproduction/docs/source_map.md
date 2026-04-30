@@ -18,6 +18,7 @@ Status:
 - Stage 1-I0 implementation readiness review completed on 2026-04-30.
 - Stage 1-I1 shared code/config scaffold implementation completed on 2026-04-30.
 - Stage 1-I2 data loading implementation completed on 2026-04-30.
+- Stage 1-I3 label, split, and normalization implementation completed on 2026-04-30.
 
 Stage 1 gate structure:
 - Planning/design gates: `1-0` through `1-9`.
@@ -83,6 +84,8 @@ Stage 1 gate structure:
 | 1-I1 | `scripts/check_scaffold.py` | Local smoke check for package import, config, paths, seed, and device selection. |
 | 1-I2 | `src/stage1_reimage/data/monthly20.py` | Discover/validate public `monthly_20d` shards and provide memmap-backed image loading. |
 | 1-I2 | `scripts/check_data_loading.py` | Local smoke check for row alignment, shard count, and sample tensor shape. |
+| 1-I3 | `src/stage1_reimage/data/label_split.py` | Build horizon labels, deterministic splits, split summaries, and train-only pixel normalization metadata. |
+| 1-I3 | `scripts/check_label_split_normalization.py` | Local smoke check for labels, split counts, and normalization JSON writing. |
 
 1-I1 source note:
 - These files implement only the shared execution scaffold required by root
@@ -95,6 +98,12 @@ Stage 1 gate structure:
 - The module only returns images and metadata. It does not construct labels,
   splits, normalization statistics, model inputs beyond the image tensor, or
   Grad-CAM outputs.
+
+1-I3 source note:
+- Label construction follows `docs/label_construction_plan.md`.
+- Split and normalization follow `docs/split_normalization_plan.md`.
+- The implementation still does not include model architecture, training loop,
+  evaluation metrics, prediction CSV writing, or Grad-CAM.
 
 ## 1-1 Source and Constraint Re-check
 

@@ -24,7 +24,7 @@ Implementation phase:
 - [x] 1-I0. Implementation readiness review
 - [x] 1-I1. Shared code/config scaffold implementation
 - [x] 1-I2. Data loading implementation
-- [ ] 1-I3. Label, split, and normalization implementation
+- [x] 1-I3. Label, split, and normalization implementation
 - [ ] 1-I4. Baseline CNN model implementation
 - [ ] 1-I5. Training loop and checkpoint implementation
 - [ ] 1-I6. Kaggle/local runner implementation
@@ -370,6 +370,20 @@ Output:
 - `normalization.json`
 - split/index metadata if needed
 
+Status:
+- Completed on 2026-04-30.
+
+Output produced:
+- `src/stage1_reimage/data/label_split.py`
+- `scripts/check_label_split_normalization.py`
+- `docs/label_split_normalization_implementation.md`
+- Updated `configs/env_local.yaml`
+- Updated `configs/env_kaggle.yaml`
+
+Validation:
+- `python scripts/check_label_split_normalization.py --config configs/env_local.yaml --normalization-max-images 2048`
+- `python -m compileall src scripts/check_label_split_normalization.py`
+
 ## 1-I4. Baseline CNN Model Implementation
 
 Purpose:
@@ -515,7 +529,7 @@ Output:
 - [x] 1-I0. 구현 시작 전 readiness review
 - [x] 1-I1. 공통 code/config scaffold 구현
 - [x] 1-I2. Data loading 구현
-- [ ] 1-I3. Label, split, normalization 구현
+- [x] 1-I3. Label, split, normalization 구현
 - [ ] 1-I4. Baseline CNN model 구현
 - [ ] 1-I5. Training loop와 checkpoint 구현
 - [ ] 1-I6. Kaggle/local runner 구현

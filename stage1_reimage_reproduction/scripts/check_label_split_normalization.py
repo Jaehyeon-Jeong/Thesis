@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Smoke-check Stage 1 label, split, and normalization implementation."""
+"""Smoke-check Stage 1 label, split, and normalization implementation.
+
+This script verifies the data-preparation steps before model training:
+future-return labels, deterministic split assignment, and train-only pixel
+normalization. It writes small JSON audit outputs under `outputs/metrics/`.
+"""
 
 from __future__ import annotations
 
@@ -57,7 +62,12 @@ def parse_args(stage_root: Path) -> argparse.Namespace:
 
 
 def main() -> int:
-    """Run the label/split/normalization smoke check."""
+    """Run the label/split/normalization smoke check.
+
+    Data path:
+        monthly_20d shards -> base metadata DataFrame -> horizon labels ->
+        split frame -> train-only normalization statistics.
+    """
 
     add_stage1_src_to_path()
     args = parse_args(Path(__file__).resolve().parents[1])
@@ -83,6 +93,8 @@ def main() -> int:
     config = load_config(args.config)
     paths = build_stage1_paths(config)
     ensure_stage1_output_dirs(paths)
+    # Dataset reads images; base_metadata holds Date/StockID/future returns and
+    # row ids. No CNN tensor batch is built in this script.
     dataset = build_dataset_from_config(config)
     base_metadata = build_base_metadata(dataset.shards)
     split_settings = split_settings_from_config(config)
@@ -94,9 +106,13 @@ def main() -> int:
         if horizon_name not in TARGET_COLUMNS:
             raise KeyError(f"Unknown horizon: {horizon_name}")
 
+        # Build labels for one target horizon, e.g. Ret_20d -> label.
         horizon_frame = build_horizon_frame(base_metadata, horizon_name)
         split_frame = assign_splits(horizon_frame, split_settings)
         split_summary = make_split_summary(split_frame, split_settings, horizon_name)
+
+        # This computes scalar train mean/std from image pixels. The smoke cap
+        # keeps local execution small.
         normalization_stats = compute_pixel_normalization(
             dataset=dataset,
             split_frame=split_frame,

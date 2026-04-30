@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Smoke-check the Stage 1 StockCNNI20 model implementation."""
+"""Smoke-check the Stage 1 StockCNNI20 model implementation.
+
+This script verifies the model contract without loading real data:
+random input `(batch_size,1,64,60)` -> logits `(batch_size,2)`, expected
+intermediate shapes, expected parameter count, and Grad-CAM target layers.
+"""
 
 from __future__ import annotations
 
@@ -53,8 +58,11 @@ def main() -> int:
     model = build_stock_cnn_i20_from_config(config)
     model.eval()
 
+    # Synthetic batch with the same shape as real I20 images after DataLoader
+    # collation: `(B, channel=1, height=64, width=60)`.
     sample = torch.rand(args.batch_size, 1, 64, 60, dtype=torch.float32)
     with torch.no_grad():
+        # Forward pass returns raw class scores, not probabilities.
         logits = model(sample)
         softmax_of_logits = torch.softmax(logits, dim=1)
 
@@ -70,6 +78,8 @@ def main() -> int:
             f"actual={parameter_count}"
         )
 
+    # `forward_with_shapes` runs the same model path and records the tensor
+    # shape after each block so architecture mistakes are caught early.
     shapes = model.forward_with_shapes(sample)
     expected_shapes = {
         "input": (args.batch_size, 1, 64, 60),

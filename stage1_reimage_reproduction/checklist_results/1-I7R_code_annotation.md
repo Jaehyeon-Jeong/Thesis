@@ -24,6 +24,11 @@ Updated files:
 - `src/stage1_reimage/evaluation/prediction.py`
 - `scripts/run_stage1_baseline.py`
 - `scripts/evaluate_stage1_predictions.py`
+- `scripts/check_scaffold.py`
+- `scripts/check_data_loading.py`
+- `scripts/check_label_split_normalization.py`
+- `scripts/check_model.py`
+- `scripts/check_training_loop.py`
 - Root `PLAN.md`
 
 Main annotation topics:
@@ -39,6 +44,7 @@ Main annotation topics:
 Validation:
 - `python -m compileall src scripts`
 - `python scripts/check_scaffold.py --config configs/env_local.yaml`
+- `python scripts/check_model.py --config configs/env_local.yaml --batch-size 2`
 - `python scripts/evaluate_stage1_predictions.py --config configs/env_local.yaml --horizon stage1_i20_r20 --run-seed 42 --split validation --max-rows 4`
 
 Result:
@@ -71,6 +77,11 @@ Result:
 - `src/stage1_reimage/evaluation/prediction.py`
 - `scripts/run_stage1_baseline.py`
 - `scripts/evaluate_stage1_predictions.py`
+- `scripts/check_scaffold.py`
+- `scripts/check_data_loading.py`
+- `scripts/check_label_split_normalization.py`
+- `scripts/check_model.py`
+- `scripts/check_training_loop.py`
 - Root `PLAN.md`
 
 주요 주석 내용:
@@ -86,6 +97,7 @@ Result:
 검증:
 - `python -m compileall src scripts`
 - `python scripts/check_scaffold.py --config configs/env_local.yaml`
+- `python scripts/check_model.py --config configs/env_local.yaml --batch-size 2`
 - `python scripts/evaluate_stage1_predictions.py --config configs/env_local.yaml --horizon stage1_i20_r20 --run-seed 42 --split validation --max-rows 4`
 
 결과:

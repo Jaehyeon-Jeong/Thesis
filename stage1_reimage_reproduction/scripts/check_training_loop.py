@@ -14,10 +14,18 @@ from torch.utils.data import DataLoader, Dataset
 
 
 class SyntheticPriceImageDataset(Dataset):
-    """Tiny deterministic image dataset for training-loop smoke checks."""
+    """Tiny deterministic image dataset for training-loop smoke checks.
+
+    This dataset mimics the real training batch interface:
+        image: `(1,64,60)` tensor
+        label: scalar class id 0 or 1
+    It avoids reading real `.dat` files while still exercising the training loop.
+    """
 
     def __init__(self, num_samples: int, seed: int) -> None:
         generator = torch.Generator().manual_seed(seed)
+        # Shape matches real DataLoader samples after batching will become
+        # `(batch_size, 1, 64, 60)`.
         self.images = torch.rand(num_samples, 1, 64, 60, generator=generator)
         # A simple deterministic label tied to the image mean keeps the smoke
         # task well-formed without using any real future-return labels.
@@ -58,7 +66,11 @@ def parse_args(stage_root: Path) -> argparse.Namespace:
 
 
 def main() -> int:
-    """Run the synthetic training-loop smoke check."""
+    """Run the synthetic training-loop smoke check.
+
+    This checks that `fit_model()` can run forward/backward passes, update
+    weights, save checkpoints, and write history/metadata files.
+    """
 
     stage_root = add_stage1_src_to_path()
     args = parse_args(stage_root)
@@ -90,6 +102,8 @@ def main() -> int:
     )
     device = select_device(config)
 
+    # DataLoaders here have the same batch structure as real training, but the
+    # images/labels are synthetic and tiny.
     train_loader = DataLoader(
         SyntheticPriceImageDataset(args.train_samples, seed=args.run_seed),
         batch_size=args.batch_size,
@@ -110,6 +124,8 @@ def main() -> int:
         "run_seed": args.run_seed,
         "split_seed": None,
     }
+    # Train one tiny model. The output paths prove that checkpoint/history
+    # writing works before running the expensive real dataset.
     result = fit_model(
         model=StockCNNI20(),
         train_loader=train_loader,

@@ -15,7 +15,11 @@ from pathlib import Path
 
 
 def add_stage1_src_to_path() -> Path:
-    """Add the local Stage 1 `src/` directory to `sys.path`."""
+    """Add the local Stage 1 `src/` directory to `sys.path`.
+
+    This smoke script is not installed as a package. This helper lets it import
+    local modules such as `stage1_reimage.config` directly from `src/`.
+    """
 
     stage_root = Path(__file__).resolve().parents[1]
     src_root = stage_root / "src"
@@ -48,7 +52,12 @@ def parse_args(stage_root: Path) -> argparse.Namespace:
 
 
 def main() -> int:
-    """Run the scaffold check and print a compact JSON summary."""
+    """Run the scaffold check and print a compact JSON summary.
+
+    This check verifies infrastructure only:
+        config can be loaded, paths can be resolved, seed can be set, and the
+        runtime device can be selected. It does not touch image tensors.
+    """
 
     stage_root = add_stage1_src_to_path()
     args = parse_args(stage_root)
@@ -61,6 +70,8 @@ def main() -> int:
         set_global_seed,
     )
 
+    # Config/path helpers are the first dependency for every later pipeline
+    # step, so this smoke check validates them before data/model code is used.
     config = load_config(args.config)
     paths = build_stage1_paths(config)
     created_or_verified_dirs = []
@@ -69,6 +80,8 @@ def main() -> int:
             str(path) for path in ensure_stage1_output_dirs(paths)
         ]
 
+    # `seed_info` records which random libraries were actually available and
+    # seeded in this environment.
     seed_info = set_global_seed(args.seed)
     device = select_device(config)
 

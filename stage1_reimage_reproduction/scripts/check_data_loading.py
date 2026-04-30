@@ -16,7 +16,11 @@ from typing import Any
 
 
 def add_stage1_src_to_path() -> Path:
-    """Add local Stage 1 `src/` directory to `sys.path`."""
+    """Add local Stage 1 `src/` directory to `sys.path`.
+
+    This lets the smoke script import local Stage 1 modules without installing
+    the package into the Python environment.
+    """
 
     stage_root = Path(__file__).resolve().parents[1]
     sys.path.insert(0, str(stage_root / "src"))
@@ -44,7 +48,13 @@ def parse_args(stage_root: Path) -> argparse.Namespace:
 
 
 def summarize_sample(sample: dict[str, Any]) -> dict[str, Any]:
-    """Return a compact JSON-safe summary of one dataset sample."""
+    """Return a compact JSON-safe summary of one dataset sample.
+
+    Input sample format:
+        `{"image": tensor(1,64,60), "metadata": {...}}`.
+    The printed summary shows shape and min/max pixel values without dumping the
+    whole image tensor.
+    """
 
     image = sample["image"]
     metadata = sample["metadata"]
@@ -72,10 +82,14 @@ def main() -> int:
         build_dataset_from_config,
     )
 
+    # Build the memmap-backed dataset. At this point images are still read
+    # lazily from disk; only label metadata is loaded into memory.
     config = load_config(args.config)
     dataset = build_dataset_from_config(config)
     inspected_samples = []
     for index in args.sample_indices:
+        # Accessing `dataset[index]` reads exactly one image row and returns a
+        # tensor `(1,64,60)` plus metadata for that row.
         inspected_samples.append(
             {
                 "requested_index": index,

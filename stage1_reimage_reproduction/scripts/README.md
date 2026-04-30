@@ -16,6 +16,8 @@ Current scripts:
   training a model.
 - `check_model.py`: verifies the 1-I4 `StockCNNI20` model shape contract,
   parameter count, logits output, and Grad-CAM target-layer lookup.
+- `check_training_loop.py`: verifies the 1-I5 training loop, backward pass,
+  best/last checkpoints, history CSV, and metadata JSON on synthetic smoke data.
 
 Example:
 
@@ -37,6 +39,8 @@ python scripts/check_scaffold.py --config configs/env_local.yaml --create-output
   deterministic split, train-only normalization metadata writing을 확인합니다.
 - `check_model.py`: 1-I4 `StockCNNI20` model shape contract, parameter count,
   logits output, Grad-CAM target-layer lookup을 확인합니다.
+- `check_training_loop.py`: synthetic smoke data로 1-I5 training loop,
+  backward pass, best/last checkpoint, history CSV, metadata JSON을 확인합니다.
 
 예시:
 

@@ -15,9 +15,10 @@ Current package:
   metadata, and train-only normalization metadata.
 - `stage1_reimage.models.stock_cnn`: GitHub-style `StockCNNI20` baseline
   model for public I20 reproduction.
+- `stage1_reimage.training.loop`: training loop, Xavier initialization, Adam,
+  early stopping, checkpoint, history, and metadata helpers.
 
 Not implemented yet:
-- training
 - evaluation
 - Grad-CAM
 
@@ -36,8 +37,9 @@ Not implemented yet:
   metadata, train-only normalization metadata.
 - `stage1_reimage.models.stock_cnn`: public I20 재현용 GitHub식
   `StockCNNI20` baseline model.
+- `stage1_reimage.training.loop`: training loop, Xavier initialization, Adam,
+  early stopping, checkpoint, history, metadata helper.
 
 아직 구현하지 않은 것:
-- training
 - evaluation
 - Grad-CAM

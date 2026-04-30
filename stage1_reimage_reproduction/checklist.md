@@ -20,6 +20,7 @@
 | 1-I2 Data loading implementation | Done | [1-I2 result](checklist_results/1-I2_data_loading_implementation.md) |
 | 1-I3 Label, split, and normalization | Done | [1-I3 result](checklist_results/1-I3_label_split_normalization.md) |
 | 1-I4 Baseline CNN model | Done | [1-I4 result](checklist_results/1-I4_baseline_cnn_model.md) |
+| 1-I5 Training loop and checkpoint | Done | [1-I5 result](checklist_results/1-I5_training_loop_checkpoint.md) |
 
 ## 한국어
 
@@ -41,3 +42,4 @@
 | 1-I2 Data loading 구현 | 완료 | [1-I2 결과](checklist_results/1-I2_data_loading_implementation.md) |
 | 1-I3 Label, split, normalization | 완료 | [1-I3 결과](checklist_results/1-I3_label_split_normalization.md) |
 | 1-I4 Baseline CNN model | 완료 | [1-I4 결과](checklist_results/1-I4_baseline_cnn_model.md) |
+| 1-I5 Training loop와 checkpoint | 완료 | [1-I5 결과](checklist_results/1-I5_training_loop_checkpoint.md) |

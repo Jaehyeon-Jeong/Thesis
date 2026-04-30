@@ -24,7 +24,8 @@ Current status:
 - Data loading for public `monthly_20d` image/label shards is implemented.
 - Label, split, and train-only normalization metadata code is implemented.
 - GitHub-style `StockCNNI20` baseline model code is implemented.
-- No training, evaluation, or Grad-CAM code has been implemented yet.
+- Training loop and checkpoint code is implemented.
+- No final evaluation or Grad-CAM code has been implemented yet.
 
 Required pre-work before every Stage 1 task:
 - Read the root `../PLAN.md`.
@@ -62,7 +63,8 @@ Primary limitation:
 - public `monthly_20d` image/label shard data loading을 구현했습니다.
 - label, split, train-only normalization metadata 코드를 구현했습니다.
 - GitHub식 `StockCNNI20` baseline model 코드를 구현했습니다.
-- training, evaluation, Grad-CAM 코드는 아직 구현하지 않았습니다.
+- training loop와 checkpoint 코드를 구현했습니다.
+- final evaluation, Grad-CAM 코드는 아직 구현하지 않았습니다.
 
 1단계의 모든 작업 전에 반드시 확인할 것:
 - 루트 `../PLAN.md`

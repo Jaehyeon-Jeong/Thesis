@@ -20,6 +20,7 @@ Status:
 - Stage 1-I2 data loading implementation completed on 2026-04-30.
 - Stage 1-I3 label, split, and normalization implementation completed on 2026-04-30.
 - Stage 1-I4 baseline CNN model implementation completed on 2026-04-30.
+- Stage 1-I5 training loop and checkpoint implementation completed on 2026-04-30.
 
 Stage 1 gate structure:
 - Planning/design gates: `1-0` through `1-9`.
@@ -89,6 +90,8 @@ Stage 1 gate structure:
 | 1-I3 | `scripts/check_label_split_normalization.py` | Local smoke check for labels, split counts, and normalization JSON writing. |
 | 1-I4 | `src/stage1_reimage/models/stock_cnn.py` | GitHub-style I20 baseline CNN with hookable convolution layers and logits output. |
 | 1-I4 | `scripts/check_model.py` | Local smoke check for model shapes, parameter count, logits output, and Grad-CAM layer lookup. |
+| 1-I5 | `src/stage1_reimage/training/loop.py` | Xavier initialization, CrossEntropyLoss, Adam, training/validation loop, early stopping, checkpoints, history, and metadata. |
+| 1-I5 | `scripts/check_training_loop.py` | Synthetic local smoke check for forward/backward, best/last checkpoints, history CSV, and metadata JSON. |
 
 1-I1 source note:
 - These files implement only the shared execution scaffold required by root
@@ -116,6 +119,17 @@ Stage 1 gate structure:
 - The known paper/GitHub dilation mismatch remains documented in code and docs.
 - The implementation still does not include loss, optimizer, training loop,
   checkpointing, evaluation metrics, prediction CSV writing, or Grad-CAM.
+
+1-I5 source note:
+- Training loop follows `docs/training_loop_plan.md`.
+- Re-image local summary maps training settings to CNN/training pp. 12-21.
+- The implementation uses the reported choices where available:
+  CrossEntropyLoss, Adam, learning rate `1e-5`, batch size `128`, Xavier
+  initialization, and validation-loss early stopping patience `2`.
+- Adam betas/eps, weight decay, exact seeds, and epoch cap remain explicit
+  implementation choices because the paper summary does not report them.
+- The implementation still does not include final evaluation metrics,
+  prediction CSV writing, portfolio outputs, or Grad-CAM.
 
 ## 1-1 Source and Constraint Re-check
 

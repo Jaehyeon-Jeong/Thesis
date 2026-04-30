@@ -26,7 +26,7 @@ Implementation phase:
 - [x] 1-I2. Data loading implementation
 - [x] 1-I3. Label, split, and normalization implementation
 - [x] 1-I4. Baseline CNN model implementation
-- [ ] 1-I5. Training loop and checkpoint implementation
+- [x] 1-I5. Training loop and checkpoint implementation
 - [ ] 1-I6. Kaggle/local runner implementation
 - [ ] 1-I7. Evaluation and prediction-output implementation
 - [ ] 1-I8. Grad-CAM implementation
@@ -431,6 +431,21 @@ Output:
 - `train_history.csv`
 - `train_metadata.json`
 
+Status:
+- Completed on 2026-04-30.
+
+Output produced:
+- `src/stage1_reimage/training/__init__.py`
+- `src/stage1_reimage/training/loop.py`
+- `scripts/check_training_loop.py`
+- `docs/training_loop_implementation.md`
+- Updated `configs/env_local.yaml`
+- Updated `configs/env_kaggle.yaml`
+
+Validation:
+- `python scripts/check_training_loop.py --config configs/env_local.yaml --max-epochs 2 --train-samples 8 --val-samples 4 --batch-size 2`
+- `python -m compileall src scripts/check_training_loop.py`
+
 ## 1-I6. Kaggle/Local Runner Implementation
 
 Purpose:
@@ -546,7 +561,7 @@ Output:
 - [x] 1-I2. Data loading 구현
 - [x] 1-I3. Label, split, normalization 구현
 - [x] 1-I4. Baseline CNN model 구현
-- [ ] 1-I5. Training loop와 checkpoint 구현
+- [x] 1-I5. Training loop와 checkpoint 구현
 - [ ] 1-I6. Kaggle/local runner 구현
 - [ ] 1-I7. Evaluation과 prediction-output 구현
 - [ ] 1-I8. Grad-CAM 구현

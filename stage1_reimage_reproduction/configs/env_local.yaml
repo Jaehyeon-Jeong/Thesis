@@ -79,6 +79,42 @@ model:
     - layer2_conv
     - layer3_conv
 
+training:
+  run_mode: smoke
+  report_as_reproduction: false
+  batch_size: 128
+  max_epochs: 100
+  loss: cross_entropy
+  class_weight: null
+  optimizer:
+    name: adam
+    learning_rate: 1.0e-5
+    betas: [0.9, 0.999]
+    eps: 1.0e-8
+    weight_decay: 0.0
+  initialization:
+    name: xavier_uniform
+    conv_linear_bias: zero
+    batchnorm_weight: one
+    batchnorm_bias: zero
+  early_stopping:
+    monitor: val_loss
+    mode: min
+    patience: 2
+    min_delta: 0.0
+    restore_best: true
+  dataloader:
+    train_shuffle: true
+    eval_shuffle: false
+    drop_last: false
+  determinism:
+    enabled: true
+    cudnn_deterministic: true
+    cudnn_benchmark: false
+  mixed_precision: false
+  gradient_clipping: null
+  log_every_batches: 100
+
 reproducibility:
   require_run_manifest: true
   record_kaggle_dataset_version: false

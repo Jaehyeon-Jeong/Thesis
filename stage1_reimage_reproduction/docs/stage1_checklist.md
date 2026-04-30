@@ -608,6 +608,27 @@ Purpose:
 Output:
 - Full-run checkpoint, predictions, metrics, and manifest for one seed
 
+Status:
+- Kaggle execution package prepared on 2026-05-01.
+- This item is not marked complete yet because the actual full run must execute
+  inside Kaggle with the `monthly_20d` dataset attached.
+
+Prepared output:
+- `scripts/run_stage1_kaggle_single_seed.sh`
+- `scripts/check_stage1_single_seed_outputs.py`
+- `docs/kaggle_single_seed_runbook.md`
+- `checklist_results/1-I10_kaggle_single_seed_run.md`
+- `reports/smoke_tests/1-I10_bash_syntax.log`
+- `reports/smoke_tests/1-I10_py_compile.log`
+- `reports/smoke_tests/1-I10_output_checker_help.txt`
+
+Kaggle command:
+- `bash scripts/run_stage1_kaggle_single_seed.sh`
+
+Completion condition:
+- `scripts/check_stage1_single_seed_outputs.py` returns `status: ok` from the
+  Kaggle run output directory.
+
 ## 1-I11. Kaggle Full Paper-style 5-run Reproduction
 
 Purpose:

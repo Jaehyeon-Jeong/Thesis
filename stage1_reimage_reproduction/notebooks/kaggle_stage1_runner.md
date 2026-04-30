@@ -9,6 +9,13 @@ shared Python script:
 python scripts/run_stage1_baseline.py --config configs/env_kaggle.yaml --run-mode full_single_seed
 ```
 
+For the current `1-I10` gate, use the wrapper below so that training,
+evaluation, Grad-CAM, and output checks are not separated by hand:
+
+```bash
+bash scripts/run_stage1_kaggle_single_seed.sh
+```
+
 Expected Kaggle input layout:
 
 ```text
@@ -22,10 +29,29 @@ Expected Kaggle input layout:
 
 Recommended Kaggle notebook cells:
 
+Preferred private-repo code input:
+- Attach a Kaggle Dataset/code snapshot that contains
+  `stage1_reimage_reproduction/`.
+
+```bash
+cd /kaggle/working
+cp -R /kaggle/input/thesis-stage1-code/stage1_reimage_reproduction /kaggle/working/stage1_reimage_reproduction
+cd /kaggle/working/stage1_reimage_reproduction
+```
+
+For live clone from the private GitHub repo, use Kaggle Secrets or another
+authenticated method. Do not hard-code tokens.
+
 ```python
 from pathlib import Path
 assert Path("/kaggle/input/reimage-monthly-20d/monthly_20d").exists()
 ```
+
+```bash
+bash scripts/run_stage1_kaggle_single_seed.sh
+```
+
+Manual command sequence, if debugging one step at a time:
 
 ```bash
 python scripts/check_data_loading.py --config configs/env_kaggle.yaml --sample-indices 0 -1
@@ -101,6 +127,13 @@ script입니다.
 python scripts/run_stage1_baseline.py --config configs/env_kaggle.yaml --run-mode full_single_seed
 ```
 
+현재 `1-I10` gate에서는 학습, 평가, Grad-CAM, output check를 손으로 나누지
+않도록 아래 wrapper를 사용합니다.
+
+```bash
+bash scripts/run_stage1_kaggle_single_seed.sh
+```
+
 Kaggle input layout은 아래를 기대합니다.
 
 ```text
@@ -114,10 +147,29 @@ Kaggle input layout은 아래를 기대합니다.
 
 권장 Kaggle notebook cell:
 
+Private repo 기준 권장 code input:
+- `stage1_reimage_reproduction/`가 들어 있는 Kaggle Dataset/code snapshot을
+  attach합니다.
+
+```bash
+cd /kaggle/working
+cp -R /kaggle/input/thesis-stage1-code/stage1_reimage_reproduction /kaggle/working/stage1_reimage_reproduction
+cd /kaggle/working/stage1_reimage_reproduction
+```
+
+Private GitHub repo에서 live clone하려면 Kaggle Secrets나 다른 인증 방식이
+필요합니다. token을 notebook에 직접 적지 않습니다.
+
 ```python
 from pathlib import Path
 assert Path("/kaggle/input/reimage-monthly-20d/monthly_20d").exists()
 ```
+
+```bash
+bash scripts/run_stage1_kaggle_single_seed.sh
+```
+
+한 단계씩 debug할 때의 manual command sequence:
 
 ```bash
 python scripts/check_data_loading.py --config configs/env_kaggle.yaml --sample-indices 0 -1

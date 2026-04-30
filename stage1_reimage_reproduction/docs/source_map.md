@@ -26,6 +26,7 @@ Status:
 - Stage 1-I7R code annotation/readability pass completed on 2026-05-01.
 - Stage 1-I8 Grad-CAM implementation completed on 2026-05-01.
 - Stage 1-I9 local smoke test completed on 2026-05-01.
+- Stage 1-I10 Kaggle single-seed execution package prepared on 2026-05-01.
 
 Stage 1 gate structure:
 - Planning/design gates: `1-0` through `1-9`.
@@ -103,6 +104,9 @@ Stage 1 gate structure:
 | 1-I8 | `src/stage1_reimage/interpretability/gradcam.py` | Grad-CAM hooks, heatmap computation, sample selection, and Figure 13-style grid writer. |
 | 1-I8 | `scripts/generate_stage1_gradcam.py` | CLI script for seed checkpoint Grad-CAM generation from prediction CSVs. |
 | 1-I9 | `reports/smoke_tests/1-I9_*.json` | Local smoke-test logs for data, model, training, prediction, and Grad-CAM checks. |
+| 1-I10 | `scripts/run_stage1_kaggle_single_seed.sh` | Kaggle wrapper for seed-42 full training, test evaluation, Grad-CAM, and output verification. |
+| 1-I10 | `scripts/check_stage1_single_seed_outputs.py` | Receipt checker for expected Kaggle single-seed outputs. |
+| 1-I10 | `docs/kaggle_single_seed_runbook.md` | Copy-paste Kaggle runbook for the first full single-seed run. |
 
 1-I1 source note:
 - These files implement only the shared execution scaffold required by root
@@ -601,7 +605,32 @@ Outputs:
 - Local tiny smoke path passes through data loading, labels/splits, model,
   training/checkpointing, prediction/metrics, and Grad-CAM.
 - Outputs are explicitly non-reproduction artifacts.
-- Next gate is `1-I10. Kaggle full single-seed run`.
+- Next action is to run the prepared `1-I10` Kaggle wrapper inside Kaggle.
+
+## 1-I10 Kaggle Single-seed Execution Package
+
+Prepared on:
+- 2026-05-01
+
+Outputs:
+- `scripts/run_stage1_kaggle_single_seed.sh`
+- `scripts/check_stage1_single_seed_outputs.py`
+- `docs/kaggle_single_seed_runbook.md`
+- `checklist_results/1-I10_kaggle_single_seed_run.md`
+
+Source/policy mapping:
+
+| Topic | Source | Stage 1 action |
+| --- | --- | --- |
+| Full run environment | Root `PLAN.md`, execution environment principle | Full training/evaluation remains Kaggle Notebook-based. |
+| Feasible public data scope | Stage 0 monthly20 audit | Runs only `I20/R5`, `I20/R20`, and `I20/R60` for the public I20 full-spec shard. |
+| Single seed | `configs/env_kaggle.yaml` | Uses seed `42` for first full diagnostic run. |
+| Required output receipt | Root `PLAN.md`, Stage 1 checklist | Checks checkpoint, prediction CSV, metric JSON, run manifest, and Grad-CAM figure. |
+
+1-I10 note:
+- The execution package is prepared, but the checklist remains open until the
+  actual Kaggle run returns outputs and `check_stage1_single_seed_outputs.py`
+  reports `status: ok`.
 
 ## 1-8 Grad-CAM Detail Plan
 
@@ -1257,7 +1286,32 @@ Metric 결정:
 - local tiny smoke path가 data loading, label/split, model, training/checkpoint,
   prediction/metric, Grad-CAM까지 통과했습니다.
 - 산출물은 재현 결과가 아니라 non-reproduction artifact입니다.
-- 다음 gate는 `1-I10. Kaggle full single-seed run`입니다.
+- 다음 작업은 준비된 `1-I10` Kaggle wrapper를 Kaggle 안에서 실행하는 것입니다.
+
+## 1-I10 Kaggle Single-seed 실행 Package
+
+준비 일자:
+- 2026-05-01
+
+산출물:
+- `scripts/run_stage1_kaggle_single_seed.sh`
+- `scripts/check_stage1_single_seed_outputs.py`
+- `docs/kaggle_single_seed_runbook.md`
+- `checklist_results/1-I10_kaggle_single_seed_run.md`
+
+근거/policy mapping:
+
+| 항목 | 근거 | Stage 1 조치 |
+| --- | --- | --- |
+| Full run 환경 | Root `PLAN.md`, 실행 환경 원칙 | Full training/evaluation은 Kaggle Notebook 기준을 유지합니다. |
+| 가능한 공개 데이터 범위 | Stage 0 monthly20 audit | Public I20 full-spec shard의 `I20/R5`, `I20/R20`, `I20/R60`만 실행합니다. |
+| Single seed | `configs/env_kaggle.yaml` | 첫 full diagnostic run은 seed `42`를 사용합니다. |
+| Required output receipt | Root `PLAN.md`, Stage 1 checklist | checkpoint, prediction CSV, metric JSON, run manifest, Grad-CAM figure를 확인합니다. |
+
+1-I10 note:
+- 실행 package는 준비됐지만, 실제 Kaggle run output이 돌아오고
+  `check_stage1_single_seed_outputs.py`가 `status: ok`를 보고하기 전까지
+  체크리스트는 open 상태입니다.
 
 ## 1-8 Grad-CAM 세부계획
 

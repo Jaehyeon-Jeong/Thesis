@@ -1,0 +1,19 @@
+usage: check_stage1_single_seed_outputs.py [-h] [--config CONFIG]
+                                           [--run-seed RUN_SEED]
+                                           [--split {train,validation,test}]
+                                           [--gradcam-year GRADCAM_YEAR]
+                                           [--horizons [HORIZONS ...]]
+
+1-I10 Kaggle single-seed full run 산출물 존재 여부를 확인한다. 이 script는 model을 다시 학습하지
+않는다. Kaggle에서 full run이 끝난 뒤 checkpoint, prediction CSV, metric JSON, Grad-CAM
+figure가 빠짐없이 만들어졌는지 검사하는 receipt checker다.
+
+options:
+  -h, --help            show this help message and exit
+  --config CONFIG       Stage 1 환경 config 경로.
+  --run-seed RUN_SEED
+  --split {train,validation,test}
+  --gradcam-year GRADCAM_YEAR
+  --horizons [HORIZONS ...]
+                        검사할 horizon 이름. 생략하면 공개 monthly_20d의 I20/R5,R20,R60
+                        전체.

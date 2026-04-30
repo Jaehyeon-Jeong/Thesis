@@ -414,7 +414,9 @@ Current implementation status:
 - `1-I0` through `1-I9` are completed.
 - `1-I9` local smoke test passed through data loading, training, evaluation,
   and Grad-CAM generation on tiny non-reproduction settings.
-- The next gate is `1-I10. Kaggle full single-seed run`.
+- The `1-I10` Kaggle single-seed execution wrapper is prepared.
+- The next action is to run `bash scripts/run_stage1_kaggle_single_seed.sh`
+  inside Kaggle and verify the returned output receipt.
 - The readiness decision is limited to the public `monthly_20d` I20 full-spec
   reproduction path. Raw OHLC image-generator work remains a separate gate if
   needed before claiming a paper-wide pipeline.
@@ -843,7 +845,9 @@ Figure 13 스타일 산출물:
 - `1-I0`부터 `1-I9`까지 완료했습니다.
 - `1-I9` local smoke test는 작은 non-reproduction 설정에서 data loading,
   training, evaluation, Grad-CAM 생성까지 통과했습니다.
-- 다음 gate는 `1-I10. Kaggle full single-seed run`입니다.
+- `1-I10` Kaggle single-seed 실행 wrapper를 준비했습니다.
+- 다음 작업은 Kaggle 안에서 `bash scripts/run_stage1_kaggle_single_seed.sh`를
+  실행하고 반환된 output receipt를 확인하는 것입니다.
 - readiness 판정은 public `monthly_20d` I20 full-spec reproduction 경로에
   한정됩니다. paper-wide pipeline을 주장하려면 raw OHLC image generator 작업은
   별도 gate로 추가해야 합니다.

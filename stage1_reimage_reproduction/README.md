@@ -29,7 +29,9 @@ Current status:
 - Evaluation and prediction-output code is implemented.
 - Grad-CAM code is implemented.
 - Local smoke test through Grad-CAM is completed.
-- Next gate is `1-I10. Kaggle full single-seed run`.
+- Kaggle single-seed execution wrapper is prepared.
+- Next gate is to run `1-I10. Kaggle full single-seed run` inside Kaggle and
+  verify the returned outputs.
 
 Required pre-work before every Stage 1 task:
 - Read the root `../PLAN.md`.
@@ -72,7 +74,9 @@ Primary limitation:
 - evaluation과 prediction-output 코드를 구현했습니다.
 - Grad-CAM 코드를 구현했습니다.
 - Grad-CAM까지 포함한 local smoke test를 완료했습니다.
-- 다음 gate는 `1-I10. Kaggle full single-seed run`입니다.
+- Kaggle single-seed 실행 wrapper를 준비했습니다.
+- 다음 gate는 Kaggle 안에서 `1-I10. Kaggle full single-seed run`을 실행하고
+  반환된 output을 확인하는 것입니다.
 
 1단계의 모든 작업 전에 반드시 확인할 것:
 - 루트 `../PLAN.md`

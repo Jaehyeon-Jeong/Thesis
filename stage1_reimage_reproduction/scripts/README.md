@@ -8,6 +8,9 @@ item is confirmed.
 Current scripts:
 - `check_scaffold.py`: verifies the 1-I1 package/config scaffold without
   loading image data or training a model.
+- `check_data_loading.py`: verifies the 1-I2 monthly_20d shard discovery,
+  row alignment, and sample image tensor shape without constructing labels or
+  training a model.
 
 Example:
 
@@ -22,6 +25,9 @@ python scripts/check_scaffold.py --config configs/env_local.yaml --create-output
 현재 script:
 - `check_scaffold.py`: image data loading이나 model training 없이 1-I1
   package/config scaffold를 확인합니다.
+- `check_data_loading.py`: label 생성이나 model training 없이 1-I2
+  monthly_20d shard discovery, row alignment, sample image tensor shape를
+  확인합니다.
 
 예시:
 

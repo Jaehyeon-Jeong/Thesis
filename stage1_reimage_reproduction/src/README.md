@@ -9,9 +9,10 @@ Current package:
 - `stage1_reimage.paths`: path objects and output-directory helpers.
 - `stage1_reimage.runtime`: runtime device selection.
 - `stage1_reimage.seed`: reproducibility seed helper.
+- `stage1_reimage.data.monthly20`: lazy/memmap loading for public
+  `monthly_20d` image/label shards.
 
 Not implemented yet:
-- data loading
 - labels/splits/normalization
 - model
 - training
@@ -27,9 +28,10 @@ Not implemented yet:
 - `stage1_reimage.paths`: path 객체와 output-directory helper.
 - `stage1_reimage.runtime`: runtime device 선택.
 - `stage1_reimage.seed`: reproducibility seed helper.
+- `stage1_reimage.data.monthly20`: public `monthly_20d` image/label shard
+  lazy/memmap loading.
 
 아직 구현하지 않은 것:
-- data loading
 - label/split/normalization
 - model
 - training

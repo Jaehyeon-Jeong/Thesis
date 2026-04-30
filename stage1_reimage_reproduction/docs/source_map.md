@@ -17,6 +17,7 @@ Status:
 - Stage 1-9 report plan completed on 2026-04-30.
 - Stage 1-I0 implementation readiness review completed on 2026-04-30.
 - Stage 1-I1 shared code/config scaffold implementation completed on 2026-04-30.
+- Stage 1-I2 data loading implementation completed on 2026-04-30.
 
 Stage 1 gate structure:
 - Planning/design gates: `1-0` through `1-9`.
@@ -80,12 +81,20 @@ Stage 1 gate structure:
 | 1-I1 | `src/stage1_reimage/runtime.py` | Select runtime device from config. |
 | 1-I1 | `src/stage1_reimage/seed.py` | Apply one selected run seed to Python, NumPy, and PyTorch. |
 | 1-I1 | `scripts/check_scaffold.py` | Local smoke check for package import, config, paths, seed, and device selection. |
+| 1-I2 | `src/stage1_reimage/data/monthly20.py` | Discover/validate public `monthly_20d` shards and provide memmap-backed image loading. |
+| 1-I2 | `scripts/check_data_loading.py` | Local smoke check for row alignment, shard count, and sample tensor shape. |
 
 1-I1 source note:
 - These files implement only the shared execution scaffold required by root
   `PLAN.md`.
 - No Re-image model architecture, label rule, loss, optimizer, evaluation, or
   Grad-CAM algorithm is implemented in 1-I1.
+
+1-I2 source note:
+- Data loading follows `docs/data_loading_plan.md`.
+- The module only returns images and metadata. It does not construct labels,
+  splits, normalization statistics, model inputs beyond the image tensor, or
+  Grad-CAM outputs.
 
 ## 1-1 Source and Constraint Re-check
 

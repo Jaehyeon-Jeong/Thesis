@@ -17,6 +17,7 @@
 | 1-9 Report plan | Done | [1-9 result](checklist_results/1-9_report_plan.md) |
 | 1-I0 Implementation readiness review | Done | [1-I0 result](checklist_results/1-I0_readiness_review.md) |
 | 1-I1 Shared code/config scaffold | Done | [1-I1 result](checklist_results/1-I1_shared_code_config_scaffold.md) |
+| 1-I2 Data loading implementation | Done | [1-I2 result](checklist_results/1-I2_data_loading_implementation.md) |
 
 ## 한국어
 
@@ -35,3 +36,4 @@
 | 1-9 Report 계획 | 완료 | [1-9 결과](checklist_results/1-9_report_plan.md) |
 | 1-I0 구현 readiness review | 완료 | [1-I0 결과](checklist_results/1-I0_readiness_review.md) |
 | 1-I1 공통 code/config scaffold | 완료 | [1-I1 결과](checklist_results/1-I1_shared_code_config_scaffold.md) |
+| 1-I2 Data loading 구현 | 완료 | [1-I2 결과](checklist_results/1-I2_data_loading_implementation.md) |

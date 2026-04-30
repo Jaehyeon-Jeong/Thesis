@@ -23,7 +23,7 @@ Planning phase:
 Implementation phase:
 - [x] 1-I0. Implementation readiness review
 - [x] 1-I1. Shared code/config scaffold implementation
-- [ ] 1-I2. Data loading implementation
+- [x] 1-I2. Data loading implementation
 - [ ] 1-I3. Label, split, and normalization implementation
 - [ ] 1-I4. Baseline CNN model implementation
 - [ ] 1-I5. Training loop and checkpoint implementation
@@ -340,6 +340,19 @@ Output:
 - Dataset/data module
 - Local smoke check for file counts and sample shapes
 
+Status:
+- Completed on 2026-04-30.
+
+Output produced:
+- `src/stage1_reimage/data/__init__.py`
+- `src/stage1_reimage/data/monthly20.py`
+- `scripts/check_data_loading.py`
+- `docs/data_loading_implementation.md`
+
+Validation:
+- `python scripts/check_data_loading.py --config configs/env_local.yaml --sample-indices 0 -1`
+- `python -m compileall src scripts/check_data_loading.py`
+
 ## 1-I3. Label, Split, and Normalization Implementation
 
 Purpose:
@@ -501,7 +514,7 @@ Output:
 구현 단계:
 - [x] 1-I0. 구현 시작 전 readiness review
 - [x] 1-I1. 공통 code/config scaffold 구현
-- [ ] 1-I2. Data loading 구현
+- [x] 1-I2. Data loading 구현
 - [ ] 1-I3. Label, split, normalization 구현
 - [ ] 1-I4. Baseline CNN model 구현
 - [ ] 1-I5. Training loop와 checkpoint 구현

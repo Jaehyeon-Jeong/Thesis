@@ -25,6 +25,8 @@ audit:
 
 ## Work Rules
 
+- Check [Github_PLAN.md](Github_PLAN.md) before each work unit and update/push
+  the clean publish repo unless the user explicitly blocks pushing.
 - Every stage starts with a workflow diagram.
 - Every stage has a checklist index and a `checklist_results/` folder.
 - Checklist items must link to their result reports.
@@ -83,6 +85,8 @@ Do not track:
 
 ## 작업 규칙
 
+- 매 작업 단위 시작 전에 [Github_PLAN.md](Github_PLAN.md)를 확인하고, 사용자가
+  명시적으로 push를 막지 않으면 clean publish repo를 업데이트/push합니다.
 - 모든 stage는 workflow diagram을 먼저 만듭니다.
 - 모든 stage는 checklist index와 `checklist_results/` 폴더를 가집니다.
 - checklist 항목은 해당 result report로 링크합니다.

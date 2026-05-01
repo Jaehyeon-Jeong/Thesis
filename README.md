@@ -16,8 +16,8 @@ tracked.
 | --- | --- | --- |
 | `stage0_data_check` | Audit data, papers, and reference implementations | Completed |
 | `stage1_reimage_reproduction` | Reproduce the Re-image CNN pipeline on public I20 stock images | Implementation completed through Kaggle runner; full Kaggle outputs pending |
-| `stage2_btc_extension` | Extend the confirmed pipeline to BTC OHLCV | Scaffold/checklist created |
-| Stage 3 | Add a Linear comparison model | Planned |
+| `stage2_btc_extension` | Extend the confirmed pipeline to BTC OHLCV | Single-seed result package closed; five-seed stability check pending |
+| `stage3_linear_adapter` | Add a Linear comparison model | Scaffold/checklist created |
 | Stage 4 | Add FiLM + News/LLM conditioning | Planned |
 
 ### Key documents
@@ -28,6 +28,7 @@ tracked.
 - [Stage 0 checklist](stage0_data_check/checklist.md)
 - [Stage 1 checklist](stage1_reimage_reproduction/checklist.md)
 - [Stage 2 checklist](stage2_btc_extension/checklist.md)
+- [Stage 3 checklist](stage3_linear_adapter/checklist.md)
 
 ### Data policy
 
@@ -62,8 +63,8 @@ config, 코드 scaffold만 올립니다. 대용량 데이터, 논문 PDF, checkp
 | --- | --- | --- |
 | `stage0_data_check` | 데이터, 논문, reference implementation 확인 | 완료 |
 | `stage1_reimage_reproduction` | public I20 stock image로 Re-image CNN pipeline 재현 | Kaggle runner까지 구현 완료, full Kaggle output 대기 |
-| `stage2_btc_extension` | 확인된 pipeline을 BTC OHLCV로 확장 | scaffold/checklist 생성 |
-| Stage 3 | Linear 비교 모델 추가 | 계획 |
+| `stage2_btc_extension` | 확인된 pipeline을 BTC OHLCV로 확장 | single-seed 결과 패키지 마무리, 5-seed 안정성 확인 예정 |
+| `stage3_linear_adapter` | Linear 비교 모델 추가 | scaffold/checklist 생성 |
 | Stage 4 | FiLM + News/LLM conditioning 추가 | 계획 |
 
 ### 주요 문서
@@ -74,6 +75,7 @@ config, 코드 scaffold만 올립니다. 대용량 데이터, 논문 PDF, checkp
 - [Stage 0 체크리스트](stage0_data_check/checklist.md)
 - [Stage 1 체크리스트](stage1_reimage_reproduction/checklist.md)
 - [Stage 2 체크리스트](stage2_btc_extension/checklist.md)
+- [Stage 3 체크리스트](stage3_linear_adapter/checklist.md)
 
 ### 데이터 정책
 

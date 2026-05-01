@@ -51,6 +51,8 @@ Implementation phase:
   - Result: [2-I11 Stage 2 grid runners and result viewer](checklist_results/2-I11_stage2_grid_runners_and_viewer.md)
 - [x] 2-I12. Stage 2 single-seed result report and Figure-13-style Grad-CAM handoff
   - Result: [2-I12 Stage 2 single-seed result report and Figure-13-style Grad-CAM](checklist_results/2-I12_stage2_single_seed_result_report_and_figure13_gradcam.md)
+- [x] 2-I13. Stage 2 single-seed closeout
+  - Result: [2-I13 Stage 2 single-seed closeout](checklist_results/2-I13_stage2_single_seed_closeout.md)
 
 Important:
 - Do not change the Stage 1 CNN core when moving to BTC unless a checklist item
@@ -110,6 +112,8 @@ Important:
   - 결과: [2-I11 Stage 2 grid runner와 result viewer](checklist_results/2-I11_stage2_grid_runners_and_viewer.md)
 - [x] 2-I12. Stage 2 single-seed 결과 보고와 Figure 13 스타일 Grad-CAM handoff
   - 결과: [2-I12 Stage 2 single-seed 결과 보고와 Figure 13 스타일 Grad-CAM](checklist_results/2-I12_stage2_single_seed_result_report_and_figure13_gradcam.md)
+- [x] 2-I13. Stage 2 single-seed 마무리
+  - 결과: [2-I13 Stage 2 single-seed 마무리](checklist_results/2-I13_stage2_single_seed_closeout.md)
 
 중요:
 - Stage 2로 넘어가도 Stage 1 CNN core는 임의로 바꾸지 않습니다. 바꿀 필요가 있으면

@@ -113,6 +113,13 @@ Main interpretation:
 - Only `5` of `36` configurations beat the majority-class baseline, so this is
   not yet a broad stability claim.
 
+Risk interpretation:
+- Severe train-validation overfitting is not visible in the best run at the best
+  epoch.
+- The result still has small-sample and model-selection risk because the best
+  configuration was selected from `36` single-seed experiments.
+- Five-seed reruns are required before making final stability claims.
+
 Result tables:
 - [Seed-level results](reports/tables/stage2_single_seed_seed_level_results.csv)
 - [Mean/std summary sorted by accuracy](reports/tables/stage2_single_seed_summary_sorted_by_accuracy.csv)
@@ -240,6 +247,12 @@ Accuracy 상위 조합:
 - `ohlc_ma_vb`는 개별 최고 성능과 평균 AUC에서 가장 좋습니다.
 - 36개 조합 중 majority-class baseline을 이긴 조합은 5개뿐이므로, 아직 넓은
   안정성 결론으로 보면 안 됩니다.
+
+위험 해석:
+- best run의 best epoch 기준으로 심한 train-validation overfitting은 보이지 않습니다.
+- 다만 `36`개 single-seed 실험 중 가장 좋은 configuration을 고른 것이므로
+  small-sample risk와 model-selection risk는 남아 있습니다.
+- 최종 안정성 주장은 5-seed rerun 이후에만 해야 합니다.
 
 결과표:
 - [Seed-level results](reports/tables/stage2_single_seed_seed_level_results.csv)

@@ -37,6 +37,17 @@ image
 The adapter dimension is config-driven. The first planned single-seed grid uses
 `adapter_dim=128` to keep the `I60` model tractable.
 
+Implemented model flow is the same as above. The current default parameter
+counts are:
+- I5 Linear adapter: `2,090,752`
+- I20 Linear adapter: `6,515,200`
+- I60 Linear adapter: `26,177,536`
+
+Kaggle execution files:
+- `notebooks/kaggle_stage3_linear_single_config_one_cell.md`
+- `notebooks/kaggle_stage3_linear_grid_single_seed_one_cell.md`
+- `notebooks/kaggle_stage3_results_viewer_one_cell.md`
+
 Primary comparison:
 - `36` Linear runs for seed `42`.
 - Same axes as Stage 2:
@@ -80,6 +91,16 @@ image
 
 Adapter dimension은 config로 관리합니다. 첫 single-seed grid는 `I60` 모델을
 계산 가능한 크기로 유지하기 위해 `adapter_dim=128`을 사용합니다.
+
+구현된 model flow도 위와 같습니다. 현재 기본 parameter 수는 다음과 같습니다:
+- I5 Linear adapter: `2,090,752`
+- I20 Linear adapter: `6,515,200`
+- I60 Linear adapter: `26,177,536`
+
+Kaggle 실행 파일:
+- `notebooks/kaggle_stage3_linear_single_config_one_cell.md`
+- `notebooks/kaggle_stage3_linear_grid_single_seed_one_cell.md`
+- `notebooks/kaggle_stage3_results_viewer_one_cell.md`
 
 Primary comparison:
 - seed `42` 기준 Linear run `36`개.

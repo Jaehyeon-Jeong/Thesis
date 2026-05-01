@@ -1,0 +1,214 @@
+environment:
+  name: kaggle
+  description: "Stage 3 Kaggle full-run environment."
+
+paths:
+  project_root: "/kaggle/working/stage3_linear_adapter"
+  data_root: "/kaggle/input"
+  source_file: ""
+  output_root: "/kaggle/working/stage3_linear_adapter/outputs/stage3"
+  checkpoint_root: "/kaggle/working/stage3_linear_adapter/outputs/stage3/checkpoints"
+  metrics_root: "/kaggle/working/stage3_linear_adapter/outputs/stage3/metrics"
+  predictions_root: "/kaggle/working/stage3_linear_adapter/outputs/stage3/predictions"
+  figures_root: "/kaggle/working/stage3_linear_adapter/outputs/stage3/figures"
+  run_manifest_root: "/kaggle/working/stage3_linear_adapter/outputs/stage3/run_manifests"
+  reports_root: "/kaggle/working/stage3_linear_adapter/reports"
+  tables_root: "/kaggle/working/stage3_linear_adapter/reports/tables"
+
+stage2_dependency:
+  project_root: "/kaggle/working/stage2_btc_extension"
+  src_path: "/kaggle/working/stage2_btc_extension/src"
+  baseline_output_root: "/kaggle/working/stage2_btc_extension/outputs/stage2"
+  note: "Stage 3 imports Stage 2 data/evaluation modules and changes only the model head."
+
+data:
+  dataset_name: "bitcoin-historical-datasets-2018-2024"
+  kaggle_url: "https://www.kaggle.com/datasets/novandraanugrah/bitcoin-historical-datasets-2018-2024"
+  source_filename: "btc_1d_data_2018_to_2025.csv"
+  source_file: ""
+  auto_detect_source_file: true
+  report_end_date: "2024-12-31"
+  optional_holdout_start_date: "2025-01-01"
+  timestamp_column: "Open time"
+  canonical_columns:
+    date: "Date"
+    open: "Open"
+    high: "High"
+    low: "Low"
+    close: "Close"
+    volume: "Volume"
+
+runtime:
+  device: cuda
+  fail_if_cuda_unavailable_for_full_run: true
+  num_workers: 2
+  pin_memory: true
+  persistent_workers: true
+  preload_train_val_images: false
+  preload_chunk_size: 1024
+
+run:
+  default_run_mode: full_single_seed
+  default_image_windows: [60]
+  default_image_specs: ["ohlc_ma_vb"]
+  default_return_horizons: [20]
+  full_single_seed_run_seeds: [42]
+  full_paper_style_run_seeds: [42, 43, 44, 45, 46]
+
+split:
+  train_val_start_date: "2018-01-01"
+  train_val_end_date: "2020-12-31"
+  test_start_date: "2021-01-01"
+  test_end_date: "2024-12-31"
+  train_ratio: 0.70
+  validation_ratio: 0.30
+  split_seed: 42
+  split_method: random_within_train_val_pool
+  stratify: false
+  purge_label_end_date: true
+
+imaging:
+  image_windows: [5, 20, 60]
+  return_horizons: [5, 20, 60]
+  image_specs: ["ohlc", "ohlc_vb", "ohlc_ma", "ohlc_ma_vb"]
+  pixels_per_day: 3
+  background_value: 0
+  foreground_value: 255
+  image_dtype: uint8
+  ma_type: simple_moving_average
+  ma_min_periods_policy: full_window_only
+  window_specs:
+    "5":
+      height: 32
+      width: 15
+      price_height: 25
+      volume_height: 6
+      gap_height: 1
+      ma_window: 5
+    "20":
+      height: 64
+      width: 60
+      price_height: 51
+      volume_height: 12
+      gap_height: 1
+      ma_window: 20
+    "60":
+      height: 96
+      width: 180
+      price_height: 76
+      volume_height: 19
+      gap_height: 1
+      ma_window: 60
+
+normalization:
+  pixel_scale: 255.0
+  fit_on: train
+  scope: per_image_window_spec_horizon
+  epsilon: 1.0e-8
+
+model:
+  family: stock_cnn_style_plus_linear_adapter
+  input_channels: 1
+  num_classes: 2
+  kernel_size: [5, 3]
+  pool_size: [2, 1]
+  leaky_relu_slope: 0.01
+  dropout: 0.5
+  weight_initialization: xavier_uniform
+  window_models:
+    "5":
+      name: stock_cnn_i5
+      input_shape: [1, 32, 15]
+      num_blocks: 2
+      channels: [64, 128]
+      first_vertical_dilation: 1
+      expected_flatten_dim: 15360
+      expected_num_params: 155138
+    "20":
+      name: stock_cnn_i20
+      input_shape: [1, 64, 60]
+      num_blocks: 3
+      channels: [64, 128, 256]
+      first_vertical_dilation: 2
+      expected_flatten_dim: 46080
+      expected_num_params: 708866
+    "60":
+      name: stock_cnn_i60
+      input_shape: [1, 96, 180]
+      num_blocks: 4
+      channels: [64, 128, 256, 512]
+      first_vertical_dilation: 3
+      expected_flatten_dim: 184320
+      expected_num_params: 2952962
+
+linear_adapter:
+  adapter_dim: 128
+  adapter_bias: false
+  classifier_bias: false
+  insertion_point: "after_flatten_before_logits"
+  note: "This is a dense Linear bridge, not FiLM channel-wise conditioning."
+
+training:
+  batch_size: 128
+  max_epochs: 100
+  optimizer: adam
+  learning_rate: 1.0e-5
+  loss: cross_entropy
+  early_stopping:
+    monitor: val_loss
+    mode: min
+    patience: 2
+  mixed_precision: false
+  data_parallel: false
+  log_every_batches: 20
+  determinism:
+    enabled: true
+    cudnn_deterministic: true
+    cudnn_benchmark: false
+
+evaluation:
+  batch_size: 128
+  threshold: 0.5
+  threshold_tie_class: 1
+  target_probability_column: prob_up
+  metrics:
+    - accuracy
+    - majority_class_accuracy
+    - precision
+    - recall
+    - f1
+    - roc_auc
+    - average_precision
+    - brier_score
+    - log_loss
+    - confusion_matrix
+    - probability_return_correlation
+    - calibration_10_bins
+
+trading:
+  strategies: ["long_flat", "long_short"]
+  annualization_periods: 365
+  transaction_cost_bps: 10.0
+  overlapping_horizon_backtest: true
+  metrics:
+    - annualized_return
+    - annualized_volatility
+    - sharpe
+    - max_drawdown
+    - turnover
+    - transaction_cost_adjusted_return
+
+gradcam:
+  enabled: true
+  target_score: pre_softmax_logit
+  quick_samples_per_class: 2
+  report_samples_per_class: 10
+  write_report_copy: true
+  compare_with_stage2_baseline_if_available: true
+
+reproducibility:
+  require_config_copy: true
+  require_run_manifest: true
+  require_git_commit_hash: true
+  require_kaggle_dataset_version: true
+

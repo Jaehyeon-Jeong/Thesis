@@ -17,7 +17,7 @@ tracked.
 | `stage0_data_check` | Audit data, papers, and reference implementations | Completed |
 | `stage1_reimage_reproduction` | Reproduce the Re-image CNN pipeline on public I20 stock images | In progress: `I20/R60` seed-42 fast diagnostic archived; `I20/R20` archive is smoke-only; `I20/R5`, strict batch-128 run, and five-seed reproduction are later |
 | `stage2_btc_extension` | Extend the confirmed pipeline to BTC OHLCV | Single-seed 36-run result package closed for now; five-seed stability check later |
-| `stage3_linear_adapter` | Add a Linear comparison model | Planning steps `3-1` to `3-5` completed; next gate is implementation readiness `3-I0` |
+| `stage3_linear_adapter` | Add a Linear comparison model | Implementation steps `3-I0` to `3-I7` completed; Kaggle single run and single-seed grid ready |
 | Stage 4 | Add FiLM + News/LLM conditioning | Planned |
 
 ### Current Status
@@ -45,8 +45,11 @@ Stage 3:
 - First Linear comparison uses a bias-free adapter/head with `adapter_dim=128`.
 - Naive `Linear(feature_dim, feature_dim)` is explicitly rejected because it is
   infeasible for `I60`.
-- First planned run: `I60/R20/ohlc_ma_vb`, seed `42`; then the single-seed
-  `36`-run grid.
+- Implemented Kaggle runner: one full run and single-seed `36`-run grid.
+- First planned full run: `I60/R20/ohlc_ma_vb`, seed `42`, adapter dim `128`.
+- Local smoke test passed for `I5/R5/ohlc`, seed `42`, one epoch, tiny rows.
+- Later: Stage 3 result report after Kaggle outputs and five-seed stability
+  checks.
 
 ### Key documents
 
@@ -92,7 +95,7 @@ config, 코드 scaffold만 올립니다. 대용량 데이터, 논문 PDF, checkp
 | `stage0_data_check` | 데이터, 논문, reference implementation 확인 | 완료 |
 | `stage1_reimage_reproduction` | public I20 stock image로 Re-image CNN pipeline 재현 | 진행 중: `I20/R60` seed-42 fast diagnostic 보존; `I20/R20` archive는 smoke-only; `I20/R5`, strict batch-128 run, five-seed reproduction은 later |
 | `stage2_btc_extension` | 확인된 pipeline을 BTC OHLCV로 확장 | single-seed 36-run 결과 패키지는 현재 마무리; 5-seed 안정성 확인은 later |
-| `stage3_linear_adapter` | Linear 비교 모델 추가 | Planning step `3-1`부터 `3-5`까지 완료, 다음 gate는 implementation readiness `3-I0` |
+| `stage3_linear_adapter` | Linear 비교 모델 추가 | Implementation step `3-I0`부터 `3-I7`까지 완료; Kaggle 단일 run과 single-seed grid 준비 완료 |
 | Stage 4 | FiLM + News/LLM conditioning 추가 | 계획 |
 
 ### 현재 상태
@@ -120,8 +123,10 @@ Stage 3:
 - 첫 Linear 비교는 `adapter_dim=128`의 bias-free adapter/head를 사용합니다.
 - 단순 `Linear(feature_dim, feature_dim)`는 `I60`에서 계산상 불가능하므로
   명시적으로 제외했습니다.
-- 첫 실행은 `I60/R20/ohlc_ma_vb`, seed `42`이고, 이후 single-seed `36`-run
-  grid로 갑니다.
+- 구현된 Kaggle runner는 full run 1개와 single-seed `36`-run grid를 지원합니다.
+- 첫 full run은 `I60/R20/ohlc_ma_vb`, seed `42`, adapter dim `128`입니다.
+- Local smoke test는 `I5/R5/ohlc`, seed `42`, one epoch, tiny rows로 통과했습니다.
+- Later: Kaggle output과 five-seed 안정성 확인 후 Stage 3 result report 작성.
 
 ### 주요 문서
 

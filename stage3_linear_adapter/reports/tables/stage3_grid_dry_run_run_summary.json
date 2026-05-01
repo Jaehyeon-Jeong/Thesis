@@ -1,0 +1,12 @@
+[
+  {
+    "experiment_name": "stage3_linear_i5_ohlc_r5_a128",
+    "image_window": 5,
+    "image_spec": "ohlc",
+    "return_horizon": 5,
+    "run_seed": 42,
+    "status": "skipped_complete",
+    "elapsed_seconds": 0.0,
+    "message": "all required files already exist"
+  }
+]

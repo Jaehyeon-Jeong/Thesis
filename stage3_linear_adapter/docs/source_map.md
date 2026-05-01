@@ -32,6 +32,21 @@ Implementation docs:
 - `docs/gradcam_comparison_plan.md`
 - `docs/kaggle_runner_output_plan.md`
 
+Implemented code locations:
+
+| Code | Source role |
+|:---|:---|
+| `configs/env_local.yaml` / `configs/env_kaggle.yaml` | Stage 2 config schema plus `linear_adapter` and `stage2_dependency` |
+| `src/stage3_linear/models/linear_stock_cnn.py` | Stage 2 CNN blocks plus post-flatten Linear adapter |
+| `scripts/run_stage3_linear.py` | Train one Stage 3 Linear experiment using fixed Stage 2 data pipeline |
+| `scripts/evaluate_stage3_predictions.py` | Prediction CSV and classification metric export |
+| `scripts/evaluate_stage3_trading.py` | BTC long/flat and long/short metric export |
+| `scripts/generate_stage3_gradcam.py` | Linear Grad-CAM and optional Stage2-vs-Stage3 comparison |
+| `scripts/run_stage3_grid.py` | Kaggle/grid orchestration |
+| `scripts/summarize_stage3_grid_results.py` | Seed-level and mean/std result tables |
+| `notebooks/kaggle_stage3_linear_single_config_one_cell.md` | Kaggle one-cell single experiment |
+| `notebooks/kaggle_stage3_linear_grid_single_seed_one_cell.md` | Kaggle one-cell 36-run grid |
+
 ## 한국어
 
 이 source map은 Stage 3 시작용으로 초기화했습니다. 각 checklist 항목에서 구현 세부사항을
@@ -62,3 +77,18 @@ scaffold 시점의 근거:
 - `docs/training_evaluation_comparison_plan.md`
 - `docs/gradcam_comparison_plan.md`
 - `docs/kaggle_runner_output_plan.md`
+
+구현 코드 위치:
+
+| Code | Source 역할 |
+|:---|:---|
+| `configs/env_local.yaml` / `configs/env_kaggle.yaml` | Stage 2 config schema에 `linear_adapter`, `stage2_dependency` 추가 |
+| `src/stage3_linear/models/linear_stock_cnn.py` | Stage 2 CNN blocks 뒤 post-flatten Linear adapter 추가 |
+| `scripts/run_stage3_linear.py` | 고정 Stage 2 data pipeline으로 Stage 3 Linear 학습 |
+| `scripts/evaluate_stage3_predictions.py` | prediction CSV와 classification metric 저장 |
+| `scripts/evaluate_stage3_trading.py` | BTC long/flat, long/short metric 저장 |
+| `scripts/generate_stage3_gradcam.py` | Linear Grad-CAM과 선택적 Stage2-vs-Stage3 비교 |
+| `scripts/run_stage3_grid.py` | Kaggle/grid orchestration |
+| `scripts/summarize_stage3_grid_results.py` | seed-level, mean/std result table |
+| `notebooks/kaggle_stage3_linear_single_config_one_cell.md` | Kaggle 단일 실험 one-cell |
+| `notebooks/kaggle_stage3_linear_grid_single_seed_one_cell.md` | Kaggle 36-run grid one-cell |

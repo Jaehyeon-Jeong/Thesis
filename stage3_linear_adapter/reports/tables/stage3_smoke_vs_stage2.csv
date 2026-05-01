@@ -1,0 +1,2 @@
+image_window,return_horizon,image_spec,run_seed,stage2_experiment_name,stage3_experiment_name,stage2_available,stage3_available,stage2_accuracy,stage3_accuracy,delta_accuracy,stage2_roc_auc,stage3_roc_auc,delta_roc_auc,stage2_f1,stage3_f1,delta_f1,stage2_brier_score,stage3_brier_score,delta_brier_score,stage2_log_loss,stage3_log_loss,delta_log_loss
+5,5,ohlc,42,stage2_i5_ohlc_r5,stage3_linear_i5_ohlc_r5_a128,False,True,,0.5,,,0.5396825396825398,,,0.42857142857142855,,,0.2514030037736318,,,0.6960621091289856,

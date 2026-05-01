@@ -20,14 +20,22 @@ Planning phase:
   - Result: [3-5 Kaggle/output plan](checklist_results/3-5_kaggle_runner_output_plan.md)
 
 Implementation phase:
-- [ ] 3-I0. Implementation readiness review
-- [ ] 3-I1. Shared Stage 3 config/code scaffold
-- [ ] 3-I2. Linear adapter model code
-- [ ] 3-I3. BTC Linear runner using fixed Stage 2 data pipeline
-- [ ] 3-I4. Prediction, classification metric, and trading metric export
-- [ ] 3-I5. Baseline-vs-Linear Grad-CAM export
-- [ ] 3-I6. Local or small Kaggle smoke test
-- [ ] 3-I7. Kaggle full Linear baseline runs
+- [x] 3-I0. Implementation readiness review
+  - Result: [3-I0 readiness review](checklist_results/3-I0_implementation_readiness_review.md)
+- [x] 3-I1. Shared Stage 3 config/code scaffold
+  - Result: [3-I1 scaffold](checklist_results/3-I1_shared_code_config_scaffold.md)
+- [x] 3-I2. Linear adapter model code
+  - Result: [3-I2 model code](checklist_results/3-I2_linear_adapter_model_code.md)
+- [x] 3-I3. BTC Linear runner using fixed Stage 2 data pipeline
+  - Result: [3-I3 runner](checklist_results/3-I3_btc_linear_runner.md)
+- [x] 3-I4. Prediction, classification metric, and trading metric export
+  - Result: [3-I4 prediction/trading export](checklist_results/3-I4_prediction_trading_export.md)
+- [x] 3-I5. Baseline-vs-Linear Grad-CAM export
+  - Result: [3-I5 Grad-CAM export](checklist_results/3-I5_gradcam_export.md)
+- [x] 3-I6. Local or small Kaggle smoke test
+  - Result: [3-I6 smoke test](checklist_results/3-I6_smoke_test.md)
+- [x] 3-I7. Kaggle full Linear baseline runs
+  - Result: [3-I7 Kaggle runner](checklist_results/3-I7_kaggle_full_runner.md)
 - [ ] 3-I8. Stage 3 result report
 
 Important:
@@ -59,14 +67,22 @@ adapter 비교만 추가해야 합니다.
   - 결과: [3-5 Kaggle/output plan](checklist_results/3-5_kaggle_runner_output_plan.md)
 
 구현 단계:
-- [ ] 3-I0. 구현 readiness review
-- [ ] 3-I1. Stage 3 공통 config/code scaffold
-- [ ] 3-I2. Linear adapter model code
-- [ ] 3-I3. 고정된 Stage 2 data pipeline을 사용하는 BTC Linear runner
-- [ ] 3-I4. prediction, classification metric, trading metric export
-- [ ] 3-I5. Baseline-vs-Linear Grad-CAM export
-- [ ] 3-I6. local 또는 작은 Kaggle smoke test
-- [ ] 3-I7. Kaggle full Linear baseline run
+- [x] 3-I0. 구현 readiness review
+  - 결과: [3-I0 readiness review](checklist_results/3-I0_implementation_readiness_review.md)
+- [x] 3-I1. Stage 3 공통 config/code scaffold
+  - 결과: [3-I1 scaffold](checklist_results/3-I1_shared_code_config_scaffold.md)
+- [x] 3-I2. Linear adapter model code
+  - 결과: [3-I2 model code](checklist_results/3-I2_linear_adapter_model_code.md)
+- [x] 3-I3. 고정된 Stage 2 data pipeline을 사용하는 BTC Linear runner
+  - 결과: [3-I3 runner](checklist_results/3-I3_btc_linear_runner.md)
+- [x] 3-I4. prediction, classification metric, trading metric export
+  - 결과: [3-I4 prediction/trading export](checklist_results/3-I4_prediction_trading_export.md)
+- [x] 3-I5. Baseline-vs-Linear Grad-CAM export
+  - 결과: [3-I5 Grad-CAM export](checklist_results/3-I5_gradcam_export.md)
+- [x] 3-I6. local 또는 작은 Kaggle smoke test
+  - 결과: [3-I6 smoke test](checklist_results/3-I6_smoke_test.md)
+- [x] 3-I7. Kaggle full Linear baseline run
+  - 결과: [3-I7 Kaggle runner](checklist_results/3-I7_kaggle_full_runner.md)
 - [ ] 3-I8. Stage 3 결과 보고
 
 중요:

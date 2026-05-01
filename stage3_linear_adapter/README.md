@@ -19,12 +19,13 @@ Key modeling rule:
 - `bias=False` removes additive shift from the adapter, but this is not the same
   as channel-wise Gamma-only FiLM.
 
-Current boundary:
-- Stage 3 starts with planning and scaffold only.
+Current status:
+- Planning steps `3-1` through `3-5` are complete.
+- Implementation steps `3-I0` through `3-I7` are complete.
+- Stage 3 is now Kaggle-runnable for one full Linear run and the single-seed
+  36-run grid.
 - Stage 2 five-seed reruns are still pending, so Stage 3 final claims should be
   treated as provisional until Stage 2 stability is checked.
-- Full training/evaluation remains Kaggle-first, with local smoke tests only for
-  code and shape checks.
 
 Main documents:
 - [Checklist](checklist.md)
@@ -36,14 +37,15 @@ Main documents:
 - [Training/evaluation comparison plan](docs/training_evaluation_comparison_plan.md)
 - [Grad-CAM comparison plan](docs/gradcam_comparison_plan.md)
 - [Kaggle runner and output plan](docs/kaggle_runner_output_plan.md)
+- [Kaggle single config cell](notebooks/kaggle_stage3_linear_single_config_one_cell.md)
+- [Kaggle single-seed grid cell](notebooks/kaggle_stage3_linear_grid_single_seed_one_cell.md)
+- [Kaggle results viewer cell](notebooks/kaggle_stage3_results_viewer_one_cell.md)
 
-Current planning status:
-- Planning steps `3-1` through `3-5` are complete.
-- First implementation gate is `3-I0` implementation readiness review.
-- First planned Linear run is `I60/R20/ohlc_ma_vb`, seed `42`, then the
-  single-seed `36`-run grid.
-- Default Linear adapter dimension is `128`.
+Implementation status:
+- First planned Linear run: `I60/R20/ohlc_ma_vb`, seed `42`, adapter dim `128`.
+- Single-seed grid: `36` runs.
 - Five-seed stability checks are deferred.
+- Local smoke test passed with `I5/R5/ohlc`, seed `42`, one epoch, tiny rows.
 
 ## 한국어
 
@@ -64,11 +66,13 @@ Current planning status:
 - `bias=False`는 additive shift를 제거하지만, 이것이 channel-wise Gamma-only
   FiLM과 같다는 뜻은 아닙니다.
 
-현재 경계:
-- Stage 3는 계획과 scaffold부터 시작합니다.
+현재 상태:
+- Planning step `3-1`부터 `3-5`까지 완료했습니다.
+- Implementation step `3-I0`부터 `3-I7`까지 완료했습니다.
+- 이제 Stage 3는 Kaggle에서 단일 Linear full run과 single-seed 36-run grid를
+  실행할 수 있습니다.
 - Stage 2의 5-seed rerun은 아직 예정이므로, Stage 3 최종 결론도 Stage 2 안정성
   확인 전까지는 provisional result로 봅니다.
-- full training/evaluation은 Kaggle 우선이며, local은 code/shape smoke test 용도입니다.
 
 주요 문서:
 - [Checklist](checklist.md)
@@ -80,11 +84,12 @@ Current planning status:
 - [Training/evaluation comparison plan](docs/training_evaluation_comparison_plan.md)
 - [Grad-CAM comparison plan](docs/gradcam_comparison_plan.md)
 - [Kaggle runner and output plan](docs/kaggle_runner_output_plan.md)
+- [Kaggle single config cell](notebooks/kaggle_stage3_linear_single_config_one_cell.md)
+- [Kaggle single-seed grid cell](notebooks/kaggle_stage3_linear_grid_single_seed_one_cell.md)
+- [Kaggle results viewer cell](notebooks/kaggle_stage3_results_viewer_one_cell.md)
 
-현재 계획 상태:
-- Planning step `3-1`부터 `3-5`까지 완료했습니다.
-- 다음 구현 gate는 `3-I0` implementation readiness review입니다.
-- 첫 Linear 실행은 `I60/R20/ohlc_ma_vb`, seed `42`이고, 이후 single-seed
-  `36`-run grid로 갑니다.
-- 기본 Linear adapter dimension은 `128`입니다.
+구현 상태:
+- 첫 Linear 실행: `I60/R20/ohlc_ma_vb`, seed `42`, adapter dim `128`.
+- Single-seed grid: `36`개 run.
 - Five-seed 안정성 확인은 later입니다.
+- Local smoke test는 `I5/R5/ohlc`, seed `42`, one epoch, tiny rows로 통과했습니다.

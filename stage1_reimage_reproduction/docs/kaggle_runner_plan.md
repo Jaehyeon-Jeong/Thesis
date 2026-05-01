@@ -227,7 +227,7 @@ Minimum fields:
 Planned notebook:
 
 ```text
-notebooks/kaggle_stage1_runner.ipynb
+notebooks/kaggle_stage1_single_horizon_one_cell.md
 ```
 
 Notebook sections:
@@ -511,7 +511,7 @@ outputs/run_manifests/run_manifest.json
 예정 notebook:
 
 ```text
-notebooks/kaggle_stage1_runner.ipynb
+notebooks/kaggle_stage1_single_horizon_one_cell.md
 ```
 
 Notebook sections:

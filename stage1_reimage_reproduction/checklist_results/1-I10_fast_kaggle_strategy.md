@@ -15,6 +15,8 @@ Changed files:
 - `src/stage1_reimage/data/label_split.py`
 - `src/stage1_reimage/runners/stage1_baseline.py`
 - `docs/fast_kaggle_strategy.md`
+- `docs/stage1_execution_map.md`
+- `workflow_diagram.md`
 - `notebooks/kaggle_stage1_single_horizon_one_cell.md`
 
 Performance change:
@@ -49,6 +51,8 @@ Validation:
 - `src/stage1_reimage/data/label_split.py`
 - `src/stage1_reimage/runners/stage1_baseline.py`
 - `docs/fast_kaggle_strategy.md`
+- `docs/stage1_execution_map.md`
+- `workflow_diagram.md`
 - `notebooks/kaggle_stage1_single_horizon_one_cell.md`
 
 성능 변경:

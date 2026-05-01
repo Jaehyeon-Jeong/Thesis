@@ -14,7 +14,7 @@ Implemented files:
 - `src/stage1_reimage/runners/__init__.py`
 - `src/stage1_reimage/runners/stage1_baseline.py`
 - `scripts/run_stage1_baseline.py`
-- `notebooks/kaggle_stage1_runner.md`
+- `notebooks/kaggle_stage1_single_horizon_one_cell.md`
 - Updated `src/stage1_reimage/data/label_split.py`
 
 Implemented behavior:
@@ -81,7 +81,7 @@ Scope limits:
 - `src/stage1_reimage/runners/__init__.py`
 - `src/stage1_reimage/runners/stage1_baseline.py`
 - `scripts/run_stage1_baseline.py`
-- `notebooks/kaggle_stage1_runner.md`
+- `notebooks/kaggle_stage1_single_horizon_one_cell.md`
 - `src/stage1_reimage/data/label_split.py` 업데이트
 
 구현한 동작:

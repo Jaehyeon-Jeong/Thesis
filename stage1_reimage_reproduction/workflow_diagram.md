@@ -2,32 +2,38 @@
 
 ## English
 
+Canonical detailed map:
+- [docs/stage1_execution_map.md](docs/stage1_execution_map.md)
+
 ```mermaid
 flowchart TD
-    A[Public monthly_20d I20 images] --> B[Data loading<br/>dat + feather alignment]
-    B --> C[Label construction<br/>Ret_5d / Ret_20d / Ret_60d]
-    C --> D[Split and normalization<br/>1993-2000 train/val<br/>2001-2019 test]
-    D --> E[Stock_CNN I20 baseline<br/>GitHub-style model]
-    E --> F[Training<br/>5 seeds for full_paper_style]
-    F --> G[Evaluation<br/>classification + correlations]
-    G --> H[Stock ranking / decile / H-L portfolio]
-    G --> I[Grad-CAM<br/>Figure 13-style output]
-    H --> J[Stage 1 report]
+    A["monthly_20d .dat / .feather"] --> B["Data loading"]
+    B --> C["Ret_5d / Ret_20d / Ret_60d > 0 -> Up=1"]
+    C --> D["Time split: train / validation / test"]
+    D --> E["Train-only pixel mean/std"]
+    E --> F["StockCNNI20 training"]
+    F --> G["Test prediction CSV"]
+    G --> H["Metrics JSON"]
+    G --> I["Grad-CAM figures"]
+    H --> J["Output check"]
     I --> J
 ```
 
 ## 한국어
 
+상세 기준 문서:
+- [docs/stage1_execution_map.md](docs/stage1_execution_map.md)
+
 ```mermaid
 flowchart TD
-    A[Public monthly_20d I20 image] --> B[Data loading<br/>dat + feather row alignment]
-    B --> C[Label construction<br/>Ret_5d / Ret_20d / Ret_60d]
-    C --> D[Split and normalization<br/>1993-2000 train/val<br/>2001-2019 test]
-    D --> E[Stock_CNN I20 baseline<br/>GitHub식 model]
-    E --> F[Training<br/>full_paper_style은 5 seeds]
-    F --> G[Evaluation<br/>classification + correlation]
-    G --> H[Stock ranking / decile / H-L portfolio]
-    G --> I[Grad-CAM<br/>Figure 13 스타일 산출]
-    H --> J[Stage 1 report]
+    A["monthly_20d .dat / .feather"] --> B["data loading"]
+    B --> C["Ret_5d / Ret_20d / Ret_60d > 0 -> Up=1"]
+    C --> D["time split: train / validation / test"]
+    D --> E["train data로만 pixel mean/std 계산"]
+    E --> F["StockCNNI20 학습"]
+    F --> G["test prediction CSV 저장"]
+    G --> H["metrics 저장"]
+    G --> I["Grad-CAM 그림 저장"]
+    H --> J["output check"]
     I --> J
 ```

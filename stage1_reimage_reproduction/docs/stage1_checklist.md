@@ -470,7 +470,7 @@ Output produced:
 - `src/stage1_reimage/runners/__init__.py`
 - `src/stage1_reimage/runners/stage1_baseline.py`
 - `scripts/run_stage1_baseline.py`
-- `notebooks/kaggle_stage1_runner.md`
+- `notebooks/kaggle_stage1_single_horizon_one_cell.md`
 - `docs/kaggle_local_runner_implementation.md`
 - Updated `src/stage1_reimage/data/label_split.py`
 
@@ -609,31 +609,33 @@ Output:
 - Full-run checkpoint, predictions, metrics, and manifest for one seed
 
 Status:
-- Kaggle execution package prepared on 2026-05-01.
+- Kaggle one-cell single-horizon execution standard prepared on 2026-05-01.
 - This item is not marked complete yet because the actual full run must execute
   inside Kaggle with the `monthly_20d` dataset attached.
 
 Prepared output:
-- `scripts/run_stage1_kaggle_single_seed.sh`
 - `scripts/check_stage1_single_seed_outputs.py`
-- `docs/kaggle_single_seed_runbook.md`
 - `docs/progress_logging.md`
 - `docs/fast_kaggle_strategy.md`
+- `docs/stage1_execution_map.md`
+- `workflow_diagram.md`
 - `notebooks/kaggle_stage1_single_horizon_one_cell.md`
-- `checklist_results/1-I10_kaggle_single_seed_run.md`
 - `checklist_results/1-I10_progress_logging_update.md`
 - `checklist_results/1-I10_fast_kaggle_strategy.md`
-- `reports/smoke_tests/1-I10_bash_syntax.log`
-- `reports/smoke_tests/1-I10_py_compile.log`
-- `reports/smoke_tests/1-I10_output_checker_help.txt`
 - `reports/smoke_tests/1-I10_progress_logging_smoke.log`
+- `reports/smoke_tests/1-I10_training_metadata_free_smoke.log`
 
-Kaggle command:
-- `bash scripts/run_stage1_kaggle_single_seed.sh`
+Kaggle command/interface:
+- Copy the Python cell from `notebooks/kaggle_stage1_single_horizon_one_cell.md`
+  into Kaggle.
+- Run one horizon at a time:
+  - `stage1_i20_r20`
+  - `stage1_i20_r5`
+  - `stage1_i20_r60`
 
 Completion condition:
 - `scripts/check_stage1_single_seed_outputs.py` returns `status: ok` from the
-  Kaggle run output directory.
+  Kaggle run output directory after all three horizon outputs exist.
 
 ## 1-I11. Kaggle Full Paper-style 5-run Reproduction
 

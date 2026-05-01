@@ -11,6 +11,11 @@ Stage 1 objective:
 - Follow the core I20 CNN implementation from `lich99/Stock_CNN` as closely as possible.
 - Produce classification outputs and Grad-CAM figures in the style of Re-image Figure 13.
 
+Canonical map:
+- [Stage 1 execution map](docs/stage1_execution_map.md)
+- [Workflow diagram](workflow_diagram.md)
+- [Kaggle one-cell runner](notebooks/kaggle_stage1_single_horizon_one_cell.md)
+
 Execution environment:
 - Full Stage 1 training/evaluation should be designed for Kaggle Notebook.
 - Local execution is for small smoke tests and structure checks.
@@ -29,9 +34,10 @@ Current status:
 - Evaluation and prediction-output code is implemented.
 - Grad-CAM code is implemented.
 - Local smoke test through Grad-CAM is completed.
-- Kaggle single-seed execution wrapper is prepared.
-- Next gate is to run `1-I10. Kaggle full single-seed run` inside Kaggle and
-  verify the returned outputs.
+- Kaggle execution is standardized on the one-cell single-horizon runner:
+  `notebooks/kaggle_stage1_single_horizon_one_cell.md`.
+- Next gate is to run `I20/R20`, `I20/R5`, and `I20/R60` one horizon at a time
+  inside Kaggle and verify the returned outputs.
 
 Required pre-work before every Stage 1 task:
 - Read the root `../PLAN.md`.
@@ -56,6 +62,11 @@ Primary limitation:
 - I20 CNN 핵심 구현은 `lich99/Stock_CNN`을 최대한 그대로 따릅니다.
 - classification 결과와 Re-image Figure 13 스타일 Grad-CAM 그림을 생성합니다.
 
+기준 문서:
+- [Stage 1 execution map](docs/stage1_execution_map.md)
+- [Workflow diagram](workflow_diagram.md)
+- [Kaggle one-cell runner](notebooks/kaggle_stage1_single_horizon_one_cell.md)
+
 실행 환경:
 - 1단계 full training/evaluation은 Kaggle Notebook 기준으로 설계합니다.
 - 로컬 실행은 작은 smoke test와 구조 확인 용도입니다.
@@ -74,9 +85,10 @@ Primary limitation:
 - evaluation과 prediction-output 코드를 구현했습니다.
 - Grad-CAM 코드를 구현했습니다.
 - Grad-CAM까지 포함한 local smoke test를 완료했습니다.
-- Kaggle single-seed 실행 wrapper를 준비했습니다.
-- 다음 gate는 Kaggle 안에서 `1-I10. Kaggle full single-seed run`을 실행하고
-  반환된 output을 확인하는 것입니다.
+- Kaggle 실행은 one-cell single-horizon runner로 통일했습니다:
+  `notebooks/kaggle_stage1_single_horizon_one_cell.md`.
+- 다음 gate는 Kaggle 안에서 `I20/R20`, `I20/R5`, `I20/R60`을 horizon 하나씩
+  실행하고 반환된 output을 확인하는 것입니다.
 
 1단계의 모든 작업 전에 반드시 확인할 것:
 - 루트 `../PLAN.md`

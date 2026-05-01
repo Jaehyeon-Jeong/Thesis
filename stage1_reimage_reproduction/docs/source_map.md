@@ -100,15 +100,14 @@ Stage 1 gate structure:
 | 1-I5 | `scripts/check_training_loop.py` | Synthetic local smoke check for forward/backward, best/last checkpoints, history CSV, and metadata JSON. |
 | 1-I6 | `src/stage1_reimage/runners/stage1_baseline.py` | Config-driven local/Kaggle baseline runner, dataloaders, training matrix, and run manifest. |
 | 1-I6 | `scripts/run_stage1_baseline.py` | CLI runner for local smoke and Kaggle full modes. |
-| 1-I6 | `notebooks/kaggle_stage1_runner.md` | Kaggle command skeleton and expected input layout. |
 | 1-I8 | `src/stage1_reimage/interpretability/gradcam.py` | Grad-CAM hooks, heatmap computation, sample selection, and Figure 13-style grid writer. |
 | 1-I8 | `scripts/generate_stage1_gradcam.py` | CLI script for seed checkpoint Grad-CAM generation from prediction CSVs. |
 | 1-I9 | `reports/smoke_tests/1-I9_*.json` | Local smoke-test logs for data, model, training, prediction, and Grad-CAM checks. |
-| 1-I10 | `scripts/run_stage1_kaggle_single_seed.sh` | Kaggle wrapper for seed-42 full training, test evaluation, Grad-CAM, and output verification. |
 | 1-I10 | `scripts/check_stage1_single_seed_outputs.py` | Receipt checker for expected Kaggle single-seed outputs. |
-| 1-I10 | `docs/kaggle_single_seed_runbook.md` | Copy-paste Kaggle runbook for the first full single-seed run. |
 | 1-I10 | `docs/progress_logging.md` | Explains long-run progress messages and `python -u` usage. |
 | 1-I10 | `docs/fast_kaggle_strategy.md` | Documents the faster one-horizon-at-a-time Kaggle strategy. |
+| 1-I10 | `docs/stage1_execution_map.md` | Canonical Stage 1 pipeline diagram, code links, and final output checklist. |
+| 1-I10 | `workflow_diagram.md` | Short Stage 1 Mermaid workflow diagram. |
 | 1-I10 | `notebooks/kaggle_stage1_single_horizon_one_cell.md` | One-cell Kaggle runner for code copy, data copy, training, evaluation, and quick Grad-CAM. |
 
 1-I1 source note:
@@ -608,20 +607,21 @@ Outputs:
 - Local tiny smoke path passes through data loading, labels/splits, model,
   training/checkpointing, prediction/metrics, and Grad-CAM.
 - Outputs are explicitly non-reproduction artifacts.
-- Next action is to run the prepared `1-I10` Kaggle wrapper inside Kaggle.
+- Next action is to run the canonical one-cell Kaggle runner for one horizon at
+  a time.
 
-## 1-I10 Kaggle Single-seed Execution Package
+## 1-I10 Kaggle Execution Standard
 
 Prepared on:
 - 2026-05-01
 
 Outputs:
-- `scripts/run_stage1_kaggle_single_seed.sh`
 - `scripts/check_stage1_single_seed_outputs.py`
-- `docs/kaggle_single_seed_runbook.md`
-- `checklist_results/1-I10_kaggle_single_seed_run.md`
 - `docs/progress_logging.md`
 - `checklist_results/1-I10_progress_logging_update.md`
+- `docs/fast_kaggle_strategy.md`
+- `notebooks/kaggle_stage1_single_horizon_one_cell.md`
+- `checklist_results/1-I10_fast_kaggle_strategy.md`
 
 Source/policy mapping:
 
@@ -630,12 +630,15 @@ Source/policy mapping:
 | Full run environment | Root `PLAN.md`, execution environment principle | Full training/evaluation remains Kaggle Notebook-based. |
 | Feasible public data scope | Stage 0 monthly20 audit | Runs only `I20/R5`, `I20/R20`, and `I20/R60` for the public I20 full-spec shard. |
 | Single seed | `configs/env_kaggle.yaml` | Uses seed `42` for first full diagnostic run. |
+| Kaggle interface | `notebooks/kaggle_stage1_single_horizon_one_cell.md` | Runs one horizon at a time through code copy, data copy, config patch, training, evaluation, and quick Grad-CAM. |
 | Required output receipt | Root `PLAN.md`, Stage 1 checklist | Checks checkpoint, prediction CSV, metric JSON, run manifest, and Grad-CAM figure. |
 
 1-I10 note:
-- The execution package is prepared, but the checklist remains open until the
-  actual Kaggle run returns outputs and `check_stage1_single_seed_outputs.py`
-  reports `status: ok`.
+- The canonical Kaggle method is now the one-cell single-horizon runner.
+- Older all-in-one Kaggle shell/runbook attempts were removed to avoid two
+  competing execution paths.
+- The checklist remains open until actual Kaggle outputs for `I20/R5`,
+  `I20/R20`, and `I20/R60` are returned and checked.
 - Progress logging was added because long Kaggle runs can look frozen during
   normalization and long epochs.
 
@@ -1293,20 +1296,20 @@ Metric 결정:
 - local tiny smoke path가 data loading, label/split, model, training/checkpoint,
   prediction/metric, Grad-CAM까지 통과했습니다.
 - 산출물은 재현 결과가 아니라 non-reproduction artifact입니다.
-- 다음 작업은 준비된 `1-I10` Kaggle wrapper를 Kaggle 안에서 실행하는 것입니다.
+- 다음 작업은 표준 one-cell Kaggle runner로 horizon 하나씩 실행하는 것입니다.
 
-## 1-I10 Kaggle Single-seed 실행 Package
+## 1-I10 Kaggle 실행 표준
 
 준비 일자:
 - 2026-05-01
 
 산출물:
-- `scripts/run_stage1_kaggle_single_seed.sh`
 - `scripts/check_stage1_single_seed_outputs.py`
-- `docs/kaggle_single_seed_runbook.md`
-- `checklist_results/1-I10_kaggle_single_seed_run.md`
 - `docs/progress_logging.md`
 - `checklist_results/1-I10_progress_logging_update.md`
+- `docs/fast_kaggle_strategy.md`
+- `notebooks/kaggle_stage1_single_horizon_one_cell.md`
+- `checklist_results/1-I10_fast_kaggle_strategy.md`
 
 근거/policy mapping:
 
@@ -1315,12 +1318,15 @@ Metric 결정:
 | Full run 환경 | Root `PLAN.md`, 실행 환경 원칙 | Full training/evaluation은 Kaggle Notebook 기준을 유지합니다. |
 | 가능한 공개 데이터 범위 | Stage 0 monthly20 audit | Public I20 full-spec shard의 `I20/R5`, `I20/R20`, `I20/R60`만 실행합니다. |
 | Single seed | `configs/env_kaggle.yaml` | 첫 full diagnostic run은 seed `42`를 사용합니다. |
+| Kaggle interface | `notebooks/kaggle_stage1_single_horizon_one_cell.md` | code copy, data copy, config patch, training, evaluation, quick Grad-CAM을 horizon 하나씩 실행합니다. |
 | Required output receipt | Root `PLAN.md`, Stage 1 checklist | checkpoint, prediction CSV, metric JSON, run manifest, Grad-CAM figure를 확인합니다. |
 
 1-I10 note:
-- 실행 package는 준비됐지만, 실제 Kaggle run output이 돌아오고
-  `check_stage1_single_seed_outputs.py`가 `status: ok`를 보고하기 전까지
-  체크리스트는 open 상태입니다.
+- 표준 Kaggle 방식은 one-cell single-horizon runner입니다.
+- 이전 all-in-one Kaggle shell/runbook 시도는 실행 경로가 둘로 갈라지지 않도록
+  제거했습니다.
+- 실제 Kaggle에서 `I20/R5`, `I20/R20`, `I20/R60` output이 돌아오고 확인되기
+  전까지 체크리스트는 open 상태입니다.
 - 긴 Kaggle run이 normalization과 긴 epoch 구간에서 멈춘 것처럼 보일 수 있어
   progress logging을 추가했습니다.
 

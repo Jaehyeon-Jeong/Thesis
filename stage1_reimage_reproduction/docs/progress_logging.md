@@ -30,7 +30,11 @@ Added progress output:
   - epoch-end loss/accuracy/time
   - early stopping message
 
-Recommended Kaggle command:
+Recommended Kaggle interface:
+- Use `notebooks/kaggle_stage1_single_horizon_one_cell.md`.
+- The cell already calls scripts with `python -u`.
+
+Manual command, if debugging:
 
 ```bash
 python -u scripts/run_stage1_baseline.py \
@@ -88,7 +92,11 @@ training:
   - epoch 종료 loss/accuracy/time
   - early stopping message
 
-권장 Kaggle 명령:
+권장 Kaggle interface:
+- `notebooks/kaggle_stage1_single_horizon_one_cell.md`를 사용합니다.
+- 이 cell은 이미 script들을 `python -u`로 호출합니다.
+
+한 단계씩 debug할 때의 manual command:
 
 ```bash
 python -u scripts/run_stage1_baseline.py \

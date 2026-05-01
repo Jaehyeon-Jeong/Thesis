@@ -13,14 +13,13 @@ Changed files:
 - `src/stage1_reimage/data/label_split.py`
 - `src/stage1_reimage/runners/stage1_baseline.py`
 - `src/stage1_reimage/training/loop.py`
-- `scripts/run_stage1_kaggle_single_seed.sh`
 - `docs/progress_logging.md`
 
 What changed:
 - Added progress logs for dataset setup, horizon setup, normalization,
   epoch start/end, batch progress, and early stopping.
 - Added `flush=True` to progress messages.
-- Updated the Kaggle wrapper to call `python -u`.
+- The canonical Kaggle one-cell runner calls scripts with `python -u`.
 
 Local validation:
 - `python -m py_compile src/stage1_reimage/data/label_split.py src/stage1_reimage/runners/stage1_baseline.py src/stage1_reimage/training/loop.py`
@@ -45,14 +44,13 @@ Kaggle note:
 - `src/stage1_reimage/data/label_split.py`
 - `src/stage1_reimage/runners/stage1_baseline.py`
 - `src/stage1_reimage/training/loop.py`
-- `scripts/run_stage1_kaggle_single_seed.sh`
 - `docs/progress_logging.md`
 
 변경 내용:
 - dataset 준비, horizon 준비, normalization, epoch 시작/종료, batch 진행률,
   early stopping message를 출력하도록 했습니다.
 - progress message에 `flush=True`를 추가했습니다.
-- Kaggle wrapper가 `python -u`로 script를 실행하도록 바꿨습니다.
+- 표준 Kaggle one-cell runner가 script들을 `python -u`로 호출합니다.
 
 로컬 검증:
 - `python -m py_compile src/stage1_reimage/data/label_split.py src/stage1_reimage/runners/stage1_baseline.py src/stage1_reimage/training/loop.py`

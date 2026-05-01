@@ -46,7 +46,7 @@ Planned environment files/runners:
 - `configs/env_local.yaml`
 - `configs/env_kaggle.yaml`
 - `configs/env_colab.yaml` only if needed later
-- `notebooks/kaggle_stage1_runner.ipynb`
+- `notebooks/kaggle_stage1_single_horizon_one_cell.md`
 - `notebooks/colab_stage1_runner.ipynb` only if needed later
 
 Reproducibility records:
@@ -414,9 +414,11 @@ Current implementation status:
 - `1-I0` through `1-I9` are completed.
 - `1-I9` local smoke test passed through data loading, training, evaluation,
   and Grad-CAM generation on tiny non-reproduction settings.
-- The `1-I10` Kaggle single-seed execution wrapper is prepared.
-- The next action is to run `bash scripts/run_stage1_kaggle_single_seed.sh`
-  inside Kaggle and verify the returned output receipt.
+- The `1-I10` Kaggle one-cell single-horizon runner is the standard execution
+  interface.
+- The next action is to copy the cell from
+  `notebooks/kaggle_stage1_single_horizon_one_cell.md` into Kaggle and run one
+  horizon at a time.
 - The readiness decision is limited to the public `monthly_20d` I20 full-spec
   reproduction path. Raw OHLC image-generator work remains a separate gate if
   needed before claiming a paper-wide pipeline.
@@ -429,7 +431,7 @@ Rule:
 
 Planned outputs under this folder:
 - `configs/*.yaml`
-- `notebooks/kaggle_stage1_runner.ipynb`
+- `notebooks/kaggle_stage1_single_horizon_one_cell.md`
 - `outputs/predictions/*`
 - `outputs/metrics/*`
 - `outputs/checkpoints/*`
@@ -492,7 +494,7 @@ Grad-CAM figure까지 만들어져야 1단계 재현으로 봅니다.
 - `configs/env_local.yaml`
 - `configs/env_kaggle.yaml`
 - `configs/env_colab.yaml`은 나중에 필요할 때만 추가
-- `notebooks/kaggle_stage1_runner.ipynb`
+- `notebooks/kaggle_stage1_single_horizon_one_cell.md`
 - `notebooks/colab_stage1_runner.ipynb`는 나중에 필요할 때만 추가
 
 재현성 기록:
@@ -845,9 +847,10 @@ Figure 13 스타일 산출물:
 - `1-I0`부터 `1-I9`까지 완료했습니다.
 - `1-I9` local smoke test는 작은 non-reproduction 설정에서 data loading,
   training, evaluation, Grad-CAM 생성까지 통과했습니다.
-- `1-I10` Kaggle single-seed 실행 wrapper를 준비했습니다.
-- 다음 작업은 Kaggle 안에서 `bash scripts/run_stage1_kaggle_single_seed.sh`를
-  실행하고 반환된 output receipt를 확인하는 것입니다.
+- `1-I10` Kaggle one-cell single-horizon runner를 표준 실행 interface로
+  정했습니다.
+- 다음 작업은 `notebooks/kaggle_stage1_single_horizon_one_cell.md`의 cell을
+  Kaggle에 복붙해서 horizon 하나씩 실행하는 것입니다.
 - readiness 판정은 public `monthly_20d` I20 full-spec reproduction 경로에
   한정됩니다. paper-wide pipeline을 주장하려면 raw OHLC image generator 작업은
   별도 gate로 추가해야 합니다.
@@ -859,7 +862,7 @@ Figure 13 스타일 산출물:
 
 이 폴더 아래 계획된 산출물:
 - `configs/*.yaml`
-- `notebooks/kaggle_stage1_runner.ipynb`
+- `notebooks/kaggle_stage1_single_horizon_one_cell.md`
 - `outputs/predictions/*`
 - `outputs/metrics/*`
 - `outputs/checkpoints/*`

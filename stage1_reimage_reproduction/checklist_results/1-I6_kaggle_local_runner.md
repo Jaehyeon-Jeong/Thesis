@@ -14,7 +14,7 @@ Implemented files:
 - `src/stage1_reimage/runners/__init__.py`
 - `src/stage1_reimage/runners/stage1_baseline.py`
 - `scripts/run_stage1_baseline.py`
-- `notebooks/kaggle_stage1_runner.md`
+- `notebooks/kaggle_stage1_single_horizon_one_cell.md`
 - Updated `src/stage1_reimage/data/label_split.py`
 
 Implemented behavior:
@@ -39,12 +39,10 @@ python scripts/run_stage1_baseline.py \
   --max-epochs 1
 ```
 
-Kaggle command:
+Kaggle standard interface:
 
-```bash
-python scripts/run_stage1_baseline.py \
-  --config configs/env_kaggle.yaml \
-  --run-mode full_single_seed
+```text
+notebooks/kaggle_stage1_single_horizon_one_cell.md
 ```
 
 Validation result:
@@ -81,7 +79,7 @@ Scope limits:
 - `src/stage1_reimage/runners/__init__.py`
 - `src/stage1_reimage/runners/stage1_baseline.py`
 - `scripts/run_stage1_baseline.py`
-- `notebooks/kaggle_stage1_runner.md`
+- `notebooks/kaggle_stage1_single_horizon_one_cell.md`
 - `src/stage1_reimage/data/label_split.py` 업데이트
 
 구현한 동작:
@@ -106,12 +104,10 @@ python scripts/run_stage1_baseline.py \
   --max-epochs 1
 ```
 
-Kaggle command:
+Kaggle standard interface:
 
-```bash
-python scripts/run_stage1_baseline.py \
-  --config configs/env_kaggle.yaml \
-  --run-mode full_single_seed
+```text
+notebooks/kaggle_stage1_single_horizon_one_cell.md
 ```
 
 검증 결과:

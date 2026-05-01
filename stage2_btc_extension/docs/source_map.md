@@ -152,8 +152,8 @@ Detailed document:
 Checked on: 2026-05-01
 
 Paper/source basis:
-- `자료조사/Re-image 요약.md`, line 13: future-return sign prediction across
-  5/20/60 horizons.
+- `자료조사/Re-image 요약.md`, line 41: 1993-2000 train/validation,
+  2001-2019 test, and 70/30 random split inside the train/validation period.
 - `자료조사/Re-image 요약.md`, line 49: binary classification and train-pixel
   mean/std normalization.
 - Stage 1 implementation:
@@ -168,13 +168,16 @@ Stage 2 decisions:
 - Primary reporting is capped at `2024-12-31`; 2025-2026 is reserved as an
   optional later holdout.
 - Split:
-  - train signal dates: `2018-01-01` to `2020-12-31`
-  - validation signal dates: `2021-01-01` to `2021-12-31`
-  - test signal dates: `2022-01-01` to `2024-12-31`
-- Purge rule: `label_end_date <= split_signal_end`.
+  - train/validation pool signal dates: `2018-01-01` to `2020-12-31`
+  - split the train/validation pool 70/30 at random with seed `42`
+  - test signal dates: `2021-01-01` to `2024-12-31`
+- Purge rule at period boundaries: `label_end_date <= split_signal_end`.
 - Normalization follows Stage 1 but is stored per Stage 2 experiment tuple:
   `(image_window, image_spec, return_horizon)`.
 - Normalization uses train images only.
+- BTC-specific caveat: train/validation random split is paper-aligned, but BTC
+  rolling samples can overlap strongly; chronological validation can be added as
+  a robustness check later.
 
 Generated artifact:
 - `stage2_btc_extension/docs/stage2_label_split_normalization_plan.md`
@@ -347,7 +350,8 @@ Stage 2 결정:
 확인일: 2026-05-01
 
 논문/source 근거:
-- `자료조사/Re-image 요약.md`, line 13: 5/20/60 horizon future-return sign prediction.
+- `자료조사/Re-image 요약.md`, line 41: 1993-2000 train/validation,
+  2001-2019 test, train/validation period 내부 70/30 random split.
 - `자료조사/Re-image 요약.md`, line 49: binary classification과 train-pixel mean/std
   normalization.
 - Stage 1 implementation:
@@ -362,13 +366,16 @@ Stage 2 결정:
 - 기본 보고 기간은 `2024-12-31`까지로 제한하고, 2025-2026은 optional later holdout으로
   남깁니다.
 - Split:
-  - train signal dates: `2018-01-01` to `2020-12-31`
-  - validation signal dates: `2021-01-01` to `2021-12-31`
-  - test signal dates: `2022-01-01` to `2024-12-31`
-- Purge rule: `label_end_date <= split_signal_end`.
+  - train/validation pool signal dates: `2018-01-01` to `2020-12-31`
+  - train/validation pool을 seed `42`로 70/30 random split
+  - test signal dates: `2021-01-01` to `2024-12-31`
+- Period boundary purge rule: `label_end_date <= split_signal_end`.
 - Normalization은 Stage 1 원칙을 따르되 Stage 2 experiment tuple
   `(image_window, image_spec, return_horizon)`별로 따로 저장합니다.
 - Normalization은 train image에서만 fit합니다.
+- BTC-specific caveat: train/validation random split은 논문 방식에 맞지만,
+  BTC rolling sample은 많이 겹칠 수 있습니다. chronological validation은 나중
+  robustness check로 추가할 수 있습니다.
 
 생성 artifact:
 - `stage2_btc_extension/docs/stage2_label_split_normalization_plan.md`

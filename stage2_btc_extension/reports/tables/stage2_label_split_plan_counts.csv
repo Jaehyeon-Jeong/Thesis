@@ -1,28 +1,28 @@
-image_window,return_horizon,split,split_signal_start,split_signal_end,purge_rule,num_samples,positive_rate,first_image_end_date,last_image_end_date,last_label_end_date
-I5,R5,train,2018-01-01,2020-12-31,label_end_date <= split_signal_end,1083,0.537396,2018-01-09,2020-12-26,2020-12-31
-I5,R5,validation,2021-01-01,2021-12-31,label_end_date <= split_signal_end,360,0.538889,2021-01-01,2021-12-26,2021-12-31
-I5,R5,test,2022-01-01,2024-12-31,label_end_date <= split_signal_end,1091,0.52429,2022-01-01,2024-12-26,2024-12-31
-I5,R20,train,2018-01-01,2020-12-31,label_end_date <= split_signal_end,1068,0.549625,2018-01-09,2020-12-11,2020-12-31
-I5,R20,validation,2021-01-01,2021-12-31,label_end_date <= split_signal_end,345,0.524638,2021-01-01,2021-12-11,2021-12-31
-I5,R20,test,2022-01-01,2024-12-31,label_end_date <= split_signal_end,1076,0.555762,2022-01-01,2024-12-11,2024-12-31
-I5,R60,train,2018-01-01,2020-12-31,label_end_date <= split_signal_end,1028,0.506809,2018-01-09,2020-11-01,2020-12-31
-I5,R60,validation,2021-01-01,2021-12-31,label_end_date <= split_signal_end,305,0.632787,2021-01-01,2021-11-01,2021-12-31
-I5,R60,test,2022-01-01,2024-12-31,label_end_date <= split_signal_end,1036,0.548263,2022-01-01,2024-11-01,2024-12-31
-I20,R5,train,2018-01-01,2020-12-31,label_end_date <= split_signal_end,1053,0.546059,2018-02-08,2020-12-26,2020-12-31
-I20,R5,validation,2021-01-01,2021-12-31,label_end_date <= split_signal_end,360,0.538889,2021-01-01,2021-12-26,2021-12-31
-I20,R5,test,2022-01-01,2024-12-31,label_end_date <= split_signal_end,1091,0.52429,2022-01-01,2024-12-26,2024-12-31
-I20,R20,train,2018-01-01,2020-12-31,label_end_date <= split_signal_end,1038,0.55684,2018-02-08,2020-12-11,2020-12-31
-I20,R20,validation,2021-01-01,2021-12-31,label_end_date <= split_signal_end,345,0.524638,2021-01-01,2021-12-11,2021-12-31
-I20,R20,test,2022-01-01,2024-12-31,label_end_date <= split_signal_end,1076,0.555762,2022-01-01,2024-12-11,2024-12-31
-I20,R60,train,2018-01-01,2020-12-31,label_end_date <= split_signal_end,998,0.522044,2018-02-08,2020-11-01,2020-12-31
-I20,R60,validation,2021-01-01,2021-12-31,label_end_date <= split_signal_end,305,0.632787,2021-01-01,2021-11-01,2021-12-31
-I20,R60,test,2022-01-01,2024-12-31,label_end_date <= split_signal_end,1036,0.548263,2022-01-01,2024-11-01,2024-12-31
-I60,R5,train,2018-01-01,2020-12-31,label_end_date <= split_signal_end,973,0.546763,2018-04-29,2020-12-26,2020-12-31
-I60,R5,validation,2021-01-01,2021-12-31,label_end_date <= split_signal_end,360,0.538889,2021-01-01,2021-12-26,2021-12-31
-I60,R5,test,2022-01-01,2024-12-31,label_end_date <= split_signal_end,1091,0.52429,2022-01-01,2024-12-26,2024-12-31
-I60,R20,train,2018-01-01,2020-12-31,label_end_date <= split_signal_end,958,0.569937,2018-04-29,2020-12-11,2020-12-31
-I60,R20,validation,2021-01-01,2021-12-31,label_end_date <= split_signal_end,345,0.524638,2021-01-01,2021-12-11,2021-12-31
-I60,R20,test,2022-01-01,2024-12-31,label_end_date <= split_signal_end,1076,0.555762,2022-01-01,2024-12-11,2024-12-31
-I60,R60,train,2018-01-01,2020-12-31,label_end_date <= split_signal_end,918,0.546841,2018-04-29,2020-11-01,2020-12-31
-I60,R60,validation,2021-01-01,2021-12-31,label_end_date <= split_signal_end,305,0.632787,2021-01-01,2021-11-01,2021-12-31
-I60,R60,test,2022-01-01,2024-12-31,label_end_date <= split_signal_end,1036,0.548263,2022-01-01,2024-11-01,2024-12-31
+image_window,return_horizon,split,split_signal_start,split_signal_end,assignment_rule,purge_rule,num_samples,positive_rate,first_image_end_date,last_image_end_date,last_label_end_date
+I5,R5,train,2018-01-01,2020-12-31,default_rng(seed=42) 70/30 random within trainval pool,label_end_date <= split_signal_end,758,0.539578,2018-01-09,2020-12-25,2020-12-30
+I5,R5,validation,2018-01-01,2020-12-31,default_rng(seed=42) 70/30 random within trainval pool,label_end_date <= split_signal_end,325,0.532308,2018-01-13,2020-12-26,2020-12-31
+I5,R5,test,2021-01-01,2024-12-31,chronological holdout test period,label_end_date <= split_signal_end,1456,0.526099,2021-01-01,2024-12-26,2024-12-31
+I5,R20,train,2018-01-01,2020-12-31,default_rng(seed=42) 70/30 random within trainval pool,label_end_date <= split_signal_end,748,0.548128,2018-01-09,2020-12-11,2020-12-31
+I5,R20,validation,2018-01-01,2020-12-31,default_rng(seed=42) 70/30 random within trainval pool,label_end_date <= split_signal_end,320,0.553125,2018-01-10,2020-11-29,2020-12-19
+I5,R20,test,2021-01-01,2024-12-31,chronological holdout test period,label_end_date <= split_signal_end,1441,0.541291,2021-01-01,2024-12-11,2024-12-31
+I5,R60,train,2018-01-01,2020-12-31,default_rng(seed=42) 70/30 random within trainval pool,label_end_date <= split_signal_end,720,0.504167,2018-01-09,2020-11-01,2020-12-31
+I5,R60,validation,2018-01-01,2020-12-31,default_rng(seed=42) 70/30 random within trainval pool,label_end_date <= split_signal_end,308,0.512987,2018-01-10,2020-10-26,2020-12-25
+I5,R60,test,2021-01-01,2024-12-31,chronological holdout test period,label_end_date <= split_signal_end,1401,0.543183,2021-01-01,2024-11-01,2024-12-31
+I20,R5,train,2018-01-01,2020-12-31,default_rng(seed=42) 70/30 random within trainval pool,label_end_date <= split_signal_end,737,0.549525,2018-02-08,2020-12-26,2020-12-31
+I20,R5,validation,2018-01-01,2020-12-31,default_rng(seed=42) 70/30 random within trainval pool,label_end_date <= split_signal_end,316,0.537975,2018-02-09,2020-12-14,2020-12-19
+I20,R5,test,2021-01-01,2024-12-31,chronological holdout test period,label_end_date <= split_signal_end,1456,0.526099,2021-01-01,2024-12-26,2024-12-31
+I20,R20,train,2018-01-01,2020-12-31,default_rng(seed=42) 70/30 random within trainval pool,label_end_date <= split_signal_end,727,0.543329,2018-02-08,2020-12-11,2020-12-31
+I20,R20,validation,2018-01-01,2020-12-31,default_rng(seed=42) 70/30 random within trainval pool,label_end_date <= split_signal_end,311,0.588424,2018-02-09,2020-12-06,2020-12-26
+I20,R20,test,2021-01-01,2024-12-31,chronological holdout test period,label_end_date <= split_signal_end,1441,0.541291,2021-01-01,2024-12-11,2024-12-31
+I20,R60,train,2018-01-01,2020-12-31,default_rng(seed=42) 70/30 random within trainval pool,label_end_date <= split_signal_end,699,0.529328,2018-02-08,2020-10-31,2020-12-30
+I20,R60,validation,2018-01-01,2020-12-31,default_rng(seed=42) 70/30 random within trainval pool,label_end_date <= split_signal_end,299,0.505017,2018-02-09,2020-11-01,2020-12-31
+I20,R60,test,2021-01-01,2024-12-31,chronological holdout test period,label_end_date <= split_signal_end,1401,0.543183,2021-01-01,2024-11-01,2024-12-31
+I60,R5,train,2018-01-01,2020-12-31,default_rng(seed=42) 70/30 random within trainval pool,label_end_date <= split_signal_end,681,0.535977,2018-04-29,2020-12-25,2020-12-30
+I60,R5,validation,2018-01-01,2020-12-31,default_rng(seed=42) 70/30 random within trainval pool,label_end_date <= split_signal_end,292,0.571918,2018-04-30,2020-12-26,2020-12-31
+I60,R5,test,2021-01-01,2024-12-31,chronological holdout test period,label_end_date <= split_signal_end,1456,0.526099,2021-01-01,2024-12-26,2024-12-31
+I60,R20,train,2018-01-01,2020-12-31,default_rng(seed=42) 70/30 random within trainval pool,label_end_date <= split_signal_end,671,0.549925,2018-04-29,2020-12-10,2020-12-30
+I60,R20,validation,2018-01-01,2020-12-31,default_rng(seed=42) 70/30 random within trainval pool,label_end_date <= split_signal_end,287,0.616725,2018-04-30,2020-12-11,2020-12-31
+I60,R20,test,2021-01-01,2024-12-31,chronological holdout test period,label_end_date <= split_signal_end,1441,0.541291,2021-01-01,2024-12-11,2024-12-31
+I60,R60,train,2018-01-01,2020-12-31,default_rng(seed=42) 70/30 random within trainval pool,label_end_date <= split_signal_end,643,0.553655,2018-04-29,2020-10-31,2020-12-30
+I60,R60,validation,2018-01-01,2020-12-31,default_rng(seed=42) 70/30 random within trainval pool,label_end_date <= split_signal_end,275,0.530909,2018-04-30,2020-11-01,2020-12-31
+I60,R60,test,2021-01-01,2024-12-31,chronological holdout test period,label_end_date <= split_signal_end,1401,0.543183,2021-01-01,2024-11-01,2024-12-31

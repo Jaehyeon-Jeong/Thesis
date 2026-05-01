@@ -2,12 +2,14 @@
 
 ## English
 
-Status: planning complete for checklist 2-4. Implementation happens later in
-`2-I4`.
+Status: planning complete for checklist 2-4. This file was revised after
+reviewing the Stage 1 paper-style train/validation split more carefully.
+Implementation happens later in `2-I4`.
 
 Source basis:
 - Re-image summary: `자료조사/Re-image 요약.md`
-  - line 13: predict signs of future 5/20/60-day returns from 5/20/60-day charts.
+  - line 41: 1993-2000 train/validation, 2001-2019 test, and a 70/30 random
+    split inside the eight-year train/validation period.
   - line 49: binary classification, cross-entropy, softmax Up probability,
     50% threshold, training-pixel mean/std normalization.
 - Stage 1 label/split implementation:
@@ -22,8 +24,13 @@ Important difference from Stage 1:
   `Ret_60d` columns.
 - Stage 2 uses one BTC time series, so future returns must be constructed from
   BTC close prices.
-- Stage 2 must use chronological split. Random train/validation split is not
-  used for BTC because adjacent rolling samples overlap strongly.
+- The default Stage 2 split still follows the paper-style principle: first
+  separate a pre-test train/validation period from an out-of-sample test period,
+  then randomly split the train/validation period 70/30.
+- Because BTC is a single rolling time series, adjacent validation samples can
+  overlap heavily with adjacent training samples. This is recorded as a
+  limitation, and a chronological-validation variant can be added later as a
+  robustness check. It is not the default Stage 2 baseline.
 
 ## Label Rule
 
@@ -60,13 +67,23 @@ Reason:
 - The local file is auto-updated through 2026-03-16, but 2025-2026 is kept as an
   optional later holdout rather than mixed into the first BTC baseline.
 
-Chronological split by signal date:
+Paper-style Stage 2 split:
 
-| Split | Signal-date range | Purpose |
-| --- | --- | --- |
-| Train | `2018-01-01` to `2020-12-31` | model fitting |
-| Validation | `2021-01-01` to `2021-12-31` | early stopping/model selection |
-| Test | `2022-01-01` to `2024-12-31` | primary out-of-sample reporting |
+| Component | Signal-date range | Rule | Purpose |
+| --- | --- | --- | --- |
+| Train/validation pool | `2018-01-01` to `2020-12-31` | 70/30 random split after eligibility filtering | model fitting and early stopping |
+| Test | `2021-01-01` to `2024-12-31` | chronological holdout | primary out-of-sample reporting |
+
+Train/validation random split:
+- Split unit: BTC rolling chart sample.
+- Train ratio: `0.70`.
+- Validation ratio: `0.30`.
+- Split seed: `42`.
+- Random generator: `numpy.random.default_rng(42)`, matching the Stage 1
+  implementation style.
+- Stratification: not used by default because the paper summary only reports a
+  random 70/30 split.
+- Class balance is still reported after the split.
 
 Purge rule:
 
@@ -74,15 +91,25 @@ Purge rule:
 label_end_date <= split_signal_end
 ```
 
-This means samples near the end of each split are dropped if their future-return
-label crosses into the next split. For example, an `R60` training signal in
-December 2020 is removed because its label would use prices in 2021.
+This means:
+- Train/validation-pool samples are kept only if their label also ends by
+  `2020-12-31`.
+- Test samples are kept only if their label ends by `2024-12-31`.
+- The model never trains on a sample whose target reaches into the test period.
 
 Feature-window rule:
-- A validation/test image may use historical prices before the split start
-  because those prices are known at the signal date.
+- A test image may use historical prices before `2021-01-01` if its signal date
+  is in the test period, because those historical prices are known at the signal
+  date.
 - This is not look-ahead leakage.
 - The strict boundary is on future label information, handled by the purge rule.
+
+BTC-specific caution:
+- Random train/validation inside `2018-2020` is paper-aligned.
+- However, BTC rolling windows are highly overlapping because they are sampled
+  from one asset. Validation loss should therefore be interpreted as an early
+  stopping/model-selection signal, not as the final generalization result.
+- Final reporting relies on the chronological holdout test period `2021-2024`.
 
 ## Split Counts
 
@@ -91,40 +118,36 @@ image specifications share the same rows within a given `I/R` setting.
 
 | Image | Horizon | Split | Samples | Positive rate | First signal date | Last signal date | Last label date |
 | --- | --- | --- | ---: | ---: | --- | --- | --- |
-| I5 | R5 | train | 1083 | 0.5374 | 2018-01-09 | 2020-12-26 | 2020-12-31 |
-| I5 | R5 | validation | 360 | 0.5389 | 2021-01-01 | 2021-12-26 | 2021-12-31 |
-| I5 | R5 | test | 1091 | 0.5243 | 2022-01-01 | 2024-12-26 | 2024-12-31 |
-| I5 | R20 | train | 1068 | 0.5496 | 2018-01-09 | 2020-12-11 | 2020-12-31 |
-| I5 | R20 | validation | 345 | 0.5246 | 2021-01-01 | 2021-12-11 | 2021-12-31 |
-| I5 | R20 | test | 1076 | 0.5558 | 2022-01-01 | 2024-12-11 | 2024-12-31 |
-| I5 | R60 | train | 1028 | 0.5068 | 2018-01-09 | 2020-11-01 | 2020-12-31 |
-| I5 | R60 | validation | 305 | 0.6328 | 2021-01-01 | 2021-11-01 | 2021-12-31 |
-| I5 | R60 | test | 1036 | 0.5483 | 2022-01-01 | 2024-11-01 | 2024-12-31 |
-| I20 | R5 | train | 1053 | 0.5461 | 2018-02-08 | 2020-12-26 | 2020-12-31 |
-| I20 | R5 | validation | 360 | 0.5389 | 2021-01-01 | 2021-12-26 | 2021-12-31 |
-| I20 | R5 | test | 1091 | 0.5243 | 2022-01-01 | 2024-12-26 | 2024-12-31 |
-| I20 | R20 | train | 1038 | 0.5568 | 2018-02-08 | 2020-12-11 | 2020-12-31 |
-| I20 | R20 | validation | 345 | 0.5246 | 2021-01-01 | 2021-12-11 | 2021-12-31 |
-| I20 | R20 | test | 1076 | 0.5558 | 2022-01-01 | 2024-12-11 | 2024-12-31 |
-| I20 | R60 | train | 998 | 0.5220 | 2018-02-08 | 2020-11-01 | 2020-12-31 |
-| I20 | R60 | validation | 305 | 0.6328 | 2021-01-01 | 2021-11-01 | 2021-12-31 |
-| I20 | R60 | test | 1036 | 0.5483 | 2022-01-01 | 2024-11-01 | 2024-12-31 |
-| I60 | R5 | train | 973 | 0.5468 | 2018-04-29 | 2020-12-26 | 2020-12-31 |
-| I60 | R5 | validation | 360 | 0.5389 | 2021-01-01 | 2021-12-26 | 2021-12-31 |
-| I60 | R5 | test | 1091 | 0.5243 | 2022-01-01 | 2024-12-26 | 2024-12-31 |
-| I60 | R20 | train | 958 | 0.5699 | 2018-04-29 | 2020-12-11 | 2020-12-31 |
-| I60 | R20 | validation | 345 | 0.5246 | 2021-01-01 | 2021-12-11 | 2021-12-31 |
-| I60 | R20 | test | 1076 | 0.5558 | 2022-01-01 | 2024-12-11 | 2024-12-31 |
-| I60 | R60 | train | 918 | 0.5468 | 2018-04-29 | 2020-11-01 | 2020-12-31 |
-| I60 | R60 | validation | 305 | 0.6328 | 2021-01-01 | 2021-11-01 | 2021-12-31 |
-| I60 | R60 | test | 1036 | 0.5483 | 2022-01-01 | 2024-11-01 | 2024-12-31 |
+| I5 | R5 | train | 758 | 0.5396 | 2018-01-09 | 2020-12-25 | 2020-12-30 |
+| I5 | R5 | validation | 325 | 0.5323 | 2018-01-13 | 2020-12-26 | 2020-12-31 |
+| I5 | R5 | test | 1456 | 0.5261 | 2021-01-01 | 2024-12-26 | 2024-12-31 |
+| I5 | R20 | train | 748 | 0.5481 | 2018-01-09 | 2020-12-11 | 2020-12-31 |
+| I5 | R20 | validation | 320 | 0.5531 | 2018-01-10 | 2020-11-29 | 2020-12-19 |
+| I5 | R20 | test | 1441 | 0.5413 | 2021-01-01 | 2024-12-11 | 2024-12-31 |
+| I5 | R60 | train | 720 | 0.5042 | 2018-01-09 | 2020-11-01 | 2020-12-31 |
+| I5 | R60 | validation | 308 | 0.5130 | 2018-01-10 | 2020-10-26 | 2020-12-25 |
+| I5 | R60 | test | 1401 | 0.5432 | 2021-01-01 | 2024-11-01 | 2024-12-31 |
+| I20 | R5 | train | 737 | 0.5495 | 2018-02-08 | 2020-12-26 | 2020-12-31 |
+| I20 | R5 | validation | 316 | 0.5380 | 2018-02-09 | 2020-12-14 | 2020-12-19 |
+| I20 | R5 | test | 1456 | 0.5261 | 2021-01-01 | 2024-12-26 | 2024-12-31 |
+| I20 | R20 | train | 727 | 0.5433 | 2018-02-08 | 2020-12-11 | 2020-12-31 |
+| I20 | R20 | validation | 311 | 0.5884 | 2018-02-09 | 2020-12-06 | 2020-12-26 |
+| I20 | R20 | test | 1441 | 0.5413 | 2021-01-01 | 2024-12-11 | 2024-12-31 |
+| I20 | R60 | train | 699 | 0.5293 | 2018-02-08 | 2020-10-31 | 2020-12-30 |
+| I20 | R60 | validation | 299 | 0.5050 | 2018-02-09 | 2020-11-01 | 2020-12-31 |
+| I20 | R60 | test | 1401 | 0.5432 | 2021-01-01 | 2024-11-01 | 2024-12-31 |
+| I60 | R5 | train | 681 | 0.5360 | 2018-04-29 | 2020-12-25 | 2020-12-30 |
+| I60 | R5 | validation | 292 | 0.5719 | 2018-04-30 | 2020-12-26 | 2020-12-31 |
+| I60 | R5 | test | 1456 | 0.5261 | 2021-01-01 | 2024-12-26 | 2024-12-31 |
+| I60 | R20 | train | 671 | 0.5499 | 2018-04-29 | 2020-12-10 | 2020-12-30 |
+| I60 | R20 | validation | 287 | 0.6167 | 2018-04-30 | 2020-12-11 | 2020-12-31 |
+| I60 | R20 | test | 1441 | 0.5413 | 2021-01-01 | 2024-12-11 | 2024-12-31 |
+| I60 | R60 | train | 643 | 0.5537 | 2018-04-29 | 2020-10-31 | 2020-12-30 |
+| I60 | R60 | validation | 275 | 0.5309 | 2018-04-30 | 2020-11-01 | 2020-12-31 |
+| I60 | R60 | test | 1401 | 0.5432 | 2021-01-01 | 2024-11-01 | 2024-12-31 |
 
 CSV artifact:
 - `stage2_btc_extension/reports/tables/stage2_label_split_plan_counts.csv`
-
-Note:
-- Validation positive rate for `R60` is high because 2021 is a strong BTC market
-  regime. This is a real split-balance property, not a data-loading error.
 
 ## Normalization Plan
 
@@ -135,7 +158,7 @@ normalized_image = (image / 255.0 - train_pixel_mean) / train_pixel_std
 ```
 
 Fit policy:
-- Fit only on training images.
+- Fit only on the 70% training subset.
 - Do not use validation or test pixels.
 - Save normalization statistics separately for each experiment tuple:
   `(image_window, image_spec, return_horizon)`.
@@ -173,11 +196,13 @@ Model input:
 
 ## 한국어
 
-상태: checklist 2-4 계획 완료. 실제 구현은 이후 `2-I4`에서 합니다.
+상태: checklist 2-4 계획 완료. Stage 1의 논문식 train/validation split을 다시
+확인한 뒤 이 파일을 수정했습니다. 실제 구현은 이후 `2-I4`에서 합니다.
 
 근거:
 - Re-image 요약: `자료조사/Re-image 요약.md`
-  - line 13: 5/20/60일 chart에서 미래 5/20/60일 수익률 부호 예측.
+  - line 41: 1993-2000 train/validation, 2001-2019 test, 8년
+    train/validation 구간 내부 70/30 random split.
   - line 49: binary classification, cross-entropy, softmax Up probability,
     50% threshold, training-pixel mean/std normalization.
 - Stage 1 label/split implementation:
@@ -192,8 +217,12 @@ Stage 1과 중요한 차이:
   사용합니다.
 - Stage 2는 BTC 단일 시계열이므로 BTC close price에서 future return을 직접
   만들어야 합니다.
-- BTC는 rolling sample 간 overlap이 크므로 시간순 split을 사용합니다. random
-  train/validation split은 사용하지 않습니다.
+- Stage 2 기본 split은 논문식 원칙을 유지합니다. 먼저 pre-test train/validation
+  기간과 out-of-sample test 기간을 분리하고, train/validation 기간 내부를 70/30
+  random split합니다.
+- 다만 BTC는 단일 rolling time series라서 인접 validation sample과 train sample이
+  많이 겹칠 수 있습니다. 이 점은 제한사항으로 기록하고, chronological validation은
+  나중 robustness check로 추가할 수 있습니다. 기본 Stage 2 baseline은 아닙니다.
 
 ## Label Rule
 
@@ -228,13 +257,21 @@ Stage 2 기본 보고는 `2024-12-31`까지로 제한합니다.
 - local file은 2026-03-16까지 auto-updated되어 있지만, 2025-2026은 첫 BTC baseline에
   섞지 않고 optional later holdout으로 남깁니다.
 
-signal date 기준 시간순 split:
+논문식 Stage 2 split:
 
-| Split | Signal-date range | 목적 |
-| --- | --- | --- |
-| Train | `2018-01-01` to `2020-12-31` | model fitting |
-| Validation | `2021-01-01` to `2021-12-31` | early stopping/model selection |
-| Test | `2022-01-01` to `2024-12-31` | primary out-of-sample reporting |
+| Component | Signal-date range | Rule | 목적 |
+| --- | --- | --- | --- |
+| Train/validation pool | `2018-01-01` to `2020-12-31` | eligible sample을 70/30 random split | model fitting과 early stopping |
+| Test | `2021-01-01` to `2024-12-31` | chronological holdout | primary out-of-sample reporting |
+
+Train/validation random split:
+- Split unit: BTC rolling chart sample.
+- Train ratio: `0.70`.
+- Validation ratio: `0.30`.
+- Split seed: `42`.
+- Random generator: Stage 1 구현 방식에 맞춰 `numpy.random.default_rng(42)`를 사용합니다.
+- Stratification: 논문 요약은 random 70/30만 보고하므로 기본적으로 사용하지 않습니다.
+- split 이후 class balance는 반드시 보고합니다.
 
 Purge rule:
 
@@ -242,14 +279,22 @@ Purge rule:
 label_end_date <= split_signal_end
 ```
 
-각 split 끝부분에서 future-return label이 다음 split로 넘어가는 sample은 제거합니다.
-예를 들어 2020년 12월의 `R60` train signal은 label 계산에 2021년 가격을 사용하므로
-train에서 제거됩니다.
+의미:
+- Train/validation pool sample은 label 종료일도 `2020-12-31` 이하여야 합니다.
+- Test sample은 label 종료일도 `2024-12-31` 이하여야 합니다.
+- 모델은 target이 test period로 넘어가는 sample로 학습하지 않습니다.
 
 Feature-window rule:
-- validation/test image가 split 시작일 이전의 과거 가격을 image window에 포함할 수는
-  있습니다. signal date에는 이미 알려진 과거 정보이므로 look-ahead leakage가 아닙니다.
+- test image의 signal date가 test period 안에 있다면, image window가 `2021-01-01`
+  이전의 과거 가격을 포함해도 됩니다. signal date 기준으로 이미 알려진 과거 정보이므로
+  look-ahead leakage가 아닙니다.
 - 엄격한 경계는 future label 정보이며, 이것은 purge rule로 처리합니다.
+
+BTC-specific caution:
+- `2018-2020` 내부 random train/validation은 논문 방식에 더 가깝습니다.
+- 하지만 BTC rolling window는 단일 자산에서 나오므로 서로 많이 겹칩니다. 따라서
+  validation loss는 early stopping/model-selection 신호로 해석하고, 최종 일반화 성능은
+  chronological holdout test period `2021-2024`에서 봅니다.
 
 ## Split Counts
 
@@ -258,33 +303,77 @@ setting 안에서 네 가지 image spec은 같은 row를 공유합니다.
 
 | Image | Horizon | Split | Samples | Positive rate | 첫 signal date | 마지막 signal date | 마지막 label date |
 | --- | --- | --- | ---: | ---: | --- | --- | --- |
-| I5 | R5 | train | 1083 | 0.5374 | 2018-01-09 | 2020-12-26 | 2020-12-31 |
-| I5 | R5 | validation | 360 | 0.5389 | 2021-01-01 | 2021-12-26 | 2021-12-31 |
-| I5 | R5 | test | 1091 | 0.5243 | 2022-01-01 | 2024-12-26 | 2024-12-31 |
-| I5 | R20 | train | 1068 | 0.5496 | 2018-01-09 | 2020-12-11 | 2020-12-31 |
-| I5 | R20 | validation | 345 | 0.5246 | 2021-01-01 | 2021-12-11 | 2021-12-31 |
-| I5 | R20 | test | 1076 | 0.5558 | 2022-01-01 | 2024-12-11 | 2024-12-31 |
-| I5 | R60 | train | 1028 | 0.5068 | 2018-01-09 | 2020-11-01 | 2020-12-31 |
-| I5 | R60 | validation | 305 | 0.6328 | 2021-01-01 | 2021-11-01 | 2021-12-31 |
-| I5 | R60 | test | 1036 | 0.5483 | 2022-01-01 | 2024-11-01 | 2024-12-31 |
-| I20 | R5 | train | 1053 | 0.5461 | 2018-02-08 | 2020-12-26 | 2020-12-31 |
-| I20 | R5 | validation | 360 | 0.5389 | 2021-01-01 | 2021-12-26 | 2021-12-31 |
-| I20 | R5 | test | 1091 | 0.5243 | 2022-01-01 | 2024-12-26 | 2024-12-31 |
-| I20 | R20 | train | 1038 | 0.5568 | 2018-02-08 | 2020-12-11 | 2020-12-31 |
-| I20 | R20 | validation | 345 | 0.5246 | 2021-01-01 | 2021-12-11 | 2021-12-31 |
-| I20 | R20 | test | 1076 | 0.5558 | 2022-01-01 | 2024-12-11 | 2024-12-31 |
-| I20 | R60 | train | 998 | 0.5220 | 2018-02-08 | 2020-11-01 | 2020-12-31 |
-| I20 | R60 | validation | 305 | 0.6328 | 2021-01-01 | 2021-11-01 | 2021-12-31 |
-| I20 | R60 | test | 1036 | 0.5483 | 2022-01-01 | 2024-11-01 | 2024-12-31 |
-| I60 | R5 | train | 973 | 0.5468 | 2018-04-29 | 2020-12-26 | 2020-12-31 |
-| I60 | R5 | validation | 360 | 0.5389 | 2021-01-01 | 2021-12-26 | 2021-12-31 |
-| I60 | R5 | test | 1091 | 0.5243 | 2022-01-01 | 2024-12-26 | 2024-12-31 |
-| I60 | R20 | train | 958 | 0.5699 | 2018-04-29 | 2020-12-11 | 2020-12-31 |
-| I60 | R20 | validation | 345 | 0.5246 | 2021-01-01 | 2021-12-11 | 2021-12-31 |
-| I60 | R20 | test | 1076 | 0.5558 | 2022-01-01 | 2024-12-11 | 2024-12-31 |
-| I60 | R60 | train | 918 | 0.5468 | 2018-04-29 | 2020-11-01 | 2020-12-31 |
-| I60 | R60 | validation | 305 | 0.6328 | 2021-01-01 | 2021-11-01 | 2021-12-31 |
-| I60 | R60 | test | 1036 | 0.5483 | 2022-01-01 | 2024-11-01 | 2024-12-31 |
+| I5 | R5 | train | 758 | 0.5396 | 2018-01-09 | 2020-12-25 | 2020-12-30 |
+| I5 | R5 | validation | 325 | 0.5323 | 2018-01-13 | 2020-12-26 | 2020-12-31 |
+| I5 | R5 | test | 1456 | 0.5261 | 2021-01-01 | 2024-12-26 | 2024-12-31 |
+| I5 | R20 | train | 748 | 0.5481 | 2018-01-09 | 2020-12-11 | 2020-12-31 |
+| I5 | R20 | validation | 320 | 0.5531 | 2018-01-10 | 2020-11-29 | 2020-12-19 |
+| I5 | R20 | test | 1441 | 0.5413 | 2021-01-01 | 2024-12-11 | 2024-12-31 |
+| I5 | R60 | train | 720 | 0.5042 | 2018-01-09 | 2020-11-01 | 2020-12-31 |
+| I5 | R60 | validation | 308 | 0.5130 | 2018-01-10 | 2020-10-26 | 2020-12-25 |
+| I5 | R60 | test | 1401 | 0.5432 | 2021-01-01 | 2024-11-01 | 2024-12-31 |
+| I20 | R5 | train | 737 | 0.5495 | 2018-02-08 | 2020-12-26 | 2020-12-31 |
+| I20 | R5 | validation | 316 | 0.5380 | 2018-02-09 | 2020-12-14 | 2020-12-19 |
+| I20 | R5 | test | 1456 | 0.5261 | 2021-01-01 | 2024-12-26 | 2024-12-31 |
+| I20 | R20 | train | 727 | 0.5433 | 2018-02-08 | 2020-12-11 | 2020-12-31 |
+| I20 | R20 | validation | 311 | 0.5884 | 2018-02-09 | 2020-12-06 | 2020-12-26 |
+| I20 | R20 | test | 1441 | 0.5413 | 2021-01-01 | 2024-12-11 | 2024-12-31 |
+| I20 | R60 | train | 699 | 0.5293 | 2018-02-08 | 2020-10-31 | 2020-12-30 |
+| I20 | R60 | validation | 299 | 0.5050 | 2018-02-09 | 2020-11-01 | 2020-12-31 |
+| I20 | R60 | test | 1401 | 0.5432 | 2021-01-01 | 2024-11-01 | 2024-12-31 |
+| I60 | R5 | train | 681 | 0.5360 | 2018-04-29 | 2020-12-25 | 2020-12-30 |
+| I60 | R5 | validation | 292 | 0.5719 | 2018-04-30 | 2020-12-26 | 2020-12-31 |
+| I60 | R5 | test | 1456 | 0.5261 | 2021-01-01 | 2024-12-26 | 2024-12-31 |
+| I60 | R20 | train | 671 | 0.5499 | 2018-04-29 | 2020-12-10 | 2020-12-30 |
+| I60 | R20 | validation | 287 | 0.6167 | 2018-04-30 | 2020-12-11 | 2020-12-31 |
+| I60 | R20 | test | 1441 | 0.5413 | 2021-01-01 | 2024-12-11 | 2024-12-31 |
+| I60 | R60 | train | 643 | 0.5537 | 2018-04-29 | 2020-10-31 | 2020-12-30 |
+| I60 | R60 | validation | 275 | 0.5309 | 2018-04-30 | 2020-11-01 | 2020-12-31 |
+| I60 | R60 | test | 1401 | 0.5432 | 2021-01-01 | 2024-11-01 | 2024-12-31 |
 
 CSV artifact:
-Need more output? Already enough. Need maybe continue doc lower after. Fine. Need maybe incorporate into other docs. Already patch later. Need update README link. Need maybe create "reports/tables/README"? It may not exist. Let's check. Need maybe in artifact. Could create. Also update reports/README. Need include small CSV in publish. Need maybe create docs mention. We'll patch README and source_map/stage2 pipeline. Need create stage2 reports/tables README maybe optional. The folder exists now with csv and no README? Need update maybe. Use apply patch. Also maybe check csv head. Need maybe add to README docs. Let's patch. 
+- `stage2_btc_extension/reports/tables/stage2_label_split_plan_counts.csv`
+
+## Normalization Plan
+
+Pixel normalization follows Stage 1:
+
+```text
+normalized_image = (image / 255.0 - train_pixel_mean) / train_pixel_std
+```
+
+Fit policy:
+- 70% training subset에서만 fit합니다.
+- validation/test pixel은 사용하지 않습니다.
+- `(image_window, image_spec, return_horizon)` experiment별로 stats를 따로 저장합니다.
+- `train_pixel_mean`, `train_pixel_std`, training image 수, pixel 수, smoke-test sample
+  사용 여부를 저장합니다.
+
+Experiment별로 따로 저장하는 이유:
+- Image size가 `I5/I20/I60`마다 다릅니다.
+- Pixel distribution이 image spec마다 다릅니다. 특히 volume bar와 MA line 포함 여부가
+  영향을 줍니다.
+- Stage 1도 horizon별 train-only normalization을 사용합니다.
+
+## Required Metadata
+
+각 BTC sample은 다음 metadata를 보존해야 합니다:
+- `sample_id`
+- `image_window`
+- `image_spec`
+- `return_horizon`
+- `image_start_date`
+- `image_end_date`
+- `label_end_date`
+- `source_start_index`
+- `source_end_index`
+- `label_exit_index`
+- `entry_close`
+- `exit_close`
+- `future_return`
+- `label`
+- `split`
+
+Model input:
+- Stage 2 baseline CNN에는 image tensor만 들어갑니다.
+- return, label, date, price는 metadata 또는 target일 뿐입니다.

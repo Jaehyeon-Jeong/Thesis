@@ -21,8 +21,9 @@ Pipeline:
    `label = 1 if future R-day return > 0 else 0`.
 4. Construct BTC future returns from close prices:
    `Close_{t+R} / Close_t - 1`.
-5. Use chronological train/validation/test split with label-horizon purging to
-   avoid look-ahead leakage.
+5. Use the paper-style split principle with label-horizon purging:
+   `2018-2020` train/validation pool, 70/30 random train/validation split, and
+   `2021-2024` chronological test holdout.
 6. Fit pixel normalization on train images only.
 7. Train BTC CNN baseline with paper batch size `128` by default.
 8. Save prediction CSV with date, label, future return, logits, probabilities,
@@ -82,11 +83,16 @@ Dependency:
   class `0`.
 - Primary reporting is capped at `2024-12-31`; 2025-2026 remains optional
   later holdout.
-- Chronological split uses train `2018-2020`, validation `2021`, and test
-  `2022-2024`.
-- Samples are purged at split ends unless `label_end_date <= split_signal_end`.
+- The default split follows the paper-style train/validation rule:
+  `2018-2020` is the train/validation pool and is split 70/30 at random with
+  seed `42`; `2021-2024` is the chronological test holdout.
+- Samples are purged at train/test period ends unless
+  `label_end_date <= split_signal_end`.
 - Pixel normalization is fit on training images only and stored per experiment
   tuple `(image_window, image_spec, return_horizon)`.
+- Because BTC is a single rolling time series, adjacent train/validation samples
+  can overlap strongly. This is acceptable for the paper-aligned default, but a
+  chronological-validation variant can be added later as a robustness check.
 
 ## 한국어
 
@@ -106,8 +112,9 @@ Stage 2는 연구 설계를 다시 정의하지 않습니다.
 3. 같은 binary label rule을 사용합니다:
    `future R-day return > 0`이면 `label=1`, 아니면 `0`.
 4. BTC future return은 close price에서 `Close_{t+R} / Close_t - 1`로 만듭니다.
-5. look-ahead leakage 방지를 위해 label-horizon purge가 있는 시간순
-   train/validation/test split을 사용합니다.
+5. label-horizon purge가 있는 논문식 split 원칙을 사용합니다:
+   `2018-2020` train/validation pool, pool 내부 70/30 random train/validation
+   split, `2021-2024` chronological test holdout.
 6. pixel normalization은 train image에서만 fit합니다.
 7. BTC CNN baseline은 기본적으로 논문 batch size `128`로 학습합니다.
 8. date, label, future return, logits, probability, predicted class, correctness가
@@ -165,7 +172,12 @@ Stage 2 기본 batch 정책:
 - label은 future return이 양수이면 `1`, 아니면 `0`입니다. 정확히 0이면 class `0`입니다.
 - 기본 보고 기간은 `2024-12-31`까지로 제한하고, 2025-2026은 optional later holdout으로
   남깁니다.
-- 시간순 split은 train `2018-2020`, validation `2021`, test `2022-2024`입니다.
-- 각 split 끝에서 `label_end_date <= split_signal_end`를 만족하지 않는 sample은 purge합니다.
+- 기본 split은 논문식 train/validation rule을 따릅니다:
+  `2018-2020`을 train/validation pool로 두고 seed `42`로 70/30 random split하며,
+  `2021-2024`를 chronological test holdout으로 둡니다.
+- train/test period 끝에서 `label_end_date <= split_signal_end`를 만족하지 않는 sample은 purge합니다.
 - pixel normalization은 train image에서만 fit하고, `(image_window, image_spec,
   return_horizon)` experiment tuple별로 따로 저장합니다.
+- BTC는 단일 rolling time series라서 인접 train/validation sample이 많이 겹칠 수
+  있습니다. 이는 논문 방식에 맞춘 기본값에서는 허용하되, chronological validation은
+  나중 robustness check로 추가할 수 있습니다.

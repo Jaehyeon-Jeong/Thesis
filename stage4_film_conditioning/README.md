@@ -24,9 +24,10 @@ Condition-source tracks:
   explicitly documented no-leakage internal condition.
 - `4B F&G index + FiLM`: daily Fear & Greed style numeric sentiment condition.
   This requires a separate data-source audit before implementation.
-- `4C News dataset + FiLM`: BTC news text condition with a non-LLM encoder,
-  closer to the original FiLM paper's language-condition setup.
-- `4D News dataset -> LLM + FiLM`: LLM-derived condition. This is deferred.
+- `4C News + non-LLM encoder + FiLM`: BTC news is encoded by a non-LLM text
+  encoder and then used to generate FiLM gamma/beta.
+- `4D News + LLM encoder + FiLM`: the same BTC news idea, but the news is
+  encoded by an LLM before generating FiLM gamma/beta. This is deferred.
 
 Key modeling rule:
 - Do not change the Stage 2 BTC data pipeline.
@@ -75,9 +76,10 @@ Condition-source track:
   없다고 문서화한 내부 condition에서 생성합니다.
 - `4B F&G index + FiLM`: daily Fear & Greed 계열 numeric sentiment condition입니다.
   구현 전에 별도 data-source audit이 필요합니다.
-- `4C News dataset + FiLM`: LLM이 아닌 encoder로 BTC news text를 condition으로
-  사용하는 track입니다. 원 FiLM 논문의 language-condition 구조에 더 가깝습니다.
-- `4D News dataset -> LLM + FiLM`: LLM-derived condition입니다. 나중으로 미룹니다.
+- `4C News + non-LLM encoder + FiLM`: BTC news를 LLM이 아닌 text encoder로
+  condition vector로 바꾼 뒤 FiLM gamma/beta를 생성하는 track입니다.
+- `4D News + LLM encoder + FiLM`: 같은 BTC news를 LLM encoder로 condition
+  vector로 바꾼 뒤 FiLM gamma/beta를 생성하는 track입니다. 나중으로 미룹니다.
 
 핵심 모델링 규칙:
 - Stage 2 BTC data pipeline은 바꾸지 않습니다.

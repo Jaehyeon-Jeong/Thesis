@@ -24,8 +24,8 @@ Stage 4 adaptation:
 - This thesis applies FiLM to BTC chart-image CNNs.
 - Therefore, the core FiLM layer and gamma/beta generator idea are reused, but
   the condition source is separated into tracks:
-  FiLM-only control, F&G numeric condition, News non-LLM condition, and
-  News-to-LLM condition.
+  FiLM-only control, F&G numeric condition, News + non-LLM encoder, and
+  News + LLM encoder.
 
 ## 한국어
 
@@ -48,5 +48,5 @@ Stage 4 adaptation:
 - 원 FiLM project는 visual reasoning에서 language question encoder를 사용합니다.
 - 이 논문은 BTC chart-image CNN에 FiLM을 적용합니다.
 - 따라서 FiLM layer와 gamma/beta generator의 핵심 아이디어는 재사용하되,
-  condition source는 FiLM-only control, F&G numeric condition, News non-LLM
-  condition, News-to-LLM condition으로 분리합니다.
+  condition source는 FiLM-only control, F&G numeric condition,
+  News + non-LLM encoder, News + LLM encoder로 분리합니다.

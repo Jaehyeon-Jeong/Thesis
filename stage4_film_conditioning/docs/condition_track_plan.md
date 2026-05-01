@@ -20,17 +20,19 @@ Track 4B: F&G index + FiLM
   no-future-leakage rule.
 - Likely encoder: small MLP from numeric condition to block-wise gamma/beta.
 
-Track 4C: News dataset + FiLM
-- Purpose: test whether BTC news text helps the chart CNN.
-- This is non-LLM first.
+Track 4C: News + non-LLM encoder + FiLM
+- Purpose: test whether BTC news text helps the chart CNN when the news is
+  encoded by a non-LLM text encoder.
+- This is the first news-conditioned track.
 - Required before implementation:
   news source audit, publication-time alignment, duplicate handling, daily
   aggregation rule, no-future-leakage rule.
 - Likely encoder: embedding/GRU or pooled text encoder closer to the original
   FiLM setup.
 
-Track 4D: News dataset -> LLM + FiLM
-- Purpose: test LLM-derived news representation as condition.
+Track 4D: News + LLM encoder + FiLM
+- Purpose: test whether BTC news text helps the chart CNN when the news is
+  encoded by an LLM.
 - Deferred.
 - Required before implementation:
   model choice, cache/version rule, prompt or embedding specification,
@@ -55,16 +57,18 @@ Track 4B: F&G index + FiLM
   no-future-leakage rule.
 - 예상 encoder: numeric condition에서 block-wise gamma/beta를 만드는 작은 MLP.
 
-Track 4C: News dataset + FiLM
-- 목적: BTC news text가 chart CNN에 도움이 되는지 테스트합니다.
-- 먼저 LLM 없이 진행합니다.
+Track 4C: News + non-LLM encoder + FiLM
+- 목적: BTC news text를 LLM이 아닌 text encoder로 condition vector로 바꿨을 때
+  chart CNN에 도움이 되는지 테스트합니다.
+- 첫 news-conditioned track입니다.
 - 구현 전 필수:
   news source audit, publication-time alignment, duplicate handling, daily
   aggregation rule, no-future-leakage rule.
 - 예상 encoder: 원 FiLM 구조에 가까운 embedding/GRU 또는 pooled text encoder.
 
-Track 4D: News dataset -> LLM + FiLM
-- 목적: LLM-derived news representation을 condition으로 테스트합니다.
+Track 4D: News + LLM encoder + FiLM
+- 목적: BTC news text를 LLM encoder로 condition vector로 바꿨을 때 chart CNN에
+  도움이 되는지 테스트합니다.
 - 나중으로 미룹니다.
 - 구현 전 필수:
   model choice, cache/version rule, prompt 또는 embedding specification,

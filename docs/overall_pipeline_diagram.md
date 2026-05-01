@@ -13,7 +13,7 @@ flowchart TD
     B --> B1[I20/R5, I20/R20, I20/R60<br/>Stock_CNN baseline<br/>metrics + Grad-CAM]
     C --> C1[BTC OHLCV images<br/>classification + trading metrics<br/>BTC Grad-CAM]
     D --> D1[CNN + Linear adapter<br/>baseline comparison<br/>Grad-CAM comparison]
-    E --> E1[4A FiLM-only control<br/>4B F&G + FiLM<br/>4C News + FiLM<br/>4D News to LLM + FiLM]
+    E --> E1[4A FiLM-only control<br/>4B F&G + FiLM<br/>4C News + non-LLM encoder + FiLM<br/>4D News + LLM encoder + FiLM]
     E --> E2[Gamma-only FiLM<br/>Full FiLM<br/>Grad-CAM<br/>gamma/beta interpretation]
 ```
 
@@ -30,6 +30,6 @@ flowchart TD
     B --> B1[I20/R5, I20/R20, I20/R60<br/>Stock_CNN baseline<br/>metric + Grad-CAM]
     C --> C1[BTC OHLCV image<br/>classification + trading metric<br/>BTC Grad-CAM]
     D --> D1[CNN + Linear adapter<br/>baseline 비교<br/>Grad-CAM 비교]
-    E --> E1[4A FiLM-only control<br/>4B F&G + FiLM<br/>4C News + FiLM<br/>4D News to LLM + FiLM]
+    E --> E1[4A FiLM-only control<br/>4B F&G + FiLM<br/>4C News + non-LLM encoder + FiLM<br/>4D News + LLM encoder + FiLM]
     E --> E2[Gamma-only FiLM<br/>Full FiLM<br/>Grad-CAM<br/>gamma/beta 해석]
 ```

@@ -10,8 +10,8 @@ flowchart TD
 
     S0[4A FiLM-only control] --> G[FiLM generator]
     S1[4B F&G numeric condition later] -. deferred .-> G
-    S2[4C News non-LLM encoder later] -. deferred .-> G
-    S3[4D News to LLM encoder later] -. deferred .-> G
+    S2[4C News + non-LLM encoder later] -. deferred .-> G
+    S3[4D News + LLM encoder later] -. deferred .-> G
 
     G --> H[gamma and beta per block/channel]
     H --> D
@@ -36,8 +36,8 @@ flowchart TD
 
     S0[4A FiLM-only control] --> G[FiLM generator]
     S1[4B F&G numeric condition later] -. later .-> G
-    S2[4C News non-LLM encoder later] -. later .-> G
-    S3[4D News to LLM encoder later] -. later .-> G
+    S2[4C News + non-LLM encoder later] -. later .-> G
+    S3[4D News + LLM encoder later] -. later .-> G
 
     G --> H[block/channel별 gamma와 beta]
     H --> D

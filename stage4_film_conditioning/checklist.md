@@ -14,8 +14,8 @@ Planning phase:
 - [ ] 4-4. Condition-source track design
   - 4A: FiLM-only control
   - 4B: F&G index + FiLM
-  - 4C: News dataset + FiLM with non-LLM encoder
-  - 4D: News dataset -> LLM + FiLM
+  - 4C: News + non-LLM encoder + FiLM
+  - 4D: News + LLM encoder + FiLM
 - [ ] 4-5. Gamma-only FiLM vs Full FiLM comparison plan
 - [ ] 4-6. Grad-CAM and gamma/beta export plan
 - [ ] 4-7. Kaggle runner and output backup plan
@@ -67,8 +67,8 @@ Important:
 - [ ] 4-4. Condition-source track 설계
   - 4A: FiLM-only control
   - 4B: F&G index + FiLM
-  - 4C: News dataset + non-LLM encoder + FiLM
-  - 4D: News dataset -> LLM + FiLM
+  - 4C: News + non-LLM encoder + FiLM
+  - 4D: News + LLM encoder + FiLM
 - [ ] 4-5. Gamma-only FiLM vs Full FiLM 비교 계획
 - [ ] 4-6. Grad-CAM과 gamma/beta export 계획
 - [ ] 4-7. Kaggle runner와 output backup 계획

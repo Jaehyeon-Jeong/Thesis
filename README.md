@@ -66,7 +66,8 @@ Stage 4:
   implemented today.
 - Condition-source tracks are separated as:
   `4A FiLM-only control`, `4B F&G index + FiLM`,
-  `4C News dataset + FiLM`, and `4D News dataset -> LLM + FiLM`.
+  `4C News + non-LLM encoder + FiLM`, and
+  `4D News + LLM encoder + FiLM`.
 - The planned FiLM insertion point is inside each Stock_CNN block:
   `Conv2d -> BatchNorm2d -> FiLM -> LeakyReLU -> MaxPool2d`.
 - FiLM reference implementation HEAD checked:
@@ -164,7 +165,8 @@ Stage 4:
   않습니다.
 - Condition-source track은 다음처럼 분리합니다:
   `4A FiLM-only control`, `4B F&G index + FiLM`,
-  `4C News dataset + FiLM`, `4D News dataset -> LLM + FiLM`.
+  `4C News + non-LLM encoder + FiLM`,
+  `4D News + LLM encoder + FiLM`.
 - 계획한 FiLM 삽입 위치는 각 Stock_CNN block 내부입니다:
   `Conv2d -> BatchNorm2d -> FiLM -> LeakyReLU -> MaxPool2d`.
 - 확인한 FiLM reference implementation HEAD:

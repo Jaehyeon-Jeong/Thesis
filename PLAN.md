@@ -204,10 +204,12 @@
        작동하는지 확인한다. 이 결과는 external information 효과로 해석하지 않는다.
     2. `4B F&G index + FiLM`: Fear & Greed 계열 daily numeric sentiment를
        condition으로 사용한다. source audit과 date/leakage check 이후에만 구현한다.
-    3. `4C News dataset + FiLM`: LLM 없이 news text encoder를 condition으로 사용한다.
-       publication-time alignment와 leakage check 이후에만 구현한다.
-    4. `4D News dataset -> LLM + FiLM`: LLM-derived news representation을
-       condition으로 사용한다. LLM model/cache/version/prompt 계획 이후에만 구현한다.
+    3. `4C News + non-LLM encoder + FiLM`: news를 LLM이 아닌 text encoder로
+       condition vector로 바꾼 뒤 FiLM에 넣는다. publication-time alignment와
+       leakage check 이후에만 구현한다.
+    4. `4D News + LLM encoder + FiLM`: 같은 news source를 LLM encoder로
+       condition vector로 바꾼 뒤 FiLM에 넣는다. LLM model/cache/version/prompt
+       계획 이후에만 구현한다.
   - 오늘 범위는 `4A FiLM-only control` 준비와 FiLM 삽입 설계까지로 제한한다.
   - News/LLM condition 구현은 오늘 진행하지 않는다.
 - 모델 구현:

@@ -22,8 +22,8 @@ Confirmed current Stage 4 scope:
 - The condition-source split will be:
   - `4A FiLM-only control`
   - `4B F&G index + FiLM`
-  - `4C News dataset + FiLM`
-  - `4D News dataset -> LLM + FiLM`
+  - `4C News + non-LLM encoder + FiLM`
+  - `4D News + LLM encoder + FiLM`
 
 Reference note:
 - FiLM reference repository HEAD checked locally by `git ls-remote`:
@@ -57,8 +57,8 @@ Stage 4 폴더 구조를 만들었습니다:
 - Condition source 분류는 다음처럼 잡습니다:
   - `4A FiLM-only control`
   - `4B F&G index + FiLM`
-  - `4C News dataset + FiLM`
-  - `4D News dataset -> LLM + FiLM`
+  - `4C News + non-LLM encoder + FiLM`
+  - `4D News + LLM encoder + FiLM`
 
 Reference note:
 - FiLM reference repository HEAD를 `git ls-remote`로 확인했습니다:

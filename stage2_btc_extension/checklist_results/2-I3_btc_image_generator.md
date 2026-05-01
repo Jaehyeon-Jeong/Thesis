@@ -28,6 +28,17 @@ Sample:
 - `I20/R20`
 - sample date: `2018-02-08`
 
+Additional sample generated on request:
+- sample date: `2021-01-01`
+- source window: `2020-12-13` to `2021-01-01`
+- label end date: `2021-01-21`
+- future return: `0.051767900178953274`
+- files:
+  - `reports/figures/sample_images/btc_i20_ohlc_sample_2021-01-01.png`
+  - `reports/figures/sample_images/btc_i20_ohlc_vb_sample_2021-01-01.png`
+  - `reports/figures/sample_images/btc_i20_ohlc_ma_sample_2021-01-01.png`
+  - `reports/figures/sample_images/btc_i20_ohlc_ma_vb_sample_2021-01-01.png`
+
 ## 한국어
 
 상태: 완료
@@ -54,3 +65,14 @@ Sample:
 Sample:
 - `I20/R20`
 - sample date: `2018-02-08`
+
+요청에 따라 추가 생성한 sample:
+- sample date: `2021-01-01`
+- source window: `2020-12-13`부터 `2021-01-01`
+- label end date: `2021-01-21`
+- future return: `0.051767900178953274`
+- files:
+  - `reports/figures/sample_images/btc_i20_ohlc_sample_2021-01-01.png`
+  - `reports/figures/sample_images/btc_i20_ohlc_vb_sample_2021-01-01.png`
+  - `reports/figures/sample_images/btc_i20_ohlc_ma_sample_2021-01-01.png`
+  - `reports/figures/sample_images/btc_i20_ohlc_ma_vb_sample_2021-01-01.png`

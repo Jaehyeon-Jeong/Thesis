@@ -1,0 +1,7 @@
+priority,image_window,return_horizon,image_spec,run_seeds,batch_size,runner_mode,notes
+1,I20,R20,ohlc_ma_vb,42,128,single_tuple,first baseline sanity run
+2,I5,R5,ohlc_ma_vb,42,128,single_tuple,short-window baseline check
+3,I60,R60,ohlc_ma_vb,42,128,single_tuple,long-window baseline check
+4,I5/I20/I60,R5/R20/R60,ohlc_ma_vb,42,128,tuple_loop,complete full-spec horizon grid
+5,I5/I20/I60,R5/R20/R60,ohlc/ohlc_vb/ohlc_ma/ohlc_ma_vb,42,128,tuple_loop,image-spec ablation
+6,I5/I20/I60,R5/R20/R60,ohlc/ohlc_vb/ohlc_ma/ohlc_ma_vb,"42 43 44 45 46",128,tuple_loop,paper-style multi-seed robustness

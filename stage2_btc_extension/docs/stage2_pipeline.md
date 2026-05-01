@@ -31,6 +31,8 @@ Pipeline:
 9. Compute classification metrics.
 10. Compute BTC time-series trading metrics.
 11. Generate BTC Grad-CAM figures.
+12. Run full experiments through the Kaggle one-cell wrapper, one experiment
+    tuple at a time.
 
 Default Stage 2 batch policy:
 - Use `batch_size=128` by default.
@@ -120,6 +122,27 @@ Dependency:
 - Annualization uses 365 daily periods.
 - Report gross metrics and configurable transaction-cost-adjusted metrics.
 
+2-7 Grad-CAM decision:
+- BTC Grad-CAM is required for every baseline run.
+- The heatmap is not a raw feature map. It is a class-discriminative heatmap
+  made from activation and gradient with respect to the selected class logit.
+- Use pre-softmax logits as target scores.
+- I5 shows 2 convolution-layer heatmap rows, I20 shows 3 rows, and I60 shows
+  4 rows.
+- Final report figures use 10 predicted Up and 10 predicted Down samples when
+  available; quick smoke checks may use 2 per class.
+
+2-8 Kaggle runner/output decision:
+- Stage 2 follows the Stage 1 one-cell Kaggle wrapper pattern.
+- The notebook wrapper copies code, patches config, and calls repo scripts; it
+  does not contain the actual implementation logic.
+- Run one experiment tuple at a time.
+- Default strict Stage 2 uses batch size `128`, no mixed precision, no
+  DataParallel, and no fast cuDNN unless explicitly recorded as a speed
+  diagnostic.
+- Large outputs remain in Kaggle/working outputs; GitHub only receives code,
+  plans, configs, and small summary/report artifacts.
+
 ## 한국어
 
 목적:
@@ -148,6 +171,7 @@ Stage 2는 연구 설계를 다시 정의하지 않습니다.
 9. classification metric을 계산합니다.
 10. BTC time-series trading metric을 계산합니다.
 11. BTC Grad-CAM 그림을 생성합니다.
+12. Kaggle one-cell wrapper로 experiment tuple 하나씩 full experiment를 실행합니다.
 
 Stage 2 기본 batch 정책:
 - 기본값은 `batch_size=128`입니다.
@@ -229,3 +253,22 @@ Stage 2 기본 batch 정책:
 - R-day signal은 overlapping-horizon daily backtest로 평가합니다.
 - annualization은 365 daily periods를 사용합니다.
 - gross metric과 configurable transaction-cost-adjusted metric을 모두 보고합니다.
+
+2-7 Grad-CAM 결정:
+- 모든 BTC baseline run에서 BTC Grad-CAM은 필수입니다.
+- Heatmap은 raw feature map이 아닙니다. 선택한 class logit에 대한 activation과
+  gradient로 만든 class-discriminative heatmap입니다.
+- target score는 softmax 이전 logit을 사용합니다.
+- I5는 convolution-layer heatmap row 2개, I20은 3개, I60은 4개를 표시합니다.
+- 최종 보고 figure는 가능한 경우 predicted Up 10개와 predicted Down 10개를 쓰고,
+  빠른 smoke check는 class당 2개를 사용할 수 있습니다.
+
+2-8 Kaggle runner/output 결정:
+- Stage 2는 Stage 1의 one-cell Kaggle wrapper pattern을 따릅니다.
+- Notebook wrapper는 code copy, config patch, repo script 호출만 담당하며 실제
+  구현 로직은 담지 않습니다.
+- Experiment tuple 하나씩 실행합니다.
+- strict Stage 2 기본값은 batch size `128`, mixed precision off, DataParallel off,
+  fast cuDNN off입니다. 속도 diagnostic으로 바꾸면 기록해야 합니다.
+- 대용량 output은 Kaggle/working output에 두고, GitHub에는 code, plan, config,
+  작은 summary/report artifact만 올립니다.

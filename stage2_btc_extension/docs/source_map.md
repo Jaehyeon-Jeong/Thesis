@@ -255,6 +255,70 @@ Generated artifacts:
 - `stage2_btc_extension/docs/stage2_evaluation_trading_metric_plan.md`
 - `stage2_btc_extension/reports/tables/stage2_metric_schema.csv`
 
+## 2-7 BTC Grad-CAM Plan Result
+
+Checked on: 2026-05-01
+
+Paper/source basis:
+- Root `PLAN.md`: BTC Grad-CAM is required in Stage 2.
+- Re-image Figure 13: original image row followed by CNN-layer Grad-CAM heatmap
+  rows. The Stage 1 source map records this figure as Re-image Figure 13 and
+  local Re-image summary pp.41-49.
+- `자료조사/Grad-CAM요약.md`, method pp.4-6:
+  - use the pre-softmax target class score.
+  - compute channel weights by spatially averaging gradients.
+  - compute `ReLU(sum_k alpha_k^c A^k)`.
+  - upsample to the input image size with bilinear interpolation.
+- Stage 1 implementation:
+  `stage1_reimage_reproduction/src/stage1_reimage/interpretability/gradcam.py`.
+
+Stage 2 decisions:
+- BTC Grad-CAM is a class-discriminative heatmap, not a raw feature map.
+- The target score is the pre-softmax class logit.
+- Target layers follow the image-window model variant.
+  - I5: 2 convolution rows.
+  - I20: 3 convolution rows.
+  - I60: 4 convolution rows.
+- Heatmaps are upsampled to each model input size.
+- Final report figures use 10 predicted Up and 10 predicted Down samples when
+  available.
+- Quick smoke figures may use 2 samples per class.
+- Save a fixed-date sample list for later Linear/FiLM comparisons.
+
+Generated artifacts:
+- `stage2_btc_extension/docs/stage2_gradcam_plan.md`
+- `stage2_btc_extension/reports/tables/stage2_gradcam_output_schema.csv`
+
+## 2-8 Kaggle Runner and Output Plan Result
+
+Checked on: 2026-05-01
+
+Paper/source basis:
+- Root `PLAN.md`: full experiments use Kaggle Notebook by default, and the
+  Kaggle wrapper calls shared `src/` and `scripts/` code.
+- Stage 1 standard runner:
+  `stage1_reimage_reproduction/notebooks/kaggle_stage1_single_horizon_one_cell.md`.
+- Stage 2 audit runner:
+  `stage2_btc_extension/notebooks/kaggle_stage2_btc_ohlcv_audit_one_cell.md`.
+
+Stage 2 decisions:
+- Stage 2 follows the Stage 1 one-cell Kaggle wrapper pattern.
+- The Kaggle cell copies the code snapshot, patches config, and calls repo
+  scripts.
+- Actual implementation remains in `src/` and `scripts/`.
+- Run one experiment tuple at a time.
+- Strict baseline defaults are `batch_size=128`, mixed precision off,
+  DataParallel off, and fast cuDNN off.
+- Speed options must be recorded in `run_manifest.json` if enabled.
+- Large outputs stay in Kaggle/working outputs and are not committed to GitHub.
+- GitHub receives planning docs, code/config, small summary tables, and only
+  small selected figures when needed.
+
+Generated artifacts:
+- `stage2_btc_extension/docs/stage2_kaggle_runner_output_plan.md`
+- `stage2_btc_extension/notebooks/kaggle_stage2_btc_baseline_one_cell.md`
+- `stage2_btc_extension/reports/tables/stage2_kaggle_run_matrix.csv`
+
 ## 한국어
 
 이 파일은 Stage 2 구현 전에 확인해야 할 근거를 기록합니다.
@@ -524,3 +588,65 @@ Stage 2 결정:
 생성 artifact:
 - `stage2_btc_extension/docs/stage2_evaluation_trading_metric_plan.md`
 - `stage2_btc_extension/reports/tables/stage2_metric_schema.csv`
+
+## 2-7 BTC Grad-CAM 계획 결과
+
+확인일: 2026-05-01
+
+논문/source 근거:
+- Root `PLAN.md`: Stage 2에서도 BTC Grad-CAM은 필수입니다.
+- Re-image Figure 13: original image row 다음에 CNN layer별 Grad-CAM heatmap row를
+  둡니다. Stage 1 source-map은 이 figure를 Re-image Figure 13 및 로컬 Re-image
+  summary pp.41-49로 기록했습니다.
+- `자료조사/Grad-CAM요약.md`, method pp.4-6:
+  - softmax 이전 target class score를 사용합니다.
+  - gradient spatial average로 channel weight를 계산합니다.
+  - `ReLU(sum_k alpha_k^c A^k)`로 heatmap을 만듭니다.
+  - bilinear interpolation으로 input image size까지 upsample합니다.
+- Stage 1 구현:
+  `stage1_reimage_reproduction/src/stage1_reimage/interpretability/gradcam.py`.
+
+Stage 2 결정:
+- BTC Grad-CAM은 raw feature map이 아니라 class-discriminative heatmap입니다.
+- target score는 softmax 이전 class logit입니다.
+- target layer는 image window model variant를 따릅니다.
+  - I5: 2 convolution rows
+  - I20: 3 convolution rows
+  - I60: 4 convolution rows
+- Heatmap은 각 model input size로 upsample합니다.
+- 최종 보고 figure는 가능한 경우 predicted Up 10개와 predicted Down 10개를 사용합니다.
+- quick smoke figure는 class당 2개를 사용할 수 있습니다.
+- 이후 Linear/FiLM 비교를 위해 fixed-date sample list를 저장합니다.
+
+생성 artifact:
+- `stage2_btc_extension/docs/stage2_gradcam_plan.md`
+- `stage2_btc_extension/reports/tables/stage2_gradcam_output_schema.csv`
+
+## 2-8 Kaggle runner와 output 계획 결과
+
+확인일: 2026-05-01
+
+논문/source 근거:
+- Root `PLAN.md`: full experiment 기본 실행 환경은 Kaggle Notebook이며,
+  공통 `src/`/`scripts/`를 Kaggle wrapper가 호출합니다.
+- Stage 1 표준 실행:
+  `stage1_reimage_reproduction/notebooks/kaggle_stage1_single_horizon_one_cell.md`.
+- Stage 2 audit 실행:
+  `stage2_btc_extension/notebooks/kaggle_stage2_btc_ohlcv_audit_one_cell.md`.
+
+Stage 2 결정:
+- Stage 2는 Stage 1과 같은 one-cell Kaggle wrapper pattern을 따릅니다.
+- Kaggle cell은 code snapshot 복사, config patch, repo script 호출만 담당합니다.
+- 실제 구현은 `src/`와 `scripts/`에 둡니다.
+- Experiment tuple 하나씩 실행합니다.
+- strict baseline 기본값은 `batch_size=128`, mixed precision off,
+  DataParallel off, fast cuDNN off입니다.
+- 속도 옵션을 켜면 `run_manifest.json`에 기록합니다.
+- 대용량 output은 Kaggle/working output에 남기고 GitHub에는 올리지 않습니다.
+- GitHub에는 planning docs, code/config, 작은 summary table, 작은 selected figure만
+  publish합니다.
+
+생성 artifact:
+- `stage2_btc_extension/docs/stage2_kaggle_runner_output_plan.md`
+- `stage2_btc_extension/notebooks/kaggle_stage2_btc_baseline_one_cell.md`
+- `stage2_btc_extension/reports/tables/stage2_kaggle_run_matrix.csv`

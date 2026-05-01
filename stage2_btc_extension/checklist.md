@@ -19,8 +19,10 @@ Planning phase:
   - Result: [2-5 BTC baseline CNN adaptation plan](checklist_results/2-5_btc_baseline_cnn_adaptation_plan.md)
 - [x] 2-6. BTC evaluation and trading-metric plan
   - Result: [2-6 BTC evaluation/trading-metric plan](checklist_results/2-6_btc_evaluation_trading_metric_plan.md)
-- [ ] 2-7. BTC Grad-CAM plan
-- [ ] 2-8. Kaggle runner and output plan
+- [x] 2-7. BTC Grad-CAM plan
+  - Result: [2-7 BTC Grad-CAM plan](checklist_results/2-7_btc_gradcam_plan.md)
+- [x] 2-8. Kaggle runner and output plan
+  - Result: [2-8 Kaggle runner/output plan](checklist_results/2-8_kaggle_runner_output_plan.md)
 
 Implementation phase:
 - [ ] 2-I0. Implementation readiness review
@@ -62,8 +64,10 @@ Important:
   - 결과: [2-5 BTC baseline CNN adaptation 계획](checklist_results/2-5_btc_baseline_cnn_adaptation_plan.md)
 - [x] 2-6. BTC evaluation과 trading metric 계획
   - 결과: [2-6 BTC evaluation/trading-metric 계획](checklist_results/2-6_btc_evaluation_trading_metric_plan.md)
-- [ ] 2-7. BTC Grad-CAM 계획
-- [ ] 2-8. Kaggle runner와 output 계획
+- [x] 2-7. BTC Grad-CAM 계획
+  - 결과: [2-7 BTC Grad-CAM 계획](checklist_results/2-7_btc_gradcam_plan.md)
+- [x] 2-8. Kaggle runner와 output 계획
+  - 결과: [2-8 Kaggle runner/output 계획](checklist_results/2-8_kaggle_runner_output_plan.md)
 
 구현 단계:
 - [ ] 2-I0. 구현 readiness review

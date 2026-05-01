@@ -1,0 +1,6 @@
+artifact_group,artifact_path,required,description
+figure,outputs/stage2/{experiment}/figures/gradcam/{split}/figure13_style.png,yes,Figure-13-style grid with original BTC images and layer-wise Grad-CAM heatmaps
+figure,outputs/stage2/{experiment}/figures/gradcam/{split}/samples/*.png,yes,Individual sample-level Grad-CAM panels for inspection
+metadata,outputs/stage2/{experiment}/figures/gradcam/{split}/metadata.json,yes,Sample metadata target class checkpoint prediction path target layers and heatmap normalization
+selection,outputs/stage2/{experiment}/gradcam_selected_samples.csv,yes,Selected Up and Down samples used for report figures
+report_copy,reports/figures/gradcam/stage2_{experiment}_{split}_figure13_style.png,no,Small report copy for GitHub only when file size remains reasonable

@@ -12,6 +12,7 @@ Expected later scripts:
 - baseline training
 - prediction/evaluation export
 - Grad-CAM generation
+- output receipt/checking
 
 ## 한국어
 
@@ -25,3 +26,4 @@ Stage 2 command-line script는 세부계획을 확인한 뒤 추가합니다.
 - baseline training
 - prediction/evaluation export
 - Grad-CAM generation
+- output receipt/checking

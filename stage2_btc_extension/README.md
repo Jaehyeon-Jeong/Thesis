@@ -30,6 +30,8 @@ Main documents:
 - [BTC label/split/normalization plan](docs/stage2_label_split_normalization_plan.md)
 - [BTC baseline CNN adaptation plan](docs/stage2_baseline_cnn_adaptation_plan.md)
 - [BTC evaluation and trading metric plan](docs/stage2_evaluation_trading_metric_plan.md)
+- [BTC Grad-CAM plan](docs/stage2_gradcam_plan.md)
+- [Kaggle runner and output plan](docs/stage2_kaggle_runner_output_plan.md)
 - [Source map](docs/source_map.md)
 
 ## 한국어
@@ -61,4 +63,6 @@ Main documents:
 - [BTC label/split/normalization plan](docs/stage2_label_split_normalization_plan.md)
 - [BTC baseline CNN adaptation plan](docs/stage2_baseline_cnn_adaptation_plan.md)
 - [BTC evaluation and trading metric plan](docs/stage2_evaluation_trading_metric_plan.md)
+- [BTC Grad-CAM plan](docs/stage2_gradcam_plan.md)
+- [Kaggle runner and output plan](docs/stage2_kaggle_runner_output_plan.md)
 - [Source map](docs/source_map.md)

@@ -12,6 +12,9 @@ Current files:
   input shapes, flatten dimensions, and expected parameter counts.
 - `stage2_metric_schema.csv`: Stage 2 prediction, classification, calibration,
   and trading metric schema.
+- `stage2_gradcam_output_schema.csv`: required BTC Grad-CAM output artifacts.
+- `stage2_kaggle_run_matrix.csv`: planned Stage 2 Kaggle execution priority
+  matrix.
 
 Large predictions are not stored here.
 
@@ -26,5 +29,7 @@ Stage 2의 작은 planning/result table을 이 폴더에 저장합니다.
   flatten dimension, expected parameter count 계획.
 - `stage2_metric_schema.csv`: Stage 2 prediction, classification, calibration,
   trading metric schema.
+- `stage2_gradcam_output_schema.csv`: 필수 BTC Grad-CAM output artifact.
+- `stage2_kaggle_run_matrix.csv`: Stage 2 Kaggle 실행 우선순위 matrix.
 
 대용량 prediction은 이 폴더에 저장하지 않습니다.

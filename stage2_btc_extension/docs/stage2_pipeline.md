@@ -53,6 +53,15 @@ Dependency:
 - Stage 1 Grad-CAM logic is reusable as a method, but BTC sample selection and
   output metadata must be BTC-specific.
 
+2-2 data audit result:
+- Local BTC data folder: `/Users/jaehyeonjeong/Desktop/논문/데이터셋/BTC _OHLCV`.
+- Baseline source file: `btc_1d_data_2018_to_2025.csv`.
+- The audited daily file has `2997` rows, `12` columns, no missing OHLCV values,
+  no duplicate dates, no invalid OHLCV rows, and no missing calendar days.
+- Date range is `2018-01-01` to `2026-03-16`.
+- No daily resampling is needed for Stage 2 baseline.
+- All `I5`, `I20`, and `I60` windows are feasible.
+
 ## 한국어
 
 목적:
@@ -103,3 +112,12 @@ Stage 2 기본 batch 정책:
   넘어오지 않습니다. BTC는 OHLCV에서 image row와 future return을 새로 구성해야 합니다.
 - Stage 1 Grad-CAM 로직은 방법론으로 재사용할 수 있지만, BTC sample selection과 output
   metadata는 BTC용으로 바꿔야 합니다.
+
+2-2 data audit 결과:
+- local BTC data folder: `/Users/jaehyeonjeong/Desktop/논문/데이터셋/BTC _OHLCV`.
+- baseline source file: `btc_1d_data_2018_to_2025.csv`.
+- audit한 daily file은 `2997` rows, `12` columns이고, OHLCV 결측, duplicate date,
+  invalid OHLCV row, missing calendar day가 없습니다.
+- date range는 `2018-01-01`부터 `2026-03-16`까지입니다.
+- Stage 2 baseline에서는 daily resampling이 필요 없습니다.
+- `I5`, `I20`, `I60` window 모두 가능합니다.

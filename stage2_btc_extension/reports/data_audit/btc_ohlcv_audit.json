@@ -1,0 +1,143 @@
+{
+  "status": "ok",
+  "source_file": "/Users/jaehyeonjeong/Desktop/논문/데이터셋/BTC _OHLCV/btc_1d_data_2018_to_2025.csv",
+  "candidate_files": [
+    "/Users/jaehyeonjeong/Desktop/논문/데이터셋/BTC _OHLCV/btc_1d_data_2018_to_2025.csv"
+  ],
+  "raw_shape": [
+    2997,
+    12
+  ],
+  "raw_columns": [
+    "Open time",
+    "Open",
+    "High",
+    "Low",
+    "Close",
+    "Volume",
+    "Close time",
+    "Quote asset volume",
+    "Number of trades",
+    "Taker buy base asset volume",
+    "Taker buy quote asset volume",
+    "Ignore"
+  ],
+  "canonical_column_map": {
+    "Date": "Open time",
+    "Open": "Open",
+    "High": "High",
+    "Low": "Low",
+    "Close": "Close",
+    "Volume": "Volume"
+  },
+  "parse_warnings": [],
+  "missing_values": {
+    "Date": 0,
+    "Open": 0,
+    "High": 0,
+    "Low": 0,
+    "Close": 0,
+    "Volume": 0
+  },
+  "duplicate_dates": 0,
+  "invalid_ohlcv_rows": 0,
+  "clean_row_count": 2997,
+  "date_min": "2018-01-01T00:00:00",
+  "date_max": "2026-03-16T00:00:00",
+  "frequency": {
+    "median_delta": "1 days",
+    "daily_delta_share": 1.0,
+    "is_mostly_daily": true,
+    "top_delta_counts": {
+      "1 days": 2996
+    }
+  },
+  "calendar_gap_check": {
+    "expected_calendar_days": 2997,
+    "unique_dates": 2997,
+    "missing_calendar_days": 0
+  },
+  "value_checks": {
+    "open_min": 3211.71,
+    "open_max": 124658.54,
+    "close_min": 3211.72,
+    "close_max": 125046.94,
+    "volume_min": 165.2218,
+    "volume_max": 760705.362783,
+    "zero_volume_rows": 0
+  },
+  "window_horizon_availability": [
+    {
+      "image_window": "I5",
+      "return_horizon": "R5",
+      "sample_count": 2988,
+      "positive_rate": 0.5267737617135207,
+      "first_image_end_date": "2018-01-05T00:00:00",
+      "last_image_end_date": "2026-03-11T00:00:00"
+    },
+    {
+      "image_window": "I5",
+      "return_horizon": "R20",
+      "sample_count": 2973,
+      "positive_rate": 0.5297679112008072,
+      "first_image_end_date": "2018-01-05T00:00:00",
+      "last_image_end_date": "2026-02-24T00:00:00"
+    },
+    {
+      "image_window": "I5",
+      "return_horizon": "R60",
+      "sample_count": 2933,
+      "positive_rate": 0.5260825093760655,
+      "first_image_end_date": "2018-01-05T00:00:00",
+      "last_image_end_date": "2026-01-15T00:00:00"
+    },
+    {
+      "image_window": "I20",
+      "return_horizon": "R5",
+      "sample_count": 2973,
+      "positive_rate": 0.5290951900437268,
+      "first_image_end_date": "2018-01-20T00:00:00",
+      "last_image_end_date": "2026-03-11T00:00:00"
+    },
+    {
+      "image_window": "I20",
+      "return_horizon": "R20",
+      "sample_count": 2958,
+      "positive_rate": 0.5324543610547667,
+      "first_image_end_date": "2018-01-20T00:00:00",
+      "last_image_end_date": "2026-02-24T00:00:00"
+    },
+    {
+      "image_window": "I20",
+      "return_horizon": "R60",
+      "sample_count": 2918,
+      "positive_rate": 0.5287868403015764,
+      "first_image_end_date": "2018-01-20T00:00:00",
+      "last_image_end_date": "2026-01-15T00:00:00"
+    },
+    {
+      "image_window": "I60",
+      "return_horizon": "R5",
+      "sample_count": 2933,
+      "positive_rate": 0.5288100920559154,
+      "first_image_end_date": "2018-03-01T00:00:00",
+      "last_image_end_date": "2026-03-11T00:00:00"
+    },
+    {
+      "image_window": "I60",
+      "return_horizon": "R20",
+      "sample_count": 2918,
+      "positive_rate": 0.5342700479780672,
+      "first_image_end_date": "2018-03-01T00:00:00",
+      "last_image_end_date": "2026-02-24T00:00:00"
+    },
+    {
+      "image_window": "I60",
+      "return_horizon": "R60",
+      "sample_count": 2878,
+      "positive_rate": 0.5361362056984017,
+      "first_image_end_date": "2018-03-01T00:00:00",
+      "last_image_end_date": "2026-01-15T00:00:00"
+    }
+  ]
+}

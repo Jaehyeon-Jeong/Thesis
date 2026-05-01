@@ -2,10 +2,12 @@
 
 ## English
 
-Kaggle runner notebooks/cells will be added after the BTC data audit confirms
-the attached dataset path.
+Available Kaggle cells:
+- `kaggle_stage2_btc_ohlcv_audit_one_cell.md`: runs the BTC OHLCV data audit
+  inside Kaggle.
 
 ## 한국어
 
-BTC 데이터 audit에서 Kaggle attached dataset path를 확인한 뒤 Kaggle runner
-notebook/cell을 추가합니다.
+사용 가능한 Kaggle cell:
+- `kaggle_stage2_btc_ohlcv_audit_one_cell.md`: Kaggle 안에서 BTC OHLCV data audit을
+  실행합니다.

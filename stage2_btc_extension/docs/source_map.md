@@ -12,7 +12,7 @@ This file records sources that Stage 2 must check before implementation.
 | Re-image paper PDF | `자료조사/Xiu-Re-Imagining-Price-Trends.pdf` | Page-level source check before implementing exact image/CNN choices. |
 | Grad-CAM summary | `자료조사/Grad-CAM요약.md` | BTC Grad-CAM implementation and interpretation. |
 | Grad-CAM PDF | `자료조사/Grad-CAM.pdf` | Original Grad-CAM method check before implementation. |
-| BTC OHLCV data | `kaggle.com/datasets/novandraanugrah/bitcoin-historical-datasets-2018-2024` | Primary Stage 2 dataset. Must audit columns/date/frequency before coding. |
+| BTC OHLCV data | `https://www.kaggle.com/datasets/novandraanugrah/bitcoin-historical-datasets-2018-2024` | Primary Stage 2 dataset. Local copy audited in 2-2. |
 
 Initial decisions:
 - Stage 2 starts with BTC OHLCV only.
@@ -69,6 +69,54 @@ Open items passed to 2-2:
 - Confirm volume column meaning and whether volume is usable for Re-image-style volume bars.
 - Confirm the first feasible BTC split dates before implementation.
 
+## 2-2 BTC OHLCV Data Audit Result
+
+Checked on: 2026-05-01
+
+Primary source:
+- Kaggle dataset: `https://www.kaggle.com/datasets/novandraanugrah/bitcoin-historical-datasets-2018-2024`
+- Local audited folder: `/Users/jaehyeonjeong/Desktop/논문/데이터셋/BTC _OHLCV`
+- Audited file: `btc_1d_data_2018_to_2025.csv`
+
+Available files in the local BTC folder:
+- `btc_15m_data_2018_to_2025.csv`
+- `btc_1d_data_2018_to_2025.csv`
+- `btc_1h_data_2018_to_2025.csv`
+- `btc_4h_data_2018_to_2025.csv`
+
+Data audit summary:
+- Raw shape: `2997 x 12`
+- Date range: `2018-01-01` to `2026-03-16`
+- Frequency: daily, median delta `1 days`, daily delta share `1.0`
+- Missing calendar days: `0`
+- Duplicate dates: `0`
+- Missing OHLCV values: `0`
+- Invalid OHLCV rows: `0`
+- Zero-volume rows: `0`
+
+Canonical Stage 2 columns:
+- `Date` <- `Open time`
+- `Open` <- `Open`
+- `High` <- `High`
+- `Low` <- `Low`
+- `Close` <- `Close`
+- `Volume` <- `Volume`
+
+Stage 2 implication:
+- No daily resampling is needed for the baseline BTC pipeline.
+- `Volume` is present and usable for Re-image-style volume bars.
+- `Open time` is used as the daily row date because it is the candle start date.
+- BTC `I5`, `I20`, and `I60` are all feasible from this daily file.
+- As recorded in 2-1, these require three window-specific CNN variants:
+  `StockCNNI5`, `StockCNNI20`, and `StockCNNI60`.
+
+Generated audit artifacts:
+- `stage2_btc_extension/scripts/audit_btc_ohlcv.py`
+- `stage2_btc_extension/notebooks/kaggle_stage2_btc_ohlcv_audit_one_cell.md`
+- `stage2_btc_extension/reports/data_audit/btc_ohlcv_audit.json`
+- `stage2_btc_extension/reports/data_audit/btc_ohlcv_audit.md`
+- `stage2_btc_extension/reports/data_audit/btc_ohlcv_head.csv`
+
 ## 한국어
 
 이 파일은 Stage 2 구현 전에 확인해야 할 근거를 기록합니다.
@@ -81,7 +129,7 @@ Open items passed to 2-2:
 | Re-image 논문 PDF | `자료조사/Xiu-Re-Imagining-Price-Trends.pdf` | 정확한 image/CNN 선택 구현 전 page-level source 확인. |
 | Grad-CAM 요약 | `자료조사/Grad-CAM요약.md` | BTC Grad-CAM 구현과 해석에 사용. |
 | Grad-CAM PDF | `자료조사/Grad-CAM.pdf` | Grad-CAM 원전 방법 구현 전 확인. |
-| BTC OHLCV 데이터 | `kaggle.com/datasets/novandraanugrah/bitcoin-historical-datasets-2018-2024` | Stage 2 primary dataset. 코딩 전에 columns/date/frequency audit 필수. |
+| BTC OHLCV 데이터 | `https://www.kaggle.com/datasets/novandraanugrah/bitcoin-historical-datasets-2018-2024` | Stage 2 primary dataset. 2-2에서 local copy audit 완료. |
 
 초기 결정:
 - Stage 2는 BTC OHLCV만으로 시작합니다.
@@ -152,3 +200,51 @@ Stage 1에서 그대로 유지할 수 있는 결정:
 - daily resampling 필요 여부 확인.
 - volume column의 의미와 Re-image-style volume bar에 사용할 수 있는지 확인.
 - 구현 전 BTC train/validation/test split 후보 확정.
+
+## 2-2 BTC OHLCV 데이터 audit 결과
+
+확인일: 2026-05-01
+
+Primary source:
+- Kaggle dataset: `https://www.kaggle.com/datasets/novandraanugrah/bitcoin-historical-datasets-2018-2024`
+- local audited folder: `/Users/jaehyeonjeong/Desktop/논문/데이터셋/BTC _OHLCV`
+- audited file: `btc_1d_data_2018_to_2025.csv`
+
+로컬 BTC 폴더에 있는 파일:
+- `btc_15m_data_2018_to_2025.csv`
+- `btc_1d_data_2018_to_2025.csv`
+- `btc_1h_data_2018_to_2025.csv`
+- `btc_4h_data_2018_to_2025.csv`
+
+데이터 audit 요약:
+- raw shape: `2997 x 12`
+- date range: `2018-01-01`부터 `2026-03-16`까지
+- frequency: daily, median delta `1 days`, daily delta share `1.0`
+- missing calendar days: `0`
+- duplicate dates: `0`
+- missing OHLCV values: `0`
+- invalid OHLCV rows: `0`
+- zero-volume rows: `0`
+
+Stage 2 canonical columns:
+- `Date` <- `Open time`
+- `Open` <- `Open`
+- `High` <- `High`
+- `Low` <- `Low`
+- `Close` <- `Close`
+- `Volume` <- `Volume`
+
+Stage 2 implication:
+- BTC baseline pipeline에서는 daily resampling이 필요 없습니다.
+- `Volume` column이 있으므로 Re-image-style volume bar에 사용할 수 있습니다.
+- `Open time`은 daily candle 시작일이므로 row date로 사용합니다.
+- 이 daily file로 BTC `I5`, `I20`, `I60` 모두 가능합니다.
+- 2-1에서 기록한 것처럼 세 window는 각각 window-specific CNN variant가 필요합니다:
+  `StockCNNI5`, `StockCNNI20`, `StockCNNI60`.
+
+생성한 audit artifact:
+- `stage2_btc_extension/scripts/audit_btc_ohlcv.py`
+- `stage2_btc_extension/notebooks/kaggle_stage2_btc_ohlcv_audit_one_cell.md`
+- `stage2_btc_extension/reports/data_audit/btc_ohlcv_audit.json`
+- `stage2_btc_extension/reports/data_audit/btc_ohlcv_audit.md`
+- `stage2_btc_extension/reports/data_audit/btc_ohlcv_head.csv`

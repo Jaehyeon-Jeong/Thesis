@@ -43,6 +43,10 @@
     - 그 셀은 code snapshot과 data를 working/local disk로 복사한다.
     - 실제 학습/평가/Grad-CAM 구현은 기존 `src/`와 `scripts/`를 호출한다.
     - horizon은 한 번에 하나씩 실행한다.
+    - 1-I10 Kaggle full single-seed debugging에서는 fast option을 사용할 수 있다:
+      train/validation RAM pre-load, larger batch, mixed precision, optional
+      DataParallel. 이 option은 실행 속도를 위한 것이며 model/label/split 구조를
+      바꾸지 않는다.
   - Colab Notebook은 필요할 경우 optional runner다.
   - 로컬은 작은 subset smoke test와 문서/구조 확인 용도다.
 - 환경 차이는 코드 분기가 아니라 config로 관리한다.

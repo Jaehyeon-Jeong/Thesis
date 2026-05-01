@@ -35,6 +35,7 @@ from stage1_reimage.config import get_config_section
 from stage1_reimage.data import (
     TARGET_COLUMNS,
     HorizonSplitImageDataset,
+    PreloadedHorizonSplitImageDataset,
     assign_splits,
     build_base_metadata,
     build_dataset_from_config,
@@ -166,7 +167,13 @@ def run_stage1_baseline(
         for run_seed in selection.run_seeds:
             # seed는 weight initialization과 DataLoader train shuffling에 영향을 준다.
             print(f"[stage1:{horizon_name}:seed_{run_seed}] training start", flush=True)
-            set_global_seed(run_seed)
+            determinism_config = get_config_section(config, "training").get(
+                "determinism",
+                {},
+            )
+            deterministic = bool(determinism_config.get("enabled", True))
+            set_global_seed(run_seed, deterministic=deterministic)
+            _apply_cudnn_runtime_flags(determinism_config)
             training_settings = training_settings_base
             if selection.max_epochs is not None:
                 from dataclasses import replace
@@ -327,25 +334,54 @@ def _build_train_val_loaders(
     num_workers = int(runtime_config.get("num_workers", 0))
     persistent_workers = bool(runtime_config.get("persistent_workers", False)) and num_workers > 0
     pin_memory = bool(runtime_config.get("pin_memory", False))
+    preload_train_val_images = bool(runtime_config.get("preload_train_val_images", False))
+    preload_chunk_size = int(runtime_config.get("preload_chunk_size", 8192))
 
-    # Dataset은 normalized sample을 하나씩 읽는다. 아래 DataLoader가 그 sample을
-    # batch tensor로 stack한다.
-    train_dataset = HorizonSplitImageDataset(
-        base_dataset=base_dataset,
-        split_frame=split_frame,
-        split_name="train",
-        normalization_stats=normalization_stats,
-        max_rows=max_train_rows,
-        include_metadata=False,
-    )
-    val_dataset = HorizonSplitImageDataset(
-        base_dataset=base_dataset,
-        split_frame=split_frame,
-        split_name="validation",
-        normalization_stats=normalization_stats,
-        max_rows=max_val_rows,
-        include_metadata=False,
-    )
+    if preload_train_val_images:
+        print(
+            "[stage1] using RAM-preloaded train/validation image datasets",
+            flush=True,
+        )
+        # Fast Kaggle path: train/validation image를 한 번 RAM으로 복사한다. 이후
+        # train shuffle은 RAM index만 섞으므로 memmap random I/O 병목이 크게 줄어든다.
+        train_dataset = PreloadedHorizonSplitImageDataset(
+            base_dataset=base_dataset,
+            split_frame=split_frame,
+            split_name="train",
+            normalization_stats=normalization_stats,
+            max_rows=max_train_rows,
+            preload_chunk_size=preload_chunk_size,
+            include_metadata=False,
+            progress_label="train",
+        )
+        val_dataset = PreloadedHorizonSplitImageDataset(
+            base_dataset=base_dataset,
+            split_frame=split_frame,
+            split_name="validation",
+            normalization_stats=normalization_stats,
+            max_rows=max_val_rows,
+            preload_chunk_size=preload_chunk_size,
+            include_metadata=False,
+            progress_label="validation",
+        )
+    else:
+        # Strict/lower-memory path: image는 필요할 때마다 memmap에서 읽는다.
+        train_dataset = HorizonSplitImageDataset(
+            base_dataset=base_dataset,
+            split_frame=split_frame,
+            split_name="train",
+            normalization_stats=normalization_stats,
+            max_rows=max_train_rows,
+            include_metadata=False,
+        )
+        val_dataset = HorizonSplitImageDataset(
+            base_dataset=base_dataset,
+            split_frame=split_frame,
+            split_name="validation",
+            normalization_stats=normalization_stats,
+            max_rows=max_val_rows,
+            include_metadata=False,
+        )
     # SGD는 random batch order에서 이점이 있으므로 train loader는 row를 shuffle한다.
     train_loader = DataLoader(
         train_dataset,
@@ -407,6 +443,26 @@ def _cuda_info() -> dict[str, Any]:
         "device_count": int(torch.cuda.device_count()) if available else 0,
         "device_name": torch.cuda.get_device_name(0) if available else None,
     }
+
+
+def _apply_cudnn_runtime_flags(determinism_config: Mapping[str, Any]) -> None:
+    """config의 determinism/benchmark 설정을 PyTorch cuDNN에 적용한다.
+
+    strict 재현 run은 deterministic=True, benchmark=False를 사용한다. Kaggle fast
+    run은 입력 shape가 고정되어 있으므로 benchmark=True가 더 빠를 수 있다.
+    """
+
+    if not torch.cuda.is_available():
+        return
+    deterministic = bool(determinism_config.get("enabled", True))
+    benchmark = bool(determinism_config.get("cudnn_benchmark", False))
+    torch.backends.cudnn.deterministic = deterministic
+    torch.backends.cudnn.benchmark = benchmark and not deterministic
+    print(
+        f"[stage1] cudnn deterministic={torch.backends.cudnn.deterministic} "
+        f"benchmark={torch.backends.cudnn.benchmark}",
+        flush=True,
+    )
 
 
 def _git_commit(project_root: Path) -> str | None:

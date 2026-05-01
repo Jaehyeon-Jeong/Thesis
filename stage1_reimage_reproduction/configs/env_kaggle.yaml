@@ -30,6 +30,8 @@ runtime:
   pin_memory: true
   persistent_workers: true
   mixed_precision: false
+  preload_train_val_images: false
+  preload_chunk_size: 8192
 
 run:
   default_run_mode: full_single_seed
@@ -112,6 +114,7 @@ training:
     cudnn_deterministic: true
     cudnn_benchmark: false
   mixed_precision: false
+  data_parallel: false
   gradient_clipping: null
   log_every_batches: 100
 

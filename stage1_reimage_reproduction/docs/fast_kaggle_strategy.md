@@ -105,6 +105,46 @@ Performance code change:
 - This keeps the research design unchanged while reducing avoidable CPU
   overhead during training.
 
+Fast runtime fix added on 2026-05-01:
+- Training/validation images can now be pre-loaded into RAM before training.
+  This changes data access speed, not the model, label, split, or target.
+- The Kaggle one-cell runner enables:
+  - `preload_train_val_images=True`
+  - `batch_size=1024`
+  - `mixed_precision=True`
+  - `data_parallel=True`
+  - `cudnn_benchmark=True`
+- If CUDA runs out of memory, set `BATCH_SIZE=512` first. If the run is still
+  unstable, set `DATA_PARALLEL=False`.
+- The expected fast-run log must include:
+  - `[preload:train] ...`
+  - `[preload:validation] ...`
+  - `[train] mixed_precision=True ...`
+  - `[train] enabling DataParallel ...` when Kaggle provides two GPUs.
+- If the log only prints `batch=20 loss=...`, the Kaggle code snapshot is old.
+  Re-upload the latest `stage1_reimage_reproduction` folder or zip.
+
+Expected runtime, not guaranteed:
+- Old lazy-memmap path: often 20+ minutes per epoch on Kaggle, sometimes worse.
+- Fast RAM-preload path on Kaggle T4 x2:
+  - code/data copy: about 3-10 minutes depending on Kaggle input storage.
+  - train/validation preload: about 2-8 minutes.
+  - one epoch: target about 2-6 minutes after preload.
+  - one horizon including training, test prediction, and quick Grad-CAM:
+    about 25-60 minutes.
+  - all three `I20/R5`, `I20/R20`, `I20/R60`: about 1.5-3.5 hours.
+- Strict reproduction mode with batch 128 and FP32 is slower. Keep it for the
+  final audit run, not for debugging the pipeline.
+
+Paid compute decision:
+- Colab Pro/Pro+ may be faster only if it actually gives an L4/A100-class GPU
+  and the dataset sits on fast local disk. It is not guaranteed.
+- RunPod/Lambda/GCP with A10/A100 and local NVMe is more likely to be faster
+  than Colab for this workload.
+- Immediate recommendation: first run the new Kaggle fast path. Pay only if
+  one horizon still takes more than about one hour after the `[preload:*]`
+  messages appear.
+
 ## 한국어
 
 목적:
@@ -208,3 +248,42 @@ python -u scripts/generate_stage1_gradcam.py \
 - training/validation DataLoader가 더 이상 metadata를 collate하지 않게 했습니다.
 - evaluation/prediction CSV에서는 metadata를 그대로 유지합니다.
 - 연구 설계는 유지하면서 training 중 불필요한 CPU overhead만 줄인 변경입니다.
+
+2026-05-01 추가 fast runtime 수정:
+- training/validation 이미지를 학습 전에 RAM으로 pre-load할 수 있게 했습니다.
+  이는 data access 속도만 바꾸며 model, label, split, target은 바꾸지 않습니다.
+- Kaggle one-cell runner는 아래 fast setting을 켭니다.
+  - `preload_train_val_images=True`
+  - `batch_size=1024`
+  - `mixed_precision=True`
+  - `data_parallel=True`
+  - `cudnn_benchmark=True`
+- CUDA OOM이 나면 먼저 `BATCH_SIZE=512`로 낮춥니다. 그래도 불안정하면
+  `DATA_PARALLEL=False`로 둡니다.
+- 정상 fast run log에는 반드시 아래 문구가 보여야 합니다.
+  - `[preload:train] ...`
+  - `[preload:validation] ...`
+  - `[train] mixed_precision=True ...`
+  - Kaggle에서 GPU 두 개가 잡히면 `[train] enabling DataParallel ...`
+- log가 여전히 `batch=20 loss=...`만 찍히면 Kaggle code snapshot이 예전
+  버전입니다. 최신 `stage1_reimage_reproduction` 폴더나 zip을 다시 업로드해야 합니다.
+
+예상 시간:
+- 기존 lazy-memmap path: Kaggle에서 epoch 하나가 20분 이상 걸릴 수 있습니다.
+- Kaggle T4 x2 fast RAM-preload path:
+  - code/data copy: Kaggle input storage 상태에 따라 약 3-10분.
+  - train/validation preload: 약 2-8분.
+  - preload 이후 epoch 하나: 목표 약 2-6분.
+  - horizon 하나의 training, test prediction, quick Grad-CAM: 약 25-60분.
+  - `I20/R5`, `I20/R20`, `I20/R60` 세 개 전체: 약 1.5-3.5시간.
+- batch 128, FP32 strict reproduction mode는 더 느립니다. 이 설정은 pipeline
+  debugging이 아니라 최종 audit run용으로 남깁니다.
+
+유료 compute 판단:
+- Colab Pro/Pro+는 L4/A100급 GPU가 실제로 배정되고 데이터가 빠른 local disk에
+  있을 때만 빨라질 수 있습니다. 배정이 보장되지는 않습니다.
+- RunPod/Lambda/GCP처럼 A10/A100과 local NVMe를 고르는 환경이 이 workload에는
+  Colab보다 더 확실하게 빠릅니다.
+- 지금 당장 권장하는 선택은 새 Kaggle fast path를 먼저 돌리는 것입니다.
+  `[preload:*]`가 보이는데도 horizon 하나가 1시간을 크게 넘으면 그때 유료 GPU를
+  판단합니다.

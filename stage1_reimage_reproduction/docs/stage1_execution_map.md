@@ -20,7 +20,8 @@ flowchart TD
     B --> C["Label construction<br/>Ret_5d / Ret_20d / Ret_60d > 0 -> Up=1"]
     C --> D["Time split<br/>train / validation / test"]
     D --> E["Train-only pixel normalization<br/>mean/std from train images only"]
-    E --> F["CNN training<br/>StockCNNI20"]
+    E --> F0["Optional Kaggle fast preload<br/>train/validation images in RAM"]
+    F0 --> F["CNN training<br/>StockCNNI20"]
     F --> G["Test prediction CSV"]
     G --> H["Metrics JSON"]
     G --> I["Grad-CAM figures"]
@@ -35,8 +36,9 @@ flowchart TD
 | label construction | [label_split.py](../src/stage1_reimage/data/label_split.py) | Builds `label = 1` when future return is positive. |
 | time split | [label_split.py](../src/stage1_reimage/data/label_split.py) | Assigns train, validation, and test split. |
 | train-only pixel mean/std | [label_split.py](../src/stage1_reimage/data/label_split.py) | Computes normalization using train images only. |
+| optional Kaggle fast preload | [label_split.py](../src/stage1_reimage/data/label_split.py) | `PreloadedHorizonSplitImageDataset` keeps train/validation images in RAM to avoid random memmap I/O. |
 | CNN model | [stock_cnn.py](../src/stage1_reimage/models/stock_cnn.py) | GitHub-style I20 CNN following `lich99/Stock_CNN`. |
-| CNN training | [loop.py](../src/stage1_reimage/training/loop.py) | Cross-entropy, Adam, early stopping, checkpoint writing. |
+| CNN training | [loop.py](../src/stage1_reimage/training/loop.py) | Cross-entropy, Adam, early stopping, AMP/DataParallel options, checkpoint writing. |
 | training runner | [stage1_baseline.py](../src/stage1_reimage/runners/stage1_baseline.py) | Orchestrates data, labels, splits, normalization, loaders, and training. |
 | training CLI | [run_stage1_baseline.py](../scripts/run_stage1_baseline.py) | Called by the Kaggle one-cell runner. |
 | test prediction CSV | [prediction.py](../src/stage1_reimage/evaluation/prediction.py) | Loads `best.pt`, writes prediction CSV, computes probabilities. |
@@ -89,7 +91,8 @@ flowchart TD
     B --> C["label 만들기<br/>Ret_5d / Ret_20d / Ret_60d > 0 -> Up=1"]
     C --> D["time split<br/>train / validation / test"]
     D --> E["train data로만 pixel mean/std 계산"]
-    E --> F["CNN 학습<br/>StockCNNI20"]
+    E --> F0["선택적 Kaggle fast preload<br/>train/validation image를 RAM에 보관"]
+    F0 --> F["CNN 학습<br/>StockCNNI20"]
     F --> G["test prediction CSV 저장"]
     G --> H["metrics 저장"]
     G --> I["Grad-CAM 그림 저장"]
@@ -104,8 +107,9 @@ flowchart TD
 | label 만들기 | [label_split.py](../src/stage1_reimage/data/label_split.py) | future return이 양수이면 `label=1`을 만듭니다. |
 | time split | [label_split.py](../src/stage1_reimage/data/label_split.py) | train, validation, test split을 부여합니다. |
 | train-only pixel mean/std | [label_split.py](../src/stage1_reimage/data/label_split.py) | train image만 사용해 normalization mean/std를 계산합니다. |
+| 선택적 Kaggle fast preload | [label_split.py](../src/stage1_reimage/data/label_split.py) | `PreloadedHorizonSplitImageDataset`이 train/validation image를 RAM에 올려 random memmap I/O를 줄입니다. |
 | CNN model | [stock_cnn.py](../src/stage1_reimage/models/stock_cnn.py) | `lich99/Stock_CNN`을 따르는 I20 CNN입니다. |
-| CNN 학습 | [loop.py](../src/stage1_reimage/training/loop.py) | Cross-entropy, Adam, early stopping, checkpoint 저장. |
+| CNN 학습 | [loop.py](../src/stage1_reimage/training/loop.py) | Cross-entropy, Adam, early stopping, AMP/DataParallel option, checkpoint 저장. |
 | training runner | [stage1_baseline.py](../src/stage1_reimage/runners/stage1_baseline.py) | data, label, split, normalization, loader, training을 연결합니다. |
 | training CLI | [run_stage1_baseline.py](../scripts/run_stage1_baseline.py) | Kaggle one-cell runner가 호출합니다. |
 | test prediction CSV | [prediction.py](../src/stage1_reimage/evaluation/prediction.py) | `best.pt`를 불러와 prediction CSV와 probability를 저장합니다. |

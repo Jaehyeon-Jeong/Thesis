@@ -1,0 +1,31 @@
+[stage1] run_mode=smoke horizons=['stage1_i20_r20'] seeds=[42]
+[stage1] device=cpu
+[stage1] building monthly_20d dataset
+[stage1] dataset ready shards=27 rows=2,196,994
+[stage1] building base metadata
+[stage1] base metadata rows=2,196,994
+[stage1:stage1_i20_r20] start
+[stage1:stage1_i20_r20] labeled rows=2,180,610 target=Ret_20d
+[stage1:stage1_i20_r20] split counts={'test': 1393845, 'train': 550736, 'validation': 236029}
+[normalization:stage1_i20_r20] start images=16 chunk_size=4096
+[normalization:stage1_i20_r20] 16/16 images (100.0%)
+[normalization:stage1_i20_r20] done mean=0.14249674 std=0.34955890
+[stage1:stage1_i20_r20:seed_42] training start
+[stage1] using RAM-preloaded train/validation image datasets
+[preload:train] start rows=8 estimated_raw_uint8=0.00GiB chunk_size=4
+[preload:train] 4/8 rows (50.0%)
+[preload:train] 8/8 rows (100.0%)
+[preload:train] done
+[preload:validation] start rows=4 estimated_raw_uint8=0.00GiB chunk_size=4
+[preload:validation] 4/4 rows (100.0%)
+[preload:validation] done
+[stage1:stage1_i20_r20:seed_42] train_rows=8 val_rows=4 train_batches=2 val_batches=1
+[train] mixed_precision=False data_parallel=False
+[train] epoch 1/1 start train_batches=2 val_batches=1
+[train] batch=1/2 (50.0%) loss=1.029075
+[train] batch=2/2 (100.0%) loss=1.378697
+[val] batch=1/1 (100.0%) loss=0.699426
+[train] epoch 1/1 done train_loss=1.203886 val_loss=0.699426 train_acc=0.3750 val_acc=0.2500 seconds=0.4 best=True
+[stage1:stage1_i20_r20:seed_42] training done best_epoch=1 best_val_loss=0.699426
+[stage1] run manifest written: /Users/jaehyeonjeong/Desktop/논문/stage1_reimage_reproduction/outputs/run_manifests/run_manifest.json
+SMOKE_OK ok ['stage1_i20_r20'] [42]

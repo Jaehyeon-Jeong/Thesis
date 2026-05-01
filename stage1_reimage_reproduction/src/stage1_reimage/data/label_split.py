@@ -213,6 +213,94 @@ class HorizonSplitImageDataset(Dataset):
         return sample
 
 
+class PreloadedHorizonSplitImageDataset(Dataset):
+    """Kaggle fast run용 RAM pre-load dataset.
+
+    왜 필요한가:
+        기본 `HorizonSplitImageDataset`은 sample마다 `.dat` memmap에서 image를
+        읽는다. train loader가 shuffle되면 매 batch가 disk-backed memmap의 랜덤
+        위치를 계속 접근하므로 Kaggle에서 CPU/I/O 병목이 커진다.
+
+        이 dataset은 선택된 split(train 또는 validation)의 raw uint8 image를 한 번
+        RAM에 올린 뒤, 학습 중에는 RAM 배열에서만 읽는다. 모델 구조, label, split,
+        normalization rule은 바꾸지 않는다. 바꾸는 것은 "읽는 방식"뿐이다.
+
+    메모리:
+        image 하나는 `64 * 60 = 3,840` byte다. 예를 들어 train 55만 장이면 raw
+        uint8 기준 약 2.1GB다. Kaggle 30GB RAM에서는 train+validation pre-load가
+        현실적이지만, test 전체까지 항상 올리는 것은 별도 판단이 필요하다.
+    """
+
+    def __init__(
+        self,
+        base_dataset: Monthly20MemmapDataset,
+        split_frame: pd.DataFrame,
+        split_name: str,
+        normalization_stats: PixelNormalizationStats,
+        max_rows: int | None = None,
+        preload_chunk_size: int = 8192,
+        include_metadata: bool = False,
+        progress_label: str | None = None,
+    ) -> None:
+        selected = split_frame[split_frame["split"].eq(split_name)].copy()
+        if max_rows is not None and max_rows > 0:
+            selected = selected.head(max_rows).copy()
+        if selected.empty:
+            raise ValueError(f"No rows available for split: {split_name}")
+        if preload_chunk_size <= 0:
+            raise ValueError("preload_chunk_size must be positive.")
+
+        self.base_dataset = base_dataset
+        self.frame = selected.reset_index(drop=True)
+        self.split_name = split_name
+        self.normalization_stats = normalization_stats
+        self.include_metadata = include_metadata
+
+        self._labels = self.frame["label"].to_numpy(dtype=np.int64)
+        self._images = _preload_image_arrays(
+            dataset=base_dataset,
+            frame=self.frame,
+            chunk_size=preload_chunk_size,
+            progress_label=progress_label or split_name,
+        )
+
+    def __len__(self) -> int:
+        """이 split dataset의 row 수를 반환한다."""
+
+        return int(len(self._labels))
+
+    def __getitem__(self, index: int) -> dict[str, Any]:
+        """RAM에 올라온 raw image를 normalized tensor로 변환해 반환한다.
+
+        데이터 이동:
+            RAM uint8 `(64, 60)`
+            -> float32 `[0, 1]`
+            -> train mean/std normalization
+            -> channel 추가 `(1, 64, 60)`
+        """
+
+        image = self._images[index].astype(np.float32, copy=True)
+        image /= self.normalization_stats.pixel_scale
+        image = (image - self.normalization_stats.train_pixel_mean) / (
+            self.normalization_stats.train_pixel_std
+        )
+        sample = {
+            "image": torch.from_numpy(image[np.newaxis, :, :]),
+            "label": torch.tensor(int(self._labels[index]), dtype=torch.long),
+        }
+        if not self.include_metadata:
+            return sample
+
+        row = self.frame.iloc[index]
+        metadata = row.to_dict()
+        date_value = metadata.get("Date")
+        if hasattr(date_value, "isoformat"):
+            metadata["Date"] = date_value.isoformat()
+        metadata["StockID"] = str(metadata.get("StockID"))
+        sample["metadata"] = metadata
+        return sample
+
+
 def split_settings_from_config(config: Mapping[str, Any]) -> SplitSettings:
     """config의 `split` section에서 split setting을 만든다.
 
@@ -581,6 +669,53 @@ def write_horizon_metadata(
         split_frame.loc[:, index_columns].to_csv(split_index_path, index=False)
         written["split_index"] = str(split_index_path)
     return written
+
+
+def _preload_image_arrays(
+    dataset: Monthly20MemmapDataset,
+    frame: pd.DataFrame,
+    chunk_size: int,
+    progress_label: str,
+) -> np.ndarray:
+    """선택된 row의 raw image를 RAM의 contiguous uint8 배열로 복사한다.
+
+    `frame`의 row 순서를 그대로 보존한다. 따라서 pre-load 전후로 label row와 image
+    row alignment가 바뀌지 않는다.
+    """
+
+    num_rows = int(len(frame))
+    estimated_gib = num_rows * 64 * 60 / (1024**3)
+    print(
+        f"[preload:{progress_label}] start rows={num_rows:,} "
+        f"estimated_raw_uint8={estimated_gib:.2f}GiB chunk_size={chunk_size:,}",
+        flush=True,
+    )
+
+    images = np.empty((num_rows, 64, 60), dtype=np.uint8)
+    rows_done = 0
+    chunks_done = 0
+    for shard_index, shard_rows in frame.groupby("shard_index", sort=True):
+        positions = shard_rows.index.to_numpy(dtype=np.int64)
+        local_rows = shard_rows["local_row"].to_numpy(dtype=np.int64)
+        for start in range(0, len(local_rows), chunk_size):
+            end = start + chunk_size
+            position_chunk = positions[start:end]
+            row_chunk = local_rows[start:end]
+            images[position_chunk] = dataset.get_image_arrays(int(shard_index), row_chunk)
+            rows_done += int(len(row_chunk))
+            chunks_done += 1
+
+            should_log = chunks_done == 1 or chunks_done % 25 == 0 or rows_done >= num_rows
+            if should_log:
+                progress = rows_done / num_rows if num_rows else 1.0
+                print(
+                    f"[preload:{progress_label}] {rows_done:,}/{num_rows:,} "
+                    f"rows ({progress:.1%})",
+                    flush=True,
+                )
+
+    print(f"[preload:{progress_label}] done", flush=True)
+    return images
 
 
 def _parse_year_range(raw_years: Any) -> tuple[int, int]:

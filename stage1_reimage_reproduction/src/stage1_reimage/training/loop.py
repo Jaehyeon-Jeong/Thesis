@@ -73,6 +73,7 @@ class TrainingSettings:
     initialization_name: str
     early_stopping: EarlyStoppingSettings
     mixed_precision: bool
+    data_parallel: bool
     gradient_clipping: float | None
     log_every_batches: int
 
@@ -134,6 +135,7 @@ def training_settings_from_config(config: Mapping[str, Any]) -> TrainingSettings
             restore_best=bool(early_stopping_config.get("restore_best", True)),
         ),
         mixed_precision=bool(training_config.get("mixed_precision", False)),
+        data_parallel=bool(training_config.get("data_parallel", False)),
         gradient_clipping=None if gradient_clipping is None else float(gradient_clipping),
         log_every_batches=int(training_config.get("log_every_batches", 100)),
     )
@@ -227,8 +229,30 @@ def fit_model(
     # model parameter를 CPU/GPU로 이동한다. 이후 batch tensor도 `model(images)` 호출
     # 전에 같은 device로 이동해야 한다.
     model.to(device)
+    if (
+        settings.data_parallel
+        and device.type == "cuda"
+        and torch.cuda.is_available()
+        and torch.cuda.device_count() > 1
+    ):
+        # Kaggle T4 x2 같은 환경에서 선택적으로 두 GPU를 모두 사용한다. checkpoint는
+        # 아래 `_state_dict_for_save()`에서 원래 model key로 저장하므로 evaluation
+        # script는 DataParallel 여부를 몰라도 된다.
+        print(
+            f"[train] enabling DataParallel over {torch.cuda.device_count()} CUDA devices",
+            flush=True,
+        )
+        model = nn.DataParallel(model)
+
     loss_fn = build_loss(settings)
     optimizer = build_optimizer(model, settings)
+    use_mixed_precision = bool(settings.mixed_precision and device.type == "cuda")
+    scaler = torch.cuda.amp.GradScaler(enabled=use_mixed_precision)
+    print(
+        f"[train] mixed_precision={use_mixed_precision} "
+        f"data_parallel={isinstance(model, nn.DataParallel)}",
+        flush=True,
+    )
 
     history: list[dict[str, Any]] = []
     best_val_loss = float("inf")
@@ -253,6 +277,8 @@ def fit_model(
             device=device,
             train=True,
             settings=settings,
+            scaler=scaler,
+            use_mixed_precision=use_mixed_precision,
         )
         # 검증 epoch: gradient와 optimizer step이 없다. 현재 checkpoint가 이전보다
         # 더 잘 일반화되는지 추정한다.
@@ -264,6 +290,8 @@ def fit_model(
             device=device,
             train=False,
             settings=settings,
+            scaler=None,
+            use_mixed_precision=use_mixed_precision,
         )
 
         # validation loss가 낮아지면 현재 model이 새로운 best model이다.
@@ -374,6 +402,8 @@ def _run_epoch(
     device: torch.device,
     train: bool,
     settings: TrainingSettings,
+    scaler: torch.cuda.amp.GradScaler | None,
+    use_mixed_precision: bool,
 ) -> tuple[float, float]:
     """train 또는 validation epoch 하나를 실행하고 `(loss, accuracy)`를 반환한다.
 
@@ -408,20 +438,31 @@ def _run_epoch(
                 optimizer.zero_grad(set_to_none=True)
 
             # 순전파. `logits` shape는 `(B, 2)`이고 column 0은 Down/non-positive
-            # score, column 1은 Up score다.
-            logits = model(images)
+            # score, column 1은 Up score다. mixed precision이 켜져 있으면 convolution과
+            # linear 연산 일부가 FP16/TF32-friendly kernel을 사용해 T4에서 더 빨라질 수 있다.
+            with _autocast_context(device=device, enabled=use_mixed_precision):
+                logits = model(images)
 
-            # CrossEntropyLoss는 내부에서 log-softmax를 적용하므로 logits는 probability가
-            # 아니라 raw score여야 한다.
-            loss = loss_fn(logits, labels)
+                # CrossEntropyLoss는 내부에서 log-softmax를 적용하므로 logits는 probability가
+                # 아니라 raw score여야 한다.
+                loss = loss_fn(logits, labels)
             if train and optimizer is not None:
                 # 역전파는 모든 trainable parameter의 gradient를 계산한다.
-                loss.backward()
+                if scaler is not None and scaler.is_enabled():
+                    scaler.scale(loss).backward()
+                else:
+                    loss.backward()
                 if settings.gradient_clipping is not None:
+                    if scaler is not None and scaler.is_enabled():
+                        scaler.unscale_(optimizer)
                     torch.nn.utils.clip_grad_norm_(model.parameters(), settings.gradient_clipping)
 
                 # Optimizer는 gradient를 사용해 model weight를 업데이트한다.
-                optimizer.step()
+                if scaler is not None and scaler.is_enabled():
+                    scaler.step(optimizer)
+                    scaler.update()
+                else:
+                    optimizer.step()
 
             batch_size = int(labels.shape[0])
             loss_total += float(loss.detach().cpu().item()) * batch_size
@@ -490,7 +531,7 @@ def _save_checkpoint(
 
     torch.save(
         {
-            "model_state_dict": model.state_dict(),
+            "model_state_dict": _state_dict_for_save(model),
             "optimizer_state_dict": optimizer.state_dict(),
             "epoch": epoch,
             "best_val_loss": best_val_loss,
@@ -541,6 +582,22 @@ def _settings_as_dict(settings: TrainingSettings) -> dict[str, Any]:
     payload = asdict(settings)
     payload["optimizer"]["betas"] = list(payload["optimizer"]["betas"])
     return payload
+
+
+def _state_dict_for_save(model: nn.Module) -> Mapping[str, torch.Tensor]:
+    """DataParallel wrapper가 있어도 원래 model key로 state_dict를 반환한다."""
+
+    if isinstance(model, nn.DataParallel):
+        return model.module.state_dict()
+    return model.state_dict()
+
+
+def _autocast_context(device: torch.device, enabled: bool) -> Any:
+    """PyTorch version 차이를 흡수하는 autocast context를 반환한다."""
+
+    if hasattr(torch, "amp") and hasattr(torch.amp, "autocast"):
+        return torch.amp.autocast(device_type=device.type, enabled=enabled)
+    return torch.cuda.amp.autocast(enabled=enabled)
 
 
 def _utc_now() -> str:

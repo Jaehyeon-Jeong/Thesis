@@ -17,6 +17,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import zipfile
 import yaml
 
 # ============================================================
@@ -33,12 +34,19 @@ EVAL_SPLIT = "test"
 GRADCAM_YEAR = 2019
 GRADCAM_SAMPLES_PER_CLASS = 2
 
-# Keep batch_size=128 for closest Stage 1 config.
-# For speed diagnostics only, try 256 or 512 and record that it is not the
-# exact baseline config.
-BATCH_SIZE = 128
+# Fast Kaggle setting:
+#   - 1024 uses fewer optimizer steps than the paper-style 128 batch.
+#   - If Kaggle raises CUDA OOM, set this to 512 and rerun.
+#   - For strict reproduction later, set BATCH_SIZE=128, MIXED_PRECISION=False,
+#     DATA_PARALLEL=False, FAST_CUDNN=False.
+BATCH_SIZE = 1024
 NUM_WORKERS = 4
 LOG_EVERY_BATCHES = 20
+PRELOAD_TRAIN_VAL_IMAGES = True
+PRELOAD_CHUNK_SIZE = 8192
+MIXED_PRECISION = True
+DATA_PARALLEL = True
+FAST_CUDNN = True
 
 
 def run(cmd, cwd=PROJECT_ROOT):
@@ -47,21 +55,64 @@ def run(cmd, cwd=PROJECT_ROOT):
     subprocess.run([str(x) for x in cmd], cwd=str(cwd), check=True)
 
 
+def copy_or_extract_input(src: Path, dst: Path, expected_child: str | None = None):
+    """Copy a Kaggle input folder or extract a Kaggle input zip file."""
+    if dst.exists():
+        shutil.rmtree(dst)
+    if src.is_dir():
+        candidate = src / expected_child if expected_child and (src / expected_child).exists() else src
+        shutil.copytree(candidate, dst)
+        return
+    if src.is_file() and src.suffix.lower() == ".zip":
+        tmp = dst.parent / f"{dst.name}_unzipped"
+        if tmp.exists():
+            shutil.rmtree(tmp)
+        tmp.mkdir(parents=True, exist_ok=True)
+        with zipfile.ZipFile(src) as archive:
+            archive.extractall(tmp)
+        candidate = tmp / expected_child if expected_child and (tmp / expected_child).exists() else tmp
+        if not (candidate / "configs").exists() and expected_child:
+            nested = next(tmp.rglob(expected_child), None)
+            if nested is not None:
+                candidate = nested
+        shutil.copytree(candidate, dst)
+        shutil.rmtree(tmp)
+        return
+    raise FileNotFoundError(f"Input must be a folder or .zip file: {src}")
+
+
+def assert_latest_fast_code(project_root: Path):
+    """Fail early if the attached Kaggle code dataset is an old snapshot."""
+    required_markers = {
+        "src/stage1_reimage/data/label_split.py": "PreloadedHorizonSplitImageDataset",
+        "src/stage1_reimage/training/loop.py": "mixed_precision=",
+        "src/stage1_reimage/runners/stage1_baseline.py": "preload_train_val_images",
+    }
+    missing = []
+    for rel_path, marker in required_markers.items():
+        file_path = project_root / rel_path
+        if not file_path.exists() or marker not in file_path.read_text(encoding="utf-8"):
+            missing.append(f"{rel_path} missing marker {marker!r}")
+    if missing:
+        raise RuntimeError(
+            "The Kaggle CODE_INPUT snapshot is old. Upload the latest "
+            "stage1_reimage_reproduction folder/zip, then rerun. Problems: "
+            + "; ".join(missing)
+        )
+
+
 # ============================================================
 # 1. Copy code snapshot into /kaggle/working
 # ============================================================
-if PROJECT_ROOT.exists():
-    shutil.rmtree(PROJECT_ROOT)
-shutil.copytree(CODE_INPUT, PROJECT_ROOT)
+copy_or_extract_input(CODE_INPUT, PROJECT_ROOT, expected_child="stage1_reimage_reproduction")
+assert_latest_fast_code(PROJECT_ROOT)
 print(f"Code copied to: {PROJECT_ROOT}", flush=True)
 
 
 # ============================================================
 # 2. Copy data to local temporary disk if possible
 # ============================================================
-if DATA_WORK.exists():
-    shutil.rmtree(DATA_WORK)
-shutil.copytree(DATA_INPUT, DATA_WORK)
+copy_or_extract_input(DATA_INPUT, DATA_WORK, expected_child="baseline-dataset")
 print(f"Data copied to: {DATA_WORK}", flush=True)
 
 
@@ -76,12 +127,31 @@ cfg["data"]["monthly20_root"] = str(DATA_WORK)
 cfg["runtime"]["num_workers"] = NUM_WORKERS
 cfg["runtime"]["pin_memory"] = True
 cfg["runtime"]["persistent_workers"] = True
+cfg["runtime"]["preload_train_val_images"] = PRELOAD_TRAIN_VAL_IMAGES
+cfg["runtime"]["preload_chunk_size"] = PRELOAD_CHUNK_SIZE
 cfg["training"]["batch_size"] = BATCH_SIZE
 cfg["evaluation"]["batch_size"] = BATCH_SIZE
 cfg["training"]["log_every_batches"] = LOG_EVERY_BATCHES
+cfg["training"]["mixed_precision"] = MIXED_PRECISION
+cfg["training"]["data_parallel"] = DATA_PARALLEL
+cfg["training"]["determinism"]["enabled"] = not FAST_CUDNN
+cfg["training"]["determinism"]["cudnn_deterministic"] = not FAST_CUDNN
+cfg["training"]["determinism"]["cudnn_benchmark"] = FAST_CUDNN
 
 config_path.write_text(yaml.safe_dump(cfg, sort_keys=False))
 print("Config patched:", config_path, flush=True)
+print(
+    "Fast settings:",
+    {
+        "batch_size": BATCH_SIZE,
+        "num_workers": NUM_WORKERS,
+        "preload_train_val_images": PRELOAD_TRAIN_VAL_IMAGES,
+        "mixed_precision": MIXED_PRECISION,
+        "data_parallel": DATA_PARALLEL,
+        "fast_cudnn": FAST_CUDNN,
+    },
+    flush=True,
+)
 
 
 # ============================================================

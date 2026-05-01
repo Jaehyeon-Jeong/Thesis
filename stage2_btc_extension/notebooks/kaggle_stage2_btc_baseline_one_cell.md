@@ -15,6 +15,44 @@ The design follows the Stage 1 one-cell runner:
 - run one BTC experiment tuple
 - evaluate predictions, trading metrics, and quick Grad-CAM
 
+Kaggle setup direction:
+1. Create a new Kaggle Notebook.
+2. Turn on GPU. T4 is enough for Stage 2 first runs because the BTC dataset is
+   much smaller than the Stage 1 stock shard.
+3. Add a Stage 2 code dataset. This dataset must contain the
+   `stage2_btc_extension` folder with `configs/`, `src/`, `scripts/`, and
+   `notebooks/`.
+4. Add the BTC OHLCV data. Either attach the public Kaggle dataset
+   `novandraanugrah/bitcoin-historical-datasets-2018-2024`, or upload a small
+   private Kaggle dataset that contains `btc_1d_data_2018_to_2025.csv`.
+5. Do not upload a separate MA file. Stage 2 computes the 5/20/60-day simple
+   moving average from the BTC `Close` column inside the code.
+6. Run the input discovery cell below, then set `CODE_INPUT` and, only if
+   needed, `SOURCE_FILE`.
+
+Input discovery cell:
+
+```python
+from pathlib import Path
+
+for p in Path("/kaggle/input").glob("*"):
+    print("\nINPUT:", p)
+    for child in list(p.glob("*"))[:15]:
+        print(" ", child)
+```
+
+How to set paths:
+- If discovery shows `/kaggle/input/thesis-stage2-code/stage2_btc_extension`,
+  set `CODE_INPUT = Path("/kaggle/input/thesis-stage2-code/stage2_btc_extension")`.
+- If discovery shows the current workspace-style path
+  `/kaggle/input/datasets/moskow/stage2/stage2_btc_extension`, the default
+  `CODE_INPUT` below is already correct.
+- Keep `DATA_ROOT = Path("/kaggle/input")`.
+- Keep `SOURCE_FILE = ""` unless auto-detection fails. If it fails, set the
+  exact CSV path printed by the discovery cell.
+- First run with `SMOKE_TEST = True`. After that passes, set
+  `SMOKE_TEST = False` for the full run.
+
 ## 한국어
 
 이 문서는 Stage 2 baseline runner interface입니다.
@@ -30,6 +68,47 @@ The design follows the Stage 1 one-cell runner:
 - BTC experiment tuple 하나 실행
 - prediction, trading metric, quick Grad-CAM 평가
 
+Kaggle 실행 지시:
+1. Kaggle에서 새 Notebook을 만듭니다.
+2. GPU를 켭니다. Stage 2는 BTC sample 수가 Stage 1 주식 shard보다 훨씬 작아서
+   첫 실행은 T4로 충분합니다.
+3. Stage 2 code dataset을 추가합니다. 이 dataset 안에는
+   `stage2_btc_extension` 폴더가 있어야 하고, 그 안에 `configs/`, `src/`,
+   `scripts/`, `notebooks/`가 있어야 합니다.
+4. BTC OHLCV data를 추가합니다. 방법은 둘 중 하나입니다.
+   - Kaggle public dataset `novandraanugrah/bitcoin-historical-datasets-2018-2024`
+     를 Notebook input으로 attach합니다.
+   - 또는 로컬에 받은 `btc_1d_data_2018_to_2025.csv`를 작은 private Kaggle
+     dataset으로 업로드한 뒤 attach합니다.
+5. MA 파일은 따로 업로드하지 않습니다. Stage 2 코드는 BTC `Close` column으로
+   5/20/60-day simple moving average를 직접 계산합니다.
+6. 아래 input discovery cell을 먼저 실행한 뒤, 출력된 경로에 맞춰 `CODE_INPUT`과
+   필요 시 `SOURCE_FILE`만 고칩니다.
+
+Input discovery cell:
+
+```python
+from pathlib import Path
+
+for p in Path("/kaggle/input").glob("*"):
+    print("\nINPUT:", p)
+    for child in list(p.glob("*"))[:15]:
+        print(" ", child)
+```
+
+경로 설정법:
+- discovery 결과가 `/kaggle/input/thesis-stage2-code/stage2_btc_extension`이면
+  `CODE_INPUT = Path("/kaggle/input/thesis-stage2-code/stage2_btc_extension")`로
+  바꿉니다.
+- discovery 결과가 현재 작업 예시처럼
+  `/kaggle/input/datasets/moskow/stage2/stage2_btc_extension`이면 아래 기본값을
+  그대로 쓰면 됩니다.
+- `DATA_ROOT = Path("/kaggle/input")`는 그대로 둡니다.
+- `SOURCE_FILE = ""`는 자동 탐색입니다. 자동 탐색이 실패할 때만 discovery에 찍힌
+  정확한 CSV path로 바꿉니다.
+- 처음에는 `SMOKE_TEST = True`로 실행합니다. 통과하면 `SMOKE_TEST = False`로
+  full run을 실행합니다.
+
 ```python
 from pathlib import Path
 import shutil
@@ -41,11 +120,14 @@ import yaml
 # ============================================================
 # User settings
 # ============================================================
+# Kaggle input path that contains the Stage 2 code snapshot.
+# 먼저 위 discovery cell로 실제 Kaggle input path를 확인한 뒤 필요하면 바꿉니다.
 CODE_INPUT = Path("/kaggle/input/datasets/moskow/stage2/stage2_btc_extension")
 PROJECT_ROOT = Path("/kaggle/working/stage2_btc_extension")
 DATA_ROOT = Path("/kaggle/input")
 
 # Leave empty to auto-detect btc_1d_data_2018_to_2025.csv under /kaggle/input.
+# MA는 별도 파일을 읽지 않습니다. BTC Close에서 window별 SMA를 코드가 계산합니다.
 SOURCE_FILE = ""
 
 IMAGE_WINDOW = 20

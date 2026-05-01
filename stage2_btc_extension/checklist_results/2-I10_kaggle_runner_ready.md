@@ -8,10 +8,23 @@ Updated runner:
 - `notebooks/kaggle_stage2_btc_baseline_one_cell.md`
 
 How to run in Kaggle:
-- Attach the Stage 2 code snapshot dataset.
-- Attach the BTC OHLCV dataset.
-- Paste the Python cell from `notebooks/kaggle_stage2_btc_baseline_one_cell.md`.
-- Set:
+- Create a new Kaggle Notebook and turn on GPU.
+- Attach the Stage 2 code snapshot dataset. It must contain the
+  `stage2_btc_extension` folder with `configs/`, `src/`, `scripts/`, and
+  `notebooks/`.
+- Attach the BTC OHLCV data in one of two ways:
+  - public Kaggle dataset:
+    `novandraanugrah/bitcoin-historical-datasets-2018-2024`
+  - or a private uploaded dataset containing `btc_1d_data_2018_to_2025.csv`
+- Do not upload a separate MA file. Stage 2 computes MA from the BTC `Close`
+  column inside the code.
+- Paste the input discovery cell and then the Python cell from
+  `notebooks/kaggle_stage2_btc_baseline_one_cell.md`.
+- Set or verify:
+  - `CODE_INPUT` points to the attached Stage 2 code folder/zip shown under
+    `/kaggle/input`
+  - `DATA_ROOT = Path("/kaggle/input")`
+  - `SOURCE_FILE = ""` unless auto-detection fails
   - `IMAGE_WINDOW = 20`
   - `IMAGE_SPEC = "ohlc_ma_vb"`
   - `RETURN_HORIZON = 20`
@@ -20,6 +33,17 @@ How to run in Kaggle:
 
 For quick Kaggle verification:
 - Set `SMOKE_TEST = True`.
+
+First-run path check:
+
+```python
+from pathlib import Path
+
+for p in Path("/kaggle/input").glob("*"):
+    print("\nINPUT:", p)
+    for child in list(p.glob("*"))[:15]:
+        print(" ", child)
+```
 
 Full-run expected output root:
 - `/kaggle/working/stage2_btc_extension/outputs/stage2`
@@ -36,10 +60,23 @@ Important:
 - `notebooks/kaggle_stage2_btc_baseline_one_cell.md`
 
 Kaggle 실행 방법:
-- Stage 2 code snapshot dataset을 attach합니다.
-- BTC OHLCV dataset을 attach합니다.
-- `notebooks/kaggle_stage2_btc_baseline_one_cell.md` 안의 Python cell을 붙여넣습니다.
-- 다음처럼 둡니다.
+- Kaggle에서 새 Notebook을 만들고 GPU를 켭니다.
+- Stage 2 code snapshot dataset을 attach합니다. 이 dataset에는
+  `stage2_btc_extension` 폴더와 그 안의 `configs/`, `src/`, `scripts/`,
+  `notebooks/`가 있어야 합니다.
+- BTC OHLCV data는 둘 중 하나로 attach합니다.
+  - public Kaggle dataset:
+    `novandraanugrah/bitcoin-historical-datasets-2018-2024`
+  - 또는 로컬의 `btc_1d_data_2018_to_2025.csv`를 private Kaggle dataset으로
+    업로드해서 attach
+- MA 파일은 따로 업로드하지 않습니다. Stage 2 코드는 BTC `Close` column으로 MA를
+  직접 계산합니다.
+- input discovery cell을 먼저 붙여넣고, 그다음
+  `notebooks/kaggle_stage2_btc_baseline_one_cell.md` 안의 Python cell을 붙여넣습니다.
+- 다음을 설정하거나 확인합니다.
+  - `CODE_INPUT`: `/kaggle/input` 아래에 attach된 Stage 2 code folder/zip 경로
+  - `DATA_ROOT = Path("/kaggle/input")`
+  - `SOURCE_FILE = ""`: 자동 탐색. 실패할 때만 정확한 CSV path로 변경
   - `IMAGE_WINDOW = 20`
   - `IMAGE_SPEC = "ohlc_ma_vb"`
   - `RETURN_HORIZON = 20`
@@ -48,6 +85,17 @@ Kaggle 실행 방법:
 
 Kaggle에서 빠르게 확인하려면:
 - `SMOKE_TEST = True`로 바꿉니다.
+
+처음 실행할 path 확인 cell:
+
+```python
+from pathlib import Path
+
+for p in Path("/kaggle/input").glob("*"):
+    print("\nINPUT:", p)
+    for child in list(p.glob("*"))[:15]:
+        print(" ", child)
+```
 
 Full-run 예상 output root:
 - `/kaggle/working/stage2_btc_extension/outputs/stage2`

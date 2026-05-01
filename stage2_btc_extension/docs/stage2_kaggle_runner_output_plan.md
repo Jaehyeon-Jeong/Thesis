@@ -29,6 +29,20 @@ Stage 2 uses the same execution pattern as Stage 1:
 6. run one experiment tuple at a time.
 7. write outputs under `/kaggle/working/stage2_btc_extension`.
 
+Concrete Kaggle input setup:
+- Code input: attach a dataset or zip containing the `stage2_btc_extension`
+  folder. The folder must include `configs/`, `src/`, `scripts/`, and
+  `notebooks/`.
+- Data input: attach either the public Kaggle BTC dataset
+  `novandraanugrah/bitcoin-historical-datasets-2018-2024` or a private uploaded
+  dataset containing `btc_1d_data_2018_to_2025.csv`.
+- MA input: no separate MA dataset is needed. The Stage 2 code computes
+  5/20/60-day SMA from the BTC `Close` column for the `ohlc_ma` and
+  `ohlc_ma_vb` image specs.
+- First Kaggle cell: list `/kaggle/input` and set `CODE_INPUT` to the actual
+  attached code path. Keep `SOURCE_FILE = ""` unless BTC CSV auto-detection
+  fails.
+
 Default experiment tuple:
 - `image_window = 20`
 - `image_spec = ohlc_ma_vb`
@@ -155,6 +169,19 @@ Stage 2는 Stage 1과 같은 실행 패턴을 사용합니다.
 5. config path와 runtime option을 patch합니다.
 6. experiment tuple 하나씩 실행합니다.
 7. output은 `/kaggle/working/stage2_btc_extension` 아래에 저장합니다.
+
+구체적인 Kaggle input 설정:
+- Code input: `stage2_btc_extension` 폴더를 포함한 dataset 또는 zip을 attach합니다.
+  이 폴더 안에는 `configs/`, `src/`, `scripts/`, `notebooks/`가 있어야 합니다.
+- Data input: public Kaggle BTC dataset
+  `novandraanugrah/bitcoin-historical-datasets-2018-2024`를 attach하거나, 로컬의
+  `btc_1d_data_2018_to_2025.csv`를 private Kaggle dataset으로 업로드해서 attach합니다.
+- MA input: 별도 MA dataset은 필요 없습니다. Stage 2 코드는 `ohlc_ma`,
+  `ohlc_ma_vb` image spec에서 BTC `Close` column으로 5/20/60-day SMA를
+  직접 계산합니다.
+- 첫 Kaggle cell: `/kaggle/input`을 출력해서 실제 attach path를 확인하고,
+  `CODE_INPUT`만 그 경로로 맞춥니다. BTC CSV 자동 탐색이 실패할 때만
+  `SOURCE_FILE`을 정확한 CSV path로 바꿉니다.
 
 기본 experiment tuple:
 - `image_window = 20`

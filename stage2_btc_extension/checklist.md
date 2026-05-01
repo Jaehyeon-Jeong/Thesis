@@ -13,7 +13,8 @@ Planning phase:
   - Result: [2-2 BTC OHLCV data audit](checklist_results/2-2_btc_ohlcv_data_audit.md)
 - [x] 2-3. BTC image-generation detail plan
   - Result: [2-3 BTC image-generation detail plan](checklist_results/2-3_btc_image_generation_detail_plan.md)
-- [ ] 2-4. BTC label, split, and normalization detail plan
+- [x] 2-4. BTC label, split, and normalization detail plan
+  - Result: [2-4 BTC label/split/normalization detail plan](checklist_results/2-4_btc_label_split_normalization_plan.md)
 - [ ] 2-5. BTC baseline CNN adaptation plan
 - [ ] 2-6. BTC evaluation and trading-metric plan
 - [ ] 2-7. BTC Grad-CAM plan
@@ -53,7 +54,8 @@ Important:
   - 결과: [2-2 BTC OHLCV 데이터 audit](checklist_results/2-2_btc_ohlcv_data_audit.md)
 - [x] 2-3. BTC image generation 세부계획
   - 결과: [2-3 BTC image-generation 세부계획](checklist_results/2-3_btc_image_generation_detail_plan.md)
-- [ ] 2-4. BTC label, split, normalization 세부계획
+- [x] 2-4. BTC label, split, normalization 세부계획
+  - 결과: [2-4 BTC label/split/normalization 세부계획](checklist_results/2-4_btc_label_split_normalization_plan.md)
 - [ ] 2-5. BTC baseline CNN adaptation 계획
 - [ ] 2-6. BTC evaluation과 trading metric 계획
 - [ ] 2-7. BTC Grad-CAM 계획

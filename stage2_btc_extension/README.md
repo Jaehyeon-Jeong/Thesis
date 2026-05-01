@@ -27,6 +27,7 @@ Main documents:
 - [Workflow diagram](workflow_diagram.md)
 - [Stage 2 pipeline](docs/stage2_pipeline.md)
 - [BTC image generation plan](docs/stage2_image_generation_plan.md)
+- [BTC label/split/normalization plan](docs/stage2_label_split_normalization_plan.md)
 - [Source map](docs/source_map.md)
 
 ## 한국어
@@ -55,4 +56,5 @@ Main documents:
 - [Workflow diagram](workflow_diagram.md)
 - [Stage 2 pipeline](docs/stage2_pipeline.md)
 - [BTC image generation plan](docs/stage2_image_generation_plan.md)
+- [BTC label/split/normalization plan](docs/stage2_label_split_normalization_plan.md)
 - [Source map](docs/source_map.md)

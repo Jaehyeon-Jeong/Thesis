@@ -147,6 +147,39 @@ Stage 2 decisions:
 Detailed document:
 - `stage2_btc_extension/docs/stage2_image_generation_plan.md`
 
+## 2-4 BTC Label, Split, and Normalization Plan Result
+
+Checked on: 2026-05-01
+
+Paper/source basis:
+- `자료조사/Re-image 요약.md`, line 13: future-return sign prediction across
+  5/20/60 horizons.
+- `자료조사/Re-image 요약.md`, line 49: binary classification and train-pixel
+  mean/std normalization.
+- Stage 1 implementation:
+  `stage1_reimage_reproduction/src/stage1_reimage/data/label_split.py`.
+
+Stage 2 decisions:
+- BTC future return is constructed from close prices:
+  `future_return_{t,R} = Close_{t+R} / Close_t - 1`.
+- `label = 1` if `future_return > 0`; otherwise `0`.
+- Exact zero return belongs to class `0`.
+- BTC uses daily bars, so `R5/R20/R60` mean 5/20/60 daily bars.
+- Primary reporting is capped at `2024-12-31`; 2025-2026 is reserved as an
+  optional later holdout.
+- Split:
+  - train signal dates: `2018-01-01` to `2020-12-31`
+  - validation signal dates: `2021-01-01` to `2021-12-31`
+  - test signal dates: `2022-01-01` to `2024-12-31`
+- Purge rule: `label_end_date <= split_signal_end`.
+- Normalization follows Stage 1 but is stored per Stage 2 experiment tuple:
+  `(image_window, image_spec, return_horizon)`.
+- Normalization uses train images only.
+
+Generated artifact:
+- `stage2_btc_extension/docs/stage2_label_split_normalization_plan.md`
+- `stage2_btc_extension/reports/tables/stage2_label_split_plan_counts.csv`
+
 ## 한국어
 
 이 파일은 Stage 2 구현 전에 확인해야 할 근거를 기록합니다.
@@ -308,3 +341,35 @@ Stage 2 결정:
 
 상세 문서:
 - `stage2_btc_extension/docs/stage2_image_generation_plan.md`
+
+## 2-4 BTC label, split, normalization 계획 결과
+
+확인일: 2026-05-01
+
+논문/source 근거:
+- `자료조사/Re-image 요약.md`, line 13: 5/20/60 horizon future-return sign prediction.
+- `자료조사/Re-image 요약.md`, line 49: binary classification과 train-pixel mean/std
+  normalization.
+- Stage 1 implementation:
+  `stage1_reimage_reproduction/src/stage1_reimage/data/label_split.py`.
+
+Stage 2 결정:
+- BTC future return은 close price에서 만듭니다:
+  `future_return_{t,R} = Close_{t+R} / Close_t - 1`.
+- `future_return > 0`이면 `label = 1`, 아니면 `0`입니다.
+- 정확히 0인 return은 class `0`입니다.
+- BTC는 daily bar를 사용하므로 `R5/R20/R60`은 5/20/60 daily bar입니다.
+- 기본 보고 기간은 `2024-12-31`까지로 제한하고, 2025-2026은 optional later holdout으로
+  남깁니다.
+- Split:
+  - train signal dates: `2018-01-01` to `2020-12-31`
+  - validation signal dates: `2021-01-01` to `2021-12-31`
+  - test signal dates: `2022-01-01` to `2024-12-31`
+- Purge rule: `label_end_date <= split_signal_end`.
+- Normalization은 Stage 1 원칙을 따르되 Stage 2 experiment tuple
+  `(image_window, image_spec, return_horizon)`별로 따로 저장합니다.
+- Normalization은 train image에서만 fit합니다.
+
+생성 artifact:
+- `stage2_btc_extension/docs/stage2_label_split_normalization_plan.md`
+- `stage2_btc_extension/reports/tables/stage2_label_split_plan_counts.csv`

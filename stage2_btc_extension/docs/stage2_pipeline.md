@@ -19,14 +19,17 @@ Pipeline:
    `OHLC+MA+Volume`.
 3. Use the same binary label rule:
    `label = 1 if future R-day return > 0 else 0`.
-4. Use chronological train/validation/test split to avoid look-ahead leakage.
-5. Fit pixel normalization on train images only.
-6. Train BTC CNN baseline with paper batch size `128` by default.
-7. Save prediction CSV with date, label, future return, logits, probabilities,
+4. Construct BTC future returns from close prices:
+   `Close_{t+R} / Close_t - 1`.
+5. Use chronological train/validation/test split with label-horizon purging to
+   avoid look-ahead leakage.
+6. Fit pixel normalization on train images only.
+7. Train BTC CNN baseline with paper batch size `128` by default.
+8. Save prediction CSV with date, label, future return, logits, probabilities,
    predicted class, and correctness.
-8. Compute classification metrics.
-9. Compute BTC time-series trading metrics.
-10. Generate BTC Grad-CAM figures.
+9. Compute classification metrics.
+10. Compute BTC time-series trading metrics.
+11. Generate BTC Grad-CAM figures.
 
 Default Stage 2 batch policy:
 - Use `batch_size=128` by default.
@@ -73,6 +76,18 @@ Dependency:
 - The four specs are compared on the same eligible sample dates within each
   window/horizon setting.
 
+2-4 label/split/normalization decision:
+- BTC future return is constructed as `Close_{t+R} / Close_t - 1`.
+- Label is `1` if future return is positive, else `0`; exact zero belongs to
+  class `0`.
+- Primary reporting is capped at `2024-12-31`; 2025-2026 remains optional
+  later holdout.
+- Chronological split uses train `2018-2020`, validation `2021`, and test
+  `2022-2024`.
+- Samples are purged at split ends unless `label_end_date <= split_signal_end`.
+- Pixel normalization is fit on training images only and stored per experiment
+  tuple `(image_window, image_spec, return_horizon)`.
+
 ## 한국어
 
 목적:
@@ -90,14 +105,16 @@ Stage 2는 연구 설계를 다시 정의하지 않습니다.
    specification인 `OHLC`, `OHLC+Volume`, `OHLC+MA`, `OHLC+MA+Volume`을 비교합니다.
 3. 같은 binary label rule을 사용합니다:
    `future R-day return > 0`이면 `label=1`, 아니면 `0`.
-4. look-ahead leakage 방지를 위해 시간순 train/validation/test split을 사용합니다.
-5. pixel normalization은 train image에서만 fit합니다.
-6. BTC CNN baseline은 기본적으로 논문 batch size `128`로 학습합니다.
-7. date, label, future return, logits, probability, predicted class, correctness가
+4. BTC future return은 close price에서 `Close_{t+R} / Close_t - 1`로 만듭니다.
+5. look-ahead leakage 방지를 위해 label-horizon purge가 있는 시간순
+   train/validation/test split을 사용합니다.
+6. pixel normalization은 train image에서만 fit합니다.
+7. BTC CNN baseline은 기본적으로 논문 batch size `128`로 학습합니다.
+8. date, label, future return, logits, probability, predicted class, correctness가
    들어 있는 prediction CSV를 저장합니다.
-8. classification metric을 계산합니다.
-9. BTC time-series trading metric을 계산합니다.
-10. BTC Grad-CAM 그림을 생성합니다.
+9. classification metric을 계산합니다.
+10. BTC time-series trading metric을 계산합니다.
+11. BTC Grad-CAM 그림을 생성합니다.
 
 Stage 2 기본 batch 정책:
 - 기본값은 `batch_size=128`입니다.
@@ -142,3 +159,13 @@ Stage 2 기본 batch 정책:
 - 네 가지 image spec은 `ohlc`, `ohlc_vb`, `ohlc_ma`, `ohlc_ma_vb`로 고정합니다.
 - 같은 window/horizon setting 안에서는 네 spec을 같은 eligible sample date에서
   비교합니다.
+
+2-4 label/split/normalization 결정:
+- BTC future return은 `Close_{t+R} / Close_t - 1`로 만듭니다.
+- label은 future return이 양수이면 `1`, 아니면 `0`입니다. 정확히 0이면 class `0`입니다.
+- 기본 보고 기간은 `2024-12-31`까지로 제한하고, 2025-2026은 optional later holdout으로
+  남깁니다.
+- 시간순 split은 train `2018-2020`, validation `2021`, test `2022-2024`입니다.
+- 각 split 끝에서 `label_end_date <= split_signal_end`를 만족하지 않는 sample은 purge합니다.
+- pixel normalization은 train image에서만 fit하고, `(image_window, image_spec,
+  return_horizon)` experiment tuple별로 따로 저장합니다.

@@ -14,7 +14,9 @@ Stage 2 does not redefine the research design:
 Pipeline:
 1. Audit BTC OHLCV file paths, columns, date range, frequency, missing values,
    duplicates, and volume units.
-2. Generate BTC chart images for windows `5`, `20`, and `60`.
+2. Generate BTC chart images for windows `5`, `20`, and `60`, and compare four
+   image specifications: `OHLC`, `OHLC+Volume`, `OHLC+MA`, and
+   `OHLC+MA+Volume`.
 3. Use the same binary label rule:
    `label = 1 if future R-day return > 0 else 0`.
 4. Use chronological train/validation/test split to avoid look-ahead leakage.
@@ -62,6 +64,15 @@ Dependency:
 - No daily resampling is needed for Stage 2 baseline.
 - All `I5`, `I20`, and `I60` windows are feasible.
 
+2-3 image-generation decision:
+- BTC OHLCV has no MA column, so Stage 2 computes simple moving averages from
+  BTC close prices.
+- `I5` uses 5-day SMA, `I20` uses 20-day SMA, and `I60` uses 60-day SMA.
+- MA uses only current and past close prices.
+- Four image specs are fixed: `ohlc`, `ohlc_vb`, `ohlc_ma`, `ohlc_ma_vb`.
+- The four specs are compared on the same eligible sample dates within each
+  window/horizon setting.
+
 ## 한국어
 
 목적:
@@ -75,7 +86,8 @@ Stage 2는 연구 설계를 다시 정의하지 않습니다.
 파이프라인:
 1. BTC OHLCV 파일 경로, column, date range, frequency, missing value, duplicate,
    volume 단위를 audit합니다.
-2. window `5`, `20`, `60`에 대해 BTC chart image를 생성합니다.
+2. window `5`, `20`, `60`에 대해 BTC chart image를 생성하고, 네 가지 image
+   specification인 `OHLC`, `OHLC+Volume`, `OHLC+MA`, `OHLC+MA+Volume`을 비교합니다.
 3. 같은 binary label rule을 사용합니다:
    `future R-day return > 0`이면 `label=1`, 아니면 `0`.
 4. look-ahead leakage 방지를 위해 시간순 train/validation/test split을 사용합니다.
@@ -121,3 +133,12 @@ Stage 2 기본 batch 정책:
 - date range는 `2018-01-01`부터 `2026-03-16`까지입니다.
 - Stage 2 baseline에서는 daily resampling이 필요 없습니다.
 - `I5`, `I20`, `I60` window 모두 가능합니다.
+
+2-3 image-generation 결정:
+- BTC OHLCV에는 MA column이 없으므로 Stage 2에서 BTC close price로 simple moving
+  average를 계산합니다.
+- `I5`는 5-day SMA, `I20`은 20-day SMA, `I60`은 60-day SMA를 사용합니다.
+- MA는 현재와 과거 close price만 사용합니다.
+- 네 가지 image spec은 `ohlc`, `ohlc_vb`, `ohlc_ma`, `ohlc_ma_vb`로 고정합니다.
+- 같은 window/horizon setting 안에서는 네 spec을 같은 eligible sample date에서
+  비교합니다.

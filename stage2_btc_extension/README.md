@@ -26,6 +26,7 @@ Main documents:
 - [Checklist](checklist.md)
 - [Workflow diagram](workflow_diagram.md)
 - [Stage 2 pipeline](docs/stage2_pipeline.md)
+- [BTC image generation plan](docs/stage2_image_generation_plan.md)
 - [Source map](docs/source_map.md)
 
 ## 한국어
@@ -53,4 +54,5 @@ Main documents:
 - [Checklist](checklist.md)
 - [Workflow diagram](workflow_diagram.md)
 - [Stage 2 pipeline](docs/stage2_pipeline.md)
+- [BTC image generation plan](docs/stage2_image_generation_plan.md)
 - [Source map](docs/source_map.md)

@@ -117,6 +117,36 @@ Generated audit artifacts:
 - `stage2_btc_extension/reports/data_audit/btc_ohlcv_audit.md`
 - `stage2_btc_extension/reports/data_audit/btc_ohlcv_head.csv`
 
+## 2-3 BTC Image-Generation Plan Result
+
+Checked on: 2026-05-01
+
+Paper/source basis:
+- `자료조사/Re-image 요약.md`, line 25: MA line and volume bars are image
+  elements; MA window matches image length.
+- `자료조사/Re-image 요약.md`, lines 32-36: 5/20/60-day image periods, 3 pixels
+  per day, and image sizes.
+- `자료조사/Re-image 요약.md`, line 110: removing MA and/or volume bars is a
+  reported robustness/ablation direction.
+
+Stage 2 decisions:
+- BTC has OHLCV but not MA columns.
+- Stage 2 computes simple moving averages from `Close`.
+- Formula: `MA_t^(K) = (1 / K) * sum_{i=0}^{K-1} Close_{t-i}`.
+- `I5` uses 5-day SMA, `I20` uses 20-day SMA, and `I60` uses 60-day SMA.
+- `min_periods=K`; partial moving averages are not drawn.
+- MA uses only current and past close prices, never future close prices.
+- Four image specs are fixed:
+  - `ohlc`: OHLC only
+  - `ohlc_vb`: OHLC + volume bars
+  - `ohlc_ma`: OHLC + moving-average line
+  - `ohlc_ma_vb`: OHLC + moving-average line + volume bars
+- The four specs are compared on a common eligible sample universe within each
+  window/horizon setting.
+
+Detailed document:
+- `stage2_btc_extension/docs/stage2_image_generation_plan.md`
+
 ## 한국어
 
 이 파일은 Stage 2 구현 전에 확인해야 할 근거를 기록합니다.
@@ -248,3 +278,33 @@ Stage 2 implication:
 - `stage2_btc_extension/reports/data_audit/btc_ohlcv_audit.json`
 - `stage2_btc_extension/reports/data_audit/btc_ohlcv_audit.md`
 - `stage2_btc_extension/reports/data_audit/btc_ohlcv_head.csv`
+
+## 2-3 BTC image-generation 계획 결과
+
+확인일: 2026-05-01
+
+논문/source 근거:
+- `자료조사/Re-image 요약.md`, line 25: MA line과 volume bar는 image 요소이고,
+  MA window는 image length와 같습니다.
+- `자료조사/Re-image 요약.md`, lines 32-36: 5/20/60일 image period, 하루 3픽셀,
+  image size.
+- `자료조사/Re-image 요약.md`, line 110: MA와/or volume bar 제거는 robustness/ablation
+  방향으로 보고됩니다.
+
+Stage 2 결정:
+- BTC에는 OHLCV는 있지만 MA column은 없습니다.
+- Stage 2에서는 `Close`에서 simple moving average를 계산합니다.
+- 공식: `MA_t^(K) = (1 / K) * sum_{i=0}^{K-1} Close_{t-i}`.
+- `I5`는 5-day SMA, `I20`은 20-day SMA, `I60`은 60-day SMA를 사용합니다.
+- `min_periods=K`를 사용하며, partial moving average는 그리지 않습니다.
+- MA는 현재와 과거 close price만 사용하고 미래 close price는 사용하지 않습니다.
+- 네 가지 image spec을 고정합니다:
+  - `ohlc`: OHLC only
+  - `ohlc_vb`: OHLC + volume bars
+  - `ohlc_ma`: OHLC + moving-average line
+  - `ohlc_ma_vb`: OHLC + moving-average line + volume bars
+- 같은 window/horizon setting 안에서는 네 spec을 공통 eligible sample universe에서
+  비교합니다.
+
+상세 문서:
+- `stage2_btc_extension/docs/stage2_image_generation_plan.md`

@@ -1,0 +1,4 @@
+return_horizon,accuracy_mean,accuracy_minus_majority_mean,roc_auc_mean,long_flat_sharpe_net_mean,long_short_sharpe_net_mean
+5,0.515739,-0.010359,0.509418,1.334953,0.58924
+20,0.542679,0.001388,0.527667,3.083404,2.339838
+60,0.516714,-0.026469,0.514699,3.933787,1.174277

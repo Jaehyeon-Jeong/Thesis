@@ -1,0 +1,4 @@
+image_window,accuracy_mean,accuracy_minus_majority_mean,roc_auc_mean,long_flat_sharpe_net_mean,long_short_sharpe_net_mean
+5,0.513957,-0.0229,0.507502,2.460612,0.62715
+20,0.517253,-0.019604,0.511975,2.710002,1.093806
+60,0.543922,0.007064,0.532307,3.181531,2.382399

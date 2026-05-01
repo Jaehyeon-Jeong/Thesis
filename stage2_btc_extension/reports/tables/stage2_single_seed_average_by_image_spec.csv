@@ -1,0 +1,5 @@
+image_spec,accuracy_mean,accuracy_minus_majority_mean,roc_auc_mean,long_flat_sharpe_net_mean,long_short_sharpe_net_mean
+ohlc,0.518263,-0.018595,0.501013,2.691266,1.425491
+ohlc_ma,0.525271,-0.011587,0.516715,2.865874,1.704856
+ohlc_ma_vb,0.526337,-0.010521,0.531193,2.689439,0.829299
+ohlc_vb,0.530306,-0.006552,0.520125,2.889614,1.511493

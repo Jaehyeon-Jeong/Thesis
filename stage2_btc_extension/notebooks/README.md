@@ -14,6 +14,9 @@ Available Kaggle cells:
   with seeds `42, 43, 44, 45, 46`.
 - `kaggle_stage2_results_viewer_one_cell.md`: summarizes grid outputs into
   tables and displays selected Grad-CAM figures.
+- `kaggle_stage2_best_gradcam_10_one_cell.md`: regenerates the best
+  single-seed configuration's Grad-CAM in a Re-Imagining Figure-13-style layout
+  with 10 predicted-up and 10 predicted-down BTC images.
 
 ## 한국어
 
@@ -29,3 +32,6 @@ Available Kaggle cells:
   Stage 2 전체 180-run grid를 실행합니다.
 - `kaggle_stage2_results_viewer_one_cell.md`: grid output을 표로 요약하고 선택한
   Grad-CAM figure를 표시합니다.
+- `kaggle_stage2_best_gradcam_10_one_cell.md`: single-seed 기준 best
+  configuration의 Grad-CAM을 Re-Imagining Figure 13 스타일로 다시 생성합니다.
+  `Predicted Up` 10개와 `Predicted Down` 10개, 총 20개 BTC image를 포함합니다.

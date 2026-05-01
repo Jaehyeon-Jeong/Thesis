@@ -24,6 +24,15 @@ Current status:
 - Implementation steps `3-I0` through `3-I7` are complete.
 - Stage 3 is now Kaggle-runnable for one full Linear run and the single-seed
   36-run grid.
+- Preliminary Kaggle result is available for the Stage 2 best single-seed
+  configuration only: `I60/R20/ohlc_ma_vb`, seed `42`, adapter dim `128`.
+- In that first test, Stage 3 Linear dropped to majority-class-level accuracy:
+  accuracy `0.541291`, majority accuracy `0.541291`, ROC-AUC `0.522101`.
+- The matching Stage 2 baseline result was stronger: accuracy `0.603053`,
+  majority accuracy `0.541291`, ROC-AUC `0.616950`.
+- Remaining Stage 3 Linear configurations are still pending: the other
+  single-seed grid runs should be executed before writing a Stage 3 result
+  conclusion.
 - Stage 2 five-seed reruns are still pending, so Stage 3 final claims should be
   treated as provisional until Stage 2 stability is checked.
 
@@ -44,6 +53,12 @@ Main documents:
 Implementation status:
 - First planned Linear run: `I60/R20/ohlc_ma_vb`, seed `42`, adapter dim `128`.
 - Single-seed grid: `36` runs.
+- Completed preliminary Linear run: `I60/R20/ohlc_ma_vb`, seed `42`.
+  This was the best Stage 2 single-seed configuration.
+- Preliminary interpretation: adding the post-flatten Linear adapter did not
+  improve this best Stage 2 configuration; it reduced the result from the
+  Stage 2 baseline's `0.603053` accuracy to `0.541291`.
+- Remaining Linear grid configurations are planned next.
 - Five-seed stability checks are deferred.
 - Local smoke test passed with `I5/R5/ohlc`, seed `42`, one epoch, tiny rows.
 
@@ -71,6 +86,14 @@ Implementation status:
 - Implementation step `3-I0`부터 `3-I7`까지 완료했습니다.
 - 이제 Stage 3는 Kaggle에서 단일 Linear full run과 single-seed 36-run grid를
   실행할 수 있습니다.
+- 현재 preliminary Kaggle 결과는 Stage 2 single-seed best configuration 하나에
+  대해서만 있습니다: `I60/R20/ohlc_ma_vb`, seed `42`, adapter dim `128`.
+- 이 첫 테스트에서 Stage 3 Linear는 majority-class 수준으로 하락했습니다:
+  accuracy `0.541291`, majority accuracy `0.541291`, ROC-AUC `0.522101`.
+- 같은 조합의 Stage 2 baseline은 더 강했습니다: accuracy `0.603053`,
+  majority accuracy `0.541291`, ROC-AUC `0.616950`.
+- 나머지 Stage 3 Linear configuration은 아직 실행 예정입니다. Stage 3 결과 결론은
+  나머지 single-seed grid run 이후 작성합니다.
 - Stage 2의 5-seed rerun은 아직 예정이므로, Stage 3 최종 결론도 Stage 2 안정성
   확인 전까지는 provisional result로 봅니다.
 
@@ -91,5 +114,11 @@ Implementation status:
 구현 상태:
 - 첫 Linear 실행: `I60/R20/ohlc_ma_vb`, seed `42`, adapter dim `128`.
 - Single-seed grid: `36`개 run.
+- Preliminary Linear run 완료: `I60/R20/ohlc_ma_vb`, seed `42`.
+  이 조합은 Stage 2 single-seed best configuration입니다.
+- Preliminary 해석: post-flatten Linear adapter는 이 Stage 2 best 조합을 개선하지
+  못했고, Stage 2 baseline accuracy `0.603053`에서 Stage 3 Linear accuracy
+  `0.541291`로 하락했습니다.
+- 나머지 Linear grid configuration은 다음 실행 예정입니다.
 - Five-seed 안정성 확인은 later입니다.
 - Local smoke test는 `I5/R5/ohlc`, seed `42`, one epoch, tiny rows로 통과했습니다.

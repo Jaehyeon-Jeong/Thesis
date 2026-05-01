@@ -42,6 +42,17 @@ Dependency:
 - Stage 2 preparation may proceed while Stage 1 Kaggle runs are executing.
 - Stage 2 final comparison tables wait for Stage 1 full outputs.
 
+2-1 dependency re-check:
+- The current Stage 1 model class is `StockCNNI20`, which is fixed to input
+  shape `(batch, 1, 64, 60)` and classifier input size `46,080`.
+- Therefore, BTC `I20` can reuse the Stage 1 CNN core directly, but BTC `I5`
+  and `I60` require Stage-1/Stock_CNN-style variants or a model factory.
+- Stage 1 stock-specific metadata and `.dat/.feather` label handling do not
+  transfer directly to BTC. BTC must construct image rows and future returns
+  from OHLCV data.
+- Stage 1 Grad-CAM logic is reusable as a method, but BTC sample selection and
+  output metadata must be BTC-specific.
+
 ## 한국어
 
 목적:
@@ -82,3 +93,13 @@ Stage 2 기본 batch 정책:
 의존성:
 - Stage 1 Kaggle run이 실행되는 동안 Stage 2 준비는 진행할 수 있습니다.
 - Stage 2 최종 비교표는 Stage 1 full output 이후 작성합니다.
+
+2-1 dependency 재확인:
+- 현재 Stage 1 model class는 `StockCNNI20`이고, input shape `(batch, 1, 64, 60)`과
+  classifier input size `46,080`에 고정되어 있습니다.
+- 따라서 BTC `I20`은 Stage 1 CNN core를 직접 재사용할 수 있지만, BTC `I5`와 `I60`은
+  Stage-1/Stock_CNN식 model variant 또는 model factory가 필요합니다.
+- Stage 1의 stock-specific metadata와 `.dat/.feather` label handling은 BTC로 직접
+  넘어오지 않습니다. BTC는 OHLCV에서 image row와 future return을 새로 구성해야 합니다.
+- Stage 1 Grad-CAM 로직은 방법론으로 재사용할 수 있지만, BTC sample selection과 output
+  metadata는 BTC용으로 바꿔야 합니다.

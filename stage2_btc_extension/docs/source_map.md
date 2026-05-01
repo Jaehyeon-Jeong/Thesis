@@ -27,6 +27,48 @@ Open checks:
 - Trading-cost assumption for adjusted returns.
 - Train/validation/test date ranges.
 
+## 2-1 Re-check Result
+
+Checked on: 2026-05-01
+
+Checked sources:
+- Root plan: `PLAN.md`
+- Stage 2 checklist: `stage2_btc_extension/checklist.md`
+- Re-image summary: `자료조사/Re-image 요약.md`
+- Grad-CAM summary: `자료조사/Grad-CAM요약.md`
+- Stage 1 model: `stage1_reimage_reproduction/src/stage1_reimage/models/stock_cnn.py`
+- Stage 1 label/split/normalization: `stage1_reimage_reproduction/src/stage1_reimage/data/label_split.py`
+- Stage 1 prediction/metrics: `stage1_reimage_reproduction/src/stage1_reimage/evaluation/prediction.py`
+- Stage 1 Grad-CAM: `stage1_reimage_reproduction/src/stage1_reimage/interpretability/gradcam.py`
+
+Reusable Stage 1 decisions:
+- Binary label rule remains `future R-day return > 0 -> Up class`.
+- Training defaults remain cross-entropy, Adam, learning rate `1e-5`, dropout `0.5`, Xavier-style initialization, early stopping by validation loss, and batch size `128` unless a later checklist item records a reason to change a value.
+- Pixel normalization must be fit on training images only.
+- Evaluation should preserve date, future return, label, logits, probabilities, predicted class, and correctness in prediction outputs.
+- Grad-CAM must use the target pre-softmax logit and convolution-layer activation/gradient, then upsample heatmaps to the input image size.
+
+Not directly reusable without adaptation:
+- `StockCNNI20` is an I20-only implementation. It reshapes inputs to `(batch, 1, 64, 60)` and uses a fixed classifier input size of `46,080`.
+- BTC `I20` can reuse the current Stage 1 CNN core directly after BTC image generation and normalization are implemented.
+- BTC `I5` and `I60` must use Stage-1/Stock_CNN-style model variants or a model factory. They must not silently reuse the I20 model with the wrong input shape.
+- Stage 1 label code is tied to public stock columns `Ret_5d`, `Ret_20d`, `Ret_60d`, `StockID`, `MarketCap`, `EWMA_vol`, and yearly `.dat/.feather` shards. BTC needs its own OHLCV row alignment and future-return construction.
+- Stage 1 prediction schema is stock-specific. BTC prediction outputs should be BTC-specific, for example `Date`, `entry_close`, `exit_close`, `future_return`, `label`, logits, probabilities, predicted class, and correctness.
+- Stage 1 Grad-CAM selection assumes stock metadata such as `StockID`, `year`, `shard_index`, and `local_row`. BTC Grad-CAM needs sample selection based on BTC dates and BTC generated image indices.
+
+Stage 2 fixed constraints after 2-1:
+- Stage 2 uses the BTC OHLCV dataset first. BTC news and LLM conditioning stay in Stage 4.
+- Stage 2 remains a single-asset time-series setting. It does not use stock cross-sectional H-L decile portfolios.
+- Stage 2 default batch size is `128`; the Stage 1 Kaggle fast diagnostic batch `1024` is not inherited.
+- Stage 2 final comparison tables wait for Stage 1 full outputs, but Stage 2 data audit and implementation planning can continue now.
+
+Open items passed to 2-2:
+- Confirm the exact Kaggle input path and CSV filename.
+- Confirm BTC OHLCV columns, timestamp format, frequency, duplicates, missing values, and date range.
+- Confirm whether daily resampling is needed.
+- Confirm volume column meaning and whether volume is usable for Re-image-style volume bars.
+- Confirm the first feasible BTC split dates before implementation.
+
 ## 한국어
 
 이 파일은 Stage 2 구현 전에 확인해야 할 근거를 기록합니다.
@@ -53,3 +95,60 @@ Open checks:
 - cleaning 이후 date range.
 - transaction-cost-adjusted return에 쓸 trading cost 가정.
 - train/validation/test date range.
+
+## 2-1 재확인 결과
+
+확인일: 2026-05-01
+
+확인한 source:
+- root plan: `PLAN.md`
+- Stage 2 checklist: `stage2_btc_extension/checklist.md`
+- Re-image 요약: `자료조사/Re-image 요약.md`
+- Grad-CAM 요약: `자료조사/Grad-CAM요약.md`
+- Stage 1 model: `stage1_reimage_reproduction/src/stage1_reimage/models/stock_cnn.py`
+- Stage 1 label/split/normalization: `stage1_reimage_reproduction/src/stage1_reimage/data/label_split.py`
+- Stage 1 prediction/metrics: `stage1_reimage_reproduction/src/stage1_reimage/evaluation/prediction.py`
+- Stage 1 Grad-CAM: `stage1_reimage_reproduction/src/stage1_reimage/interpretability/gradcam.py`
+
+Stage 1에서 그대로 유지할 수 있는 결정:
+- binary label rule은 그대로 `future R-day return > 0 -> Up class`입니다.
+- 학습 기본값은 cross-entropy, Adam, learning rate `1e-5`, dropout `0.5`,
+  Xavier-style initialization, validation loss 기준 early stopping, batch size `128`을
+  유지합니다. 이후 checklist에서 바꿀 이유가 기록되기 전에는 임의 변경하지 않습니다.
+- pixel normalization은 training image에서만 fit해야 합니다.
+- prediction output에는 date, future return, label, logits, probability, predicted class,
+  correctness를 남겨야 합니다.
+- Grad-CAM은 softmax 이후 probability가 아니라 target pre-softmax logit을 사용하고,
+  convolution layer activation/gradient로 heatmap을 만든 뒤 입력 image 크기로 upsample합니다.
+
+그대로 재사용하면 안 되고 BTC용 수정이 필요한 부분:
+- `StockCNNI20`은 I20 전용 구현입니다. input을 `(batch, 1, 64, 60)`으로 reshape하고
+  classifier input size를 `46,080`으로 고정합니다.
+- BTC `I20`은 BTC image generation과 normalization을 구현한 뒤 현재 Stage 1 CNN core를
+  직접 재사용할 수 있습니다.
+- BTC `I5`와 `I60`은 Stage-1/Stock_CNN식 원칙을 따르는 별도 model variant 또는 model
+  factory가 필요합니다. I20 model을 shape만 억지로 맞춰 조용히 재사용하지 않습니다.
+- Stage 1 label code는 public stock column인 `Ret_5d`, `Ret_20d`, `Ret_60d`,
+  `StockID`, `MarketCap`, `EWMA_vol`, yearly `.dat/.feather` shard에 묶여 있습니다.
+  BTC는 OHLCV row alignment와 future-return construction을 새로 만들어야 합니다.
+- Stage 1 prediction schema는 stock-specific입니다. BTC output은 예를 들어 `Date`,
+  `entry_close`, `exit_close`, `future_return`, `label`, logits, probabilities,
+  predicted class, correctness 중심으로 새로 잡습니다.
+- Stage 1 Grad-CAM sample selection은 `StockID`, `year`, `shard_index`, `local_row`를
+  가정합니다. BTC Grad-CAM은 BTC date와 generated image index 기준으로 sample을 선택해야 합니다.
+
+2-1 이후 Stage 2 고정 제약:
+- Stage 2는 우선 BTC OHLCV만 사용합니다. BTC news와 LLM conditioning은 Stage 4입니다.
+- Stage 2는 단일 자산 time-series setting입니다. stock cross-sectional H-L decile
+  portfolio를 사용하지 않습니다.
+- Stage 2 기본 batch size는 `128`입니다. Stage 1 Kaggle fast diagnostic의 `1024` batch를
+  가져오지 않습니다.
+- Stage 2 최종 비교표는 Stage 1 full output 이후 작성하지만, Stage 2 data audit과
+  구현 설계는 지금 진행할 수 있습니다.
+
+2-2로 넘기는 열린 항목:
+- Kaggle input path와 정확한 CSV filename 확인.
+- BTC OHLCV column, timestamp format, frequency, duplicate, missing value, date range 확인.
+- daily resampling 필요 여부 확인.
+- volume column의 의미와 Re-image-style volume bar에 사용할 수 있는지 확인.
+- 구현 전 BTC train/validation/test split 후보 확정.

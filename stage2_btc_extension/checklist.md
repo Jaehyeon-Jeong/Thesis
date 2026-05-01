@@ -47,7 +47,8 @@ Implementation phase:
   - Result: [2-I9 local smoke test](checklist_results/2-I9_local_smoke_test.md)
 - [x] 2-I10. Kaggle full BTC baseline runs
   - Result: [2-I10 Kaggle runner ready](checklist_results/2-I10_kaggle_runner_ready.md)
-- [ ] 2-I11. Stage 2 report outputs
+- [x] 2-I11. Stage 2 grid runners and result viewer
+  - Result: [2-I11 Stage 2 grid runners and result viewer](checklist_results/2-I11_stage2_grid_runners_and_viewer.md)
 
 Important:
 - Do not change the Stage 1 CNN core when moving to BTC unless a checklist item
@@ -103,7 +104,8 @@ Important:
   - 결과: [2-I9 local smoke test](checklist_results/2-I9_local_smoke_test.md)
 - [x] 2-I10. Kaggle full BTC baseline run
   - 결과: [2-I10 Kaggle runner ready](checklist_results/2-I10_kaggle_runner_ready.md)
-- [ ] 2-I11. Stage 2 report output
+- [x] 2-I11. Stage 2 grid runner와 result viewer
+  - 결과: [2-I11 Stage 2 grid runner와 result viewer](checklist_results/2-I11_stage2_grid_runners_and_viewer.md)
 
 중요:
 - Stage 2로 넘어가도 Stage 1 CNN core는 임의로 바꾸지 않습니다. 바꿀 필요가 있으면

@@ -9,10 +9,15 @@ Scripts:
   `reports/figures/sample_images/`.
 - `check_stage2_label_split.py`: verifies label/split/normalization.
 - `run_stage2_btc_baseline.py`: trains one BTC baseline experiment tuple.
+- `run_stage2_grid.py`: runs the full BTC baseline grid across image windows,
+  return horizons, image specifications, and seeds by calling the single-run
+  scripts.
 - `evaluate_stage2_predictions.py`: exports prediction CSV and classification metrics.
 - `evaluate_stage2_trading.py`: exports BTC time-series trading metrics.
 - `generate_stage2_gradcam.py`: exports BTC Grad-CAM figures.
 - `check_stage2_outputs.py`: checks required output files after a run.
+- `summarize_stage2_grid_results.py`: collects grid outputs into seed-level and
+  mean/std result tables.
 
 ## 한국어
 
@@ -23,7 +28,11 @@ Scripts:
   local sample image를 생성합니다.
 - `check_stage2_label_split.py`: label/split/normalization을 확인합니다.
 - `run_stage2_btc_baseline.py`: BTC baseline experiment tuple 하나를 학습합니다.
+- `run_stage2_grid.py`: 단일 실행 script들을 호출해서 image window, return
+  horizon, image specification, seed 전체 grid를 반복 실행합니다.
 - `evaluate_stage2_predictions.py`: prediction CSV와 classification metric을 저장합니다.
 - `evaluate_stage2_trading.py`: BTC time-series trading metric을 저장합니다.
 - `generate_stage2_gradcam.py`: BTC Grad-CAM figure를 저장합니다.
 - `check_stage2_outputs.py`: 실행 후 필요한 output file이 있는지 확인합니다.
+- `summarize_stage2_grid_results.py`: grid output을 seed-level table과 mean/std
+  result table로 모읍니다.

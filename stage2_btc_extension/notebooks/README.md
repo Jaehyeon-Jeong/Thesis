@@ -8,6 +8,12 @@ Available Kaggle cells:
 - `kaggle_stage2_btc_baseline_one_cell.md`: planned one-cell interface for
   BTC baseline training, evaluation, trading metrics, and quick Grad-CAM. It is
   executable only after the Stage 2 implementation scripts are added.
+- `kaggle_stage2_grid_single_seed_one_cell.md`: runs the 36-run Stage 2 grid
+  once with seed `42`.
+- `kaggle_stage2_grid_five_seed_one_cell.md`: runs the 180-run Stage 2 grid
+  with seeds `42, 43, 44, 45, 46`.
+- `kaggle_stage2_results_viewer_one_cell.md`: summarizes grid outputs into
+  tables and displays selected Grad-CAM figures.
 
 ## 한국어
 
@@ -17,3 +23,9 @@ Available Kaggle cells:
 - `kaggle_stage2_btc_baseline_one_cell.md`: BTC baseline training, evaluation,
   trading metric, quick Grad-CAM을 위한 예정 one-cell interface입니다. Stage 2 구현
   script가 추가된 뒤 실행 가능합니다.
+- `kaggle_stage2_grid_single_seed_one_cell.md`: seed `42` 하나로 Stage 2 전체
+  36-run grid를 실행합니다.
+- `kaggle_stage2_grid_five_seed_one_cell.md`: seed `42, 43, 44, 45, 46`으로
+  Stage 2 전체 180-run grid를 실행합니다.
+- `kaggle_stage2_results_viewer_one_cell.md`: grid output을 표로 요약하고 선택한
+  Grad-CAM figure를 표시합니다.

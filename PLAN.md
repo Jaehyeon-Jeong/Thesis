@@ -60,6 +60,15 @@
   - random seed
   - package/environment 정보
   - `metrics.json`, `predictions.csv`, 주요 figure outputs
+- Kaggle에서 긴 모델 학습을 실행하는 runner는 반드시 output backup을 자동 생성한다.
+  - 학습 직후 checkpoint가 생기면 즉시 backup한다.
+  - evaluation 직후 prediction/metric이 생기면 다시 backup한다.
+  - Grad-CAM/figure 생성 직후 다시 backup한다.
+  - backup zip은 `PROJECT_ROOT` 밖, 예를 들어 `/kaggle/working/stage1_saved_outputs/`
+    또는 `/kaggle/working/stage2_saved_outputs/`에 저장한다.
+  - 이유: 다음 horizon/model 실행 때 `PROJECT_ROOT`를 새 code snapshot으로 다시 만들면
+    이전 run의 checkpoint, prediction, metric, Grad-CAM이 삭제될 수 있기 때문이다.
+  - 이 backup은 실험 로직 변경이 아니라 output 보존을 위한 실행 안정성 장치다.
 - 4단계 News/LLM처럼 Hugging Face/LLM cache가 중요한 작업은 Colab도 후보가 될 수 있지만, 기본 원칙은 여전히 단일 코드베이스 + 환경별 runner다.
 
 ## 0단계: 자료/데이터/참고 구현 확인

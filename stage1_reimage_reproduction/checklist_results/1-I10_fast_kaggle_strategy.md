@@ -27,6 +27,8 @@ Performance change:
   - Added optional mixed precision training.
   - Added optional DataParallel training for Kaggle T4 x2.
   - Added one-cell guard that fails if the Kaggle code snapshot is old.
+  - Added automatic output backup zips outside `PROJECT_ROOT` after training,
+    evaluation, Grad-CAM, and output check.
 
 Recommended execution:
 - Run one horizon first: `stage1_i20_r20`.
@@ -41,6 +43,13 @@ Recommended execution:
   - `MIXED_PRECISION=True`
   - `DATA_PARALLEL=True`
   - `FAST_CUDNN=True`
+- Output preservation:
+  - The one-cell runner now writes backup zips to
+    `/kaggle/working/stage1_saved_outputs/`.
+  - This prevents losing a completed horizon when the next run recreates
+    `/kaggle/working/stage1_reimage_reproduction`.
+  - For the R5 rerun, set `HORIZON = "stage1_i20_r5"` and keep
+    `SAVE_BACKUP_ZIPS = True`.
 
 Expected runtime:
 - Lazy memmap path can take 20+ minutes per epoch.
@@ -85,6 +94,8 @@ Validation:
   - Kaggle T4 x2용 DataParallel training option을 추가했습니다.
   - Kaggle code snapshot이 오래된 경우 one-cell runner가 바로 실패하도록 guard를
     추가했습니다.
+  - training, evaluation, Grad-CAM, output check 직후 `PROJECT_ROOT` 밖에 자동
+    backup zip을 저장하도록 추가했습니다.
 
 권장 실행:
 - 먼저 `stage1_i20_r20` horizon 하나만 실행합니다.
@@ -99,6 +110,13 @@ Validation:
   - `MIXED_PRECISION=True`
   - `DATA_PARALLEL=True`
   - `FAST_CUDNN=True`
+- Output 보존:
+  - one-cell runner는 이제 `/kaggle/working/stage1_saved_outputs/`에 backup zip을
+    저장합니다.
+  - 다음 run에서 `/kaggle/working/stage1_reimage_reproduction`을 새로 만들더라도
+    이미 끝난 horizon 결과가 사라지지 않게 하기 위한 장치입니다.
+  - R5를 다시 돌릴 때는 `HORIZON = "stage1_i20_r5"`로 두고
+    `SAVE_BACKUP_ZIPS = True`를 유지합니다.
 
 예상 시간:
 - 기존 lazy memmap path는 epoch 하나가 20분 이상 걸릴 수 있습니다.

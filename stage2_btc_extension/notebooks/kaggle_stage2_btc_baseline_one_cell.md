@@ -111,6 +111,8 @@ for p in Path("/kaggle/input").glob("*"):
 
 ```python
 from pathlib import Path
+from datetime import datetime, timezone
+import json
 import shutil
 import subprocess
 import sys
@@ -125,6 +127,7 @@ import yaml
 CODE_INPUT = Path("/kaggle/input/datasets/moskow/stage2/stage2_btc_extension")
 PROJECT_ROOT = Path("/kaggle/working/stage2_btc_extension")
 DATA_ROOT = Path("/kaggle/input")
+BACKUP_ROOT = Path("/kaggle/working/stage2_saved_outputs")
 
 # Leave empty to auto-detect btc_1d_data_2018_to_2025.csv under /kaggle/input.
 # MA는 별도 파일을 읽지 않습니다. BTC Close에서 window별 SMA를 코드가 계산합니다.
@@ -137,6 +140,7 @@ RUN_SEED = 42
 EVAL_SPLIT = "test"
 GRADCAM_SAMPLES_PER_CLASS = 2
 SMOKE_TEST = False
+SAVE_BACKUP_ZIPS = True
 
 # Strict Stage 2 default.
 BATCH_SIZE = 128
@@ -176,6 +180,67 @@ def run(cmd, cwd=PROJECT_ROOT):
     """Run one command and stream output."""
     print("\n$ " + " ".join(str(x) for x in cmd), flush=True)
     subprocess.run([str(x) for x in cmd], cwd=str(cwd), check=True)
+
+
+def experiment_name() -> str:
+    """Stage 2 experiment directory name을 runner 설정값에서 만든다."""
+
+    return f"stage2_i{IMAGE_WINDOW}_{IMAGE_SPEC}_r{RETURN_HORIZON}"
+
+
+def backup_stage2_outputs(phase: str):
+    """현재 Stage 2 output을 `PROJECT_ROOT` 밖에 zip으로 저장한다.
+
+    왜 필요한가:
+        Kaggle one-cell runner는 실행 시작 시 code snapshot을 `/kaggle/working`으로
+        다시 복사한다. 이후 다른 model/window/spec을 실행하면서 project folder를
+        새로 만들면 이전 output이 사라질 수 있다. 이 함수는 backup zip을
+        `/kaggle/working/stage2_saved_outputs`에 저장해서 결과를 보존한다.
+    """
+
+    if not SAVE_BACKUP_ZIPS:
+        return None
+
+    outputs_root = PROJECT_ROOT / "outputs" / "stage2"
+    if not outputs_root.exists():
+        print(f"[backup:{phase}] skip: outputs directory does not exist yet", flush=True)
+        return None
+
+    BACKUP_ROOT.mkdir(parents=True, exist_ok=True)
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    name = experiment_name()
+    archive_base = BACKUP_ROOT / f"{name}_seed{RUN_SEED}_{phase}_{timestamp}_outputs"
+    archive_path = Path(shutil.make_archive(str(archive_base), "zip", outputs_root))
+    receipt = {
+        "experiment": name,
+        "image_window": IMAGE_WINDOW,
+        "image_spec": IMAGE_SPEC,
+        "return_horizon": RETURN_HORIZON,
+        "run_seed": RUN_SEED,
+        "phase": phase,
+        "created_utc": timestamp,
+        "archive_path": str(archive_path),
+        "archive_size_mb": round(archive_path.stat().st_size / (1024 * 1024), 3),
+        "project_root": str(PROJECT_ROOT),
+        "outputs_root": str(outputs_root),
+    }
+    receipt_path = BACKUP_ROOT / f"{name}_seed{RUN_SEED}_{phase}_{timestamp}_receipt.json"
+    receipt_path.write_text(json.dumps(receipt, indent=2), encoding="utf-8")
+    print(
+        f"[backup:{phase}] saved {archive_path} "
+        f"({receipt['archive_size_mb']} MB), receipt={receipt_path}",
+        flush=True,
+    )
+    return archive_path
+
+
+def run_step(step_name: str, cmd):
+    """단계 실행 후 성공/실패와 관계없이 현재 outputs를 backup한다."""
+
+    try:
+        run(cmd)
+    finally:
+        backup_stage2_outputs(step_name)
 
 
 def assert_required_scripts(project_root: Path):
@@ -239,7 +304,7 @@ run([
     "--output-dir", "reports/data_audit",
 ])
 
-run([
+run_step("after_train", [
     sys.executable, "-u",
     "scripts/run_stage2_btc_baseline.py",
     "--config", "configs/env_kaggle.yaml",
@@ -249,7 +314,7 @@ run([
     "--run-seed", str(RUN_SEED),
 ] + smoke_train_args)
 
-run([
+run_step("after_prediction_eval", [
     sys.executable, "-u",
     "scripts/evaluate_stage2_predictions.py",
     "--config", "configs/env_kaggle.yaml",
@@ -260,7 +325,7 @@ run([
     "--split", EVAL_SPLIT,
 ] + smoke_data_args)
 
-run([
+run_step("after_trading_eval", [
     sys.executable, "-u",
     "scripts/evaluate_stage2_trading.py",
     "--config", "configs/env_kaggle.yaml",
@@ -271,7 +336,7 @@ run([
     "--split", EVAL_SPLIT,
 ])
 
-run([
+run_step("after_gradcam", [
     sys.executable, "-u",
     "scripts/generate_stage2_gradcam.py",
     "--config", "configs/env_kaggle.yaml",
@@ -284,7 +349,7 @@ run([
     "--write-report-copy",
 ] + smoke_data_args)
 
-run([
+run_step("after_output_check", [
     sys.executable, "-u",
     "scripts/check_stage2_outputs.py",
     "--config", "configs/env_kaggle.yaml",
@@ -298,4 +363,5 @@ run([
 
 print("\nDONE", flush=True)
 print("Outputs:", PROJECT_ROOT / "outputs" / "stage2", flush=True)
+print("Backup zips:", BACKUP_ROOT, flush=True)
 ```

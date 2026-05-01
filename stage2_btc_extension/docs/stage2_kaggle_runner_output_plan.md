@@ -42,6 +42,10 @@ Concrete Kaggle input setup:
 - First Kaggle cell: list `/kaggle/input` and set `CODE_INPUT` to the actual
   attached code path. Keep `SOURCE_FILE = ""` unless BTC CSV auto-detection
   fails.
+- Output preservation: write backup zips outside `PROJECT_ROOT`, under
+  `/kaggle/working/stage2_saved_outputs/`, after each long-running stage. This
+  prevents losing a completed model run when the next run recreates the project
+  folder.
 
 Default experiment tuple:
 - `image_window = 20`
@@ -182,6 +186,10 @@ Stage 2는 Stage 1과 같은 실행 패턴을 사용합니다.
 - 첫 Kaggle cell: `/kaggle/input`을 출력해서 실제 attach path를 확인하고,
   `CODE_INPUT`만 그 경로로 맞춥니다. BTC CSV 자동 탐색이 실패할 때만
   `SOURCE_FILE`을 정확한 CSV path로 바꿉니다.
+- Output 보존: 긴 실행 단계가 끝날 때마다 `PROJECT_ROOT` 밖의
+  `/kaggle/working/stage2_saved_outputs/`에 backup zip을 저장합니다. 다음 run에서
+  project folder를 새로 만들더라도 완료된 model run 결과가 사라지지 않게 하기
+  위한 장치입니다.
 
 기본 experiment tuple:
 - `image_window = 20`

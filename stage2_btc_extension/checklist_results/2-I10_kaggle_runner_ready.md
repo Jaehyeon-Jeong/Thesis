@@ -48,6 +48,13 @@ for p in Path("/kaggle/input").glob("*"):
 Full-run expected output root:
 - `/kaggle/working/stage2_btc_extension/outputs/stage2`
 
+Automatic backup:
+- The runner now writes backup zips to `/kaggle/working/stage2_saved_outputs/`
+  after training, prediction evaluation, trading evaluation, Grad-CAM, and
+  output check.
+- These backups are outside `PROJECT_ROOT`, so they survive the next run that
+  recreates `/kaggle/working/stage2_btc_extension`.
+
 Important:
 - This checklist item creates the Kaggle runner. The actual full Kaggle result
   is not available until the user runs it in Kaggle and returns the output.
@@ -99,6 +106,13 @@ for p in Path("/kaggle/input").glob("*"):
 
 Full-run 예상 output root:
 - `/kaggle/working/stage2_btc_extension/outputs/stage2`
+
+자동 backup:
+- runner는 training, prediction evaluation, trading evaluation, Grad-CAM,
+  output check 직후 `/kaggle/working/stage2_saved_outputs/`에 backup zip을
+  저장합니다.
+- 이 backup은 `PROJECT_ROOT` 밖에 있으므로, 다음 run에서
+  `/kaggle/working/stage2_btc_extension`을 새로 만들어도 남아 있습니다.
 
 중요:
 - 이 체크리스트는 Kaggle runner를 작성한 것입니다. 실제 full Kaggle 결과는 사용자가

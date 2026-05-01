@@ -14,6 +14,8 @@ Default:
 
 ```python
 from pathlib import Path
+from datetime import datetime, timezone
+import json
 import shutil
 import subprocess
 import sys
@@ -27,12 +29,17 @@ CODE_INPUT = Path("/kaggle/input/datasets/moskow/stage1/stage1_reimage_reproduct
 DATA_INPUT = Path("/kaggle/input/datasets/moskow/baseline-dataset")
 PROJECT_ROOT = Path("/kaggle/working/stage1_reimage_reproduction")
 DATA_WORK = Path("/tmp/baseline-dataset")
+BACKUP_ROOT = Path("/kaggle/working/stage1_saved_outputs")
 
 HORIZON = "stage1_i20_r20"
 RUN_SEED = 42
 EVAL_SPLIT = "test"
 GRADCAM_YEAR = 2019
 GRADCAM_SAMPLES_PER_CLASS = 2
+
+# 학습은 몇 시간 걸리기 때문에, 각 주요 단계가 끝날 때마다 PROJECT_ROOT 밖에
+# outputs zip을 저장한다. 다음 horizon 실행 때 PROJECT_ROOT를 지워도 이 zip은 남는다.
+SAVE_BACKUP_ZIPS = True
 
 # Fast Kaggle setting:
 #   - 1024 uses fewer optimizer steps than the paper-style 128 batch.
@@ -53,6 +60,70 @@ def run(cmd, cwd=PROJECT_ROOT):
     """Run one shell command and stream output immediately."""
     print("\n$ " + " ".join(str(x) for x in cmd), flush=True)
     subprocess.run([str(x) for x in cmd], cwd=str(cwd), check=True)
+
+
+def backup_stage1_outputs(phase: str):
+    """현재 horizon output을 `/kaggle/working/stage1_saved_outputs`에 zip으로 저장한다.
+
+    왜 필요한가:
+        one-cell runner는 실행 시작 시 `PROJECT_ROOT`를 새 code snapshot으로 다시 만든다.
+        그래서 horizon을 바꿔 다시 실행하면 이전 horizon의 checkpoint/prediction/Grad-CAM이
+        같이 삭제될 수 있다. 이 함수는 `PROJECT_ROOT` 밖에 backup zip을 만들기 때문에
+        다음 실행에서도 결과가 남는다.
+
+    저장 내용:
+        `PROJECT_ROOT/outputs` 전체를 zip으로 묶는다. 이 안에는 checkpoint, metrics,
+        predictions, Grad-CAM outputs, run_manifest가 들어간다.
+    """
+
+    if not SAVE_BACKUP_ZIPS:
+        return None
+
+    outputs_root = PROJECT_ROOT / "outputs"
+    if not outputs_root.exists():
+        print(f"[backup:{phase}] skip: outputs directory does not exist yet", flush=True)
+        return None
+
+    BACKUP_ROOT.mkdir(parents=True, exist_ok=True)
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    archive_base = BACKUP_ROOT / f"{HORIZON}_seed{RUN_SEED}_{phase}_{timestamp}_outputs"
+    archive_path = Path(shutil.make_archive(str(archive_base), "zip", outputs_root))
+
+    receipt = {
+        "horizon": HORIZON,
+        "run_seed": RUN_SEED,
+        "phase": phase,
+        "created_utc": timestamp,
+        "archive_path": str(archive_path),
+        "archive_size_mb": round(archive_path.stat().st_size / (1024 * 1024), 3),
+        "project_root": str(PROJECT_ROOT),
+        "outputs_root": str(outputs_root),
+        "expected_files": {
+            "checkpoint": str(outputs_root / "checkpoints" / HORIZON / f"seed_{RUN_SEED}" / "best.pt"),
+            "predictions": str(outputs_root / "predictions" / HORIZON / f"seed_{RUN_SEED}" / f"{EVAL_SPLIT}_predictions.csv"),
+            "metrics": str(outputs_root / "metrics" / HORIZON / f"seed_{RUN_SEED}" / f"{EVAL_SPLIT}_metrics.json"),
+            "correlation": str(outputs_root / "metrics" / HORIZON / f"seed_{RUN_SEED}" / f"{EVAL_SPLIT}_correlation_metrics.json"),
+            "gradcam": str(outputs_root / "figures" / "gradcam" / HORIZON / f"seed_{RUN_SEED}" / EVAL_SPLIT / f"figure13_style_{GRADCAM_YEAR}_{EVAL_SPLIT}.png"),
+        },
+    }
+    receipt_path = BACKUP_ROOT / f"{HORIZON}_seed{RUN_SEED}_{phase}_{timestamp}_receipt.json"
+    receipt_path.write_text(json.dumps(receipt, indent=2), encoding="utf-8")
+
+    print(
+        f"[backup:{phase}] saved {archive_path} "
+        f"({receipt['archive_size_mb']} MB), receipt={receipt_path}",
+        flush=True,
+    )
+    return archive_path
+
+
+def run_step(step_name: str, cmd):
+    """단계 실행 후 성공/실패와 관계없이 현재 outputs를 backup한다."""
+
+    try:
+        run(cmd)
+    finally:
+        backup_stage1_outputs(step_name)
 
 
 def copy_or_extract_input(src: Path, dst: Path, expected_child: str | None = None):
@@ -168,7 +239,7 @@ run([
 # ============================================================
 # 5. Train one horizon
 # ============================================================
-run([
+run_step("after_train", [
     sys.executable, "-u",
     "scripts/run_stage1_baseline.py",
     "--config", "configs/env_kaggle.yaml",
@@ -181,7 +252,7 @@ run([
 # ============================================================
 # 6. Evaluate one horizon
 # ============================================================
-run([
+run_step("after_evaluation", [
     sys.executable, "-u",
     "scripts/evaluate_stage1_predictions.py",
     "--config", "configs/env_kaggle.yaml",
@@ -194,7 +265,7 @@ run([
 # ============================================================
 # 7. Quick Grad-CAM for visual check
 # ============================================================
-run([
+run_step("after_gradcam", [
     sys.executable, "-u",
     "scripts/generate_stage1_gradcam.py",
     "--config", "configs/env_kaggle.yaml",
@@ -206,8 +277,22 @@ run([
     "--write-report-copy",
 ])
 
+# ============================================================
+# 8. Output receipt check and final backup
+# ============================================================
+run_step("after_output_check", [
+    sys.executable, "-u",
+    "scripts/check_stage1_single_seed_outputs.py",
+    "--config", "configs/env_kaggle.yaml",
+    "--horizons", HORIZON,
+    "--run-seed", str(RUN_SEED),
+    "--split", EVAL_SPLIT,
+    "--gradcam-year", str(GRADCAM_YEAR),
+])
+
 print("\nDONE", flush=True)
 print("Outputs:", PROJECT_ROOT / "outputs", flush=True)
+print("Backup zips:", BACKUP_ROOT, flush=True)
 ```
 
 ## 한국어
@@ -230,3 +315,7 @@ Kaggle에서 horizon 하나를 깔끔하게 한 셀로 실행하고 싶을 때 �
   생성합니다.
 - `BATCH_SIZE`를 256/512로 키우면 빨라질 수 있지만, 정확한 baseline config와
   달라지므로 speed diagnostic으로 기록해야 합니다.
+- 이 runner는 학습 직후, evaluation 직후, Grad-CAM 직후, output check 직후에
+  `/kaggle/working/stage1_saved_outputs/` 아래로 horizon별 zip backup을 자동 생성합니다.
+  다음 horizon 실행 때 `stage1_reimage_reproduction` 폴더가 삭제돼도 backup zip은
+  남아 있습니다.

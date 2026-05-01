@@ -37,6 +37,24 @@ The strongest configuration is:
 The first three accuracy and AUC leaders are all `I60/R20` variants. This is the
 clearest signal in the single-seed run.
 
+### Result Tiers
+
+Best result:
+- `I60 / R20 / ohlc_ma_vb`: best accuracy, best AUC among the top group, and
+  the clearest positive margin over the majority-class baseline.
+
+Promising candidates:
+- `I60 / R20 / ohlc_vb`: second-best accuracy and AUC, also clearly above the
+  majority baseline.
+- `I60 / R20 / ohlc_ma`: third-best accuracy and still above the majority
+  baseline.
+
+Caution cases:
+- `I20 / R20 / ohlc_vb`: slightly above the majority baseline, but the margin is
+  small.
+- `I60 / R60 / ohlc`: high long/flat Sharpe, but weak AUC, so it should not be
+  treated as strong classification evidence.
+
 ### Aggregate Patterns
 
 Average by image window:
@@ -97,6 +115,15 @@ Expected final artifacts after running the Kaggle cell:
 
 - `reports/figures/gradcam/stage2_single_seed_best_i60_ohlc_ma_vb_r20_gradcam_10perclass.png`
 - `reports/figures/gradcam/stage2_single_seed_best_i60_ohlc_ma_vb_r20_gradcam_10perclass_samples.csv`
+
+Current preview artifact included in GitHub:
+
+- [`figures/gradcam/stage2_single_seed_best_i60_ohlc_ma_vb_r20_gradcam.png`](figures/gradcam/stage2_single_seed_best_i60_ohlc_ma_vb_r20_gradcam.png)
+- [`figures/gradcam/stage2_single_seed_best_i60_ohlc_ma_vb_r20_gradcam_samples.csv`](figures/gradcam/stage2_single_seed_best_i60_ohlc_ma_vb_r20_gradcam_samples.csv)
+
+This preview contains only `2` predicted-up and `2` predicted-down samples. It
+is useful for checking that Grad-CAM rendering works, but it is not the final
+Figure-13-style result.
 
 Current local limitation: the downloaded `stage2_result_save` folder contains
 only the quick `2`-per-class Grad-CAM preview and does not include the checkpoint
@@ -166,6 +193,22 @@ variation.
 Accuracy와 AUC 상위 3개가 모두 `I60/R20` variant입니다. single-seed 기준으로는 이
 부분이 가장 뚜렷한 signal입니다.
 
+### 결과 구분
+
+Best result:
+- `I60 / R20 / ohlc_ma_vb`: accuracy와 AUC가 가장 좋고, majority-class baseline
+  대비 개선 폭도 가장 뚜렷합니다.
+
+Promising candidates:
+- `I60 / R20 / ohlc_vb`: accuracy와 AUC가 2위이고, majority baseline보다 확실히
+  높습니다.
+- `I60 / R20 / ohlc_ma`: accuracy 3위이며 majority baseline을 넘습니다.
+
+Caution cases:
+- `I20 / R20 / ohlc_vb`: majority baseline보다 높긴 하지만 차이가 작습니다.
+- `I60 / R60 / ohlc`: long/flat Sharpe는 높지만 AUC가 약하므로, 강한 classification
+  evidence로 보기는 어렵습니다.
+
 ### 축별 패턴
 
 Image window별 평균:
@@ -227,6 +270,14 @@ Kaggle cell 실행 후 들어와야 하는 최종 산출물:
 
 - `reports/figures/gradcam/stage2_single_seed_best_i60_ohlc_ma_vb_r20_gradcam_10perclass.png`
 - `reports/figures/gradcam/stage2_single_seed_best_i60_ohlc_ma_vb_r20_gradcam_10perclass_samples.csv`
+
+GitHub에 현재 포함한 preview 산출물:
+
+- [`figures/gradcam/stage2_single_seed_best_i60_ohlc_ma_vb_r20_gradcam.png`](figures/gradcam/stage2_single_seed_best_i60_ohlc_ma_vb_r20_gradcam.png)
+- [`figures/gradcam/stage2_single_seed_best_i60_ohlc_ma_vb_r20_gradcam_samples.csv`](figures/gradcam/stage2_single_seed_best_i60_ohlc_ma_vb_r20_gradcam_samples.csv)
+
+이 preview는 predicted-up 2개와 predicted-down 2개만 포함합니다. Grad-CAM이 제대로
+그려지는지 확인하는 용도이고, 최종 Figure 13 스타일 결과는 아닙니다.
 
 현재 로컬 제한사항: 내려받은 `stage2_result_save`에는 빠른 확인용 `2`-per-class
 Grad-CAM preview만 있고, 로컬에서 `10`개씩 다시 생성하는 데 필요한 checkpoint와

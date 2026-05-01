@@ -198,6 +198,18 @@
 ## 4단계: FiLM + News/LLM Conditioning
 - 목적:
   - BTC price image CNN feature를 news/LLM condition으로 modulation.
+- 현재 진행 원칙:
+  - Stage 4는 condition source를 섞지 않고 아래 track으로 나눠 진행한다.
+    1. `4A FiLM-only control`: 외부 condition 없이 FiLM 삽입/초기화/export/Grad-CAM이
+       작동하는지 확인한다. 이 결과는 external information 효과로 해석하지 않는다.
+    2. `4B F&G index + FiLM`: Fear & Greed 계열 daily numeric sentiment를
+       condition으로 사용한다. source audit과 date/leakage check 이후에만 구현한다.
+    3. `4C News dataset + FiLM`: LLM 없이 news text encoder를 condition으로 사용한다.
+       publication-time alignment와 leakage check 이후에만 구현한다.
+    4. `4D News dataset -> LLM + FiLM`: LLM-derived news representation을
+       condition으로 사용한다. LLM model/cache/version/prompt 계획 이후에만 구현한다.
+  - 오늘 범위는 `4A FiLM-only control` 준비와 FiLM 삽입 설계까지로 제한한다.
+  - News/LLM condition 구현은 오늘 진행하지 않는다.
 - 모델 구현:
   - `ethanjperez/film`의 핵심 구조를 최대한 동일하게 따른다.
   - conditioning encoder와 FiLM generator를 분리한다.

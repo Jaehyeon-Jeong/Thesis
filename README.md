@@ -18,7 +18,7 @@ tracked.
 | `stage1_reimage_reproduction` | Reproduce the Re-image CNN pipeline on public I20 stock images | In progress: `I20/R60` seed-42 fast diagnostic archived; `I20/R20` archive is smoke-only; `I20/R5`, strict batch-128 run, and five-seed reproduction are later |
 | `stage2_btc_extension` | Extend the confirmed pipeline to BTC OHLCV | Single-seed 36-run result package closed for now; five-seed stability check later |
 | `stage3_linear_adapter` | Add a Linear comparison model | First test on Stage 2 best config completed; result dropped to majority level; remaining grid runs pending |
-| Stage 4 | Add FiLM + News/LLM conditioning | Planned |
+| `stage4_film_conditioning` | Add FiLM conditioning, then later F&G/News/LLM conditions | Scaffold created; today scope is FiLM-only, News/LLM deferred |
 
 ### Current Status
 
@@ -59,6 +59,19 @@ Stage 3:
 - Later: Stage 3 result report after Kaggle outputs and five-seed stability
   checks.
 
+Stage 4:
+- Stage 4 folder, checklist, workflow diagram, and source map scaffold are now
+  created.
+- Current scope is FiLM-only preparation. News data and LLM conditioning are not
+  implemented today.
+- Condition-source tracks are separated as:
+  `4A FiLM-only control`, `4B F&G index + FiLM`,
+  `4C News dataset + FiLM`, and `4D News dataset -> LLM + FiLM`.
+- The planned FiLM insertion point is inside each Stock_CNN block:
+  `Conv2d -> BatchNorm2d -> FiLM -> LeakyReLU -> MaxPool2d`.
+- FiLM reference implementation HEAD checked:
+  `ethanjperez/film@fe43ddf8a22b339dcca2efa07091ce9d498955cf`.
+
 ### Key documents
 
 - [PLAN.md](PLAN.md)
@@ -68,6 +81,7 @@ Stage 3:
 - [Stage 1 checklist](stage1_reimage_reproduction/checklist.md)
 - [Stage 2 checklist](stage2_btc_extension/checklist.md)
 - [Stage 3 checklist](stage3_linear_adapter/checklist.md)
+- [Stage 4 checklist](stage4_film_conditioning/checklist.md)
 
 ### Data policy
 
@@ -104,7 +118,7 @@ config, 코드 scaffold만 올립니다. 대용량 데이터, 논문 PDF, checkp
 | `stage1_reimage_reproduction` | public I20 stock image로 Re-image CNN pipeline 재현 | 진행 중: `I20/R60` seed-42 fast diagnostic 보존; `I20/R20` archive는 smoke-only; `I20/R5`, strict batch-128 run, five-seed reproduction은 later |
 | `stage2_btc_extension` | 확인된 pipeline을 BTC OHLCV로 확장 | single-seed 36-run 결과 패키지는 현재 마무리; 5-seed 안정성 확인은 later |
 | `stage3_linear_adapter` | Linear 비교 모델 추가 | Stage 2 best config 1회 테스트 완료; majority 수준으로 하락; 나머지 grid run 예정 |
-| Stage 4 | FiLM + News/LLM conditioning 추가 | 계획 |
+| `stage4_film_conditioning` | FiLM conditioning 추가 후 F&G/News/LLM condition 확장 | scaffold 생성; 오늘 범위는 FiLM-only, News/LLM은 deferred |
 
 ### 현재 상태
 
@@ -144,6 +158,18 @@ Stage 3:
 - Local smoke test는 `I5/R5/ohlc`, seed `42`, one epoch, tiny rows로 통과했습니다.
 - Later: Kaggle output과 five-seed 안정성 확인 후 Stage 3 result report 작성.
 
+Stage 4:
+- Stage 4 폴더, checklist, workflow diagram, source map scaffold를 만들었습니다.
+- 현재 범위는 FiLM-only 준비입니다. News data와 LLM conditioning은 오늘 구현하지
+  않습니다.
+- Condition-source track은 다음처럼 분리합니다:
+  `4A FiLM-only control`, `4B F&G index + FiLM`,
+  `4C News dataset + FiLM`, `4D News dataset -> LLM + FiLM`.
+- 계획한 FiLM 삽입 위치는 각 Stock_CNN block 내부입니다:
+  `Conv2d -> BatchNorm2d -> FiLM -> LeakyReLU -> MaxPool2d`.
+- 확인한 FiLM reference implementation HEAD:
+  `ethanjperez/film@fe43ddf8a22b339dcca2efa07091ce9d498955cf`.
+
 ### 주요 문서
 
 - [PLAN.md](PLAN.md)
@@ -153,6 +179,7 @@ Stage 3:
 - [Stage 1 체크리스트](stage1_reimage_reproduction/checklist.md)
 - [Stage 2 체크리스트](stage2_btc_extension/checklist.md)
 - [Stage 3 체크리스트](stage3_linear_adapter/checklist.md)
+- [Stage 4 체크리스트](stage4_film_conditioning/checklist.md)
 
 ### 데이터 정책
 

@@ -95,16 +95,30 @@ def run_stage1_baseline(
             "Pass --allow-local-full only if this is intentional."
         )
 
+    print(
+        f"[stage1] run_mode={selection.run_mode} "
+        f"horizons={list(selection.horizons)} seeds={list(selection.run_seeds)}",
+        flush=True,
+    )
     ensure_stage1_output_dirs(paths)
     device = select_device(config)
+    print(f"[stage1] device={device}", flush=True)
 
     # `base_dataset`은 raw image를 읽을 수 있다. 아직 어떤 future return horizon을
     # label로 쓸지는 모른다.
+    print("[stage1] building monthly_20d dataset", flush=True)
     base_dataset = build_dataset_from_config(config)
+    print(
+        f"[stage1] dataset ready shards={len(base_dataset.shards)} "
+        f"rows={len(base_dataset):,}",
+        flush=True,
+    )
 
     # `base_metadata`는 모든 label row와 row id를 담은 하나의 DataFrame이다.
     # image tensor는 포함하지 않는다.
+    print("[stage1] building base metadata", flush=True)
     base_metadata = build_base_metadata(base_dataset.shards)
+    print(f"[stage1] base metadata rows={len(base_metadata):,}", flush=True)
     split_settings = split_settings_from_config(config)
     normalization_settings = normalization_settings_from_config(config)
     training_settings_base = training_settings_from_config(config)
@@ -114,12 +128,20 @@ def run_stage1_baseline(
         if horizon_name not in TARGET_COLUMNS:
             raise KeyError(f"Unknown horizon: {horizon_name}")
 
+        print(f"[stage1:{horizon_name}] start", flush=True)
         # Ret_20d 같은 target return column 하나를 binary label로 변환한다.
         horizon_frame = build_horizon_frame(base_metadata, horizon_name)
+        print(
+            f"[stage1:{horizon_name}] labeled rows={len(horizon_frame):,} "
+            f"target={TARGET_COLUMNS[horizon_name]}",
+            flush=True,
+        )
 
         # `split` column을 추가한다: train, validation, test 중 하나.
         split_frame = assign_splits(horizon_frame, split_settings)
         split_summary = make_split_summary(split_frame, split_settings, horizon_name)
+        split_counts = split_frame["split"].value_counts().to_dict()
+        print(f"[stage1:{horizon_name}] split counts={split_counts}", flush=True)
 
         # 이 horizon의 train row에서만 pixel mean/std를 계산한다.
         # 계산된 stats는 training과 validation data 모두에서 재사용된다.
@@ -129,6 +151,7 @@ def run_stage1_baseline(
             settings=normalization_settings,
             target_return_name=TARGET_COLUMNS[horizon_name],
             max_images=selection.normalization_max_images,
+            progress_label=horizon_name,
         )
         horizon_metrics_dir = paths.metrics_root / horizon_name
         # training 시작 전에 split/normalization audit JSON을 저장한다.
@@ -142,6 +165,7 @@ def run_stage1_baseline(
 
         for run_seed in selection.run_seeds:
             # seed는 weight initialization과 DataLoader train shuffling에 영향을 준다.
+            print(f"[stage1:{horizon_name}:seed_{run_seed}] training start", flush=True)
             set_global_seed(run_seed)
             training_settings = training_settings_base
             if selection.max_epochs is not None:
@@ -161,6 +185,14 @@ def run_stage1_baseline(
                 run_seed=run_seed,
                 max_train_rows=selection.max_train_rows,
                 max_val_rows=selection.max_val_rows,
+            )
+            print(
+                f"[stage1:{horizon_name}:seed_{run_seed}] "
+                f"train_rows={len(train_loader.dataset):,} "
+                f"val_rows={len(val_loader.dataset):,} "
+                f"train_batches={len(train_loader):,} "
+                f"val_batches={len(val_loader):,}",
+                flush=True,
             )
             checkpoint_dir = paths.checkpoint_root / horizon_name / f"seed_{run_seed}"
             metrics_dir = paths.metrics_root / horizon_name / f"seed_{run_seed}"
@@ -187,6 +219,12 @@ def run_stage1_baseline(
                 normalization_metadata=normalization_stats.as_dict(),
                 source_reference_metadata=_source_reference_metadata(config),
             )
+            print(
+                f"[stage1:{horizon_name}:seed_{run_seed}] training done "
+                f"best_epoch={result.best_epoch} "
+                f"best_val_loss={result.best_val_loss:.6f}",
+                flush=True,
+            )
             run_results.append(
                 {
                     "horizon_name": horizon_name,
@@ -206,6 +244,7 @@ def run_stage1_baseline(
         run_results=run_results,
         device=device,
     )
+    print(f"[stage1] run manifest written: {manifest}", flush=True)
     return {
         "status": "ok",
         "run_mode": selection.run_mode,

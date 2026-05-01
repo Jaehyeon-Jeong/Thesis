@@ -239,6 +239,11 @@ def fit_model(
 
     for epoch in range(1, settings.max_epochs + 1):
         epoch_start = time.perf_counter()
+        print(
+            f"[train] epoch {epoch}/{settings.max_epochs} start "
+            f"train_batches={len(train_loader):,} val_batches={len(val_loader):,}",
+            flush=True,
+        )
         # 학습 epoch: gradient를 켜고 optimizer가 weight를 업데이트한다.
         train_loss, train_accuracy = _run_epoch(
             model=model,
@@ -283,6 +288,7 @@ def fit_model(
             epochs_without_improvement += 1
 
         # dictionary 하나가 `train_history.csv`의 row 하나가 된다.
+        epoch_seconds = time.perf_counter() - epoch_start
         history.append(
             {
                 "epoch": epoch,
@@ -291,13 +297,25 @@ def fit_model(
                 "train_accuracy": train_accuracy,
                 "val_accuracy": val_accuracy,
                 "learning_rate": optimizer.param_groups[0]["lr"],
-                "epoch_seconds": time.perf_counter() - epoch_start,
+                "epoch_seconds": epoch_seconds,
                 "best_so_far": improved,
             }
+        )
+        print(
+            f"[train] epoch {epoch}/{settings.max_epochs} done "
+            f"train_loss={train_loss:.6f} val_loss={val_loss:.6f} "
+            f"train_acc={train_accuracy:.4f} val_acc={val_accuracy:.4f} "
+            f"seconds={epoch_seconds:.1f} best={improved}",
+            flush=True,
         )
 
         if epochs_without_improvement >= settings.early_stopping.patience:
             stopped_early = True
+            print(
+                f"[train] early stopping at epoch {epoch} "
+                f"best_epoch={best_epoch} best_val_loss={best_val_loss:.6f}",
+                flush=True,
+            )
             break
 
     stopped_epoch = history[-1]["epoch"] if history else 0
@@ -371,6 +389,8 @@ def _run_epoch(
     loss_total = 0.0
     correct_total = 0
     sample_total = 0
+    total_batches = len(data_loader)
+    phase = "train" if train else "val"
 
     context = torch.enable_grad() if train else torch.no_grad()
     with context:
@@ -413,12 +433,16 @@ def _run_epoch(
             sample_total += batch_size
 
             should_log = (
-                train
-                and settings.log_every_batches > 0
+                settings.log_every_batches > 0
                 and batch_index % settings.log_every_batches == 0
             )
             if should_log:
-                print(f"batch={batch_index} loss={float(loss.detach().cpu().item()):.6f}")
+                progress = batch_index / total_batches if total_batches else 1.0
+                print(
+                    f"[{phase}] batch={batch_index:,}/{total_batches:,} "
+                    f"({progress:.1%}) loss={float(loss.detach().cpu().item()):.6f}",
+                    flush=True,
+                )
 
     if sample_total == 0:
         raise ValueError("DataLoader produced zero samples.")

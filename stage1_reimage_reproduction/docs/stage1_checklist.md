@@ -617,10 +617,13 @@ Prepared output:
 - `scripts/run_stage1_kaggle_single_seed.sh`
 - `scripts/check_stage1_single_seed_outputs.py`
 - `docs/kaggle_single_seed_runbook.md`
+- `docs/progress_logging.md`
 - `checklist_results/1-I10_kaggle_single_seed_run.md`
+- `checklist_results/1-I10_progress_logging_update.md`
 - `reports/smoke_tests/1-I10_bash_syntax.log`
 - `reports/smoke_tests/1-I10_py_compile.log`
 - `reports/smoke_tests/1-I10_output_checker_help.txt`
+- `reports/smoke_tests/1-I10_progress_logging_smoke.log`
 
 Kaggle command:
 - `bash scripts/run_stage1_kaggle_single_seed.sh`

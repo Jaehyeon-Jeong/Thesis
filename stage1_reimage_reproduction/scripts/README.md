@@ -27,7 +27,8 @@ Current scripts:
   samples from prediction CSVs and writing Figure 13-style heatmap grids.
 - `run_stage1_kaggle_single_seed.sh`: runs the 1-I10 Kaggle single-seed
   sequence: data check, seed-42 training, test evaluation, Grad-CAM, and output
-  verification.
+  verification. It uses `python -u` so progress messages appear promptly in
+  notebook output.
 - `check_stage1_single_seed_outputs.py`: verifies that the expected 1-I10
   checkpoint, prediction, metric, manifest, and Grad-CAM files exist after a
   Kaggle run.
@@ -63,7 +64,8 @@ python scripts/check_scaffold.py --config configs/env_local.yaml --create-output
   Up/Down sample을 고르고 Figure 13-style heatmap grid를 작성합니다.
 - `run_stage1_kaggle_single_seed.sh`: 1-I10 Kaggle single-seed sequence를
   실행합니다. data check, seed-42 training, test evaluation, Grad-CAM, output
-  verification을 한 번에 묶습니다.
+  verification을 한 번에 묶습니다. Notebook output에 진행률이 빨리 보이도록
+  `python -u`를 사용합니다.
 - `check_stage1_single_seed_outputs.py`: Kaggle 실행 이후 1-I10에서 기대하는
   checkpoint, prediction, metric, manifest, Grad-CAM 파일이 실제로 있는지
   확인합니다.

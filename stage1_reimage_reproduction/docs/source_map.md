@@ -107,6 +107,7 @@ Stage 1 gate structure:
 | 1-I10 | `scripts/run_stage1_kaggle_single_seed.sh` | Kaggle wrapper for seed-42 full training, test evaluation, Grad-CAM, and output verification. |
 | 1-I10 | `scripts/check_stage1_single_seed_outputs.py` | Receipt checker for expected Kaggle single-seed outputs. |
 | 1-I10 | `docs/kaggle_single_seed_runbook.md` | Copy-paste Kaggle runbook for the first full single-seed run. |
+| 1-I10 | `docs/progress_logging.md` | Explains long-run progress messages and `python -u` usage. |
 
 1-I1 source note:
 - These files implement only the shared execution scaffold required by root
@@ -617,6 +618,8 @@ Outputs:
 - `scripts/check_stage1_single_seed_outputs.py`
 - `docs/kaggle_single_seed_runbook.md`
 - `checklist_results/1-I10_kaggle_single_seed_run.md`
+- `docs/progress_logging.md`
+- `checklist_results/1-I10_progress_logging_update.md`
 
 Source/policy mapping:
 
@@ -631,6 +634,8 @@ Source/policy mapping:
 - The execution package is prepared, but the checklist remains open until the
   actual Kaggle run returns outputs and `check_stage1_single_seed_outputs.py`
   reports `status: ok`.
+- Progress logging was added because long Kaggle runs can look frozen during
+  normalization and long epochs.
 
 ## 1-8 Grad-CAM Detail Plan
 
@@ -1298,6 +1303,8 @@ Metric 결정:
 - `scripts/check_stage1_single_seed_outputs.py`
 - `docs/kaggle_single_seed_runbook.md`
 - `checklist_results/1-I10_kaggle_single_seed_run.md`
+- `docs/progress_logging.md`
+- `checklist_results/1-I10_progress_logging_update.md`
 
 근거/policy mapping:
 
@@ -1312,6 +1319,8 @@ Metric 결정:
 - 실행 package는 준비됐지만, 실제 Kaggle run output이 돌아오고
   `check_stage1_single_seed_outputs.py`가 `status: ok`를 보고하기 전까지
   체크리스트는 open 상태입니다.
+- 긴 Kaggle run이 normalization과 긴 epoch 구간에서 멈춘 것처럼 보일 수 있어
+  progress logging을 추가했습니다.
 
 ## 1-8 Grad-CAM 세부계획
 

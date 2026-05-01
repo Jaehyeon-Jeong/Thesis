@@ -412,6 +412,8 @@ def compute_pixel_normalization(
     target_return_name: str,
     max_images: int | None = None,
     chunk_size: int = 4096,
+    progress_label: str | None = None,
+    progress_every_chunks: int = 25,
 ) -> PixelNormalizationStats:
     """training split에서만 scalar pixel mean/std를 계산한다.
 
@@ -447,6 +449,16 @@ def compute_pixel_normalization(
     pixel_sum = 0.0
     pixel_square_sum = 0.0
     pixel_count = 0
+    chunks_done = 0
+    images_done = 0
+    total_images = int(len(train_rows))
+
+    if progress_label is not None:
+        print(
+            f"[normalization:{progress_label}] start "
+            f"images={total_images:,} chunk_size={chunk_size}",
+            flush=True,
+        )
 
     for shard_index, shard_rows in train_rows.groupby("shard_index", sort=True):
         local_rows = shard_rows["local_row"].to_numpy(dtype=np.int64)
@@ -462,11 +474,38 @@ def compute_pixel_normalization(
             pixel_sum += float(images.sum(dtype=np.float64))
             pixel_square_sum += float(np.square(images, dtype=np.float32).sum(dtype=np.float64))
             pixel_count += int(images.size)
+            chunks_done += 1
+            images_done += int(len(row_chunk))
+
+            should_log_progress = (
+                progress_label is not None
+                and progress_every_chunks > 0
+                and (
+                    chunks_done == 1
+                    or chunks_done % progress_every_chunks == 0
+                    or images_done >= total_images
+                )
+            )
+            if should_log_progress:
+                progress = images_done / total_images if total_images else 1.0
+                print(
+                    f"[normalization:{progress_label}] "
+                    f"{images_done:,}/{total_images:,} images "
+                    f"({progress:.1%})",
+                    flush=True,
+                )
 
     # 모든 pixel을 memory에 보관하지 않기 위해 E[x^2] - E[x]^2 방식으로 std를 계산한다.
     mean = pixel_sum / pixel_count
     variance = max(pixel_square_sum / pixel_count - mean * mean, 0.0)
     std = max(float(np.sqrt(variance)), settings.epsilon)
+
+    if progress_label is not None:
+        print(
+            f"[normalization:{progress_label}] done "
+            f"mean={mean:.8f} std={std:.8f}",
+            flush=True,
+        )
 
     return PixelNormalizationStats(
         target_return_name=target_return_name,

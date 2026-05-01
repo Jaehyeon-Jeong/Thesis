@@ -45,7 +45,7 @@ echo "[1-I10] split=${EVAL_SPLIT}"
 echo "[1-I10] gradcam_year=${GRADCAM_YEAR}"
 
 # 1. 데이터 경로와 첫/마지막 sample shape를 먼저 확인한다.
-python scripts/check_data_loading.py \
+python -u scripts/check_data_loading.py \
   --config "${CONFIG_PATH}" \
   --sample-indices 0 -1 \
   | tee "${LOG_DIR}/check_data_loading.json"
@@ -53,7 +53,7 @@ python scripts/check_data_loading.py \
 # 2. full_single_seed training.
 #    `run_stage1_baseline.py`는 config의 `full_single_seed_run_seeds: [42]`를 읽지만,
 #    여기서는 실행 로그에서 seed가 분명히 보이도록 CLI에서도 seed를 한 번 더 고정한다.
-python scripts/run_stage1_baseline.py \
+python -u scripts/run_stage1_baseline.py \
   --config "${CONFIG_PATH}" \
   --run-mode full_single_seed \
   --run-seeds "${RUN_SEED}" \
@@ -62,7 +62,7 @@ python scripts/run_stage1_baseline.py \
 # 3. 학습된 best checkpoint로 horizon별 test prediction/metric을 저장한다.
 for horizon in "${HORIZONS[@]}"; do
   echo "[1-I10] evaluating ${horizon}"
-  python scripts/evaluate_stage1_predictions.py \
+  python -u scripts/evaluate_stage1_predictions.py \
     --config "${CONFIG_PATH}" \
     --horizon "${horizon}" \
     --run-seed "${RUN_SEED}" \
@@ -74,7 +74,7 @@ done
 #    최종 논문 그림과 같은 2019년 test sample 기준으로 Up/Down 예측 각각 10개를 고른다.
 for horizon in "${HORIZONS[@]}"; do
   echo "[1-I10] generating Grad-CAM ${horizon}"
-  python scripts/generate_stage1_gradcam.py \
+  python -u scripts/generate_stage1_gradcam.py \
     --config "${CONFIG_PATH}" \
     --horizon "${horizon}" \
     --run-seed "${RUN_SEED}" \
@@ -86,7 +86,7 @@ for horizon in "${HORIZONS[@]}"; do
 done
 
 # 5. 빠진 산출물이 있으면 여기서 실패시킨다.
-python scripts/check_stage1_single_seed_outputs.py \
+python -u scripts/check_stage1_single_seed_outputs.py \
   --config "${CONFIG_PATH}" \
   --run-seed "${RUN_SEED}" \
   --split "${EVAL_SPLIT}" \

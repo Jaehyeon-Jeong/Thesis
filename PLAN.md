@@ -149,11 +149,18 @@
 ## 2단계: BTC 자산군 확장
 - 목적:
   - 1단계에서 재현한 Re-image CNN pipeline을 BTC 단일 자산에 적용.
+- 진행 경계:
+  - Stage 1 Kaggle full run이 도는 동안 Stage 2의 데이터 audit, checklist,
+    scaffold, image-generation plan은 진행할 수 있다.
+  - Stage 1과의 최종 비교표와 결론은 Stage 1 full output이 나온 뒤 확정한다.
 - 데이터:
   - `kaggle.com/datasets/novandraanugrah/bitcoin-historical-datasets-2018-2024`
 - 구현:
   - BTC OHLCV에서 5/20/60-day 이미지를 직접 생성.
   - CNN 모델 핵심은 1단계에서 확정한 `Stock_CNN`식 구현을 유지.
+  - BTC dataset은 public stock shard보다 작으므로 기본 batch size는 논문값
+    `128`을 유지한다. Stage 1 fast diagnostic의 `1024` batch를 Stage 2 기본값으로
+    가져오지 않는다.
 - 평가:
   - classification metrics
   - long/flat

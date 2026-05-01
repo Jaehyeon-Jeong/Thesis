@@ -15,8 +15,8 @@ tracked.
 | Stage | Purpose | Current status |
 | --- | --- | --- |
 | `stage0_data_check` | Audit data, papers, and reference implementations | Completed |
-| `stage1_reimage_reproduction` | Reproduce the Re-image CNN pipeline on public I20 stock images | Planning + readiness completed; code implementation next |
-| Stage 2 | Extend the confirmed pipeline to BTC OHLCV | Planned |
+| `stage1_reimage_reproduction` | Reproduce the Re-image CNN pipeline on public I20 stock images | Implementation completed through Kaggle runner; full Kaggle outputs pending |
+| `stage2_btc_extension` | Extend the confirmed pipeline to BTC OHLCV | Scaffold/checklist created |
 | Stage 3 | Add a Linear comparison model | Planned |
 | Stage 4 | Add FiLM + News/LLM conditioning | Planned |
 
@@ -27,6 +27,7 @@ tracked.
 - [Execution environment diagram](docs/execution_environment_diagram.md)
 - [Stage 0 checklist](stage0_data_check/checklist.md)
 - [Stage 1 checklist](stage1_reimage_reproduction/checklist.md)
+- [Stage 2 checklist](stage2_btc_extension/checklist.md)
 
 ### Data policy
 
@@ -60,8 +61,8 @@ config, 코드 scaffold만 올립니다. 대용량 데이터, 논문 PDF, checkp
 | 단계 | 목적 | 현재 상태 |
 | --- | --- | --- |
 | `stage0_data_check` | 데이터, 논문, reference implementation 확인 | 완료 |
-| `stage1_reimage_reproduction` | public I20 stock image로 Re-image CNN pipeline 재현 | 계획 + readiness 완료, 다음은 코드 구현 |
-| Stage 2 | 확인된 pipeline을 BTC OHLCV로 확장 | 계획 |
+| `stage1_reimage_reproduction` | public I20 stock image로 Re-image CNN pipeline 재현 | Kaggle runner까지 구현 완료, full Kaggle output 대기 |
+| `stage2_btc_extension` | 확인된 pipeline을 BTC OHLCV로 확장 | scaffold/checklist 생성 |
 | Stage 3 | Linear 비교 모델 추가 | 계획 |
 | Stage 4 | FiLM + News/LLM conditioning 추가 | 계획 |
 
@@ -72,6 +73,7 @@ config, 코드 scaffold만 올립니다. 대용량 데이터, 논문 PDF, checkp
 - [실행환경 다이어그램](docs/execution_environment_diagram.md)
 - [Stage 0 체크리스트](stage0_data_check/checklist.md)
 - [Stage 1 체크리스트](stage1_reimage_reproduction/checklist.md)
+- [Stage 2 체크리스트](stage2_btc_extension/checklist.md)
 
 ### 데이터 정책
 

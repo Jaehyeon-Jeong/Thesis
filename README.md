@@ -15,10 +15,29 @@ tracked.
 | Stage | Purpose | Current status |
 | --- | --- | --- |
 | `stage0_data_check` | Audit data, papers, and reference implementations | Completed |
-| `stage1_reimage_reproduction` | Reproduce the Re-image CNN pipeline on public I20 stock images | Implementation completed through Kaggle runner; full Kaggle outputs pending |
-| `stage2_btc_extension` | Extend the confirmed pipeline to BTC OHLCV | Single-seed result package closed; five-seed stability check pending |
-| `stage3_linear_adapter` | Add a Linear comparison model | Scaffold/checklist created |
+| `stage1_reimage_reproduction` | Reproduce the Re-image CNN pipeline on public I20 stock images | In progress: `I20/R60` seed-42 fast diagnostic archived; `I20/R20` archive is smoke-only; `I20/R5`, strict batch-128 run, and five-seed reproduction are later |
+| `stage2_btc_extension` | Extend the confirmed pipeline to BTC OHLCV | Single-seed 36-run result package closed for now; five-seed stability check later |
+| `stage3_linear_adapter` | Add a Linear comparison model | Scaffold/checklist created; next stage after status cleanup |
 | Stage 4 | Add FiLM + News/LLM conditioning | Planned |
+
+### Current Status
+
+Stage 1:
+- Current usable full test artifact: `I20/R60`, seed `42`, fast Kaggle
+  diagnostic.
+- `I20/R60` snapshot: accuracy `0.5312`, majority accuracy `0.5408`,
+  ROC-AUC `0.5298`, test rows `1,376,215`.
+- `I20/R20` is not ready as a full result in the local archive. The preserved
+  metrics/Grad-CAM are validation-smoke outputs only.
+- `I20/R5` is not archived locally yet.
+- Later: strict paper-style batch size `128`, five independent runs/seeds, and
+  final `10` up + `10` down Figure-13-style Grad-CAM.
+
+Stage 2:
+- Current result package: BTC single-seed grid, `36` experiments
+  (`I5/I20/I60` x `R5/R20/R60` x four image specs), seed `42`.
+- Best single-seed configuration: `I60/R20/ohlc_ma_vb`.
+- Remaining Stage 2 work is the five-seed rerun for stability.
 
 ### Key documents
 
@@ -62,10 +81,29 @@ config, 코드 scaffold만 올립니다. 대용량 데이터, 논문 PDF, checkp
 | 단계 | 목적 | 현재 상태 |
 | --- | --- | --- |
 | `stage0_data_check` | 데이터, 논문, reference implementation 확인 | 완료 |
-| `stage1_reimage_reproduction` | public I20 stock image로 Re-image CNN pipeline 재현 | Kaggle runner까지 구현 완료, full Kaggle output 대기 |
-| `stage2_btc_extension` | 확인된 pipeline을 BTC OHLCV로 확장 | single-seed 결과 패키지 마무리, 5-seed 안정성 확인 예정 |
-| `stage3_linear_adapter` | Linear 비교 모델 추가 | scaffold/checklist 생성 |
+| `stage1_reimage_reproduction` | public I20 stock image로 Re-image CNN pipeline 재현 | 진행 중: `I20/R60` seed-42 fast diagnostic 보존; `I20/R20` archive는 smoke-only; `I20/R5`, strict batch-128 run, five-seed reproduction은 later |
+| `stage2_btc_extension` | 확인된 pipeline을 BTC OHLCV로 확장 | single-seed 36-run 결과 패키지는 현재 마무리; 5-seed 안정성 확인은 later |
+| `stage3_linear_adapter` | Linear 비교 모델 추가 | scaffold/checklist 생성, status 정리 후 다음 단계 |
 | Stage 4 | FiLM + News/LLM conditioning 추가 | 계획 |
+
+### 현재 상태
+
+Stage 1:
+- 현재 full test artifact로 사용할 수 있는 것은 `I20/R60`, seed `42`, fast
+  Kaggle diagnostic입니다.
+- `I20/R60` snapshot: accuracy `0.5312`, majority accuracy `0.5408`,
+  ROC-AUC `0.5298`, test rows `1,376,215`.
+- `I20/R20`은 로컬 archive 기준 full 결과가 아닙니다. 현재 보존된
+  metrics/Grad-CAM은 validation-smoke output입니다.
+- `I20/R5`는 아직 로컬에 보존되어 있지 않습니다.
+- Later: 논문식 strict batch size `128`, five independent runs/seeds, 최종
+  `10` up + `10` down Figure-13-style Grad-CAM.
+
+Stage 2:
+- 현재 결과 패키지: BTC single-seed grid, `36`개 실험
+  (`I5/I20/I60` x `R5/R20/R60` x image spec 4개), seed `42`.
+- Single-seed best configuration: `I60/R20/ohlc_ma_vb`.
+- 남은 Stage 2 작업은 안정성 확인용 five-seed rerun입니다.
 
 ### 주요 문서
 

@@ -14,8 +14,8 @@ Stage 1 objective:
 Canonical map:
 - [Stage 1 execution map](docs/stage1_execution_map.md)
 - [Checklist](checklist.md)
+- [Workflow diagram](workflow_diagram.md)
 - [Kaggle one-cell runner](notebooks/kaggle_stage1_single_horizon_one_cell.md)
-
 
 Execution environment:
 - Full Stage 1 training/evaluation should be designed for Kaggle Notebook.
@@ -37,8 +37,32 @@ Current status:
 - Local smoke test through Grad-CAM is completed.
 - Kaggle execution is standardized on the one-cell single-horizon runner:
   `notebooks/kaggle_stage1_single_horizon_one_cell.md`.
-- Next gate is to run `I20/R20`, `I20/R5`, and `I20/R60` one horizon at a time
-  inside Kaggle and verify the returned outputs.
+- Current archived Kaggle/local output status:
+  - `I20/R60`: seed `42` full test artifact is archived as a fast Kaggle
+    diagnostic. Accuracy `0.5312`, majority accuracy `0.5408`, ROC-AUC
+    `0.5298`, test rows `1,376,215`.
+  - `I20/R20`: the current local folder preserves only validation-smoke outputs
+    for metrics/Grad-CAM. It is not a full reproduction result.
+  - `I20/R5`: full output is still pending locally.
+- Detailed status report: [Stage 1 current status report](reports/stage1_current_status_report.md)
+- Later work:
+  - rerun/download missing `I20/R5` and full `I20/R20` outputs;
+  - run strict paper-style setting with batch size `128`;
+  - run five independent seeds/runs;
+  - generate final Figure-13-style Grad-CAM with `10` predicted-up and `10`
+    predicted-down examples.
+
+Current result snapshot:
+
+| Experiment | Status | Split | Samples | Accuracy | Majority | ROC-AUC | Note |
+|:---|:---|:---|---:|---:|---:|---:|:---|
+| `I20/R5` | Pending | - | - | - | - | - | Not archived locally yet |
+| `I20/R20` | Smoke only | validation | 4 | 0.2500 | 0.5000 | 0.5000 | Not a reproduction result |
+| `I20/R60` | Full seed-42 fast diagnostic | test | 1,376,215 | 0.5312 | 0.5408 | 0.5298 | Strict paper batch and five-seed runs later |
+
+`I20/R60` Grad-CAM preview:
+
+![Stage 1 I20/R60 Grad-CAM preview](reports/figures/gradcam/stage1_i20_r60_seed42_test_2019_figure13_style.png)
 
 Required pre-work before every Stage 1 task:
 - Read the root `../PLAN.md`.
@@ -66,6 +90,7 @@ Primary limitation:
 기준 문서:
 - [Stage 1 execution map](docs/stage1_execution_map.md)
 - [Checklist](checklist.md)
+- [Workflow diagram](workflow_diagram.md)
 - [Kaggle one-cell runner](notebooks/kaggle_stage1_single_horizon_one_cell.md)
 
 실행 환경:
@@ -88,8 +113,31 @@ Primary limitation:
 - Grad-CAM까지 포함한 local smoke test를 완료했습니다.
 - Kaggle 실행은 one-cell single-horizon runner로 통일했습니다:
   `notebooks/kaggle_stage1_single_horizon_one_cell.md`.
-- 다음 gate는 Kaggle 안에서 `I20/R20`, `I20/R5`, `I20/R60`을 horizon 하나씩
-  실행하고 반환된 output을 확인하는 것입니다.
+- 현재 보존된 Kaggle/local output 상태:
+  - `I20/R60`: seed `42` full test artifact가 fast Kaggle diagnostic으로
+    보존되어 있습니다. Accuracy `0.5312`, majority accuracy `0.5408`,
+    ROC-AUC `0.5298`, test rows `1,376,215`.
+  - `I20/R20`: 현재 로컬 폴더에는 metrics/Grad-CAM 기준 validation smoke
+    output만 남아 있습니다. full reproduction 결과가 아닙니다.
+  - `I20/R5`: full output은 아직 로컬에 보존되어 있지 않습니다.
+- 상세 상태 보고: [Stage 1 current status report](reports/stage1_current_status_report.md)
+- 나중에 할 작업:
+  - 빠진 `I20/R5`와 full `I20/R20` output 재실행/재다운로드;
+  - 논문식 strict setting인 batch size `128`로 재실행;
+  - five independent seeds/runs 실행;
+  - 최종 Figure 13 스타일 Grad-CAM을 predicted-up 10개와 predicted-down 10개로 생성.
+
+현재 결과 snapshot:
+
+| 실험 | 상태 | Split | Sample 수 | Accuracy | Majority | ROC-AUC | 비고 |
+|:---|:---|:---|---:|---:|---:|---:|:---|
+| `I20/R5` | 대기 | - | - | - | - | - | 아직 로컬에 보존되지 않음 |
+| `I20/R20` | Smoke only | validation | 4 | 0.2500 | 0.5000 | 0.5000 | 재현 결과 아님 |
+| `I20/R60` | Full seed-42 fast diagnostic | test | 1,376,215 | 0.5312 | 0.5408 | 0.5298 | strict paper batch와 five-seed run은 later |
+
+`I20/R60` Grad-CAM preview:
+
+![Stage 1 I20/R60 Grad-CAM preview](reports/figures/gradcam/stage1_i20_r60_seed42_test_2019_figure13_style.png)
 
 1단계의 모든 작업 전에 반드시 확인할 것:
 - 루트 `../PLAN.md`

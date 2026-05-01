@@ -41,7 +41,9 @@ Current result status:
 - Completed run: single seed `42`
 - Grid size: `36` experiments
   (`3` image windows x `3` return horizons x `4` image specs)
-- Full five-seed stability check is still pending.
+- Stage 2 is closed for now at the single-seed reporting level.
+- Full five-seed stability check is the only remaining Stage 2 rerun and will
+  be done later before making final stability claims.
 
 Full result report:
 - [Stage 2 single-seed result report](reports/stage2_single_seed_result_report.md)
@@ -176,7 +178,9 @@ predicted-down examples. Generate it in Kaggle with:
 - 완료된 run: seed `42` 한 개
 - Grid size: `36`개 실험
   (`3` image window x `3` return horizon x `4` image spec)
-- 5-seed 안정성 확인은 아직 예정입니다.
+- Stage 2는 현재 single-seed 보고 수준에서 마무리합니다.
+- 남은 Stage 2 재실행은 5-seed 안정성 확인뿐이며, 최종 안정성 결론을 내기 전에
+  나중에 수행합니다.
 
 전체 결과 보고:
 - [Stage 2 single-seed result report](reports/stage2_single_seed_result_report.md)

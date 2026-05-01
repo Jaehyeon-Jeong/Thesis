@@ -33,6 +33,9 @@ Implementation phase:
 - [x] 1-I8. Grad-CAM implementation
 - [x] 1-I9. Local smoke test
 - [ ] 1-I10. Kaggle full single-seed run
+  - Current archived status checked: `I20/R60` full seed-42 fast diagnostic is
+    available; `I20/R20` is smoke-only in the local archive; `I20/R5` is still
+    pending.
 - [ ] 1-I11. Kaggle full paper-style 5-run reproduction
 - [ ] 1-I12. Stage 1 report outputs
 
@@ -610,8 +613,12 @@ Output:
 
 Status:
 - Kaggle one-cell single-horizon execution standard prepared on 2026-05-01.
-- This item is not marked complete yet because the actual full run must execute
-  inside Kaggle with the `monthly_20d` dataset attached.
+- This item is not marked complete yet because all three target horizons are
+  not fully archived locally.
+- Current archived status checked on 2026-05-01:
+  - `I20/R60`: full seed-42 fast diagnostic exists.
+  - `I20/R20`: current archive is validation-smoke only, not a full result.
+  - `I20/R5`: full output is still pending.
 
 Prepared output:
 - `scripts/check_stage1_single_seed_outputs.py`
@@ -622,6 +629,9 @@ Prepared output:
 - `notebooks/kaggle_stage1_single_horizon_one_cell.md`
 - `checklist_results/1-I10_progress_logging_update.md`
 - `checklist_results/1-I10_fast_kaggle_strategy.md`
+- `checklist_results/1-I10_current_kaggle_output_status.md`
+- `reports/stage1_current_status_report.md`
+- `reports/tables/stage1_seed42_current_status.csv`
 - `reports/smoke_tests/1-I10_progress_logging_smoke.log`
 - `reports/smoke_tests/1-I10_training_metadata_free_smoke.log`
 
@@ -689,6 +699,8 @@ Output:
 - [x] 1-I8. Grad-CAM 구현
 - [x] 1-I9. Local smoke test
 - [ ] 1-I10. Kaggle full single-seed run
+  - 현재 보존 상태 확인: `I20/R60` full seed-42 fast diagnostic은 있음;
+    `I20/R20`은 로컬 archive 기준 smoke-only; `I20/R5`는 아직 대기.
 - [ ] 1-I11. Kaggle full paper-style 5-run reproduction
 - [ ] 1-I12. 1단계 report outputs
 

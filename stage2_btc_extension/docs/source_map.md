@@ -319,6 +319,38 @@ Generated artifacts:
 - `stage2_btc_extension/notebooks/kaggle_stage2_btc_baseline_one_cell.md`
 - `stage2_btc_extension/reports/tables/stage2_kaggle_run_matrix.csv`
 
+## 2-I0 Implementation Readiness Review Result
+
+Checked on: 2026-05-01
+
+Checked sources:
+- Root `PLAN.md`: confirms one-step implementation workflow and Kaggle-first
+  full experiment execution.
+- Stage 2 checklist: confirms planning items `2-0` through `2-8` are complete.
+- Stage 2 planning docs: image generation, label/split/normalization, model
+  adaptation, evaluation/trading, Grad-CAM, and Kaggle runner plans.
+- Stage 2 small artifacts: data audit, split-count table, architecture table,
+  metric schema, Grad-CAM schema, and Kaggle run matrix.
+
+Readiness verdict:
+- Stage 2 is ready to move from planning to implementation.
+- Stage 1 full outputs are still required before final comparison tables, but
+  they do not block Stage 2 implementation.
+- The next checklist item is `2-I1`, shared Stage 2 config/code scaffold.
+
+Implementation constraints carried forward:
+- Keep Stage 1/Stock_CNN-style CNN core.
+- Use model variants by image window: I5, I20, I60.
+- Keep default Stage 2 `batch_size=128`.
+- Do not use stock cross-sectional H-L decile portfolios for BTC.
+- Generate BTC Grad-CAM for baseline runs.
+- Keep actual logic in `src/` and `scripts/`, not in the Kaggle one-cell
+  wrapper.
+
+Generated artifacts:
+- `stage2_btc_extension/docs/stage2_implementation_readiness_review.md`
+- `stage2_btc_extension/reports/tables/stage2_implementation_task_map.csv`
+
 ## 한국어
 
 이 파일은 Stage 2 구현 전에 확인해야 할 근거를 기록합니다.
@@ -650,3 +682,33 @@ Stage 2 결정:
 - `stage2_btc_extension/docs/stage2_kaggle_runner_output_plan.md`
 - `stage2_btc_extension/notebooks/kaggle_stage2_btc_baseline_one_cell.md`
 - `stage2_btc_extension/reports/tables/stage2_kaggle_run_matrix.csv`
+
+## 2-I0 구현 readiness review 결과
+
+확인일: 2026-05-01
+
+확인한 source:
+- Root `PLAN.md`: 한 단계씩 구현하는 workflow와 Kaggle-first full experiment 실행
+  원칙을 확인했습니다.
+- Stage 2 checklist: planning 항목 `2-0`부터 `2-8`까지 완료된 것을 확인했습니다.
+- Stage 2 planning docs: image generation, label/split/normalization, model
+  adaptation, evaluation/trading, Grad-CAM, Kaggle runner 계획.
+- Stage 2 small artifacts: data audit, split-count table, architecture table,
+  metric schema, Grad-CAM schema, Kaggle run matrix.
+
+Readiness 판정:
+- Stage 2는 planning에서 implementation으로 넘어갈 준비가 됐습니다.
+- Stage 1 full output은 최종 비교표에는 필요하지만 Stage 2 구현을 막지는 않습니다.
+- 다음 checklist 항목은 `2-I1`, shared Stage 2 config/code scaffold입니다.
+
+계속 가져갈 구현 제약:
+- Stage 1/Stock_CNN식 CNN core를 유지합니다.
+- image window별 model variant를 사용합니다: I5, I20, I60.
+- Stage 2 기본 `batch_size=128`을 유지합니다.
+- BTC에는 stock cross-sectional H-L decile portfolio를 사용하지 않습니다.
+- BTC baseline run에도 Grad-CAM을 생성합니다.
+- 실제 로직은 Kaggle one-cell wrapper가 아니라 `src/`와 `scripts/`에 둡니다.
+
+생성 artifact:
+- `stage2_btc_extension/docs/stage2_implementation_readiness_review.md`
+- `stage2_btc_extension/reports/tables/stage2_implementation_task_map.csv`

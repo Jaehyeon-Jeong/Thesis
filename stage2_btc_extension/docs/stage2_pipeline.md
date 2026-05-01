@@ -143,6 +143,15 @@ Dependency:
 - Large outputs remain in Kaggle/working outputs; GitHub only receives code,
   plans, configs, and small summary/report artifacts.
 
+2-I0 implementation readiness decision:
+- Stage 2 is ready to move from planning to implementation.
+- Stage 1 full output is still needed for final comparison tables, but it does
+  not block Stage 2 code implementation.
+- The next implementation item is `2-I1`, shared config/code scaffold.
+- Implementation must proceed in checklist order from config scaffold to data
+  loader, image generator, label/split, model runner, metrics, trading,
+  Grad-CAM, smoke test, full Kaggle run, and report outputs.
+
 ## 한국어
 
 목적:
@@ -272,3 +281,12 @@ Stage 2 기본 batch 정책:
   fast cuDNN off입니다. 속도 diagnostic으로 바꾸면 기록해야 합니다.
 - 대용량 output은 Kaggle/working output에 두고, GitHub에는 code, plan, config,
   작은 summary/report artifact만 올립니다.
+
+2-I0 implementation readiness 결정:
+- Stage 2는 planning에서 implementation으로 넘어갈 준비가 됐습니다.
+- Stage 1 full output은 최종 비교표에는 필요하지만 Stage 2 코드 구현을 막지는
+  않습니다.
+- 다음 구현 항목은 `2-I1`, shared config/code scaffold입니다.
+- 구현은 checklist 순서대로 진행합니다: config scaffold, data loader, image
+  generator, label/split, model runner, metric, trading, Grad-CAM, smoke test,
+  full Kaggle run, report output.

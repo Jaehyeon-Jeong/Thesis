@@ -15,6 +15,7 @@ Current files:
 - `stage2_gradcam_output_schema.csv`: required BTC Grad-CAM output artifacts.
 - `stage2_kaggle_run_matrix.csv`: planned Stage 2 Kaggle execution priority
   matrix.
+- `stage2_implementation_task_map.csv`: checklist-to-file implementation map.
 
 Large predictions are not stored here.
 
@@ -31,5 +32,6 @@ Stage 2의 작은 planning/result table을 이 폴더에 저장합니다.
   trading metric schema.
 - `stage2_gradcam_output_schema.csv`: 필수 BTC Grad-CAM output artifact.
 - `stage2_kaggle_run_matrix.csv`: Stage 2 Kaggle 실행 우선순위 matrix.
+- `stage2_implementation_task_map.csv`: checklist별 구현 파일 mapping.
 
 대용량 prediction은 이 폴더에 저장하지 않습니다.

@@ -25,7 +25,8 @@ Planning phase:
   - Result: [2-8 Kaggle runner/output plan](checklist_results/2-8_kaggle_runner_output_plan.md)
 
 Implementation phase:
-- [ ] 2-I0. Implementation readiness review
+- [x] 2-I0. Implementation readiness review
+  - Result: [2-I0 implementation readiness review](checklist_results/2-I0_implementation_readiness_review.md)
 - [ ] 2-I1. Shared Stage 2 config/code scaffold
 - [ ] 2-I2. BTC OHLCV loader
 - [ ] 2-I3. BTC image generator
@@ -70,7 +71,8 @@ Important:
   - 결과: [2-8 Kaggle runner/output 계획](checklist_results/2-8_kaggle_runner_output_plan.md)
 
 구현 단계:
-- [ ] 2-I0. 구현 readiness review
+- [x] 2-I0. 구현 readiness review
+  - 결과: [2-I0 구현 readiness review](checklist_results/2-I0_implementation_readiness_review.md)
 - [ ] 2-I1. Stage 2 공통 config/code scaffold
 - [ ] 2-I2. BTC OHLCV loader
 - [ ] 2-I3. BTC image generator

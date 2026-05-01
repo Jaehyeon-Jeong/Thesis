@@ -100,7 +100,38 @@ def run(cmd, cwd=PROJECT_ROOT):
     subprocess.run([str(x) for x in cmd], cwd=str(cwd), check=True)
 
 
+def assert_latest_stage2_code(project_root: Path):
+    """Kaggle에 붙인 Stage 2 code snapshot이 최신 grid code인지 확인한다.
+
+    이 check가 필요한 이유:
+        Kaggle input dataset은 한 번 업로드하면 read-only snapshot으로 고정된다.
+        로컬/GitHub에서 새 script를 추가해도 Kaggle dataset을 다시 upload하지 않으면
+        notebook은 이전 snapshot을 복사한다. 그러면 학습 전에 `run_stage2_grid.py`
+        같은 파일이 없어서 몇 분 뒤 에러가 난다. 여기서 초반에 바로 실패시킨다.
+    """
+
+    required_files = [
+        "scripts/run_stage2_grid.py",
+        "scripts/summarize_stage2_grid_results.py",
+        "scripts/run_stage2_btc_baseline.py",
+        "scripts/evaluate_stage2_predictions.py",
+        "scripts/evaluate_stage2_trading.py",
+        "scripts/generate_stage2_gradcam.py",
+        "src/stage2_btc/models/stock_cnn.py",
+    ]
+    missing = [path for path in required_files if not (project_root / path).exists()]
+    if missing:
+        available_scripts = sorted(str(path.relative_to(project_root)) for path in (project_root / "scripts").glob("*.py"))
+        raise RuntimeError(
+            "The attached Kaggle Stage 2 code dataset is old or incomplete. "
+            "Upload the latest `stage2_btc_extension` folder/zip as a Kaggle dataset, "
+            "then update CODE_INPUT if the path changed. "
+            f"Missing: {missing}. Available scripts: {available_scripts}"
+        )
+
+
 copy_or_extract_input(CODE_INPUT, PROJECT_ROOT, expected_child="stage2_btc_extension")
+assert_latest_stage2_code(PROJECT_ROOT)
 print(f"Code copied to: {PROJECT_ROOT}", flush=True)
 
 config_path = PROJECT_ROOT / "configs" / "env_kaggle.yaml"

@@ -61,6 +61,10 @@ Validation:
   - `scripts/summarize_stage2_grid_results.py`
 - A local dry-run of one grid item passed.
 - A local summary read of the existing smoke output passed.
+- After a Kaggle old-snapshot error, both grid notebook cells now check for
+  required grid scripts immediately after copying `CODE_INPUT`. If the uploaded
+  Kaggle code dataset is stale, the cell fails before audit/training and lists
+  the missing files.
 
 Important:
 - The grid runners are execution wrappers. They do not change the CNN model,
@@ -131,6 +135,10 @@ Output 보존:
   - `scripts/summarize_stage2_grid_results.py`
 - local dry-run으로 grid item 하나 통과.
 - 기존 smoke output을 대상으로 summary read 통과.
+- Kaggle old-snapshot error 이후, 두 grid notebook cell 모두 `CODE_INPUT` 복사
+  직후 필요한 grid script가 있는지 확인하도록 보강했습니다. Kaggle에 업로드한 code
+  dataset이 오래된 snapshot이면 audit/training 전에 바로 실패하고 missing file을
+  출력합니다.
 
 중요:
 - Grid runner는 실행 wrapper입니다. CNN model, label construction, split rule,

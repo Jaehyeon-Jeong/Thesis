@@ -797,6 +797,13 @@ Generated visual checks:
 - Smoke Grad-CAM report copy:
   `stage2_btc_extension/reports/figures/gradcam/stage2_i20_ohlc_ma_vb_r20_seed_42_test_gradcam.png`
 
+Image-generation correction after visual review:
+- The first implementation reserved the volume panel even for `ohlc` and
+  `ohlc_ma`, which left blank rows at the bottom of no-volume images.
+- This was corrected so no-volume specs use the full image height for price
+  scaling, consistent with `stage2_image_generation_plan.md`.
+- Volume specs still use the upper price area and lower volume area.
+
 Limit:
 - The local smoke run verifies code execution only.
 - Full Stage 2 thesis results require running the Kaggle one-cell runner.

@@ -46,14 +46,20 @@ def generate_btc_chart_image(
 
     height = int(window_config["height"])
     width = int(window_config["width"])
-    price_height = int(window_config["price_height"])
-    volume_height = int(window_config["volume_height"])
-    gap_height = int(window_config["gap_height"])
-
     include_volume = image_spec in {"ohlc_vb", "ohlc_ma_vb"}
     include_ma = image_spec in {"ohlc_ma", "ohlc_ma_vb"}
     if image_spec not in {"ohlc", "ohlc_vb", "ohlc_ma", "ohlc_ma_vb"}:
         raise ValueError(f"Unsupported image_spec: {image_spec}")
+
+    # Re-image 계획 기준:
+    #   - volume이 있는 spec은 image 하단을 volume 영역으로 나누고, price는 상단
+    #     price area에만 그린다.
+    #   - volume이 없는 spec은 bottom volume 영역을 비워두지 않고, price chart가
+    #     전체 image height를 사용한다. 그래야 window 내부 low가 image 맨 아래까지
+    #     rescale된다.
+    price_height = int(window_config["price_height"]) if include_volume else height
+    volume_height = int(window_config["volume_height"]) if include_volume else 0
+    gap_height = int(window_config["gap_height"]) if include_volume else 0
 
     expected_width = len(ohlcv_window) * int(pixels_per_day)
     if expected_width != width:

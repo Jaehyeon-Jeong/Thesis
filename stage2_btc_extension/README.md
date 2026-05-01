@@ -46,6 +46,56 @@ Current result status:
 Full result report:
 - [Stage 2 single-seed result report](reports/stage2_single_seed_result_report.md)
 
+#### Experiment Design
+
+Stage 2 keeps the Stage 1 image-CNN pipeline and changes the asset universe to
+BTC. Each sample uses one BTC chart image ending at date `t`; the label is
+whether the future `R`-day return is positive.
+
+Image specifications:
+
+| Image spec | Contents | BTC sample image |
+|:---|:---|:---|
+| `ohlc` | OHLC chart only | ![ohlc](reports/figures/sample_images/btc_i20_ohlc_sample_2021-01-01.png) |
+| `ohlc_vb` | OHLC + volume bars | ![ohlc_vb](reports/figures/sample_images/btc_i20_ohlc_vb_sample_2021-01-01.png) |
+| `ohlc_ma` | OHLC + moving average | ![ohlc_ma](reports/figures/sample_images/btc_i20_ohlc_ma_sample_2021-01-01.png) |
+| `ohlc_ma_vb` | OHLC + moving average + volume bars | ![ohlc_ma_vb](reports/figures/sample_images/btc_i20_ohlc_ma_vb_sample_2021-01-01.png) |
+
+Comparison axes:
+
+| Axis | Compared values | Purpose |
+|:---|:---|:---|
+| Image window/model | `I5`, `I20`, `I60` | Compare short, medium, and longer chart history |
+| Return horizon | `R5`, `R20`, `R60` | Compare three future prediction intervals |
+| Image specification | `ohlc`, `ohlc_vb`, `ohlc_ma`, `ohlc_ma_vb` | Test whether MA and volume add information |
+
+#### Comparison Summary
+
+Average by image window:
+
+| Image window | Accuracy | AUC | Accuracy - majority | Interpretation |
+|---:|---:|---:|---:|:---|
+| 5 | 0.5140 | 0.5075 | -0.0229 | Weakest on average |
+| 20 | 0.5173 | 0.5120 | -0.0196 | Slightly better than I5, still weak |
+| 60 | 0.5439 | 0.5323 | +0.0071 | Best average window |
+
+Average by return horizon:
+
+| Return horizon | Accuracy | AUC | Accuracy - majority | Interpretation |
+|---:|---:|---:|---:|:---|
+| 5 | 0.5157 | 0.5094 | -0.0104 | Short horizon is noisy |
+| 20 | 0.5427 | 0.5277 | +0.0014 | Best average prediction horizon |
+| 60 | 0.5167 | 0.5147 | -0.0265 | Classification signal is weaker |
+
+Average by image specification:
+
+| Image spec | Accuracy | AUC | Accuracy - majority | Interpretation |
+|:---|---:|---:|---:|:---|
+| `ohlc` | 0.5183 | 0.5010 | -0.0186 | Chart-only signal is weak |
+| `ohlc_vb` | 0.5303 | 0.5201 | -0.0066 | Best average accuracy |
+| `ohlc_ma` | 0.5253 | 0.5167 | -0.0116 | MA helps somewhat |
+| `ohlc_ma_vb` | 0.5263 | 0.5312 | -0.0105 | Best average AUC and best individual run |
+
 Top accuracy configurations:
 
 | Tier | Image window | Return horizon | Image spec | Accuracy | AUC | Accuracy - majority | Interpretation |
@@ -123,6 +173,56 @@ predicted-down examples. Generate it in Kaggle with:
 
 전체 결과 보고:
 - [Stage 2 single-seed result report](reports/stage2_single_seed_result_report.md)
+
+#### 실험 구조
+
+Stage 2에서는 Stage 1의 image-CNN pipeline을 유지하고, 자산군만 BTC로 바꿉니다.
+각 sample은 `t` 시점까지의 BTC chart image 하나를 사용하고, label은 이후 `R`일
+수익률이 양수인지 여부입니다.
+
+Image specification:
+
+| Image spec | 구성 | BTC sample image |
+|:---|:---|:---|
+| `ohlc` | OHLC chart only | ![ohlc](reports/figures/sample_images/btc_i20_ohlc_sample_2021-01-01.png) |
+| `ohlc_vb` | OHLC + volume bars | ![ohlc_vb](reports/figures/sample_images/btc_i20_ohlc_vb_sample_2021-01-01.png) |
+| `ohlc_ma` | OHLC + moving average | ![ohlc_ma](reports/figures/sample_images/btc_i20_ohlc_ma_sample_2021-01-01.png) |
+| `ohlc_ma_vb` | OHLC + moving average + volume bars | ![ohlc_ma_vb](reports/figures/sample_images/btc_i20_ohlc_ma_vb_sample_2021-01-01.png) |
+
+비교 축:
+
+| 비교 축 | 비교값 | 목적 |
+|:---|:---|:---|
+| Image window/model | `I5`, `I20`, `I60` | 짧은/중간/긴 chart history 비교 |
+| Return horizon | `R5`, `R20`, `R60` | 세 가지 미래 예측 구간 비교 |
+| Image specification | `ohlc`, `ohlc_vb`, `ohlc_ma`, `ohlc_ma_vb` | MA와 volume이 정보를 추가하는지 확인 |
+
+#### 비교 요약
+
+Image window별 평균:
+
+| Image window | Accuracy | AUC | Accuracy - majority | 해석 |
+|---:|---:|---:|---:|:---|
+| 5 | 0.5140 | 0.5075 | -0.0229 | 평균적으로 가장 약함 |
+| 20 | 0.5173 | 0.5120 | -0.0196 | I5보다 조금 낫지만 아직 약함 |
+| 60 | 0.5439 | 0.5323 | +0.0071 | 평균적으로 가장 좋은 window |
+
+Return horizon별 평균:
+
+| Return horizon | Accuracy | AUC | Accuracy - majority | 해석 |
+|---:|---:|---:|---:|:---|
+| 5 | 0.5157 | 0.5094 | -0.0104 | 짧은 horizon은 noise가 큼 |
+| 20 | 0.5427 | 0.5277 | +0.0014 | 평균적으로 가장 좋은 예측 구간 |
+| 60 | 0.5167 | 0.5147 | -0.0265 | 분류 signal은 약함 |
+
+Image specification별 평균:
+
+| Image spec | Accuracy | AUC | Accuracy - majority | 해석 |
+|:---|---:|---:|---:|:---|
+| `ohlc` | 0.5183 | 0.5010 | -0.0186 | chart-only signal은 약함 |
+| `ohlc_vb` | 0.5303 | 0.5201 | -0.0066 | 평균 accuracy가 가장 좋음 |
+| `ohlc_ma` | 0.5253 | 0.5167 | -0.0116 | MA가 어느 정도 도움 |
+| `ohlc_ma_vb` | 0.5263 | 0.5312 | -0.0105 | 평균 AUC와 개별 최고 run에서 가장 좋음 |
 
 Accuracy 상위 조합:
 

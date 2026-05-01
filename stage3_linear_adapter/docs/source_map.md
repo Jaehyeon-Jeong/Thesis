@@ -14,13 +14,23 @@ Known sources at scaffold time:
 | `lich99/Stock_CNN` | CNN core reference inherited through Stage 1/2 | CNN feature extractor must not be changed for Stage 3 |
 | PyTorch `torch.nn.Linear` | Adapter implementation API | Linear adapter with `bias=False` |
 
-Items to confirm before implementation:
-- Exact CNN feature tensor shape for `I5`, `I20`, `I60`.
-- Whether the adapter maps `feature_dim -> feature_dim` or another documented
-  adapter dimension.
-- Whether the final classifier is reused after the adapter or rebuilt as part
-  of a new model head.
-- Which Stage 2 configurations are used for first Linear comparison.
+Confirmed during planning:
+- Stage 2 CNN feature dimensions are:
+  - `I5`: `15,360`
+  - `I20`: `46,080`
+  - `I60`: `184,320`
+- Naive `Linear(feature_dim, feature_dim)` is rejected as infeasible.
+- First Linear comparison uses `adapter_dim=128`, `bias=False`.
+- First comparison grid is `36` runs for seed `42`, matching the Stage 2
+  single-seed grid.
+- Full five-seed stability check is deferred.
+
+Implementation docs:
+- `docs/stage2_dependency_baseline_review.md`
+- `docs/linear_adapter_design.md`
+- `docs/training_evaluation_comparison_plan.md`
+- `docs/gradcam_comparison_plan.md`
+- `docs/kaggle_runner_output_plan.md`
 
 ## 한국어
 
@@ -36,8 +46,19 @@ scaffold 시점의 근거:
 | `lich99/Stock_CNN` | Stage 1/2를 통해 상속되는 CNN core reference | Stage 3에서 CNN feature extractor를 바꾸지 않음 |
 | PyTorch `torch.nn.Linear` | Adapter 구현 API | `bias=False` Linear adapter |
 
-구현 전 확인할 것:
-- `I5`, `I20`, `I60`별 CNN feature tensor shape.
-- adapter가 `feature_dim -> feature_dim`인지, 다른 adapter dimension을 둘 것인지.
-- adapter 뒤 final classifier를 재사용할지, 새 model head로 구성할지.
-- 첫 Linear 비교에 사용할 Stage 2 configuration 범위.
+계획 단계에서 확인한 것:
+- Stage 2 CNN feature dimension:
+  - `I5`: `15,360`
+  - `I20`: `46,080`
+  - `I60`: `184,320`
+- 단순 `Linear(feature_dim, feature_dim)`는 계산상 불가능해서 제외합니다.
+- 첫 Linear 비교는 `adapter_dim=128`, `bias=False`를 사용합니다.
+- 첫 비교 grid는 Stage 2 single-seed grid와 같은 seed `42` 기준 `36`개 run입니다.
+- Full five-seed 안정성 확인은 나중으로 미룹니다.
+
+구현 문서:
+- `docs/stage2_dependency_baseline_review.md`
+- `docs/linear_adapter_design.md`
+- `docs/training_evaluation_comparison_plan.md`
+- `docs/gradcam_comparison_plan.md`
+- `docs/kaggle_runner_output_plan.md`

@@ -31,6 +31,19 @@ Main documents:
 - [Workflow diagram](workflow_diagram.md)
 - [Stage 3 pipeline](docs/stage3_pipeline.md)
 - [Source map](docs/source_map.md)
+- [Stage 2 dependency review](docs/stage2_dependency_baseline_review.md)
+- [Linear adapter design](docs/linear_adapter_design.md)
+- [Training/evaluation comparison plan](docs/training_evaluation_comparison_plan.md)
+- [Grad-CAM comparison plan](docs/gradcam_comparison_plan.md)
+- [Kaggle runner and output plan](docs/kaggle_runner_output_plan.md)
+
+Current planning status:
+- Planning steps `3-1` through `3-5` are complete.
+- First implementation gate is `3-I0` implementation readiness review.
+- First planned Linear run is `I60/R20/ohlc_ma_vb`, seed `42`, then the
+  single-seed `36`-run grid.
+- Default Linear adapter dimension is `128`.
+- Five-seed stability checks are deferred.
 
 ## 한국어
 
@@ -62,3 +75,16 @@ Main documents:
 - [Workflow diagram](workflow_diagram.md)
 - [Stage 3 pipeline](docs/stage3_pipeline.md)
 - [Source map](docs/source_map.md)
+- [Stage 2 dependency review](docs/stage2_dependency_baseline_review.md)
+- [Linear adapter design](docs/linear_adapter_design.md)
+- [Training/evaluation comparison plan](docs/training_evaluation_comparison_plan.md)
+- [Grad-CAM comparison plan](docs/gradcam_comparison_plan.md)
+- [Kaggle runner and output plan](docs/kaggle_runner_output_plan.md)
+
+현재 계획 상태:
+- Planning step `3-1`부터 `3-5`까지 완료했습니다.
+- 다음 구현 gate는 `3-I0` implementation readiness review입니다.
+- 첫 Linear 실행은 `I60/R20/ohlc_ma_vb`, seed `42`이고, 이후 single-seed
+  `36`-run grid로 갑니다.
+- 기본 Linear adapter dimension은 `128`입니다.
+- Five-seed 안정성 확인은 later입니다.

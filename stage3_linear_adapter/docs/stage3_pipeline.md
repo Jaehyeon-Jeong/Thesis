@@ -18,6 +18,9 @@ Fixed inherited components from Stage 2:
 New Stage 3 component:
 - A Linear adapter inserted after CNN feature extraction.
 - First version uses `bias=False`.
+- The default first comparison uses `adapter_dim=128`.
+- A naive `Linear(feature_dim, feature_dim)` is not used because `I60` would
+  require about `33.97B` weights.
 
 Planned model flow:
 
@@ -25,14 +28,21 @@ Planned model flow:
 image
   -> fixed CNN feature extractor
   -> flatten feature
-  -> Linear(feature_dim, feature_dim or adapter_dim, bias=False)
+  -> Linear(feature_dim, adapter_dim=128, bias=False)
+  -> Linear(adapter_dim=128, 2, bias=False)
   -> classifier logits
   -> probability / prediction / metrics
 ```
 
-The exact adapter dimension is not finalized in this scaffold step. It must be
-decided in `3-2` after checking the Stage 2 model output shapes and the intended
-comparison design.
+The adapter dimension is config-driven. The first planned single-seed grid uses
+`adapter_dim=128` to keep the `I60` model tractable.
+
+Primary comparison:
+- `36` Linear runs for seed `42`.
+- Same axes as Stage 2:
+  `I5/I20/I60 x R5/R20/R60 x ohlc/ohlc_vb/ohlc_ma/ohlc_ma_vb`.
+- Join Stage 2 baseline and Stage 3 Linear outputs by image window, return
+  horizon, image spec, and seed.
 
 ## 한국어
 
@@ -52,6 +62,9 @@ Stage 2에서 고정해서 가져오는 것:
 Stage 3에서 새로 추가하는 것:
 - CNN feature extraction 뒤에 Linear adapter를 삽입합니다.
 - 첫 버전은 `bias=False`를 사용합니다.
+- 첫 비교의 기본값은 `adapter_dim=128`입니다.
+- 단순 `Linear(feature_dim, feature_dim)`는 사용하지 않습니다. `I60`에서는 약
+  `33.97B`개 weight가 필요하기 때문입니다.
 
 예정 model flow:
 
@@ -59,10 +72,18 @@ Stage 3에서 새로 추가하는 것:
 image
   -> fixed CNN feature extractor
   -> flatten feature
-  -> Linear(feature_dim, feature_dim 또는 adapter_dim, bias=False)
+  -> Linear(feature_dim, adapter_dim=128, bias=False)
+  -> Linear(adapter_dim=128, 2, bias=False)
   -> classifier logits
   -> probability / prediction / metrics
 ```
 
-정확한 adapter dimension은 이 scaffold 단계에서 확정하지 않습니다. Stage 2 model
-output shape와 비교 설계를 확인한 뒤 `3-2`에서 결정해야 합니다.
+Adapter dimension은 config로 관리합니다. 첫 single-seed grid는 `I60` 모델을
+계산 가능한 크기로 유지하기 위해 `adapter_dim=128`을 사용합니다.
+
+Primary comparison:
+- seed `42` 기준 Linear run `36`개.
+- Stage 2와 같은 축:
+  `I5/I20/I60 x R5/R20/R60 x ohlc/ohlc_vb/ohlc_ma/ohlc_ma_vb`.
+- Stage 2 baseline과 Stage 3 Linear output을 image window, return horizon,
+  image spec, seed 기준으로 join합니다.

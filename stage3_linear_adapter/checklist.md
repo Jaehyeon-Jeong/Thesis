@@ -8,11 +8,16 @@ fixed and add only the Linear adapter comparison.
 Planning phase:
 - [x] 3-0. Stage 3 folder and planning documents
   - Result: [3-0 Stage 3 scaffold](checklist_results/3-0_stage3_scaffold.md)
-- [ ] 3-1. Stage 2 dependency and baseline-output review
-- [ ] 3-2. Linear adapter design and insertion-point review
-- [ ] 3-3. Training/evaluation comparison plan
-- [ ] 3-4. Grad-CAM comparison plan
-- [ ] 3-5. Kaggle runner and output plan
+- [x] 3-1. Stage 2 dependency and baseline-output review
+  - Result: [3-1 dependency review](checklist_results/3-1_stage2_dependency_baseline_review.md)
+- [x] 3-2. Linear adapter design and insertion-point review
+  - Result: [3-2 adapter design](checklist_results/3-2_linear_adapter_design.md)
+- [x] 3-3. Training/evaluation comparison plan
+  - Result: [3-3 training/evaluation plan](checklist_results/3-3_training_evaluation_comparison_plan.md)
+- [x] 3-4. Grad-CAM comparison plan
+  - Result: [3-4 Grad-CAM plan](checklist_results/3-4_gradcam_comparison_plan.md)
+- [x] 3-5. Kaggle runner and output plan
+  - Result: [3-5 Kaggle/output plan](checklist_results/3-5_kaggle_runner_output_plan.md)
 
 Implementation phase:
 - [ ] 3-I0. Implementation readiness review
@@ -42,11 +47,16 @@ adapter 비교만 추가해야 합니다.
 계획 단계:
 - [x] 3-0. Stage 3 폴더와 planning 문서
   - 결과: [3-0 Stage 3 scaffold](checklist_results/3-0_stage3_scaffold.md)
-- [ ] 3-1. Stage 2 dependency와 baseline output 확인
-- [ ] 3-2. Linear adapter 설계와 삽입 위치 확인
-- [ ] 3-3. training/evaluation 비교 계획
-- [ ] 3-4. Grad-CAM 비교 계획
-- [ ] 3-5. Kaggle runner와 output 계획
+- [x] 3-1. Stage 2 dependency와 baseline output 확인
+  - 결과: [3-1 dependency review](checklist_results/3-1_stage2_dependency_baseline_review.md)
+- [x] 3-2. Linear adapter 설계와 삽입 위치 확인
+  - 결과: [3-2 adapter design](checklist_results/3-2_linear_adapter_design.md)
+- [x] 3-3. training/evaluation 비교 계획
+  - 결과: [3-3 training/evaluation plan](checklist_results/3-3_training_evaluation_comparison_plan.md)
+- [x] 3-4. Grad-CAM 비교 계획
+  - 결과: [3-4 Grad-CAM plan](checklist_results/3-4_gradcam_comparison_plan.md)
+- [x] 3-5. Kaggle runner와 output 계획
+  - 결과: [3-5 Kaggle/output plan](checklist_results/3-5_kaggle_runner_output_plan.md)
 
 구현 단계:
 - [ ] 3-I0. 구현 readiness review

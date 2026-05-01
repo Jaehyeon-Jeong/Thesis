@@ -1,13 +1,12 @@
-# Kaggle Stage 2 BTC Baseline One-cell Draft
+# Kaggle Stage 2 BTC Baseline One-cell Runner
 
 ## English
 
-This is the planned Stage 2 baseline runner interface.
+This is the Stage 2 baseline runner interface.
 
 Current status:
-- interface draft only.
-- It becomes executable after `2-I5` through `2-I8` implement the underlying
-  scripts.
+- executable after `2-I10` code update.
+- The same cell can run a smoke check or one full BTC baseline tuple.
 
 The design follows the Stage 1 one-cell runner:
 - copy or extract the code snapshot into `/kaggle/working`
@@ -18,11 +17,11 @@ The design follows the Stage 1 one-cell runner:
 
 ## 한국어
 
-이 문서는 Stage 2 baseline runner의 예정 interface입니다.
+이 문서는 Stage 2 baseline runner interface입니다.
 
 현재 상태:
-- interface draft입니다.
-- `2-I5`부터 `2-I8`까지 underlying script가 구현된 뒤 실행 가능합니다.
+- `2-I10` code update 이후 실행 가능한 runner입니다.
+- 같은 cell로 smoke check 또는 BTC baseline tuple 하나를 full run할 수 있습니다.
 
 설계는 Stage 1 one-cell runner를 따릅니다.
 - code snapshot을 `/kaggle/working`으로 복사 또는 압축 해제
@@ -55,6 +54,7 @@ RETURN_HORIZON = 20
 RUN_SEED = 42
 EVAL_SPLIT = "test"
 GRADCAM_SAMPLES_PER_CLASS = 2
+SMOKE_TEST = False
 
 # Strict Stage 2 default.
 BATCH_SIZE = 128
@@ -97,19 +97,20 @@ def run(cmd, cwd=PROJECT_ROOT):
 
 
 def assert_required_scripts(project_root: Path):
-    """Fail early until Stage 2 implementation scripts exist."""
+    """Fail early if the code snapshot is missing Stage 2 implementation scripts."""
     required = [
         "scripts/audit_btc_ohlcv.py",
         "scripts/run_stage2_btc_baseline.py",
         "scripts/evaluate_stage2_predictions.py",
+        "scripts/evaluate_stage2_trading.py",
         "scripts/generate_stage2_gradcam.py",
         "scripts/check_stage2_outputs.py",
     ]
     missing = [path for path in required if not (project_root / path).exists()]
     if missing:
         raise RuntimeError(
-            "Stage 2 baseline runner is not executable yet. "
-            "Missing implementation scripts: " + ", ".join(missing)
+            "The attached Stage 2 code snapshot is incomplete. "
+            "Missing scripts: " + ", ".join(missing)
         )
 
 
@@ -121,6 +122,7 @@ config_path = PROJECT_ROOT / "configs" / "env_kaggle.yaml"
 cfg = yaml.safe_load(config_path.read_text())
 
 cfg["paths"]["data_root"] = str(DATA_ROOT)
+cfg["paths"]["source_file"] = SOURCE_FILE
 cfg["data"]["source_file"] = SOURCE_FILE
 cfg["runtime"]["num_workers"] = NUM_WORKERS
 cfg["runtime"]["pin_memory"] = True
@@ -132,6 +134,21 @@ cfg["training"]["determinism"]["enabled"] = not FAST_CUDNN
 cfg["training"]["determinism"]["cudnn_deterministic"] = not FAST_CUDNN
 cfg["training"]["determinism"]["cudnn_benchmark"] = FAST_CUDNN
 config_path.write_text(yaml.safe_dump(cfg, sort_keys=False))
+
+smoke_train_args = []
+smoke_data_args = []
+if SMOKE_TEST:
+    smoke_train_args = [
+        "--max-epochs", "2",
+        "--max-train-rows", "128",
+        "--max-validation-rows", "64",
+        "--max-test-rows", "64",
+    ]
+    smoke_data_args = [
+        "--max-train-rows", "128",
+        "--max-validation-rows", "64",
+        "--max-test-rows", "64",
+    ]
 
 run([
     sys.executable, "-u",
@@ -148,11 +165,22 @@ run([
     "--image-spec", IMAGE_SPEC,
     "--return-horizon", str(RETURN_HORIZON),
     "--run-seed", str(RUN_SEED),
-])
+] + smoke_train_args)
 
 run([
     sys.executable, "-u",
     "scripts/evaluate_stage2_predictions.py",
+    "--config", "configs/env_kaggle.yaml",
+    "--image-window", str(IMAGE_WINDOW),
+    "--image-spec", IMAGE_SPEC,
+    "--return-horizon", str(RETURN_HORIZON),
+    "--run-seed", str(RUN_SEED),
+    "--split", EVAL_SPLIT,
+] + smoke_data_args)
+
+run([
+    sys.executable, "-u",
+    "scripts/evaluate_stage2_trading.py",
     "--config", "configs/env_kaggle.yaml",
     "--image-window", str(IMAGE_WINDOW),
     "--image-spec", IMAGE_SPEC,
@@ -172,7 +200,7 @@ run([
     "--split", EVAL_SPLIT,
     "--samples-per-class", str(GRADCAM_SAMPLES_PER_CLASS),
     "--write-report-copy",
-])
+] + smoke_data_args)
 
 run([
     sys.executable, "-u",
@@ -182,6 +210,8 @@ run([
     "--image-spec", IMAGE_SPEC,
     "--return-horizon", str(RETURN_HORIZON),
     "--run-seed", str(RUN_SEED),
+    "--split", EVAL_SPLIT,
+    "--gradcam-samples-per-class", str(GRADCAM_SAMPLES_PER_CLASS),
 ])
 
 print("\nDONE", flush=True)

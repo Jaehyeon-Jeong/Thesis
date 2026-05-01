@@ -1,0 +1,20 @@
+{
+  "status": "ok",
+  "experiment_name": "stage2_i20_ohlc_ma_vb_r20",
+  "image_window": 20,
+  "image_spec": "ohlc_ma_vb",
+  "return_horizon": 20,
+  "run_seed": 42,
+  "max_epochs": 2,
+  "rows": {
+    "train": 128,
+    "validation": 64,
+    "test": 64
+  },
+  "best_epoch": 2,
+  "best_val_loss": 0.6888229846954346,
+  "test_accuracy_smoke": 0.265625,
+  "sample_image_dir": "reports/figures/sample_images",
+  "gradcam_report_copy": "reports/figures/gradcam/stage2_i20_ohlc_ma_vb_r20_seed_42_test_gradcam.png",
+  "note": "Smoke results verify code execution only and are not thesis full-run results."
+}

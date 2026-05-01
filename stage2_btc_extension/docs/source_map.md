@@ -712,3 +712,91 @@ Readiness 판정:
 생성 artifact:
 - `stage2_btc_extension/docs/stage2_implementation_readiness_review.md`
 - `stage2_btc_extension/reports/tables/stage2_implementation_task_map.csv`
+
+## 2-I1 Shared Config/Code Scaffold Result
+
+Checked on: 2026-05-01
+
+Implementation-source basis:
+- Root `PLAN.md`: local and Kaggle must use one shared codebase, with
+  environment differences controlled by config.
+- Stage 1 helper style:
+  - `stage1_reimage_reproduction/src/stage1_reimage/config.py`
+  - `stage1_reimage_reproduction/src/stage1_reimage/paths.py`
+  - `stage1_reimage_reproduction/src/stage1_reimage/runtime.py`
+  - `stage1_reimage_reproduction/src/stage1_reimage/seed.py`
+
+Stage 2 scaffold created:
+- `stage2_btc_extension/configs/env_local.yaml`
+- `stage2_btc_extension/configs/env_kaggle.yaml`
+- `stage2_btc_extension/src/stage2_btc/config.py`
+- `stage2_btc_extension/src/stage2_btc/paths.py`
+- `stage2_btc_extension/src/stage2_btc/runtime.py`
+- `stage2_btc_extension/src/stage2_btc/seed.py`
+
+Important note:
+- This item records implementation scaffolding, not a new paper-derived model
+  decision.
+- Paper-derived model/image/training values are stored in config so later code
+  can use them consistently.
+
+## 2-I1 공통 Config/Code Scaffold 결과
+
+확인일: 2026-05-01
+
+구현 근거:
+- Root `PLAN.md`: local과 Kaggle은 하나의 공통 codebase를 사용하고, 환경 차이는
+  config로 관리합니다.
+- Stage 1 helper style:
+  - `stage1_reimage_reproduction/src/stage1_reimage/config.py`
+  - `stage1_reimage_reproduction/src/stage1_reimage/paths.py`
+  - `stage1_reimage_reproduction/src/stage1_reimage/runtime.py`
+  - `stage1_reimage_reproduction/src/stage1_reimage/seed.py`
+
+생성한 Stage 2 scaffold:
+- `stage2_btc_extension/configs/env_local.yaml`
+- `stage2_btc_extension/configs/env_kaggle.yaml`
+- `stage2_btc_extension/src/stage2_btc/config.py`
+- `stage2_btc_extension/src/stage2_btc/paths.py`
+- `stage2_btc_extension/src/stage2_btc/runtime.py`
+- `stage2_btc_extension/src/stage2_btc/seed.py`
+
+중요:
+- 이 항목은 새 논문 기반 model 결정을 추가한 것이 아니라 구현 scaffold입니다.
+- 논문에서 가져온 model/image/training 값은 이후 코드가 일관되게 사용하도록 config에
+  저장했습니다.
+
+## 2-I2 to 2-I10 Implementation Result
+
+Checked on: 2026-05-01
+
+Implemented files:
+- Data loader: `stage2_btc_extension/src/stage2_btc/data/ohlcv.py`
+- Image generator: `stage2_btc_extension/src/stage2_btc/imaging/ohlcv_image.py`
+- Label/split/normalization: `stage2_btc_extension/src/stage2_btc/data/label_split.py`
+- Model variants: `stage2_btc_extension/src/stage2_btc/models/stock_cnn.py`
+- Training loop: `stage2_btc_extension/src/stage2_btc/training/loop.py`
+- Prediction metrics: `stage2_btc_extension/src/stage2_btc/evaluation/prediction.py`
+- Trading metrics: `stage2_btc_extension/src/stage2_btc/evaluation/backtest.py`
+- Grad-CAM: `stage2_btc_extension/src/stage2_btc/interpretability/gradcam.py`
+- Kaggle runner: `stage2_btc_extension/notebooks/kaggle_stage2_btc_baseline_one_cell.md`
+
+Source basis:
+- BTC loader/image/label code follows Stage 2 planning documents from `2-2`
+  through `2-4`.
+- I20 model follows Stage 1/GitHub-style core.
+- I5/I60 variants are Stage-1/Stock_CNN-style extensions that match the paper
+  summary targets for depth, channel sequence, flatten dimension, and parameter
+  count.
+- BTC trading metrics replace stock H-L decile evaluation because BTC is a
+  single asset.
+- BTC Grad-CAM follows the Grad-CAM method plan and uses class logits.
+
+Generated visual checks:
+- Sample images: `stage2_btc_extension/reports/figures/sample_images/`
+- Smoke Grad-CAM report copy:
+  `stage2_btc_extension/reports/figures/gradcam/stage2_i20_ohlc_ma_vb_r20_seed_42_test_gradcam.png`
+
+Limit:
+- The local smoke run verifies code execution only.
+- Full Stage 2 thesis results require running the Kaggle one-cell runner.

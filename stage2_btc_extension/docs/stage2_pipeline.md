@@ -290,3 +290,28 @@ Stage 2 기본 batch 정책:
 - 구현은 checklist 순서대로 진행합니다: config scaffold, data loader, image
   generator, label/split, model runner, metric, trading, Grad-CAM, smoke test,
   full Kaggle run, report output.
+
+2-I1 shared config/code scaffold 결정:
+- `configs/env_local.yaml`과 `configs/env_kaggle.yaml`을 같은 schema로 만들었습니다.
+- local/Kaggle 차이는 path와 runtime config 값으로 처리하고, Python 구현은 공통
+  `src/stage2_btc/`를 사용합니다.
+- Stage 2 기본 batch size는 `128`로 고정했습니다.
+- strict Stage 2 baseline 기본값은 mixed precision off, DataParallel off입니다.
+- `src/stage2_btc/config.py`, `paths.py`, `runtime.py`, `seed.py`를 추가했습니다.
+- 이 항목은 새 논문 결정이 아니라 root `PLAN.md`와 Stage 1 helper style을 따르는
+  구현 scaffold입니다.
+
+2-I2 to 2-I10 implementation status:
+- `2-I2`: BTC OHLCV loader implemented and verified on `2997` daily rows.
+- `2-I3`: BTC image generator implemented. Local sample images are in
+  `reports/figures/sample_images/`.
+- `2-I4`: BTC label/split/normalization code implemented and verified for
+  `I20/ohlc_ma_vb/R20`.
+- `2-I5`: I5/I20/I60 Stock_CNN-style model variants and BTC baseline training
+  runner implemented.
+- `2-I6`: prediction CSV and classification metric export implemented.
+- `2-I7`: BTC single-asset trading metric export implemented.
+- `2-I8`: BTC Grad-CAM export implemented.
+- `2-I9`: local smoke test completed for `I20/ohlc_ma_vb/R20`, seed `42`.
+- `2-I10`: Kaggle one-cell full runner is ready. Actual full-run result must be
+  produced in Kaggle by the user.

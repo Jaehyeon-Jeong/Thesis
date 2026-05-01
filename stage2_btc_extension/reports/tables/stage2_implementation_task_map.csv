@@ -1,12 +1,12 @@
 checklist_item,task,primary_files_to_create_or_update,depends_on,readiness_status
-2-I1,shared config/code scaffold,"configs/env_local.yaml; configs/env_kaggle.yaml; src/stage2_btc/config.py; src/stage2_btc/paths.py; src/stage2_btc/runtime.py; src/stage2_btc/seed.py",2-I0,ready
-2-I2,BTC OHLCV loader,"src/stage2_btc/data/ohlcv.py; scripts/check_stage2_data_loading.py",2-I1,ready
-2-I3,BTC image generator,"src/stage2_btc/imaging/ohlcv_image.py; scripts/check_stage2_image_generation.py",2-I2,ready
-2-I4,label split normalization,"src/stage2_btc/data/label_split.py; reports/tables/stage2_label_split_actual_counts.csv",2-I2 and 2-I3,ready
-2-I5,BTC baseline runner and models,"src/stage2_btc/models/stock_cnn.py; src/stage2_btc/training/loop.py; src/stage2_btc/runners/btc_baseline.py; scripts/run_stage2_btc_baseline.py",2-I1 through 2-I4,ready
-2-I6,prediction and classification metrics,"src/stage2_btc/evaluation/prediction.py; scripts/evaluate_stage2_predictions.py",2-I5,ready
-2-I7,trading metric backtest,"src/stage2_btc/evaluation/backtest.py; scripts/evaluate_stage2_trading.py",2-I6,ready
-2-I8,BTC Grad-CAM export,"src/stage2_btc/interpretability/gradcam.py; scripts/generate_stage2_gradcam.py",2-I5 and 2-I6,ready
-2-I9,smoke test,"scripts/check_stage2_outputs.py; reports/smoke_tests/stage2_smoke_*.json",2-I5 through 2-I8,ready_after_implementation
-2-I10,Kaggle full BTC baseline runs,"notebooks/kaggle_stage2_btc_baseline_one_cell.md; outputs/stage2/*",2-I9,ready_after_smoke
+2-I1,shared config/code scaffold,"configs/env_local.yaml; configs/env_kaggle.yaml; src/stage2_btc/config.py; src/stage2_btc/paths.py; src/stage2_btc/runtime.py; src/stage2_btc/seed.py",2-I0,complete
+2-I2,BTC OHLCV loader,"src/stage2_btc/data/ohlcv.py; scripts/check_stage2_data_loading.py",2-I1,complete
+2-I3,BTC image generator,"src/stage2_btc/imaging/ohlcv_image.py; scripts/check_stage2_image_generation.py",2-I2,complete
+2-I4,label split normalization,"src/stage2_btc/data/label_split.py; scripts/check_stage2_label_split.py",2-I2 and 2-I3,complete
+2-I5,BTC baseline runner and models,"src/stage2_btc/models/stock_cnn.py; src/stage2_btc/training/loop.py; src/stage2_btc/runners/btc_baseline.py; scripts/run_stage2_btc_baseline.py",2-I1 through 2-I4,complete
+2-I6,prediction and classification metrics,"src/stage2_btc/evaluation/prediction.py; scripts/evaluate_stage2_predictions.py",2-I5,complete
+2-I7,trading metric backtest,"src/stage2_btc/evaluation/backtest.py; scripts/evaluate_stage2_trading.py",2-I6,complete
+2-I8,BTC Grad-CAM export,"src/stage2_btc/interpretability/gradcam.py; scripts/generate_stage2_gradcam.py",2-I5 and 2-I6,complete
+2-I9,smoke test,"scripts/check_stage2_outputs.py; reports/smoke_tests/stage2_i20_r20_smoke_summary.json",2-I5 through 2-I8,complete
+2-I10,Kaggle full BTC baseline runs,"notebooks/kaggle_stage2_btc_baseline_one_cell.md; outputs/stage2/*",2-I9,runner_ready_waiting_for_kaggle_execution
 2-I11,Stage 2 report outputs,"reports/tables/stage2_classification_metrics.csv; reports/tables/stage2_trading_metrics.csv; reports/figures/gradcam/*",2-I10,ready_after_full_run

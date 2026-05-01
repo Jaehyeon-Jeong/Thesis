@@ -27,16 +27,26 @@ Planning phase:
 Implementation phase:
 - [x] 2-I0. Implementation readiness review
   - Result: [2-I0 implementation readiness review](checklist_results/2-I0_implementation_readiness_review.md)
-- [ ] 2-I1. Shared Stage 2 config/code scaffold
-- [ ] 2-I2. BTC OHLCV loader
-- [ ] 2-I3. BTC image generator
-- [ ] 2-I4. BTC label/split/normalization code
-- [ ] 2-I5. BTC baseline runner using Stage 1 CNN core
-- [ ] 2-I6. BTC prediction and metric export
-- [ ] 2-I7. BTC trading metric/backtest export
-- [ ] 2-I8. BTC Grad-CAM export
-- [ ] 2-I9. Local or small Kaggle smoke test
-- [ ] 2-I10. Kaggle full BTC baseline runs
+- [x] 2-I1. Shared Stage 2 config/code scaffold
+  - Result: [2-I1 shared config/code scaffold](checklist_results/2-I1_shared_config_code_scaffold.md)
+- [x] 2-I2. BTC OHLCV loader
+  - Result: [2-I2 BTC OHLCV loader](checklist_results/2-I2_btc_ohlcv_loader.md)
+- [x] 2-I3. BTC image generator
+  - Result: [2-I3 BTC image generator](checklist_results/2-I3_btc_image_generator.md)
+- [x] 2-I4. BTC label/split/normalization code
+  - Result: [2-I4 BTC label/split/normalization code](checklist_results/2-I4_label_split_normalization_code.md)
+- [x] 2-I5. BTC baseline runner using Stage 1 CNN core
+  - Result: [2-I5 BTC baseline runner](checklist_results/2-I5_btc_baseline_runner.md)
+- [x] 2-I6. BTC prediction and metric export
+  - Result: [2-I6 prediction/metric export](checklist_results/2-I6_prediction_metric_export.md)
+- [x] 2-I7. BTC trading metric/backtest export
+  - Result: [2-I7 trading metric export](checklist_results/2-I7_trading_metric_export.md)
+- [x] 2-I8. BTC Grad-CAM export
+  - Result: [2-I8 BTC Grad-CAM export](checklist_results/2-I8_btc_gradcam_export.md)
+- [x] 2-I9. Local or small Kaggle smoke test
+  - Result: [2-I9 local smoke test](checklist_results/2-I9_local_smoke_test.md)
+- [x] 2-I10. Kaggle full BTC baseline runs
+  - Result: [2-I10 Kaggle runner ready](checklist_results/2-I10_kaggle_runner_ready.md)
 - [ ] 2-I11. Stage 2 report outputs
 
 Important:
@@ -73,16 +83,26 @@ Important:
 구현 단계:
 - [x] 2-I0. 구현 readiness review
   - 결과: [2-I0 구현 readiness review](checklist_results/2-I0_implementation_readiness_review.md)
-- [ ] 2-I1. Stage 2 공통 config/code scaffold
-- [ ] 2-I2. BTC OHLCV loader
-- [ ] 2-I3. BTC image generator
-- [ ] 2-I4. BTC label/split/normalization code
-- [ ] 2-I5. Stage 1 CNN core를 사용하는 BTC baseline runner
-- [ ] 2-I6. BTC prediction과 metric export
-- [ ] 2-I7. BTC trading metric/backtest export
-- [ ] 2-I8. BTC Grad-CAM export
-- [ ] 2-I9. local 또는 작은 Kaggle smoke test
-- [ ] 2-I10. Kaggle full BTC baseline run
+- [x] 2-I1. Stage 2 공통 config/code scaffold
+  - 결과: [2-I1 공통 config/code scaffold](checklist_results/2-I1_shared_config_code_scaffold.md)
+- [x] 2-I2. BTC OHLCV loader
+  - 결과: [2-I2 BTC OHLCV loader](checklist_results/2-I2_btc_ohlcv_loader.md)
+- [x] 2-I3. BTC image generator
+  - 결과: [2-I3 BTC image generator](checklist_results/2-I3_btc_image_generator.md)
+- [x] 2-I4. BTC label/split/normalization code
+  - 결과: [2-I4 BTC label/split/normalization code](checklist_results/2-I4_label_split_normalization_code.md)
+- [x] 2-I5. Stage 1 CNN core를 사용하는 BTC baseline runner
+  - 결과: [2-I5 BTC baseline runner](checklist_results/2-I5_btc_baseline_runner.md)
+- [x] 2-I6. BTC prediction과 metric export
+  - 결과: [2-I6 prediction/metric export](checklist_results/2-I6_prediction_metric_export.md)
+- [x] 2-I7. BTC trading metric/backtest export
+  - 결과: [2-I7 trading metric export](checklist_results/2-I7_trading_metric_export.md)
+- [x] 2-I8. BTC Grad-CAM export
+  - 결과: [2-I8 BTC Grad-CAM export](checklist_results/2-I8_btc_gradcam_export.md)
+- [x] 2-I9. local 또는 작은 Kaggle smoke test
+  - 결과: [2-I9 local smoke test](checklist_results/2-I9_local_smoke_test.md)
+- [x] 2-I10. Kaggle full BTC baseline run
+  - 결과: [2-I10 Kaggle runner ready](checklist_results/2-I10_kaggle_runner_ready.md)
 - [ ] 2-I11. Stage 2 report output
 
 중요:

@@ -29,6 +29,7 @@ Main documents:
 - [BTC image generation plan](docs/stage2_image_generation_plan.md)
 - [BTC label/split/normalization plan](docs/stage2_label_split_normalization_plan.md)
 - [BTC baseline CNN adaptation plan](docs/stage2_baseline_cnn_adaptation_plan.md)
+- [BTC evaluation and trading metric plan](docs/stage2_evaluation_trading_metric_plan.md)
 - [Source map](docs/source_map.md)
 
 ## 한국어
@@ -59,4 +60,5 @@ Main documents:
 - [BTC image generation plan](docs/stage2_image_generation_plan.md)
 - [BTC label/split/normalization plan](docs/stage2_label_split_normalization_plan.md)
 - [BTC baseline CNN adaptation plan](docs/stage2_baseline_cnn_adaptation_plan.md)
+- [BTC evaluation and trading metric plan](docs/stage2_evaluation_trading_metric_plan.md)
 - [Source map](docs/source_map.md)

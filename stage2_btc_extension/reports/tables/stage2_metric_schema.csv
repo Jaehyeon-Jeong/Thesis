@@ -1,0 +1,26 @@
+metric_group,metric_name,definition,output_artifact,source_or_decision
+prediction_schema,prob_up,softmax(logits) probability for Up class,outputs/stage2/{experiment}/predictions*.csv,Stage1 evaluation pattern
+prediction_schema,pred_class,1 if prob_up >= 0.5 else 0,outputs/stage2/{experiment}/predictions*.csv,Implementation convention aligned with Stage1
+classification,accuracy,mean(pred_class == label),classification_metrics.json and reports/tables/stage2_classification_metrics.csv,Stage1 evaluation pattern
+classification,majority_class_accuracy,max class count / sample_count,classification_metrics.json and reports/tables/stage2_classification_metrics.csv,Stage1 baseline comparison
+classification,precision,true_positive / predicted_positive,classification_metrics.json and reports/tables/stage2_classification_metrics.csv,Stage1 evaluation pattern
+classification,recall,true_positive / actual_positive,classification_metrics.json and reports/tables/stage2_classification_metrics.csv,Stage1 evaluation pattern
+classification,f1,2 * precision * recall / (precision + recall),classification_metrics.json and reports/tables/stage2_classification_metrics.csv,Stage1 evaluation pattern
+classification,roc_auc,ROC AUC using prob_up,classification_metrics.json and reports/tables/stage2_classification_metrics.csv,Stage1 evaluation pattern
+classification,average_precision,Average precision using prob_up,classification_metrics.json and reports/tables/stage2_classification_metrics.csv,Stage1 evaluation pattern
+classification,brier_score,mean((prob_up - label)^2),classification_metrics.json and reports/tables/stage2_classification_metrics.csv,Stage1 evaluation pattern
+classification,log_loss,binary cross-entropy on probabilities,classification_metrics.json and reports/tables/stage2_classification_metrics.csv,Stage1 evaluation pattern
+classification,confusion_matrix,TP TN FP FN counts,classification_metrics.json and reports/tables/stage2_classification_metrics.csv,Stage1 evaluation pattern
+diagnostic,pearson_prob_return,Pearson correlation between prob_up and future_return,classification_metrics.json and reports/tables/stage2_classification_metrics.csv,Paper-style prediction-return diagnostic adapted to BTC
+diagnostic,spearman_prob_return,Spearman correlation between prob_up and future_return,classification_metrics.json and reports/tables/stage2_classification_metrics.csv,Paper-style prediction-return diagnostic adapted to BTC
+calibration,calibration_bin,10-bin table with sample count mean prob observed positive rate and mean future return,reports/tables/stage2_calibration_bins.csv,Stage2 required diagnostic
+trading,long_flat,position 1 if prob_up >= 0.5 else 0,trading_daily_returns.csv and trading_metrics.json,Stage2 BTC single-asset strategy
+trading,long_short,position 1 if prob_up >= 0.5 else -1,trading_daily_returns.csv and trading_metrics.json,Stage2 BTC single-asset strategy
+trading,cumulative_return,final equity curve value minus 1,trading_metrics.json and reports/tables/stage2_trading_metrics.csv,Stage2 BTC single-asset strategy
+trading,annualized_return,geometric annualized return using 365 daily periods,trading_metrics.json and reports/tables/stage2_trading_metrics.csv,Stage2 decision for daily BTC
+trading,annualized_volatility,std(daily strategy returns) * sqrt(365),trading_metrics.json and reports/tables/stage2_trading_metrics.csv,Stage2 decision for daily BTC
+trading,sharpe_ratio,annualized mean return / annualized volatility with rf=0,trading_metrics.json and reports/tables/stage2_trading_metrics.csv,Stage2 decision for daily BTC
+trading,max_drawdown,min drawdown from daily equity curve,trading_metrics.json and reports/tables/stage2_trading_metrics.csv,Stage2 BTC single-asset strategy
+trading,average_turnover,mean(abs(active_position_t - active_position_t_minus_1)),trading_metrics.json and reports/tables/stage2_trading_metrics.csv,Stage2 BTC single-asset strategy
+trading,average_exposure,mean(abs(active_position_t)),trading_metrics.json and reports/tables/stage2_trading_metrics.csv,Stage2 BTC single-asset strategy
+trading,cost_adjusted_return,strategy_return - turnover * transaction_cost_bps / 10000,trading_daily_returns.csv and trading_metrics.json,Implementation assumption with configurable bps

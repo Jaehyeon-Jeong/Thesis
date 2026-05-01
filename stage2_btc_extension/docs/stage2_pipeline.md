@@ -106,6 +106,20 @@ Dependency:
 - Default BTC baseline training starts from scratch, not from a stock
   checkpoint.
 
+2-6 evaluation/trading decision:
+- BTC cannot use the original paper's stock cross-sectional H-L decile
+  portfolios.
+- Classification metrics follow the Stage 1 prediction style: accuracy,
+  precision, recall, F1, ROC AUC, average precision, Brier score, log loss,
+  confusion matrix, majority-class baseline, and probability/return
+  correlations.
+- Calibration is reported as a 10-bin `prob_up` table.
+- Trading metrics use BTC single-asset time-series strategies:
+  `long_flat` and `long_short`.
+- R-day signals are evaluated with overlapping-horizon daily backtests.
+- Annualization uses 365 daily periods.
+- Report gross metrics and configurable transaction-cost-adjusted metrics.
+
 ## 한국어
 
 목적:
@@ -203,3 +217,15 @@ Stage 2 기본 batch 정책:
 - 모든 image spec은 1-channel grayscale image입니다. MA와 volume은 channel을
   추가하지 않습니다.
 - 기본 BTC baseline은 stock checkpoint transfer 없이 from scratch로 학습합니다.
+
+2-6 evaluation/trading 결정:
+- BTC는 원논문의 stock cross-sectional H-L decile portfolio를 사용할 수 없습니다.
+- Classification metric은 Stage 1 prediction style을 따릅니다: accuracy,
+  precision, recall, F1, ROC AUC, average precision, Brier score, log loss,
+  confusion matrix, majority-class baseline, probability/return correlation.
+- Calibration은 `prob_up` 10-bin table로 보고합니다.
+- Trading metric은 BTC 단일 자산 time-series strategy인 `long_flat`,
+  `long_short`를 사용합니다.
+- R-day signal은 overlapping-horizon daily backtest로 평가합니다.
+- annualization은 365 daily periods를 사용합니다.
+- gross metric과 configurable transaction-cost-adjusted metric을 모두 보고합니다.

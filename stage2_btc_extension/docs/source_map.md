@@ -221,6 +221,40 @@ Generated artifacts:
 - `stage2_btc_extension/docs/stage2_baseline_cnn_adaptation_plan.md`
 - `stage2_btc_extension/reports/tables/stage2_baseline_cnn_architecture_plan.csv`
 
+## 2-6 BTC Evaluation and Trading Metric Plan Result
+
+Checked on: 2026-05-01
+
+Paper/source basis:
+- `자료조사/Re-image 요약.md`, lines 5, 7, and 73-77: classification accuracy
+  and H-L portfolio evaluation.
+- `자료조사/Re-image 요약.md`, line 77: short-horizon turnover warning.
+- Stage 1 evaluation implementation:
+  `stage1_reimage_reproduction/src/stage1_reimage/evaluation/prediction.py`.
+- Stage 2 constraint from 2-1: BTC is a single asset, so stock
+  cross-sectional H-L decile portfolios are not directly applicable.
+
+Stage 2 decisions:
+- BTC reports classification metrics plus time-series trading metrics.
+- Required sentence for reports: the original paper can form H-L decile
+  portfolios because it is cross-sectional, but BTC is a single asset, so Stage
+  2 reports classification and time-series trading metrics instead.
+- Prediction CSV preserves BTC dates, image/window/spec metadata, future return,
+  label, logits, probabilities, predicted class, and correctness.
+- Classification metrics include accuracy, precision, recall, F1, ROC AUC,
+  average precision, Brier score, log loss, confusion matrix, majority-class
+  baseline, and probability/return correlations.
+- Calibration is required as a 10-bin `prob_up` table.
+- Trading strategies are `long_flat` and `long_short`.
+- Trading metrics use overlapping-horizon daily backtests, annualized with
+  365 daily periods.
+- Report gross metrics and configurable transaction-cost-adjusted metrics.
+  Initial planning value: `10 bps` per unit turnover.
+
+Generated artifacts:
+- `stage2_btc_extension/docs/stage2_evaluation_trading_metric_plan.md`
+- `stage2_btc_extension/reports/tables/stage2_metric_schema.csv`
+
 ## 한국어
 
 이 파일은 Stage 2 구현 전에 확인해야 할 근거를 기록합니다.
@@ -456,3 +490,37 @@ Stage 2 결정:
 생성 artifact:
 - `stage2_btc_extension/docs/stage2_baseline_cnn_adaptation_plan.md`
 - `stage2_btc_extension/reports/tables/stage2_baseline_cnn_architecture_plan.csv`
+
+## 2-6 BTC evaluation과 trading metric 계획 결과
+
+확인일: 2026-05-01
+
+논문/source 근거:
+- `자료조사/Re-image 요약.md`, lines 5, 7, 73-77: classification accuracy와
+  H-L portfolio evaluation.
+- `자료조사/Re-image 요약.md`, line 77: short-horizon turnover 주의.
+- Stage 1 evaluation implementation:
+  `stage1_reimage_reproduction/src/stage1_reimage/evaluation/prediction.py`.
+- 2-1에서 확정한 Stage 2 constraint: BTC는 단일 자산이므로 stock cross-sectional
+  H-L decile portfolio를 직접 적용할 수 없습니다.
+
+Stage 2 결정:
+- BTC는 classification metric과 time-series trading metric을 함께 보고합니다.
+- 보고서 필수 문장: 원논문은 cross-sectional이라 H-L decile portfolio를 구성할 수
+  있지만, BTC는 단일 자산이므로 Stage 2는 classification과 time-series trading
+  metric을 사용합니다.
+- Prediction CSV에는 BTC date, image/window/spec metadata, future return, label,
+  logits, probability, predicted class, correctness를 보존합니다.
+- Classification metric은 accuracy, precision, recall, F1, ROC AUC, average
+  precision, Brier score, log loss, confusion matrix, majority-class baseline,
+  probability/return correlation을 포함합니다.
+- Calibration은 `prob_up` 10-bin table을 필수로 만듭니다.
+- Trading strategy는 `long_flat`, `long_short`입니다.
+- Trading metric은 overlapping-horizon daily backtest로 계산하고, annualization은
+  365 daily periods를 사용합니다.
+- gross metric과 configurable transaction-cost-adjusted metric을 모두 보고합니다.
+  초기 계획값은 unit turnover당 `10 bps`입니다.
+
+생성 artifact:
+- `stage2_btc_extension/docs/stage2_evaluation_trading_metric_plan.md`
+- `stage2_btc_extension/reports/tables/stage2_metric_schema.csv`

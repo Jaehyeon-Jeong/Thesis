@@ -17,7 +17,8 @@ Planning phase:
   - Result: [2-4 BTC label/split/normalization detail plan](checklist_results/2-4_btc_label_split_normalization_plan.md)
 - [x] 2-5. BTC baseline CNN adaptation plan
   - Result: [2-5 BTC baseline CNN adaptation plan](checklist_results/2-5_btc_baseline_cnn_adaptation_plan.md)
-- [ ] 2-6. BTC evaluation and trading-metric plan
+- [x] 2-6. BTC evaluation and trading-metric plan
+  - Result: [2-6 BTC evaluation/trading-metric plan](checklist_results/2-6_btc_evaluation_trading_metric_plan.md)
 - [ ] 2-7. BTC Grad-CAM plan
 - [ ] 2-8. Kaggle runner and output plan
 
@@ -59,7 +60,8 @@ Important:
   - 결과: [2-4 BTC label/split/normalization 세부계획](checklist_results/2-4_btc_label_split_normalization_plan.md)
 - [x] 2-5. BTC baseline CNN adaptation 계획
   - 결과: [2-5 BTC baseline CNN adaptation 계획](checklist_results/2-5_btc_baseline_cnn_adaptation_plan.md)
-- [ ] 2-6. BTC evaluation과 trading metric 계획
+- [x] 2-6. BTC evaluation과 trading metric 계획
+  - 결과: [2-6 BTC evaluation/trading-metric 계획](checklist_results/2-6_btc_evaluation_trading_metric_plan.md)
 - [ ] 2-7. BTC Grad-CAM 계획
 - [ ] 2-8. Kaggle runner와 output 계획
 

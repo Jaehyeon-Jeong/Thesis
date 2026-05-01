@@ -10,6 +10,8 @@ Current files:
   and chronological test split.
 - `stage2_baseline_cnn_architecture_plan.csv`: planned BTC CNN model variants,
   input shapes, flatten dimensions, and expected parameter counts.
+- `stage2_metric_schema.csv`: Stage 2 prediction, classification, calibration,
+  and trading metric schema.
 
 Large predictions are not stored here.
 
@@ -22,5 +24,7 @@ Stage 2의 작은 planning/result table을 이 폴더에 저장합니다.
   train/validation split, chronological test split별 예정 sample 수와 class balance.
 - `stage2_baseline_cnn_architecture_plan.csv`: BTC CNN model variant, input shape,
   flatten dimension, expected parameter count 계획.
+- `stage2_metric_schema.csv`: Stage 2 prediction, classification, calibration,
+  trading metric schema.
 
 대용량 prediction은 이 폴더에 저장하지 않습니다.

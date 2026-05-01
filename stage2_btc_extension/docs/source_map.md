@@ -183,6 +183,44 @@ Generated artifact:
 - `stage2_btc_extension/docs/stage2_label_split_normalization_plan.md`
 - `stage2_btc_extension/reports/tables/stage2_label_split_plan_counts.csv`
 
+## 2-5 BTC Baseline CNN Adaptation Plan Result
+
+Checked on: 2026-05-01
+
+Paper/source basis:
+- `자료조사/Re-image 요약.md`, line 36: baseline image sizes `32x15`,
+  `64x60`, and `96x180`.
+- `자료조사/Re-image 요약.md`, line 47: I5/I20/I60 model depths, channel
+  sequence, flatten dimensions, and parameter counts.
+- `자료조사/Re-image 요약.md`, line 49: baseline training defaults.
+- GitHub reference: `lich99/Stock_CNN/models/baseline.py`, commit
+  `415e2acf2a5013afca67e383acd3edc61fced840`.
+- Stage 1 implementation:
+  `stage1_reimage_reproduction/src/stage1_reimage/models/stock_cnn.py`.
+
+Source check:
+- The checked GitHub model is I20-specific: it reshapes input to
+  `(batch, 1, 64, 60)` and uses `Linear(46080, 2)`.
+- Therefore BTC I20 can reuse the Stage 1/GitHub-style core directly.
+- BTC I5 and I60 require separate model variants; they must not reuse the I20
+  reshape or classifier.
+
+Stage 2 decisions:
+- `I5` -> `stock_cnn_i5`, input `(batch, 1, 32, 15)`, 2 blocks,
+  flatten dim `15360`, expected params `155138`.
+- `I20` -> `stock_cnn_i20`, input `(batch, 1, 64, 60)`, 3 blocks,
+  flatten dim `46080`, expected params `708866`.
+- `I60` -> `stock_cnn_i60`, input `(batch, 1, 96, 180)`, 4 blocks,
+  flatten dim `184320`, expected params `2952962`.
+- Model selection is by image window, not by return horizon.
+- All four image specifications remain one-channel grayscale images.
+- Default BTC baseline training uses from-scratch initialization rather than a
+  stock checkpoint transfer.
+
+Generated artifacts:
+- `stage2_btc_extension/docs/stage2_baseline_cnn_adaptation_plan.md`
+- `stage2_btc_extension/reports/tables/stage2_baseline_cnn_architecture_plan.csv`
+
 ## 한국어
 
 이 파일은 Stage 2 구현 전에 확인해야 할 근거를 기록합니다.
@@ -380,3 +418,41 @@ Stage 2 결정:
 생성 artifact:
 - `stage2_btc_extension/docs/stage2_label_split_normalization_plan.md`
 - `stage2_btc_extension/reports/tables/stage2_label_split_plan_counts.csv`
+
+## 2-5 BTC baseline CNN adaptation 계획 결과
+
+확인일: 2026-05-01
+
+논문/source 근거:
+- `자료조사/Re-image 요약.md`, line 36: baseline image size `32x15`,
+  `64x60`, `96x180`.
+- `자료조사/Re-image 요약.md`, line 47: I5/I20/I60 model depth, channel
+  sequence, flatten dimension, parameter count.
+- `자료조사/Re-image 요약.md`, line 49: baseline training default.
+- GitHub reference: `lich99/Stock_CNN/models/baseline.py`, commit
+  `415e2acf2a5013afca67e383acd3edc61fced840`.
+- Stage 1 implementation:
+  `stage1_reimage_reproduction/src/stage1_reimage/models/stock_cnn.py`.
+
+Source 확인:
+- 확인한 GitHub model은 I20 전용입니다. input을 `(batch, 1, 64, 60)`으로
+  reshape하고 `Linear(46080, 2)`를 사용합니다.
+- 따라서 BTC I20은 Stage 1/GitHub식 core를 직접 재사용할 수 있습니다.
+- BTC I5와 I60은 별도 model variant가 필요하며, I20 reshape나 classifier를
+  재사용하면 안 됩니다.
+
+Stage 2 결정:
+- `I5` -> `stock_cnn_i5`, input `(batch, 1, 32, 15)`, 2 blocks,
+  flatten dim `15360`, expected params `155138`.
+- `I20` -> `stock_cnn_i20`, input `(batch, 1, 64, 60)`, 3 blocks,
+  flatten dim `46080`, expected params `708866`.
+- `I60` -> `stock_cnn_i60`, input `(batch, 1, 96, 180)`, 4 blocks,
+  flatten dim `184320`, expected params `2952962`.
+- model은 return horizon이 아니라 image window로 선택합니다.
+- 네 image specification은 모두 1-channel grayscale image로 유지합니다.
+- 기본 BTC baseline은 stock checkpoint transfer가 아니라 from-scratch
+  initialization으로 학습합니다.
+
+생성 artifact:
+- `stage2_btc_extension/docs/stage2_baseline_cnn_adaptation_plan.md`
+- `stage2_btc_extension/reports/tables/stage2_baseline_cnn_architecture_plan.csv`

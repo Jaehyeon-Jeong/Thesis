@@ -94,6 +94,18 @@ Dependency:
   can overlap strongly. This is acceptable for the paper-aligned default, but a
   chronological-validation variant can be added later as a robustness check.
 
+2-5 baseline CNN adaptation decision:
+- Model selection is by image window, not return horizon.
+- `I5` uses `stock_cnn_i5`, `I20` uses `stock_cnn_i20`, and `I60` uses
+  `stock_cnn_i60`.
+- The checked GitHub implementation is I20-specific, so I20 reuses the exact
+  Stage 1/GitHub-style core while I5 and I60 require separate paper-targeted
+  variants.
+- All image specs remain one-channel grayscale images; MA and volume do not add
+  channels.
+- Default BTC baseline training starts from scratch, not from a stock
+  checkpoint.
+
 ## 한국어
 
 목적:
@@ -181,3 +193,13 @@ Stage 2 기본 batch 정책:
 - BTC는 단일 rolling time series라서 인접 train/validation sample이 많이 겹칠 수
   있습니다. 이는 논문 방식에 맞춘 기본값에서는 허용하되, chronological validation은
   나중 robustness check로 추가할 수 있습니다.
+
+2-5 baseline CNN adaptation 결정:
+- model은 return horizon이 아니라 image window로 선택합니다.
+- `I5`는 `stock_cnn_i5`, `I20`은 `stock_cnn_i20`, `I60`은 `stock_cnn_i60`을
+  사용합니다.
+- 확인한 GitHub implementation은 I20 전용이므로 I20은 Stage 1/GitHub식 core를
+  그대로 재사용하고, I5와 I60은 논문 target에 맞춘 별도 variant를 구현합니다.
+- 모든 image spec은 1-channel grayscale image입니다. MA와 volume은 channel을
+  추가하지 않습니다.
+- 기본 BTC baseline은 stock checkpoint transfer 없이 from scratch로 학습합니다.

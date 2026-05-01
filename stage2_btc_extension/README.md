@@ -28,6 +28,7 @@ Main documents:
 - [Stage 2 pipeline](docs/stage2_pipeline.md)
 - [BTC image generation plan](docs/stage2_image_generation_plan.md)
 - [BTC label/split/normalization plan](docs/stage2_label_split_normalization_plan.md)
+- [BTC baseline CNN adaptation plan](docs/stage2_baseline_cnn_adaptation_plan.md)
 - [Source map](docs/source_map.md)
 
 ## 한국어
@@ -57,4 +58,5 @@ Main documents:
 - [Stage 2 pipeline](docs/stage2_pipeline.md)
 - [BTC image generation plan](docs/stage2_image_generation_plan.md)
 - [BTC label/split/normalization plan](docs/stage2_label_split_normalization_plan.md)
+- [BTC baseline CNN adaptation plan](docs/stage2_baseline_cnn_adaptation_plan.md)
 - [Source map](docs/source_map.md)

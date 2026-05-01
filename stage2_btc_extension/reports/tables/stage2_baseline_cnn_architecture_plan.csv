@@ -1,0 +1,4 @@
+image_window,model_name,input_shape,blocks,channels,flatten_dim,expected_params,source_basis,stage2_decision
+I5,stock_cnn_i5,"(batch,1,32,15)",2,"64->128",15360,155138,"Re-image summary line 47; paper Figure 7 p.18 mapping","Implement separate I5 variant; do not reshape into I20"
+I20,stock_cnn_i20,"(batch,1,64,60)",3,"64->128->256",46080,708866,"lich99/Stock_CNN models/baseline.py commit 415e2acf; Re-image summary line 47","Reuse exact Stage1/GitHub-style I20 core"
+I60,stock_cnn_i60,"(batch,1,96,180)",4,"64->128->256->512",184320,2952962,"Re-image summary line 47; paper Figure 7 p.18 mapping","Implement separate I60 variant; do not reshape into I20"

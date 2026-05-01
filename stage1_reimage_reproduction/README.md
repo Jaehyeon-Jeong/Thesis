@@ -13,7 +13,9 @@ Stage 1 objective:
 
 Canonical map:
 - [Stage 1 execution map](docs/stage1_execution_map.md)
+- [Checklist](notebooks/checklist.md)
 - [Kaggle one-cell runner](notebooks/kaggle_stage1_single_horizon_one_cell.md)
+
 
 Execution environment:
 - Full Stage 1 training/evaluation should be designed for Kaggle Notebook.
@@ -63,6 +65,7 @@ Primary limitation:
 
 기준 문서:
 - [Stage 1 execution map](docs/stage1_execution_map.md)
+- [Checklist](notebooks/checklist.md)
 - [Kaggle one-cell runner](notebooks/kaggle_stage1_single_horizon_one_cell.md)
 
 실행 환경:

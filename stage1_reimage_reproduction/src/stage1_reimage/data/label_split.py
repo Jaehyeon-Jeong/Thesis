@@ -136,6 +136,7 @@ class HorizonSplitImageDataset(Dataset):
         split_name: str,
         normalization_stats: PixelNormalizationStats,
         max_rows: int | None = None,
+        include_metadata: bool = True,
     ) -> None:
         # `split_frame`에는 한 horizon의 모든 valid row가 들어 있다. 여기서는
         # caller가 요청한 split, 예를 들어 train 또는 validation row만 남긴다.
@@ -151,6 +152,17 @@ class HorizonSplitImageDataset(Dataset):
         self.frame = selected.reset_index(drop=True)
         self.split_name = split_name
         self.normalization_stats = normalization_stats
+        self.include_metadata = include_metadata
+
+        # Training loop는 image와 label만 필요하다. 매 sample마다 pandas `iloc`로 row를
+        # 꺼내고 metadata dict를 만든 뒤 DataLoader가 collate하면 CPU overhead가 커진다.
+        # 그래서 자주 쓰는 integer column은 NumPy array로 미리 빼둔다.
+        #
+        # evaluation/prediction CSV에서는 metadata가 필요하므로 `include_metadata=True`
+        # 일 때만 아래 array로 image/label을 가져온 뒤 metadata dict를 추가로 만든다.
+        self._shard_indices = self.frame["shard_index"].to_numpy(dtype=np.int64)
+        self._local_rows = self.frame["local_row"].to_numpy(dtype=np.int64)
+        self._labels = self.frame["label"].to_numpy(dtype=np.int64)
 
     def __len__(self) -> int:
         """이 split dataset의 row 수를 반환한다."""
@@ -166,13 +178,14 @@ class HorizonSplitImageDataset(Dataset):
             metadata: prediction CSV 해석에 쓰이는 dictionary.
         """
 
-        row = self.frame.iloc[index]
+        shard_index = int(self._shard_indices[index])
+        local_row = int(self._local_rows[index])
 
         # 저장된 shard/local row id를 사용해서 memmap dataset에서 정확히 같은 image
         # row를 가져온다. 이렇게 label row와 image row의 alignment를 유지한다.
         image = self.base_dataset.get_image_tensor(
-            int(row["shard_index"]),
-            int(row["local_row"]),
+            shard_index,
+            local_row,
         )
 
         # Train-only normalization. validation/test pixel을 mean/std 계산에 쓰지 않으므로
@@ -181,18 +194,23 @@ class HorizonSplitImageDataset(Dataset):
             self.normalization_stats.train_pixel_std
         )
 
+        sample = {
+            "image": image,
+            "label": torch.tensor(int(self._labels[index]), dtype=torch.long),
+        }
+        if not self.include_metadata:
+            return sample
+
         # Metadata는 Date/StockID/return을 보존한다. 나중 evaluation CSV에서 어떤
         # stock-date image가 어떤 probability를 만들었는지 확인하기 위해 필요하다.
+        row = self.frame.iloc[index]
         metadata = row.to_dict()
         date_value = metadata.get("Date")
         if hasattr(date_value, "isoformat"):
             metadata["Date"] = date_value.isoformat()
         metadata["StockID"] = str(metadata.get("StockID"))
-        return {
-            "image": image,
-            "label": torch.tensor(int(row["label"]), dtype=torch.long),
-            "metadata": metadata,
-        }
+        sample["metadata"] = metadata
+        return sample
 
 
 def split_settings_from_config(config: Mapping[str, Any]) -> SplitSettings:

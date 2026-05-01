@@ -314,8 +314,10 @@ def _build_train_val_loaders(
     """split metadata에서 train/validation DataLoader를 만든다.
 
     출력:
-        train_loader는 image `(B,1,64,60)`, label `(B,)`, metadata가 들어 있는
-        dictionary batch를 만든다. training loop는 image와 label만 사용한다.
+        train_loader는 image `(B,1,64,60)`, label `(B,)` batch를 만든다.
+        training loop는 metadata를 사용하지 않으므로 training/validation loader에서는
+        metadata collate를 끈다. prediction CSV가 필요한 evaluation script에서만
+        metadata를 포함한다.
     """
 
     runtime_config = get_config_section(config, "runtime")
@@ -334,6 +336,7 @@ def _build_train_val_loaders(
         split_name="train",
         normalization_stats=normalization_stats,
         max_rows=max_train_rows,
+        include_metadata=False,
     )
     val_dataset = HorizonSplitImageDataset(
         base_dataset=base_dataset,
@@ -341,6 +344,7 @@ def _build_train_val_loaders(
         split_name="validation",
         normalization_stats=normalization_stats,
         max_rows=max_val_rows,
+        include_metadata=False,
     )
     # SGD는 random batch order에서 이점이 있으므로 train loader는 row를 shuffle한다.
     train_loader = DataLoader(

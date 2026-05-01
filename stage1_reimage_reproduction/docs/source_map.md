@@ -108,6 +108,8 @@ Stage 1 gate structure:
 | 1-I10 | `scripts/check_stage1_single_seed_outputs.py` | Receipt checker for expected Kaggle single-seed outputs. |
 | 1-I10 | `docs/kaggle_single_seed_runbook.md` | Copy-paste Kaggle runbook for the first full single-seed run. |
 | 1-I10 | `docs/progress_logging.md` | Explains long-run progress messages and `python -u` usage. |
+| 1-I10 | `docs/fast_kaggle_strategy.md` | Documents the faster one-horizon-at-a-time Kaggle strategy. |
+| 1-I10 | `notebooks/kaggle_stage1_single_horizon_one_cell.md` | One-cell Kaggle runner for code copy, data copy, training, evaluation, and quick Grad-CAM. |
 
 1-I1 source note:
 - These files implement only the shared execution scaffold required by root

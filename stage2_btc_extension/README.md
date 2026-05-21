@@ -44,6 +44,9 @@ Current result status:
 - Stage 2 is closed for now at the single-seed reporting level.
 - Full five-seed stability check is the only remaining Stage 2 rerun and will
   be done later before making final stability claims.
+- Selected five-seed robustness check is now planned before the full 180-run
+  rerun: `I20/R20` and `I60/R20` across all four image specs and five seeds
+  (`40` runs total).
 
 Full result report:
 - [Stage 2 single-seed result report](reports/stage2_single_seed_result_report.md)
@@ -181,6 +184,9 @@ predicted-down examples. Generate it in Kaggle with:
 - Stage 2는 현재 single-seed 보고 수준에서 마무리합니다.
 - 남은 Stage 2 재실행은 5-seed 안정성 확인뿐이며, 최종 안정성 결론을 내기 전에
   나중에 수행합니다.
+- 전체 180-run five-seed rerun 전에 선별 robustness check를 먼저 수행할 계획입니다:
+  `I20/R20`과 `I60/R20`만 두고 image spec 4개와 seed 5개를 실행합니다
+  (`40` runs total).
 
 전체 결과 보고:
 - [Stage 2 single-seed result report](reports/stage2_single_seed_result_report.md)

@@ -62,6 +62,9 @@ Stage 4 방향이 확정되면, 해당 옵션을 기준으로 바로 구현 및 
 
 남은 작업:
 - Five-seed stability check는 later work로 남겨두었습니다.
+- 계산 비용을 고려해 전체 `180` run을 바로 수행하기보다, 우선 `I20/R20`과
+  `I60/R20`의 네 가지 image spec을 seed `42, 43, 44, 45, 46`으로 확인하는
+  선별 `40` run robustness check를 진행할 계획입니다.
 
 ### Stage 3. Re-image + Linear
 

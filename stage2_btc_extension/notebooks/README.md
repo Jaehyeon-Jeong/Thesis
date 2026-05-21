@@ -12,6 +12,9 @@ Available Kaggle cells:
   once with seed `42`.
 - `kaggle_stage2_grid_five_seed_one_cell.md`: runs the 180-run Stage 2 grid
   with seeds `42, 43, 44, 45, 46`.
+- `kaggle_stage2_i20_i60_r20_five_seed_one_cell.md`: runs the selected 40-run
+  robustness check for `I20/R20` and `I60/R20` across all four image specs and
+  five seeds.
 - `kaggle_stage2_results_viewer_one_cell.md`: summarizes grid outputs into
   tables and displays selected Grad-CAM figures.
 - `kaggle_stage2_best_gradcam_10_one_cell.md`: regenerates the best
@@ -30,6 +33,8 @@ Available Kaggle cells:
   36-run grid를 실행합니다.
 - `kaggle_stage2_grid_five_seed_one_cell.md`: seed `42, 43, 44, 45, 46`으로
   Stage 2 전체 180-run grid를 실행합니다.
+- `kaggle_stage2_i20_i60_r20_five_seed_one_cell.md`: `I20/R20`과 `I60/R20`만
+  두고 image spec 4개와 seed 5개를 실행하는 선별 40-run robustness check입니다.
 - `kaggle_stage2_results_viewer_one_cell.md`: grid output을 표로 요약하고 선택한
   Grad-CAM figure를 표시합니다.
 - `kaggle_stage2_best_gradcam_10_one_cell.md`: single-seed 기준 best

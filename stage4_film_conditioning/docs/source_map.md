@@ -29,6 +29,14 @@ Implementation-source distinction:
     optional attention-based fusion.
   - Therefore Stage 4 uses numeric context + MLP encoder and compares concat,
     gating, gamma-only FiLM, and full FiLM.
+- Short excerpts from the advisor note that determine the model set:
+  - "strong no-conditioning baseline"
+  - "the prediction query is effectively fixed"
+  - "compact structured metadata"
+  - "an MLP or embedding-based condition encoder is a cleaner design than an RNN"
+  - "CNN + naive condition concatenation"
+  - "CNN + FiLM"
+  - "Optional attention-based fusion"
 - Implementation choice for the first Stage 4 main run: structured numeric
   context first; news context remains a second-phase track after audit.
 
@@ -62,5 +70,13 @@ Implementation-source distinction:
     fusion 비교를 권장합니다.
   - 따라서 Stage 4는 numeric context + MLP encoder를 사용하고 concat, gating,
     gamma-only FiLM, full FiLM을 비교합니다.
+- 네 가지 model set을 결정한 교수님 note 원문 발췌:
+  - "strong no-conditioning baseline"
+  - "the prediction query is effectively fixed"
+  - "compact structured metadata"
+  - "an MLP or embedding-based condition encoder is a cleaner design than an RNN"
+  - "CNN + naive condition concatenation"
+  - "CNN + FiLM"
+  - "Optional attention-based fusion"
 - 첫 Stage 4 main run 구현 선택: structured numeric context를 먼저 사용합니다.
   news context는 audit 이후 second-phase track으로 유지합니다.

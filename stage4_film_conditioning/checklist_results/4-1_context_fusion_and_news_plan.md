@@ -30,6 +30,21 @@ Key parts and how they map to the current Stage 4 plan:
 | "The path from condition input to visual feature modulation is explicit." | Save context features, gates, gamma/beta, Grad-CAM, and correctness/confidence metadata. |
 | "The contribution is conditional visual modulation, not generic language-style reasoning." | News/LLM is deferred until leakage-safe daily news vectors are defined; it is not the first main run. |
 
+Short excerpts used to justify the four experiments:
+
+| Exact excerpt from advisor note | Stage 4 implication |
+|:---|:---|
+| "does not treat the task as a full visual question answering problem" | Do not build an image+text-question VQA system for the main run. |
+| "conditional modulation mechanism for chart-image features" | The main contribution should be feature modulation, not just another classifier head. |
+| "strong no-conditioning baseline" | Keep the selected Stage 2 CNN as the fixed baseline. |
+| "the prediction query is effectively fixed" | The question is fixed as future Up/Down; context is what changes by date. |
+| "compact structured metadata" | Use F&G, Bollinger, MFI, and volatility as numeric context first. |
+| "an MLP or embedding-based condition encoder is a cleaner design than an RNN" | Encode numeric context with an MLP before fusion/FiLM. |
+| "CNN + naive condition concatenation" | Add `4-A CNN + context concat`. |
+| "Optional attention-based fusion" | Add `4-B CNN + context gating` as the attention/gating comparison. |
+| "CNN + FiLM" | Add `4-C gamma-only FiLM` and `4-D full gamma/beta FiLM`. |
+| "The path from condition input to visual feature modulation is explicit" | Save gamma/beta/gate values for interpretation. |
+
 ## Main Stage 4 Ablation
 
 The four immediate experiments are:
@@ -119,6 +134,21 @@ fusion/modulation을 비교하는 단계**로 정리했습니다.
 | CNN + FiLM 필요 | `4-C gamma-only FiLM`, `4-D full gamma/beta FiLM` 추가 |
 | condition input에서 visual feature modulation으로 가는 경로가 명시적 | context, gate, gamma/beta, Grad-CAM, correctness/confidence metadata 저장 |
 | contribution은 generic language reasoning이 아니라 conditional visual modulation | News/LLM은 첫 main run이 아니라 leakage-safe daily vector가 정의된 뒤 second-phase로 진행 |
+
+네 가지 실험을 정한 원문 발췌:
+
+| 교수님 note 원문 발췌 | Stage 4 적용 |
+|:---|:---|
+| "does not treat the task as a full visual question answering problem" | main run을 image+text-question VQA로 만들지 않음 |
+| "conditional modulation mechanism for chart-image features" | 핵심 기여를 단순 classifier 추가가 아니라 feature modulation으로 둠 |
+| "strong no-conditioning baseline" | Stage 2 selected CNN을 고정 baseline으로 사용 |
+| "the prediction query is effectively fixed" | 질문은 future Up/Down으로 고정하고, date별 context만 바뀜 |
+| "compact structured metadata" | F&G, Bollinger, MFI, volatility를 numeric context로 먼저 사용 |
+| "an MLP or embedding-based condition encoder is a cleaner design than an RNN" | numeric context는 MLP로 encoding |
+| "CNN + naive condition concatenation" | `4-A CNN + context concat` |
+| "Optional attention-based fusion" | `4-B CNN + context gating` |
+| "CNN + FiLM" | `4-C gamma-only FiLM`, `4-D full gamma/beta FiLM` |
+| "The path from condition input to visual feature modulation is explicit" | gamma/beta/gate 값을 저장해서 해석력 분석에 사용 |
 
 ## Stage 4 main ablation
 

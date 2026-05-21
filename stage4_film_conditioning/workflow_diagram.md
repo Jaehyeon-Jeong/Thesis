@@ -4,50 +4,92 @@
 
 ```mermaid
 flowchart TD
-    A[Stage 2 BTC fixed pipeline] --> B[BTC chart image tensors]
-    B --> C[Stock_CNN I5/I20/I60 blocks]
-    C --> D[Insert FiLM after BatchNorm]
+    A[Stage 2 selected baseline<br/>I60/R20/ohlc_ma_vb] --> B[BTC chart image tensor]
+    B --> C[Stock_CNN image encoder]
 
-    S0[4A FiLM-only control] --> G[FiLM generator]
-    S1[4B F&G numeric condition later] -. deferred .-> G
-    S2[4C News + non-LLM encoder later] -. deferred .-> G
-    S3[4D News + LLM encoder later] -. deferred .-> G
+    D[Structured numeric context<br/>F&G, BB %B, BB width, MFI, volatility] --> E[No-leakage date alignment]
+    E --> F[Train-only normalization]
+    F --> G[MLP context encoder]
 
-    G --> H[gamma and beta per block/channel]
-    H --> D
-    D --> I[logits and probabilities]
-    I --> J[classification metrics]
-    I --> K[trading metrics]
-    I --> L[Grad-CAM figures]
-    H --> M[gamma/beta parquet or csv export]
-    J --> N[Stage 4 report]
-    K --> N
-    L --> N
-    M --> N
+    C --> H1[4-A concat]
+    G --> H1
+    H1 --> O[Up/Down logits]
+
+    C --> H2[4-B gating]
+    G --> H2
+    H2 --> O
+
+    C --> H3[4-C FiLM gamma-only]
+    G --> H3
+    H3 --> O
+
+    C --> H4[4-D FiLM full gamma/beta]
+    G --> H4
+    H4 --> O
+
+    O --> M1[Classification metrics]
+    O --> M2[Trading metrics]
+    O --> M3[Grad-CAM]
+    H2 --> L1[gate logs]
+    H3 --> L2[gamma logs]
+    H4 --> L3[gamma/beta logs]
+    M1 --> R[Stage 4 report]
+    M2 --> R
+    M3 --> R
+    L1 --> R
+    L2 --> R
+    L3 --> R
+
+    N[News context later<br/>edaschau/bitcoin_news] -. audit/alignment .-> NG[News daily vector]
+    NG -. same four heads .-> H1
+    NG -. same four heads .-> H2
+    NG -. same four heads .-> H3
+    NG -. same four heads .-> H4
 ```
 
 ## 한국어
 
 ```mermaid
 flowchart TD
-    A[Stage 2 BTC 고정 pipeline] --> B[BTC chart image tensor]
-    B --> C[Stock_CNN I5/I20/I60 block]
-    C --> D[BatchNorm 뒤 FiLM 삽입]
+    A[Stage 2 selected baseline<br/>I60/R20/ohlc_ma_vb] --> B[BTC chart image tensor]
+    B --> C[Stock_CNN image encoder]
 
-    S0[4A FiLM-only control] --> G[FiLM generator]
-    S1[4B F&G numeric condition later] -. later .-> G
-    S2[4C News + non-LLM encoder later] -. later .-> G
-    S3[4D News + LLM encoder later] -. later .-> G
+    D[Structured numeric context<br/>F&G, BB %B, BB width, MFI, volatility] --> E[No-leakage date alignment]
+    E --> F[Train-only normalization]
+    F --> G[MLP context encoder]
 
-    G --> H[block/channel별 gamma와 beta]
-    H --> D
-    D --> I[logit과 probability]
-    I --> J[classification metric]
-    I --> K[trading metric]
-    I --> L[Grad-CAM figure]
-    H --> M[gamma/beta parquet 또는 csv export]
-    J --> N[Stage 4 report]
-    K --> N
-    L --> N
-    M --> N
+    C --> H1[4-A concat]
+    G --> H1
+    H1 --> O[Up/Down logits]
+
+    C --> H2[4-B gating]
+    G --> H2
+    H2 --> O
+
+    C --> H3[4-C FiLM gamma-only]
+    G --> H3
+    H3 --> O
+
+    C --> H4[4-D FiLM full gamma/beta]
+    G --> H4
+    H4 --> O
+
+    O --> M1[Classification metrics]
+    O --> M2[Trading metrics]
+    O --> M3[Grad-CAM]
+    H2 --> L1[gate logs]
+    H3 --> L2[gamma logs]
+    H4 --> L3[gamma/beta logs]
+    M1 --> R[Stage 4 report]
+    M2 --> R
+    M3 --> R
+    L1 --> R
+    L2 --> R
+    L3 --> R
+
+    N[News context later<br/>edaschau/bitcoin_news] -. audit/alignment .-> NG[News daily vector]
+    NG -. same four heads .-> H1
+    NG -. same four heads .-> H2
+    NG -. same four heads .-> H3
+    NG -. same four heads .-> H4
 ```

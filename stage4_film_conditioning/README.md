@@ -1,105 +1,179 @@
-# Stage 4: FiLM Conditioning
+# Stage 4: Market Context Fusion + FiLM Conditioning
 
 ## English
 
-This folder is reserved for Stage 4 of the thesis pipeline.
+This folder is the Stage 4 workspace for testing whether structured market
+context can improve the BTC chart-image CNN through conditional feature
+modulation.
 
 Stage 4 objective:
 - Keep the Stage 2 BTC image-generation, label, split, normalization,
   evaluation, trading metric, and Grad-CAM pipeline fixed.
-- Add FiLM modulation inside the Stock_CNN-style convolution blocks.
-- Compare BTC baseline, Stage 3 Linear, and FiLM variants.
-- Follow the core implementation idea of `ethanjperez/film` as closely as the
-  BTC chart-classification setting allows.
+- Use the selected five-seed Stage 2 baseline as the primary image model:
+  `I60/R20/ohlc_ma_vb`.
+- Build a structured market context vector from information available at or
+  before the image end date `t`.
+- Compare simple context fusion against FiLM-style conditional modulation.
+- Use the comparison to answer why FiLM is needed rather than only adding more
+  parameters or appending side information.
 
-Current scope:
-- Today is **FiLM only**.
-- News data and LLM conditioning are not implemented today.
-- The first Stage 4 work is the folder/checklist/source-map scaffold and the
-  FiLM insertion design.
+Primary Stage 4 image input:
+- `I60/R20/ohlc_ma_vb`
+- This is selected because the Stage 2 selected five-seed check found it to be
+  the strongest candidate:
+  - accuracy mean `0.5793`
+  - accuracy std `0.0182`
+  - ROC-AUC mean `0.5849`
 
-Condition-source tracks:
-- `4A FiLM-only control`: no external data. This is a mechanism/smoke-test
-  track. If used, gamma/beta are static learned parameters or generated from an
-  explicitly documented no-leakage internal condition.
-- `4B F&G index + FiLM`: daily Fear & Greed style numeric sentiment condition.
-  This requires a separate data-source audit before implementation.
-- `4C News + non-LLM encoder + FiLM`: BTC news is encoded by a non-LLM text
-  encoder and then used to generate FiLM gamma/beta.
-- `4D News + LLM encoder + FiLM`: the same BTC news idea, but the news is
-  encoded by an LLM before generating FiLM gamma/beta. This is deferred.
+Structured market context candidates:
+- Fear & Greed score.
+- Bollinger %B.
+- Bollinger bandwidth.
+- Money Flow Index.
+- Realized volatility.
 
-Key modeling rule:
-- Do not change the Stage 2 BTC data pipeline.
-- Do not change the Stock_CNN block count for I5/I20/I60.
-- Insert FiLM inside each CNN block after BatchNorm and before activation:
-  `Conv2d -> BatchNorm2d -> FiLM -> LeakyReLU -> MaxPool2d`.
-- Implement both Gamma-only FiLM and Full FiLM when the first FiLM model is
-  ready for comparison.
-- Save gamma/beta values by sample/date/layer whenever FiLM is used.
+Important modeling rule:
+- These context values are not drawn into the chart image in the main Stage 4
+  experiment.
+- The chart image remains the Stage 2 `ohlc_ma_vb` image.
+- The context values are fed as a separate numeric vector.
+- The numeric context vector is normalized with train-only statistics, encoded
+  by an MLP, and then used by the fusion/modulation model.
 
-Current status:
-- Stage 4 folder and checklist scaffold are created.
-- Stage 4 is not yet implemented.
-- Stage 4 starts with FiLM-only planning. F&G, News, and LLM tracks are listed
-  but deferred until their data/source audits are done.
+Main Stage 4 ablation models:
+
+| Track | Model | What changes | Interpretation |
+|:---|:---|:---|:---|
+| `4-A` | CNN + context concat | Append context embedding to CNN feature before classifier | Tests whether simple side-information fusion is enough |
+| `4-B` | CNN + context gating | Use context to multiply CNN channels/features by learned gates | Tests a simpler modulation alternative |
+| `4-C` | CNN + context FiLM gamma-only | Use context to generate block-wise `gamma`; apply `F' = gamma * F` | Tests FiLM scaling without additive shift |
+| `4-D` | CNN + context FiLM full | Use context to generate block-wise `gamma` and `beta`; apply `F' = gamma * F + beta` | Main FiLM model and interpretability target |
+
+Why this matches the advisor's direction:
+- The chart-image CNN baseline is already strong.
+- The research question is not simply whether chart images work.
+- The research question is whether market context can make the visual feature
+  extractor more adaptive to regime/state.
+- FiLM is useful because the path from context to feature modulation is explicit:
+  the model produces gates/gamma/beta values that can be analyzed by date,
+  market regime, layer, channel, confidence, and correctness.
+
+Advisor direction file mapping:
+- Source: `/Users/jaehyeonjeong/Desktop/film_chart_research_summary.md`.
+- It frames FiLM as conditional modulation for chart-image features, not as a
+  full visual-question-answering task.
+- It states that the prediction query is effectively fixed, so an RNN question
+  encoder is not essential.
+- It recommends compact structured metadata and an MLP/embedding-based condition
+  encoder.
+- It recommends comparing CNN-only, naive condition concatenation, FiLM, and an
+  optional attention-based fusion alternative.
+- This is why Stage 4 uses structured numeric context first and compares
+  concat, gating, gamma-only FiLM, and full FiLM.
+
+News-context position:
+- News is not removed from the thesis.
+- Candidate source: Hugging Face `edaschau/bitcoin_news`.
+- Public metadata checked on 2026-05-21 shows about `210k` rows, date range
+  2011-2025, and columns such as `date_time`, `title`, `source`, `url`, and
+  `article_text`.
+- News requires source audit, publication-time alignment, daily aggregation, and
+  encoder/cache rules before model training.
+- Therefore it is kept as a second-phase context track after the structured
+  numeric-context ablation is stable.
 
 Main documents:
 - [Checklist](checklist.md)
 - [Workflow diagram](workflow_diagram.md)
 - [Stage 4 pipeline](docs/stage4_pipeline.md)
-- [Source map](docs/source_map.md)
-- [FiLM reference review](docs/film_reference_review.md)
-- [Condition track plan](docs/condition_track_plan.md)
+- [Context fusion ablation plan](docs/condition_track_plan.md)
 - [FiLM insertion design](docs/film_insertion_design.md)
+- [Source map](docs/source_map.md)
+- [Planning report](checklist_results/4-1_context_fusion_and_news_plan.md)
 
 ## 한국어
 
-이 폴더는 논문 파이프라인의 4단계 작업 공간입니다.
+이 폴더는 structured market context가 BTC chart-image CNN을 개선할 수 있는지
+확인하는 Stage 4 작업 공간입니다. 핵심은 단순히 이미지를 더 복잡하게 그리는 것이
+아니라, 시장 맥락이 CNN feature를 조건부로 조절하게 만드는 것입니다.
 
-4단계 목표:
+Stage 4 목표:
 - Stage 2의 BTC image generation, label, split, normalization, evaluation,
   trading metric, Grad-CAM 파이프라인은 고정합니다.
-- Stock_CNN-style convolution block 내부에 FiLM modulation을 추가합니다.
-- BTC baseline, Stage 3 Linear, FiLM variant를 비교합니다.
-- BTC chart classification setting이 허용하는 범위에서
-  `ethanjperez/film`의 핵심 구현 아이디어를 최대한 따릅니다.
+- primary image model은 Stage 2 selected five-seed best인
+  `I60/R20/ohlc_ma_vb`로 둡니다.
+- image end date `t`까지 이용 가능한 정보만 사용해서 structured market context
+  vector를 만듭니다.
+- 단순 context fusion과 FiLM-style conditional modulation을 비교합니다.
+- FiLM이 단순 parameter 증가나 side information 추가보다 왜 필요한지 실험적으로
+  방어합니다.
 
-현재 범위:
-- 오늘은 **FiLM only**입니다.
-- News data와 LLM conditioning은 오늘 구현하지 않습니다.
-- 첫 Stage 4 작업은 folder/checklist/source-map scaffold와 FiLM 삽입 설계입니다.
+Stage 4 primary image input:
+- `I60/R20/ohlc_ma_vb`
+- Stage 2 selected five-seed check에서 가장 강한 후보였기 때문에 사용합니다:
+  - accuracy mean `0.5793`
+  - accuracy std `0.0182`
+  - ROC-AUC mean `0.5849`
 
-Condition-source track:
-- `4A FiLM-only control`: 외부 데이터를 쓰지 않습니다. mechanism/smoke-test
-  용도입니다. 사용한다면 gamma/beta는 static learned parameter이거나, leakage가
-  없다고 문서화한 내부 condition에서 생성합니다.
-- `4B F&G index + FiLM`: daily Fear & Greed 계열 numeric sentiment condition입니다.
-  구현 전에 별도 data-source audit이 필요합니다.
-- `4C News + non-LLM encoder + FiLM`: BTC news를 LLM이 아닌 text encoder로
-  condition vector로 바꾼 뒤 FiLM gamma/beta를 생성하는 track입니다.
-- `4D News + LLM encoder + FiLM`: 같은 BTC news를 LLM encoder로 condition
-  vector로 바꾼 뒤 FiLM gamma/beta를 생성하는 track입니다. 나중으로 미룹니다.
+Structured market context 후보:
+- Fear & Greed score.
+- Bollinger %B.
+- Bollinger bandwidth.
+- Money Flow Index.
+- Realized volatility.
 
-핵심 모델링 규칙:
-- Stage 2 BTC data pipeline은 바꾸지 않습니다.
-- I5/I20/I60의 Stock_CNN block 수는 바꾸지 않습니다.
-- FiLM은 각 CNN block 내부의 BatchNorm 뒤, activation 전에 삽입합니다:
-  `Conv2d -> BatchNorm2d -> FiLM -> LeakyReLU -> MaxPool2d`.
-- 첫 FiLM 모델 비교가 준비되면 Gamma-only FiLM과 Full FiLM을 모두 구현합니다.
-- FiLM을 사용하면 sample/date/layer 기준 gamma/beta 값을 저장합니다.
+중요한 모델링 규칙:
+- 이 context 값들을 main Stage 4 실험에서 chart image 위에 추가로 그리지 않습니다.
+- chart image는 Stage 2의 `ohlc_ma_vb` 이미지를 그대로 사용합니다.
+- context 값은 별도 numeric vector로 모델에 들어갑니다.
+- numeric context vector는 train split 통계로만 normalize하고, MLP로 encoding한 뒤
+  fusion/modulation model에서 사용합니다.
 
-현재 상태:
-- Stage 4 folder와 checklist scaffold를 만들었습니다.
-- Stage 4 구현은 아직 시작하지 않았습니다.
-- Stage 4는 FiLM-only planning부터 시작합니다. F&G, News, LLM track은 목록에
-  올려두되, data/source audit 전까지 구현하지 않습니다.
+Stage 4 주요 ablation model:
+
+| Track | Model | 바뀌는 부분 | 해석 |
+|:---|:---|:---|:---|
+| `4-A` | CNN + context concat | classifier 직전에 CNN feature와 context embedding을 붙임 | 단순 side information 추가만으로 충분한지 확인 |
+| `4-B` | CNN + context gating | context가 CNN channel/feature gate를 만들어 곱함 | 더 단순한 modulation 대안 |
+| `4-C` | CNN + context FiLM gamma-only | context가 block별 `gamma`를 만들고 `F' = gamma * F` 적용 | additive shift 없는 FiLM scaling |
+| `4-D` | CNN + context FiLM full | context가 block별 `gamma`, `beta`를 만들고 `F' = gamma * F + beta` 적용 | main FiLM model과 해석력 대상 |
+
+교수님 방향성과 맞는 이유:
+- chart-image CNN baseline은 이미 강합니다.
+- 핵심 질문은 chart image 자체가 예측력이 있는지가 아닙니다.
+- 핵심 질문은 market context가 visual feature extractor를 regime/state에 따라
+  더 적응적으로 만들 수 있는지입니다.
+- FiLM은 context에서 feature modulation으로 가는 경로가 명시적입니다. 따라서
+  gate/gamma/beta 값을 date, regime, layer, channel, confidence, correctness별로
+  분석할 수 있습니다.
+
+교수님 방향성 파일과의 연결:
+- Source: `/Users/jaehyeonjeong/Desktop/film_chart_research_summary.md`.
+- 해당 note는 FiLM을 full VQA가 아니라 chart-image feature의 conditional
+  modulation으로 재정의합니다.
+- 금융 예측 질문은 사실상 고정되어 있으므로 RNN question encoder가 필수는 아니라고
+  정리합니다.
+- compact structured metadata와 MLP/embedding-based condition encoder를 권장합니다.
+- CNN-only, naive condition concatenation, FiLM, optional attention-based fusion
+  비교를 권장합니다.
+- 그래서 Stage 4는 structured numeric context를 먼저 사용하고 concat, gating,
+  gamma-only FiLM, full FiLM을 비교합니다.
+
+뉴스 context 위치:
+- 뉴스는 논문에서 제거하지 않습니다.
+- 후보 source: Hugging Face `edaschau/bitcoin_news`.
+- 2026-05-21 기준 공개 metadata 확인 결과 약 `210k` rows, 2011-2025 date range,
+  `date_time`, `title`, `source`, `url`, `article_text` columns를 포함합니다.
+- 뉴스는 source audit, publication-time alignment, daily aggregation,
+  encoder/cache rule이 필요합니다.
+- 따라서 structured numeric-context ablation이 안정화된 뒤 second-phase context
+  track으로 유지합니다.
 
 주요 문서:
 - [Checklist](checklist.md)
 - [Workflow diagram](workflow_diagram.md)
 - [Stage 4 pipeline](docs/stage4_pipeline.md)
-- [Source map](docs/source_map.md)
-- [FiLM reference review](docs/film_reference_review.md)
-- [Condition track plan](docs/condition_track_plan.md)
+- [Context fusion ablation plan](docs/condition_track_plan.md)
 - [FiLM insertion design](docs/film_insertion_design.md)
+- [Source map](docs/source_map.md)
+- [Planning report](checklist_results/4-1_context_fusion_and_news_plan.md)

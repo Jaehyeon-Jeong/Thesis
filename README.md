@@ -18,7 +18,7 @@ tracked.
 | `stage1_reimage_reproduction` | Reproduce the Re-image CNN pipeline on public I20 stock images | In progress: `I20/R60` seed-42 fast diagnostic archived; `I20/R20` archive is smoke-only; `I20/R5`, strict batch-128 run, and five-seed reproduction are later |
 | `stage2_btc_extension` | Extend the confirmed pipeline to BTC OHLCV | Single-seed 36-run complete; selected `I20/R20` and `I60/R20` five-seed robustness check complete; full 180-run five-seed grid later |
 | `stage3_linear_adapter` | Add a Linear comparison model | First test on Stage 2 best config completed; result dropped to majority level; remaining grid runs pending |
-| `stage4_film_conditioning` | Add FiLM conditioning, then later F&G/News/LLM conditions | Scaffold created; today scope is FiLM-only, News/LLM deferred |
+| `stage4_film_conditioning` | Compare market-context concat, gating, gamma-only FiLM, and full FiLM on the fixed BTC CNN | Planning updated; numeric context first, news context kept as second-phase track |
 
 ### Current Status
 
@@ -68,18 +68,18 @@ Stage 3:
   checks.
 
 Stage 4:
-- Stage 4 folder, checklist, workflow diagram, and source map scaffold are now
-  created.
-- Current scope is FiLM-only preparation. News data and LLM conditioning are not
-  implemented today.
-- Condition-source tracks are separated as:
-  `4A FiLM-only control`, `4B F&G index + FiLM`,
-  `4C News + non-LLM encoder + FiLM`, and
-  `4D News + LLM encoder + FiLM`.
+- Stage 4 is now defined as a market-context fusion/modulation comparison on
+  the fixed Stage 2 BTC baseline `I60/R20/ohlc_ma_vb`.
+- Main ablations: `4-A CNN + context concat`, `4-B CNN + context gating`,
+  `4-C CNN + context FiLM gamma-only`, and `4-D CNN + context FiLM full`.
+- First context source: structured numeric market context, including F&G,
+  Bollinger %B, Bollinger bandwidth, MFI, and realized volatility.
+- News context is preserved as a second-phase track after source/date/leakage
+  audit. Candidate source: Hugging Face `edaschau/bitcoin_news`.
+- Advisor-direction mapping is documented in the Stage 4 README/source map and
+  checklist result `4-1`.
 - The planned FiLM insertion point is inside each Stock_CNN block:
   `Conv2d -> BatchNorm2d -> FiLM -> LeakyReLU -> MaxPool2d`.
-- FiLM reference implementation HEAD checked:
-  `ethanjperez/film@fe43ddf8a22b339dcca2efa07091ce9d498955cf`.
 
 ### Key documents
 
@@ -128,7 +128,7 @@ config, 코드 scaffold만 올립니다. 대용량 데이터, 논문 PDF, checkp
 | `stage1_reimage_reproduction` | public I20 stock image로 Re-image CNN pipeline 재현 | 진행 중: `I20/R60` seed-42 fast diagnostic 보존; `I20/R20` archive는 smoke-only; `I20/R5`, strict batch-128 run, five-seed reproduction은 later |
 | `stage2_btc_extension` | 확인된 pipeline을 BTC OHLCV로 확장 | single-seed 36-run 완료; `I20/R20`, `I60/R20` 선별 five-seed robustness check 완료; full 180-run five-seed grid는 later |
 | `stage3_linear_adapter` | Linear 비교 모델 추가 | Stage 2 best config 1회 테스트 완료; majority 수준으로 하락; 나머지 grid run 예정 |
-| `stage4_film_conditioning` | FiLM conditioning 추가 후 F&G/News/LLM condition 확장 | scaffold 생성; 오늘 범위는 FiLM-only, News/LLM은 deferred |
+| `stage4_film_conditioning` | 고정 BTC CNN 위에서 market-context concat, gating, gamma-only FiLM, full FiLM 비교 | 계획 업데이트; numeric context 먼저, news context는 second-phase track으로 유지 |
 
 ### 현재 상태
 
@@ -178,17 +178,18 @@ Stage 3:
 - Later: Kaggle output과 five-seed 안정성 확인 후 Stage 3 result report 작성.
 
 Stage 4:
-- Stage 4 폴더, checklist, workflow diagram, source map scaffold를 만들었습니다.
-- 현재 범위는 FiLM-only 준비입니다. News data와 LLM conditioning은 오늘 구현하지
-  않습니다.
-- Condition-source track은 다음처럼 분리합니다:
-  `4A FiLM-only control`, `4B F&G index + FiLM`,
-  `4C News + non-LLM encoder + FiLM`,
-  `4D News + LLM encoder + FiLM`.
+- Stage 4는 이제 고정된 Stage 2 BTC baseline `I60/R20/ohlc_ma_vb` 위에서
+  market-context fusion/modulation을 비교하는 단계로 정리했습니다.
+- Main ablation: `4-A CNN + context concat`, `4-B CNN + context gating`,
+  `4-C CNN + context FiLM gamma-only`, `4-D CNN + context FiLM full`.
+- 첫 context source는 structured numeric market context입니다: F&G, Bollinger %B,
+  Bollinger bandwidth, MFI, realized volatility.
+- News context는 제거하지 않고 source/date/leakage audit 이후 second-phase track으로
+  유지합니다. 후보 source는 Hugging Face `edaschau/bitcoin_news`입니다.
+- 교수님 방향성 파일과 Stage 4 실험 결정의 연결은 Stage 4 README/source map과
+  checklist result `4-1`에 문서화했습니다.
 - 계획한 FiLM 삽입 위치는 각 Stock_CNN block 내부입니다:
   `Conv2d -> BatchNorm2d -> FiLM -> LeakyReLU -> MaxPool2d`.
-- 확인한 FiLM reference implementation HEAD:
-  `ethanjperez/film@fe43ddf8a22b339dcca2efa07091ce9d498955cf`.
 
 ### 주요 문서
 

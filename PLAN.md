@@ -195,46 +195,57 @@
   - Linear adapter가 붙어도 Grad-CAM은 CNN feature와 target class score의 gradient 관계로 계산한다.
   - baseline CNN과 Linear model의 heatmap 차이를 같은 sample/date 기준으로 비교한다.
 
-## 4단계: FiLM + News/LLM Conditioning
+## 4단계: Market Context Fusion + FiLM Conditioning
 - 목적:
-  - BTC price image CNN feature를 news/LLM condition으로 modulation.
+  - BTC price image CNN feature를 structured market context로 modulation.
+  - Stage 2에서 확인한 강한 chart-image baseline 위에서, 시장 맥락이 같은 차트
+    패턴의 해석을 바꿀 수 있는지 확인한다.
 - 현재 진행 원칙:
-  - Stage 4는 condition source를 섞지 않고 아래 track으로 나눠 진행한다.
-    1. `4A FiLM-only control`: 외부 condition 없이 FiLM 삽입/초기화/export/Grad-CAM이
-       작동하는지 확인한다. 이 결과는 external information 효과로 해석하지 않는다.
-    2. `4B F&G index + FiLM`: Fear & Greed 계열 daily numeric sentiment를
-       condition으로 사용한다. source audit과 date/leakage check 이후에만 구현한다.
-    3. `4C News + non-LLM encoder + FiLM`: news를 LLM이 아닌 text encoder로
-       condition vector로 바꾼 뒤 FiLM에 넣는다. publication-time alignment와
-       leakage check 이후에만 구현한다.
-    4. `4D News + LLM encoder + FiLM`: 같은 news source를 LLM encoder로
-       condition vector로 바꾼 뒤 FiLM에 넣는다. LLM model/cache/version/prompt
-       계획 이후에만 구현한다.
-  - 오늘 범위는 `4A FiLM-only control` 준비와 FiLM 삽입 설계까지로 제한한다.
-  - News/LLM condition 구현은 오늘 진행하지 않는다.
+  - Stage 4의 우선 실험은 아래 네 가지 context fusion 방식 비교로 고정한다.
+    1. `4-A CNN + context concat`
+    2. `4-B CNN + context gating`
+    3. `4-C CNN + context FiLM gamma-only`
+    4. `4-D CNN + context FiLM full gamma/beta`
+  - Image input은 Stage 2 selected five-seed best인
+    `I60/R20/ohlc_ma_vb`를 primary baseline으로 고정한다.
+  - Market context는 이미지 위에 추가로 그리지 않는다. 별도 numeric vector로 구성한다.
+    - 후보: F&G score, Bollinger %B, Bollinger bandwidth, MFI, realized volatility.
+    - 모든 context feature는 image end date `t`까지의 정보만 사용한다.
+    - context feature scaling/normalization은 train split에서만 fit한다.
+  - News context는 버리지 않는다. 다만 바로 LLM/VLM prompt로 처리하지 않고,
+    별도 `4-N` track에서 dataset audit, publication-time alignment, daily aggregation,
+    leakage check를 먼저 수행한다.
+  - 뉴스 dataset 후보는 `huggingface.co/datasets/edaschau/bitcoin_news`다.
+  - 뉴스는 원문 그대로 모델에 "질문"으로 넣는 것이 아니라, 일별 headline/article를
+    요약하거나 non-LLM/LLM encoder로 embedding해서 context vector로 사용한다.
+  - 현재 Stage 4 main은 structured numeric market context를 사용한
+    FiLM/concat/gating 비교이고, news context는 같은 fusion 방식에 붙일 2차 확장이다.
 - 모델 구현:
   - `ethanjperez/film`의 핵심 구조를 최대한 동일하게 따른다.
-  - conditioning encoder와 FiLM generator를 분리한다.
-  - FiLM generator가 block별 gamma/beta를 만든다.
-  - FiLM layer는 feature map에 channel-wise affine modulation을 적용한다.
+  - context encoder와 fusion/modulation head를 분리한다.
+  - context encoder는 numeric market context vector를 MLP로 condition embedding으로 바꾼다.
+  - concat model은 CNN feature와 context embedding을 classifier 직전에 연결한다.
+  - gating model은 context embedding으로 channel gate를 만들고 CNN feature를 곱해서 조절한다.
+  - gamma-only FiLM은 block별 gamma만 만들어 `F' = gamma * F`를 적용한다.
+  - full FiLM은 block별 gamma/beta를 만들어 `F' = gamma * F + beta`를 적용한다.
+  - FiLM layer는 feature map에 channel-wise modulation을 적용한다.
 - Re-image CNN에 이식:
   - 기존 CNN 구조는 유지하고, block 내부에 FiLM만 삽입한다.
   - 기본 위치: `Conv -> BN -> FiLM -> LeakyReLU -> MaxPool`
-- News/LLM:
-  - BTC News: `huggingface.co/datasets/edaschau/bitcoin_news`
-  - 1차 encoder: FiLM 원형에 가까운 word embedding 200d + GRU
-  - 2차 encoder: Llama 계열 local/open LLM encoder
 - 비교:
   - BTC baseline
   - BTC Linear
-  - BTC Gamma-only FiLM
-  - BTC Full FiLM
-  - GRU encoder
-  - LLM encoder
+  - BTC CNN + context concat
+  - BTC CNN + context gating
+  - BTC CNN + context FiLM gamma-only
+  - BTC CNN + context FiLM full gamma/beta
+  - later: BTC CNN + news-context concat/gating/FiLM, news audit 통과 후 실행
 - FiLM 단계에서도 BTC Grad-CAM 필수.
   - FiLM이 삽입된 block의 modulation 이후 feature와 기존 CNN block feature를 구분해서 기록한다.
-  - Grad-CAM heatmap과 FiLM gamma/beta를 같은 date/sample/layer 기준으로 연결해 해석한다.
+  - Grad-CAM heatmap과 gate/gamma/beta를 같은 date/sample/layer 기준으로 연결해 해석한다.
 - 추가 해석:
+  - context feature 저장
+  - concat/gate/gamma/beta 저장
   - gamma/beta 저장
   - layer/channel/date별 분석
   - regime/confidence/correctness별 분석

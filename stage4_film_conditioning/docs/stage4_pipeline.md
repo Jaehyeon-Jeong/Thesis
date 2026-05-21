@@ -2,51 +2,238 @@
 
 ## English
 
-Stage 4 adds FiLM modulation to the fixed BTC chart-image pipeline.
+Stage 4 keeps the Stage 2 BTC chart-image pipeline fixed and adds a second
+input: market context. The experiments compare how that context is attached to
+the CNN.
 
-Fixed inputs from earlier stages:
-- BTC OHLCV source and chart image generation from Stage 2.
-- I5/I20/I60 Stock_CNN variants from Stage 2.
-- Stage 3 Linear result is a comparison point, not a dependency that changes
-  the FiLM model.
-- Evaluation, trading metrics, Grad-CAM, and Kaggle backup conventions remain
-  the same as Stage 2/3.
+## Fixed Inputs
 
-Stage 4 flow:
-1. Build BTC chart image sample.
-2. Build or load condition vector for the selected condition-source track.
-3. Use the FiLM generator to produce block/channel-level gamma and beta.
-4. Run Stock_CNN block with FiLM inserted after BatchNorm.
-5. Predict Up/Down.
-6. Export metrics, trading metrics, Grad-CAM, and gamma/beta logs.
+From Stage 2:
+- BTC OHLCV loading and chart image generation.
+- Label construction: future `R20` return up/down.
+- Split, normalization, evaluation, trading metrics, Grad-CAM conventions.
+- Primary model family: `I60/R20/ohlc_ma_vb`.
 
-Current first target:
-- Use the best Stage 2 single-seed configuration as the first diagnostic:
-  `I60/R20/ohlc_ma_vb`, seed `42`.
-- This is only a first diagnostic. The Stage 4 conclusion requires broader
-  single-seed and later five-seed runs.
+From Stage 3:
+- Linear adapter result is a comparison point only.
+- It does not change the Stage 4 architecture.
+
+## Stage 4 Data Flow
+
+```text
+BTC OHLCV
+  -> I60/R20/ohlc_ma_vb chart image
+  -> Stock_CNN image branch
+
+BTC OHLCV + external market context
+  -> context feature builder
+  -> train-only normalization
+  -> MLP context encoder
+
+image branch + context branch
+  -> concat / gating / gamma-only FiLM / full FiLM
+  -> Up/Down logits
+  -> predictions, metrics, trading metrics
+  -> Grad-CAM + context/gate/gamma/beta logs
+```
+
+## Main Numeric Context Flow
+
+```text
+image_end_date = t
+
+context_vector[t] = [
+    fear_greed_score[t or previous available],
+    bollinger_percent_b[t],
+    bollinger_bandwidth[t],
+    mfi[t],
+    realized_volatility[t],
+]
+```
+
+All context features must satisfy:
+- available at or before `t`;
+- no use of `t+1 ... t+R20` information;
+- train-only normalization statistics;
+- explicit missing-value policy.
+
+## Four Model Flows
+
+### 4-A. Concat
+
+```text
+image -> CNN -> final image feature
+context -> MLP -> context embedding
+[image feature, context embedding] -> classifier
+```
+
+### 4-B. Gating
+
+```text
+image -> CNN -> image feature
+context -> MLP -> gate
+image feature * gate -> classifier
+```
+
+### 4-C. Gamma-only FiLM
+
+```text
+context -> MLP -> block-wise gamma
+Conv -> BN -> gamma * feature -> LeakyReLU -> MaxPool
+```
+
+### 4-D. Full FiLM
+
+```text
+context -> MLP -> block-wise gamma, beta
+Conv -> BN -> gamma * feature + beta -> LeakyReLU -> MaxPool
+```
+
+## News Context Extension
+
+News is a planned second-phase context source.
+
+```text
+BTC news rows
+  -> publication-time audit
+  -> daily aggregation
+  -> headline/article summary or embedding
+  -> news context vector
+  -> same concat/gating/FiLM heads
+```
+
+The news context should not be implemented until:
+- the source is downloaded/versioned;
+- publication timestamps are aligned to BTC trading dates;
+- the aggregation rule is fixed;
+- the encoder/cache policy is reproducible.
+
+## Output Requirements
+
+Each Stage 4 run must save:
+- predictions;
+- classification metrics;
+- trading metrics;
+- context feature statistics;
+- gate/gamma/beta logs where applicable;
+- Grad-CAM figures;
+- run manifest with config, seed, source version, and Git commit.
 
 ## 한국어
 
-Stage 4는 고정된 BTC chart-image pipeline에 FiLM modulation을 추가합니다.
+Stage 4는 Stage 2 BTC chart-image pipeline을 고정하고, 두 번째 입력으로 market
+context를 추가합니다. 실험의 핵심은 이 context를 CNN에 어떻게 붙이는지 비교하는
+것입니다.
 
-이전 단계에서 고정해서 가져오는 것:
-- Stage 2의 BTC OHLCV source와 chart image generation.
-- Stage 2의 I5/I20/I60 Stock_CNN variant.
-- Stage 3 Linear 결과는 비교 대상일 뿐, FiLM model을 바꾸는 dependency가 아닙니다.
-- Evaluation, trading metric, Grad-CAM, Kaggle backup 규칙은 Stage 2/3와
-  동일하게 유지합니다.
+## 고정 입력
 
-Stage 4 흐름:
-1. BTC chart image sample을 만듭니다.
-2. 선택한 condition-source track에 맞는 condition vector를 만들거나 불러옵니다.
-3. FiLM generator가 block/channel별 gamma와 beta를 만듭니다.
-4. BatchNorm 뒤에 FiLM을 삽입한 Stock_CNN block을 실행합니다.
-5. Up/Down을 예측합니다.
-6. metric, trading metric, Grad-CAM, gamma/beta log를 저장합니다.
+Stage 2에서 고정해서 가져오는 것:
+- BTC OHLCV loading과 chart image generation.
+- Label construction: future `R20` return up/down.
+- Split, normalization, evaluation, trading metrics, Grad-CAM 규칙.
+- Primary model family: `I60/R20/ohlc_ma_vb`.
 
-현재 첫 목표:
-- 첫 diagnostic은 Stage 2 single-seed best configuration으로 시작합니다:
-  `I60/R20/ohlc_ma_vb`, seed `42`.
-- 이것은 첫 diagnostic일 뿐입니다. Stage 4 결론은 더 넓은 single-seed run과
-  나중의 five-seed run 이후에 작성합니다.
+Stage 3에서 가져오는 것:
+- Linear adapter 결과는 비교 대상일 뿐입니다.
+- Stage 4 architecture를 바꾸는 dependency가 아닙니다.
+
+## Stage 4 데이터 흐름
+
+```text
+BTC OHLCV
+  -> I60/R20/ohlc_ma_vb chart image
+  -> Stock_CNN image branch
+
+BTC OHLCV + external market context
+  -> context feature builder
+  -> train-only normalization
+  -> MLP context encoder
+
+image branch + context branch
+  -> concat / gating / gamma-only FiLM / full FiLM
+  -> Up/Down logits
+  -> predictions, metrics, trading metrics
+  -> Grad-CAM + context/gate/gamma/beta logs
+```
+
+## Main numeric context 흐름
+
+```text
+image_end_date = t
+
+context_vector[t] = [
+    fear_greed_score[t 또는 직전 available 값],
+    bollinger_percent_b[t],
+    bollinger_bandwidth[t],
+    mfi[t],
+    realized_volatility[t],
+]
+```
+
+모든 context feature는 다음을 지켜야 합니다.
+- `t` 또는 그 이전에 알 수 있어야 합니다.
+- `t+1 ... t+R20` 정보를 쓰면 안 됩니다.
+- normalization 통계는 train split에서만 fit합니다.
+- missing-value policy를 명시해야 합니다.
+
+## 네 가지 model flow
+
+### 4-A. Concat
+
+```text
+image -> CNN -> final image feature
+context -> MLP -> context embedding
+[image feature, context embedding] -> classifier
+```
+
+### 4-B. Gating
+
+```text
+image -> CNN -> image feature
+context -> MLP -> gate
+image feature * gate -> classifier
+```
+
+### 4-C. Gamma-only FiLM
+
+```text
+context -> MLP -> block-wise gamma
+Conv -> BN -> gamma * feature -> LeakyReLU -> MaxPool
+```
+
+### 4-D. Full FiLM
+
+```text
+context -> MLP -> block-wise gamma, beta
+Conv -> BN -> gamma * feature + beta -> LeakyReLU -> MaxPool
+```
+
+## News context 확장
+
+뉴스는 2차 context source로 계획합니다.
+
+```text
+BTC news rows
+  -> publication-time audit
+  -> daily aggregation
+  -> headline/article summary or embedding
+  -> news context vector
+  -> same concat/gating/FiLM heads
+```
+
+뉴스 context는 아래가 정해지기 전까지 구현하지 않습니다.
+- source download/version;
+- publication timestamp와 BTC trading date 정렬;
+- aggregation rule;
+- encoder/cache 재현성 정책.
+
+## Output 요구사항
+
+각 Stage 4 run은 다음을 저장해야 합니다.
+- predictions;
+- classification metrics;
+- trading metrics;
+- context feature statistics;
+- 필요한 경우 gate/gamma/beta logs;
+- Grad-CAM figures;
+- config, seed, source version, Git commit이 들어간 run manifest.

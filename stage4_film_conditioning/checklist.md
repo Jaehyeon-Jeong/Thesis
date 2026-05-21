@@ -2,106 +2,164 @@
 
 ## English
 
-Proceed one item at a time. Stage 4 must keep the Stage 2 BTC pipeline fixed
-and add FiLM conditioning in clearly separated condition-source tracks.
+Stage 4 now tests **how market context should be attached to the fixed BTC
+chart-image CNN**. The image pipeline stays fixed; the comparison is between
+context fusion/modulation methods.
+
+Fixed baseline:
+- Image/model family: Stage 2 `I60/R20/ohlc_ma_vb`.
+- Reason: selected five-seed Stage 2 best configuration.
+- Baseline metrics: accuracy mean `0.5793`, ROC-AUC mean `0.5849`.
+- Stage 3 Linear result is kept as a negative/simple-parameter ablation.
+
+Main Stage 4 ablation:
+- [ ] 4-A. `CNN + context concat`
+  - Context is encoded by MLP and appended to the CNN feature before the
+    classifier.
+  - Question: is simple side-information fusion enough?
+- [ ] 4-B. `CNN + context gating`
+  - Context creates channel/feature gates that multiply CNN features.
+  - Question: is simple multiplicative modulation enough?
+- [ ] 4-C. `CNN + context FiLM gamma-only`
+  - Context creates block-wise `gamma`; apply `F' = gamma * F`.
+  - Question: is FiLM-style scaling enough without additive shift?
+- [ ] 4-D. `CNN + context FiLM full`
+  - Context creates block-wise `gamma` and `beta`; apply
+    `F' = gamma * F + beta`.
+  - Question: does full FiLM give the best conditional adaptation and
+    interpretability?
 
 Planning phase:
 - [x] 4-0. Stage 4 folder, checklist, and workflow scaffold
   - Result: [4-0 Stage 4 scaffold](checklist_results/4-0_stage4_scaffold.md)
-- [ ] 4-1. FiLM paper, local summary, and `ethanjperez/film` reference review
-- [ ] 4-2. Stage 2/Stage 3 dependency and baseline-output review
-- [ ] 4-3. FiLM insertion-point design for Stock_CNN blocks
-- [ ] 4-4. Condition-source track design
-  - 4A: FiLM-only control
-  - 4B: F&G index + FiLM
-  - 4C: News + non-LLM encoder + FiLM
-  - 4D: News + LLM encoder + FiLM
-- [ ] 4-5. Gamma-only FiLM vs Full FiLM comparison plan
-- [ ] 4-6. Grad-CAM and gamma/beta export plan
-- [ ] 4-7. Kaggle runner and output backup plan
+- [x] 4-1. Context fusion and news-context plan
+  - Result: [4-1 Context fusion and news plan](checklist_results/4-1_context_fusion_and_news_plan.md)
+- [ ] 4-2. Structured numeric context audit and leakage policy
+  - F&G, Bollinger %B, Bollinger bandwidth, MFI, realized volatility.
+- [ ] 4-3. News dataset audit and news-context feasibility decision
+  - Candidate: `edaschau/bitcoin_news`.
+  - Decide whether to use headline-only, article summaries, or embeddings.
+- [ ] 4-4. Stage 2/Stage 3 dependency and baseline-output review
+- [ ] 4-5. Context encoder and normalization plan
+- [ ] 4-6. Concat/gating/FiLM insertion design
+- [ ] 4-7. Grad-CAM plus context/gate/gamma/beta export plan
+- [ ] 4-8. Kaggle runner and output backup plan
 
 Implementation phase:
 - [ ] 4-I0. Implementation readiness review
 - [ ] 4-I1. Shared Stage 4 config/code scaffold
-- [ ] 4-I2. FiLM layer module
-- [ ] 4-I3. FiLM generator module for the current condition track
-- [ ] 4-I4. StockCNN + FiLM model variants for I5/I20/I60
-- [ ] 4-I5. BTC FiLM runner using fixed Stage 2 data pipeline
-- [ ] 4-I6. Prediction, classification metric, and trading metric export
-- [ ] 4-I7. Grad-CAM and FiLM gamma/beta export
-- [ ] 4-I8. Local or small Kaggle smoke test
-- [ ] 4-I9. Kaggle single-config FiLM run
-- [ ] 4-I10. Kaggle grid runner for selected FiLM variants
-- [ ] 4-I11. Stage 4 result report
+- [ ] 4-I2. Structured context feature builder
+- [ ] 4-I3. Context MLP encoder
+- [ ] 4-I4. `CNN + context concat` model
+- [ ] 4-I5. `CNN + context gating` model
+- [ ] 4-I6. FiLM layer and FiLM generator modules
+- [ ] 4-I7. `CNN + FiLM gamma-only` and `CNN + FiLM full` models
+- [ ] 4-I8. BTC Stage 4 runner using fixed Stage 2 data pipeline
+- [ ] 4-I9. Prediction, classification metric, and trading metric export
+- [ ] 4-I10. Grad-CAM plus context/gate/gamma/beta export
+- [ ] 4-I11. Local or small Kaggle smoke test
+- [ ] 4-I12. Kaggle single-config run for the four main ablations
+- [ ] 4-I13. Kaggle selected grid/five-seed runner
+- [ ] 4-I14. Stage 4 result report
 
-Deferred condition tracks:
-- [ ] 4-FG1. F&G index source audit
-- [ ] 4-FG2. F&G date alignment and leakage check
-- [ ] 4-N1. BTC news dataset audit
-- [ ] 4-N2. News-to-trading-date alignment and leakage check
-- [ ] 4-N3. Non-LLM news encoder implementation
-- [ ] 4-L1. LLM encoder source/model decision
-- [ ] 4-L2. LLM embedding/cache/reproducibility plan
-- [ ] 4-L3. LLM-conditioned FiLM implementation
+News-context extension:
+- [ ] 4-N1. `edaschau/bitcoin_news` source audit
+- [ ] 4-N2. Publication-time alignment and no-future-leakage check
+- [ ] 4-N3. Daily aggregation policy
+  - Options: latest headline, top-k headlines, concatenated headlines,
+    article summary, or daily embedding average.
+- [ ] 4-N4. Non-LLM news encoder
+  - Options: TF-IDF/SVD, trainable embedding + GRU, sentence-transformer style
+    embedding if reproducibility is fixed.
+- [ ] 4-N5. LLM-summary or LLM-embedding plan
+  - Deferred until data alignment and caching/reproducibility are fixed.
+- [ ] 4-N6. News-context concat/gating/FiLM comparison
 
 Important:
-- Today, do not implement News/LLM conditioning.
-- FiLM-only control is useful for verifying insertion, logging, Grad-CAM, and
-  gamma/beta export. It is not evidence that external information helps.
-- Any external condition source must pass date alignment and no-future-leakage
-  checks before model training.
-- Grad-CAM remains required. FiLM gamma/beta must be saved with the same
-  sample/date/layer keys used by Grad-CAM.
+- Do not draw the context values into the chart image for the main Stage 4
+  experiment.
+- The context enters as a separate vector.
+- All context features must be available at or before image end date `t`.
+- Train-only statistics must be used for context normalization.
+- News is not removed from the thesis. It is a second-phase context track after
+  the structured numeric-context ablation is stable.
 
 ## 한국어
 
-한 항목씩 진행합니다. Stage 4는 Stage 2 BTC pipeline을 고정하고, condition source를
-명확히 나눈 상태에서 FiLM conditioning을 추가해야 합니다.
+Stage 4는 이제 **market context를 고정된 BTC chart-image CNN에 어떻게 붙일지**를
+검증하는 단계입니다. 이미지 파이프라인은 고정하고, context fusion/modulation 방식을
+비교합니다.
+
+고정 baseline:
+- Image/model family: Stage 2 `I60/R20/ohlc_ma_vb`.
+- 이유: Stage 2 selected five-seed best configuration.
+- Baseline metrics: accuracy mean `0.5793`, ROC-AUC mean `0.5849`.
+- Stage 3 Linear 결과는 단순 parameter 증가 비교의 negative ablation으로 둡니다.
+
+Stage 4 main ablation:
+- [ ] 4-A. `CNN + context concat`
+  - context를 MLP로 encoding한 뒤 classifier 직전 CNN feature에 붙입니다.
+  - 질문: 단순 side information 추가만으로 충분한가?
+- [ ] 4-B. `CNN + context gating`
+  - context가 channel/feature gate를 만들고 CNN feature에 곱합니다.
+  - 질문: 단순 multiplicative modulation만으로 충분한가?
+- [ ] 4-C. `CNN + context FiLM gamma-only`
+  - context가 block별 `gamma`를 만들고 `F' = gamma * F`를 적용합니다.
+  - 질문: additive shift 없이 FiLM-style scaling만으로 충분한가?
+- [ ] 4-D. `CNN + context FiLM full`
+  - context가 block별 `gamma`, `beta`를 만들고 `F' = gamma * F + beta`를 적용합니다.
+  - 질문: full FiLM이 conditional adaptation과 해석력에서 가장 좋은가?
 
 계획 단계:
 - [x] 4-0. Stage 4 폴더, checklist, workflow scaffold
   - 결과: [4-0 Stage 4 scaffold](checklist_results/4-0_stage4_scaffold.md)
-- [ ] 4-1. FiLM 논문, local summary, `ethanjperez/film` reference 확인
-- [ ] 4-2. Stage 2/Stage 3 dependency와 baseline output 확인
-- [ ] 4-3. Stock_CNN block 기준 FiLM 삽입 위치 설계
-- [ ] 4-4. Condition-source track 설계
-  - 4A: FiLM-only control
-  - 4B: F&G index + FiLM
-  - 4C: News + non-LLM encoder + FiLM
-  - 4D: News + LLM encoder + FiLM
-- [ ] 4-5. Gamma-only FiLM vs Full FiLM 비교 계획
-- [ ] 4-6. Grad-CAM과 gamma/beta export 계획
-- [ ] 4-7. Kaggle runner와 output backup 계획
+- [x] 4-1. Context fusion과 news-context 계획
+  - 결과: [4-1 Context fusion and news plan](checklist_results/4-1_context_fusion_and_news_plan.md)
+- [ ] 4-2. Structured numeric context audit와 leakage policy
+  - F&G, Bollinger %B, Bollinger bandwidth, MFI, realized volatility.
+- [ ] 4-3. News dataset audit와 news-context 사용 가능성 결정
+  - 후보: `edaschau/bitcoin_news`.
+  - headline-only, article summary, embedding 중 무엇을 쓸지 결정합니다.
+- [ ] 4-4. Stage 2/Stage 3 dependency와 baseline output 확인
+- [ ] 4-5. Context encoder와 normalization 계획
+- [ ] 4-6. Concat/gating/FiLM 삽입 설계
+- [ ] 4-7. Grad-CAM plus context/gate/gamma/beta export 계획
+- [ ] 4-8. Kaggle runner와 output backup 계획
 
 구현 단계:
 - [ ] 4-I0. 구현 readiness review
 - [ ] 4-I1. Stage 4 공통 config/code scaffold
-- [ ] 4-I2. FiLM layer module
-- [ ] 4-I3. 현재 condition track용 FiLM generator module
-- [ ] 4-I4. I5/I20/I60용 StockCNN + FiLM model variant
-- [ ] 4-I5. 고정된 Stage 2 data pipeline을 쓰는 BTC FiLM runner
-- [ ] 4-I6. prediction, classification metric, trading metric export
-- [ ] 4-I7. Grad-CAM과 FiLM gamma/beta export
-- [ ] 4-I8. local 또는 작은 Kaggle smoke test
-- [ ] 4-I9. Kaggle single-config FiLM run
-- [ ] 4-I10. 선택된 FiLM variant용 Kaggle grid runner
-- [ ] 4-I11. Stage 4 결과 보고
+- [ ] 4-I2. Structured context feature builder
+- [ ] 4-I3. Context MLP encoder
+- [ ] 4-I4. `CNN + context concat` model
+- [ ] 4-I5. `CNN + context gating` model
+- [ ] 4-I6. FiLM layer와 FiLM generator module
+- [ ] 4-I7. `CNN + FiLM gamma-only`와 `CNN + FiLM full` model
+- [ ] 4-I8. 고정된 Stage 2 data pipeline을 쓰는 BTC Stage 4 runner
+- [ ] 4-I9. prediction, classification metric, trading metric export
+- [ ] 4-I10. Grad-CAM plus context/gate/gamma/beta export
+- [ ] 4-I11. local 또는 작은 Kaggle smoke test
+- [ ] 4-I12. 네 가지 main ablation의 Kaggle single-config run
+- [ ] 4-I13. Kaggle selected grid/five-seed runner
+- [ ] 4-I14. Stage 4 결과 보고
 
-나중으로 미루는 condition track:
-- [ ] 4-FG1. F&G index source audit
-- [ ] 4-FG2. F&G date alignment와 leakage check
-- [ ] 4-N1. BTC news dataset audit
-- [ ] 4-N2. News-to-trading-date alignment와 leakage check
-- [ ] 4-N3. Non-LLM news encoder 구현
-- [ ] 4-L1. LLM encoder source/model 결정
-- [ ] 4-L2. LLM embedding/cache/reproducibility 계획
-- [ ] 4-L3. LLM-conditioned FiLM 구현
+News-context 확장:
+- [ ] 4-N1. `edaschau/bitcoin_news` source audit
+- [ ] 4-N2. Publication-time alignment와 no-future-leakage check
+- [ ] 4-N3. Daily aggregation policy
+  - 선택지: latest headline, top-k headline, headline concat, article summary,
+    daily embedding average.
+- [ ] 4-N4. Non-LLM news encoder
+  - 선택지: TF-IDF/SVD, trainable embedding + GRU, 재현성 고정된
+    sentence-transformer style embedding.
+- [ ] 4-N5. LLM-summary 또는 LLM-embedding plan
+  - 데이터 정렬과 cache/reproducibility가 고정된 뒤로 미룹니다.
+- [ ] 4-N6. News-context concat/gating/FiLM comparison
 
 중요:
-- 오늘은 News/LLM conditioning을 구현하지 않습니다.
-- FiLM-only control은 삽입 위치, logging, Grad-CAM, gamma/beta export를 확인하는
-  용도입니다. 외부 정보가 도움이 된다는 증거로 해석하지 않습니다.
-- 외부 condition source는 model training 전에 date alignment와 no-future-leakage
-  check를 통과해야 합니다.
-- Stage 4에서도 Grad-CAM은 필수입니다. FiLM gamma/beta는 Grad-CAM과 같은
-  sample/date/layer key로 저장합니다.
+- Main Stage 4 실험에서 context 값을 chart image 위에 추가로 그리지 않습니다.
+- context는 별도 vector로 들어갑니다.
+- 모든 context feature는 image end date `t` 또는 그 이전에 알 수 있어야 합니다.
+- context normalization은 train split 통계로만 fit합니다.
+- 뉴스는 논문에서 제거하지 않습니다. structured numeric-context ablation이 안정화된 뒤
+  second-phase context track으로 사용합니다.

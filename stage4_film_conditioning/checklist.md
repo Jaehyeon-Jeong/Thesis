@@ -34,8 +34,9 @@ Planning phase:
   - Result: [4-0 Stage 4 scaffold](checklist_results/4-0_stage4_scaffold.md)
 - [x] 4-1. Context fusion and news-context plan
   - Result: [4-1 Context fusion and news plan](checklist_results/4-1_context_fusion_and_news_plan.md)
-- [ ] 4-2. Structured numeric context audit and leakage policy
+- [x] 4-2. Structured numeric context audit and leakage policy
   - F&G, Bollinger %B, Bollinger bandwidth, MFI, realized volatility.
+  - Result: [4-2 Structured context audit and leakage policy](checklist_results/4-2_structured_context_audit_and_leakage_policy.md)
 - [ ] 4-3. News dataset audit and news-context feasibility decision
   - Candidate: `edaschau/bitcoin_news`.
   - Decide whether to use headline-only, article summaries, or embeddings.
@@ -115,8 +116,9 @@ Stage 4 main ablation:
   - 결과: [4-0 Stage 4 scaffold](checklist_results/4-0_stage4_scaffold.md)
 - [x] 4-1. Context fusion과 news-context 계획
   - 결과: [4-1 Context fusion and news plan](checklist_results/4-1_context_fusion_and_news_plan.md)
-- [ ] 4-2. Structured numeric context audit와 leakage policy
+- [x] 4-2. Structured numeric context audit와 leakage policy
   - F&G, Bollinger %B, Bollinger bandwidth, MFI, realized volatility.
+  - 결과: [4-2 Structured context audit and leakage policy](checklist_results/4-2_structured_context_audit_and_leakage_policy.md)
 - [ ] 4-3. News dataset audit와 news-context 사용 가능성 결정
   - 후보: `edaschau/bitcoin_news`.
   - headline-only, article summary, embedding 중 무엇을 쓸지 결정합니다.

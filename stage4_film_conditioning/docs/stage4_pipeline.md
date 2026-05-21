@@ -43,11 +43,14 @@ image branch + context branch
 image_end_date = t
 
 context_vector[t] = [
-    fear_greed_score[t or previous available],
-    bollinger_percent_b[t],
-    bollinger_bandwidth[t],
-    mfi[t],
-    realized_volatility[t],
+    fg_value[t or previous available],
+    fg_mean_60[t],
+    fg_delta_20[t],
+    bollinger_percent_b_20[t],
+    bollinger_bandwidth_20[t],
+    mfi_14[t],
+    realized_volatility_20[t],
+    realized_volatility_60[t],
 ]
 ```
 
@@ -56,6 +59,10 @@ All context features must satisfy:
 - no use of `t+1 ... t+R20` information;
 - train-only normalization statistics;
 - explicit missing-value policy.
+- F&G is the only first-run external dataset. Bollinger, MFI, and realized
+  volatility are derived from BTC OHLCV.
+- The first run uses compact trailing summaries, not a raw 60-step context
+  sequence.
 
 ## Four Model Flows
 
@@ -162,11 +169,14 @@ image branch + context branch
 image_end_date = t
 
 context_vector[t] = [
-    fear_greed_score[t 또는 직전 available 값],
-    bollinger_percent_b[t],
-    bollinger_bandwidth[t],
-    mfi[t],
-    realized_volatility[t],
+    fg_value[t 또는 직전 available 값],
+    fg_mean_60[t],
+    fg_delta_20[t],
+    bollinger_percent_b_20[t],
+    bollinger_bandwidth_20[t],
+    mfi_14[t],
+    realized_volatility_20[t],
+    realized_volatility_60[t],
 ]
 ```
 
@@ -175,6 +185,10 @@ context_vector[t] = [
 - `t+1 ... t+R20` 정보를 쓰면 안 됩니다.
 - normalization 통계는 train split에서만 fit합니다.
 - missing-value policy를 명시해야 합니다.
+- 첫 run에서 외부 dataset이 필요한 것은 F&G뿐입니다. Bollinger, MFI, realized
+  volatility는 BTC OHLCV에서 파생합니다.
+- 첫 run은 raw 60-step context sequence가 아니라 compact trailing summary를
+  사용합니다.
 
 ## 네 가지 model flow
 

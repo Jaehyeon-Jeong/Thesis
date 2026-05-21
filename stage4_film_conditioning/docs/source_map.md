@@ -12,6 +12,7 @@
 | Stage 2 BTC pipeline | `stage2_btc_extension/src/stage2_btc/` | Fixed BTC data, labels, split, normalization, evaluation |
 | Stage 3 Linear model | `stage3_linear_adapter/src/stage3_linear/models/linear_stock_cnn.py` | Comparison model only |
 | Grad-CAM local summary | `자료조사/Grad-CAM요약.md` | Stage 4 Grad-CAM rule and interpretation |
+| Fear & Greed candidate dataset | `https://www.kaggle.com/datasets/ashishpatel8736/historical-and-fear-greed-index-datasets` | Candidate external sentiment/regime context source; must be audited for crypto-vs-equity meaning, date coverage, scale, and missing dates |
 | BTC news candidate dataset | `https://huggingface.co/datasets/edaschau/bitcoin_news` | Candidate second-phase news context source after source/date/leakage audit |
 
 Implementation-source distinction:
@@ -39,6 +40,10 @@ Implementation-source distinction:
   - "Optional attention-based fusion"
 - Implementation choice for the first Stage 4 main run: structured numeric
   context first; news context remains a second-phase track after audit.
+- Structured context source split:
+  - F&G requires an external dataset.
+  - Bollinger %B, Bollinger bandwidth, MFI, and realized volatility are derived
+    from BTC OHLCV and do not require additional data.
 
 ## 한국어
 
@@ -52,6 +57,7 @@ Implementation-source distinction:
 | Stage 2 BTC pipeline | `stage2_btc_extension/src/stage2_btc/` | 고정된 BTC data, label, split, normalization, evaluation |
 | Stage 3 Linear model | `stage3_linear_adapter/src/stage3_linear/models/linear_stock_cnn.py` | 비교 모델로만 사용 |
 | Grad-CAM local summary | `자료조사/Grad-CAM요약.md` | Stage 4 Grad-CAM 규칙과 해석 |
+| Fear & Greed 후보 dataset | `https://www.kaggle.com/datasets/ashishpatel8736/historical-and-fear-greed-index-datasets` | 외부 sentiment/regime context 후보. crypto-vs-equity 의미, date coverage, scale, missing date audit 필요 |
 | BTC news 후보 dataset | `https://huggingface.co/datasets/edaschau/bitcoin_news` | source/date/leakage audit 이후 second-phase news context source 후보 |
 
 구현 근거 구분:
@@ -80,3 +86,7 @@ Implementation-source distinction:
   - "Optional attention-based fusion"
 - 첫 Stage 4 main run 구현 선택: structured numeric context를 먼저 사용합니다.
   news context는 audit 이후 second-phase track으로 유지합니다.
+- Structured context source 구분:
+  - F&G는 외부 dataset이 필요합니다.
+  - Bollinger %B, Bollinger bandwidth, MFI, realized volatility는 BTC OHLCV에서
+    파생하므로 추가 dataset이 필요 없습니다.

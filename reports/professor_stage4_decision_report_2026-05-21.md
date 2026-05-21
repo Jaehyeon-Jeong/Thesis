@@ -53,18 +53,30 @@ Stage 4 방향이 확정되면, 해당 옵션을 기준으로 바로 구현 및 
   prediction, trading metrics, Grad-CAM까지 구현했습니다.
 - Single-seed 36-run grid를 실행했습니다:
   `I5/I20/I60 x R5/R20/R60 x 4 image specs`, seed `42`.
+- 이후 선별 5-seed robustness check를 추가로 완료했습니다:
+  `I20/R20`과 `I60/R20`의 네 가지 image spec을 seed `42, 43, 44, 45, 46`으로
+  확인했습니다 (`40/40` runs ok).
 
-대표 결과:
+Single-seed 대표 결과:
 - Best single-seed configuration: `I60/R20/ohlc_ma_vb`
 - Accuracy: `0.603053`
 - Majority-class accuracy: `0.541291`
 - ROC-AUC: `0.616950`
 
+선별 5-seed 대표 결과:
+- Best selected five-seed configuration: `I60/R20/ohlc_ma_vb`
+- Accuracy mean/std: `0.5793 / 0.0182`
+- Majority-class accuracy: `0.5413`
+- Accuracy minus majority mean: `+0.0380`
+- ROC-AUC mean/std: `0.5849 / 0.0233`
+- 해석: `I60/R20` 네 가지 image spec은 모두 평균적으로 majority baseline을
+  넘었고, `I20/R20` 네 가지 image spec은 모두 평균적으로 majority baseline보다
+  낮았습니다. 따라서 Stage 4 비교의 primary Stage 2 baseline은
+  `I60/R20/ohlc_ma_vb`로 두는 것이 현재 가장 방어 가능합니다.
+
 남은 작업:
-- Five-seed stability check는 later work로 남겨두었습니다.
-- 계산 비용을 고려해 전체 `180` run을 바로 수행하기보다, 우선 `I20/R20`과
-  `I60/R20`의 네 가지 image spec을 seed `42, 43, 44, 45, 46`으로 확인하는
-  선별 `40` run robustness check를 진행할 계획입니다.
+- 전체 `180` run five-seed grid는 아직 later work입니다.
+- 현재 결론은 "selected five-seed robustness check" 기준으로 표현하는 것이 안전합니다.
 
 ### Stage 3. Re-image + Linear
 

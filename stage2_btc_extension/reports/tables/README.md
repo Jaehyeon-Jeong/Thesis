@@ -16,6 +16,12 @@ Current files:
 - `stage2_kaggle_run_matrix.csv`: planned Stage 2 Kaggle execution priority
   matrix.
 - `stage2_implementation_task_map.csv`: checklist-to-file implementation map.
+- `stage2_i20_i60_r20_five_seed_mean_std_results.csv`: selected five-seed
+  mean/std result table for `I20/R20` and `I60/R20`.
+- `stage2_i20_i60_r20_five_seed_seed_results.csv`: seed-level result table for
+  the selected five-seed robustness check.
+- `stage2_i20_i60_r20_five_seed_run_summary.csv`: run status and runtime
+  summary for the selected five-seed robustness check.
 
 Large predictions are not stored here.
 
@@ -33,5 +39,11 @@ Stage 2의 작은 planning/result table을 이 폴더에 저장합니다.
 - `stage2_gradcam_output_schema.csv`: 필수 BTC Grad-CAM output artifact.
 - `stage2_kaggle_run_matrix.csv`: Stage 2 Kaggle 실행 우선순위 matrix.
 - `stage2_implementation_task_map.csv`: checklist별 구현 파일 mapping.
+- `stage2_i20_i60_r20_five_seed_mean_std_results.csv`: `I20/R20`과 `I60/R20`
+  선별 five-seed mean/std 결과표.
+- `stage2_i20_i60_r20_five_seed_seed_results.csv`: 선별 five-seed robustness
+  check의 seed-level 결과표.
+- `stage2_i20_i60_r20_five_seed_run_summary.csv`: 선별 five-seed robustness
+  check의 run status와 runtime summary.
 
 대용량 prediction은 이 폴더에 저장하지 않습니다.

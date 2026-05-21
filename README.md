@@ -16,7 +16,7 @@ tracked.
 | --- | --- | --- |
 | `stage0_data_check` | Audit data, papers, and reference implementations | Completed |
 | `stage1_reimage_reproduction` | Reproduce the Re-image CNN pipeline on public I20 stock images | In progress: `I20/R60` seed-42 fast diagnostic archived; `I20/R20` archive is smoke-only; `I20/R5`, strict batch-128 run, and five-seed reproduction are later |
-| `stage2_btc_extension` | Extend the confirmed pipeline to BTC OHLCV | Single-seed 36-run result package closed for now; five-seed stability check later |
+| `stage2_btc_extension` | Extend the confirmed pipeline to BTC OHLCV | Single-seed 36-run complete; selected `I20/R20` and `I60/R20` five-seed robustness check complete; full 180-run five-seed grid later |
 | `stage3_linear_adapter` | Add a Linear comparison model | First test on Stage 2 best config completed; result dropped to majority level; remaining grid runs pending |
 | `stage4_film_conditioning` | Add FiLM conditioning, then later F&G/News/LLM conditions | Scaffold created; today scope is FiLM-only, News/LLM deferred |
 
@@ -37,7 +37,15 @@ Stage 2:
 - Current result package: BTC single-seed grid, `36` experiments
   (`I5/I20/I60` x `R5/R20/R60` x four image specs), seed `42`.
 - Best single-seed configuration: `I60/R20/ohlc_ma_vb`.
-- Remaining Stage 2 work is the five-seed rerun for stability.
+- Selected five-seed robustness check completed for `I20/R20` and `I60/R20`
+  across four image specs and seeds `42, 43, 44, 45, 46` (`40/40` runs ok).
+- Best selected five-seed configuration: `I60/R20/ohlc_ma_vb`, accuracy mean
+  `0.5793`, accuracy std `0.0182`, majority accuracy `0.5413`, ROC-AUC mean
+  `0.5849`.
+- Interpretation: `I60/R20` survives seed variation; `I20/R20` does not beat
+  the majority baseline on average.
+- Remaining Stage 2 work is the full `180`-run five-seed grid if a final global
+  Stage 2 stability claim is needed.
 
 Stage 3:
 - Stage 2 data/image/split/normalization/evaluation/Grad-CAM pipeline remains
@@ -118,7 +126,7 @@ config, 코드 scaffold만 올립니다. 대용량 데이터, 논문 PDF, checkp
 | --- | --- | --- |
 | `stage0_data_check` | 데이터, 논문, reference implementation 확인 | 완료 |
 | `stage1_reimage_reproduction` | public I20 stock image로 Re-image CNN pipeline 재현 | 진행 중: `I20/R60` seed-42 fast diagnostic 보존; `I20/R20` archive는 smoke-only; `I20/R5`, strict batch-128 run, five-seed reproduction은 later |
-| `stage2_btc_extension` | 확인된 pipeline을 BTC OHLCV로 확장 | single-seed 36-run 결과 패키지는 현재 마무리; 5-seed 안정성 확인은 later |
+| `stage2_btc_extension` | 확인된 pipeline을 BTC OHLCV로 확장 | single-seed 36-run 완료; `I20/R20`, `I60/R20` 선별 five-seed robustness check 완료; full 180-run five-seed grid는 later |
 | `stage3_linear_adapter` | Linear 비교 모델 추가 | Stage 2 best config 1회 테스트 완료; majority 수준으로 하락; 나머지 grid run 예정 |
 | `stage4_film_conditioning` | FiLM conditioning 추가 후 F&G/News/LLM condition 확장 | scaffold 생성; 오늘 범위는 FiLM-only, News/LLM은 deferred |
 
@@ -139,7 +147,16 @@ Stage 2:
 - 현재 결과 패키지: BTC single-seed grid, `36`개 실험
   (`I5/I20/I60` x `R5/R20/R60` x image spec 4개), seed `42`.
 - Single-seed best configuration: `I60/R20/ohlc_ma_vb`.
-- 남은 Stage 2 작업은 안정성 확인용 five-seed rerun입니다.
+- `I20/R20`과 `I60/R20`을 대상으로 image spec 4개와 seed
+  `42, 43, 44, 45, 46`을 돌린 선별 five-seed robustness check를 완료했습니다
+  (`40/40` runs ok).
+- 선별 five-seed best configuration: `I60/R20/ohlc_ma_vb`, accuracy mean
+  `0.5793`, accuracy std `0.0182`, majority accuracy `0.5413`, ROC-AUC mean
+  `0.5849`.
+- 해석: `I60/R20` 우위는 seed 변화 후에도 유지되지만, `I20/R20`은 평균적으로
+  majority baseline을 이기지 못했습니다.
+- 남은 Stage 2 작업은 최종적인 전체 안정성 주장이 필요할 경우 full `180`-run
+  five-seed grid를 수행하는 것입니다.
 
 Stage 3:
 - Stage 2 data/image/split/normalization/evaluation/Grad-CAM pipeline은

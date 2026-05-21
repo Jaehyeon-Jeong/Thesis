@@ -41,15 +41,37 @@ Current result status:
 - Completed run: single seed `42`
 - Grid size: `36` experiments
   (`3` image windows x `3` return horizons x `4` image specs)
-- Stage 2 is closed for now at the single-seed reporting level.
-- Full five-seed stability check is the only remaining Stage 2 rerun and will
-  be done later before making final stability claims.
-- Selected five-seed robustness check is now planned before the full 180-run
-  rerun: `I20/R20` and `I60/R20` across all four image specs and five seeds
-  (`40` runs total).
+- Selected five-seed robustness check is completed:
+  `I20/R20` and `I60/R20` across all four image specs and seeds
+  `42, 43, 44, 45, 46` (`40/40` runs ok).
+- Full five-seed stability check over the entire `180`-run grid remains later
+  work before making final global Stage 2 stability claims.
 
-Full result report:
+Result reports:
 - [Stage 2 single-seed result report](reports/stage2_single_seed_result_report.md)
+- [Stage 2 selected five-seed robustness result report](reports/stage2_i20_i60_r20_five_seed_result_report.md)
+
+#### Selected Five-Seed Robustness Check
+
+The selected robustness check confirms that the `I60/R20` family is not just a
+single-seed spike. The best five-seed mean configuration is:
+
+`I60 / R20 / ohlc_ma_vb`
+
+| Image window | Image spec | Accuracy mean | Accuracy std | Accuracy - majority | ROC-AUC mean | ROC-AUC std |
+|---:|:---|---:|---:|---:|---:|---:|
+| 60 | `ohlc_ma_vb` | 0.5793 | 0.0182 | +0.0380 | 0.5849 | 0.0233 |
+| 60 | `ohlc_vb` | 0.5674 | 0.0173 | +0.0261 | 0.5612 | 0.0186 |
+| 60 | `ohlc` | 0.5581 | 0.0152 | +0.0168 | 0.5602 | 0.0156 |
+| 60 | `ohlc_ma` | 0.5575 | 0.0233 | +0.0162 | 0.5645 | 0.0163 |
+
+Interpretation:
+- All selected `I60/R20` variants beat the majority-class baseline on average.
+- All selected `I20/R20` variants fall below the majority-class baseline on
+  average.
+- `I60/R20/ohlc_ma_vb` is the current primary Stage 2 baseline candidate for
+  Stage 4 FiLM comparisons.
+- `I60/R20/ohlc_vb` remains a useful simpler ablation candidate.
 
 #### Experiment Design
 
@@ -181,15 +203,35 @@ predicted-down examples. Generate it in Kaggle with:
 - 완료된 run: seed `42` 한 개
 - Grid size: `36`개 실험
   (`3` image window x `3` return horizon x `4` image spec)
-- Stage 2는 현재 single-seed 보고 수준에서 마무리합니다.
-- 남은 Stage 2 재실행은 5-seed 안정성 확인뿐이며, 최종 안정성 결론을 내기 전에
-  나중에 수행합니다.
-- 전체 180-run five-seed rerun 전에 선별 robustness check를 먼저 수행할 계획입니다:
-  `I20/R20`과 `I60/R20`만 두고 image spec 4개와 seed 5개를 실행합니다
-  (`40` runs total).
+- 선별 5-seed robustness check를 완료했습니다:
+  `I20/R20`과 `I60/R20`, image spec 4개, seed `42, 43, 44, 45, 46`
+  (`40/40` runs ok).
+- 전체 `180`개 grid에 대한 full five-seed stability check는 최종 Stage 2 안정성
+  결론을 내기 전 later work로 남겨둡니다.
 
-전체 결과 보고:
+결과 보고:
 - [Stage 2 single-seed result report](reports/stage2_single_seed_result_report.md)
+- [Stage 2 selected five-seed robustness result report](reports/stage2_i20_i60_r20_five_seed_result_report.md)
+
+#### 선별 5-seed robustness check
+
+선별 robustness check 결과, `I60/R20` 계열은 seed `42` 한 번의 spike만은 아닌 것으로
+확인되었습니다. 5-seed 평균 기준 가장 좋은 조합은 다음입니다.
+
+`I60 / R20 / ohlc_ma_vb`
+
+| Image window | Image spec | Accuracy mean | Accuracy std | Accuracy - majority | ROC-AUC mean | ROC-AUC std |
+|---:|:---|---:|---:|---:|---:|---:|
+| 60 | `ohlc_ma_vb` | 0.5793 | 0.0182 | +0.0380 | 0.5849 | 0.0233 |
+| 60 | `ohlc_vb` | 0.5674 | 0.0173 | +0.0261 | 0.5612 | 0.0186 |
+| 60 | `ohlc` | 0.5581 | 0.0152 | +0.0168 | 0.5602 | 0.0156 |
+| 60 | `ohlc_ma` | 0.5575 | 0.0233 | +0.0162 | 0.5645 | 0.0163 |
+
+해석:
+- 선별한 `I60/R20` 네 가지 image spec은 모두 평균적으로 majority-class baseline을 넘었습니다.
+- 선별한 `I20/R20` 네 가지 image spec은 모두 평균적으로 majority-class baseline보다 낮았습니다.
+- `I60/R20/ohlc_ma_vb`는 현재 Stage 4 FiLM 비교의 primary Stage 2 baseline 후보입니다.
+- `I60/R20/ohlc_vb`는 MA를 제외한 더 단순한 ablation 후보로 유지할 수 있습니다.
 
 #### 실험 구조
 

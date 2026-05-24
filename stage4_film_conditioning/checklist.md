@@ -36,6 +36,11 @@ Planning phase:
   - Result: [4-1 Context fusion and news plan](checklist_results/4-1_context_fusion_and_news_plan.md)
 - [x] 4-2. Structured numeric context audit and leakage policy
   - F&G, Bollinger %B, Bollinger bandwidth, MFI, realized volatility.
+  - Primary decision: `context_window = image_window`.
+  - For the selected `I60/R20/ohlc_ma_vb` baseline, use matched 60-day
+    context first: `F&G60`, `BB60`, `MFI60`, `RV60`.
+  - Keep `BB20`, `MFI14`, and short F&G summaries only as later
+    `standard_window` or `multi_scale` diagnostics.
   - Result: [4-2 Structured context audit and leakage policy](checklist_results/4-2_structured_context_audit_and_leakage_policy.md)
 - [ ] 4-3. News dataset audit and news-context feasibility decision
   - Candidate: `edaschau/bitcoin_news`.
@@ -45,6 +50,19 @@ Planning phase:
 - [ ] 4-6. Concat/gating/FiLM insertion design
 - [ ] 4-7. Grad-CAM plus context/gate/gamma/beta export plan
 - [ ] 4-8. Kaggle runner and output backup plan
+
+Advisor confirmation/reporting:
+- [x] 4-R1. Professor meeting direction brief
+  - Purpose: summarize Stage 1-4 progress, explain why Stage 4 is
+    market-context-conditioned feature modulation, and map 4-A/B/C/D to the
+    advisor direction file excerpts.
+  - Result: [Professor meeting direction brief](docs/professor_meeting_stage4_direction_brief.md)
+- [ ] 4-R2. Advisor feedback and final Stage 4 scope lock
+  - Confirm whether Stage 4 should proceed with `matched_window` numeric
+    context first.
+  - Confirm whether news/LLM remains second-phase after numeric context.
+  - Confirm whether 4-A concat, 4-B gating, 4-C gamma-only FiLM, and 4-D full
+    FiLM are the intended ablation set.
 
 Implementation phase:
 - [ ] 4-I0. Implementation readiness review
@@ -118,6 +136,11 @@ Stage 4 main ablation:
   - 결과: [4-1 Context fusion and news plan](checklist_results/4-1_context_fusion_and_news_plan.md)
 - [x] 4-2. Structured numeric context audit와 leakage policy
   - F&G, Bollinger %B, Bollinger bandwidth, MFI, realized volatility.
+  - Primary decision: `context_window = image_window`.
+  - 선택된 `I60/R20/ohlc_ma_vb` baseline에서는 60일 matched context를 먼저 사용:
+    `F&G60`, `BB60`, `MFI60`, `RV60`.
+  - `BB20`, `MFI14`, short F&G summary는 나중의 `standard_window` 또는
+    `multi_scale` diagnostic으로만 유지합니다.
   - 결과: [4-2 Structured context audit and leakage policy](checklist_results/4-2_structured_context_audit_and_leakage_policy.md)
 - [ ] 4-3. News dataset audit와 news-context 사용 가능성 결정
   - 후보: `edaschau/bitcoin_news`.
@@ -127,6 +150,18 @@ Stage 4 main ablation:
 - [ ] 4-6. Concat/gating/FiLM 삽입 설계
 - [ ] 4-7. Grad-CAM plus context/gate/gamma/beta export 계획
 - [ ] 4-8. Kaggle runner와 output backup 계획
+
+교수님 확인/보고:
+- [x] 4-R1. 교수님 미팅용 방향성 brief
+  - 목적: Stage 1-4 진행 현황, Stage 4를 market-context-conditioned feature
+    modulation으로 해석한 이유, 4-A/B/C/D가 교수님 방향성 파일의 어떤 발췌와
+    연결되는지 정리합니다.
+  - 결과: [Professor meeting direction brief](docs/professor_meeting_stage4_direction_brief.md)
+- [ ] 4-R2. 교수님 피드백 반영과 Stage 4 최종 scope lock
+  - Stage 4를 `matched_window` numeric context부터 진행하는 것이 맞는지 확인합니다.
+  - news/LLM을 numeric context 이후 second-phase로 두는 것이 맞는지 확인합니다.
+  - 4-A concat, 4-B gating, 4-C gamma-only FiLM, 4-D full FiLM이 의도한
+    ablation set인지 확인합니다.
 
 구현 단계:
 - [ ] 4-I0. 구현 readiness review

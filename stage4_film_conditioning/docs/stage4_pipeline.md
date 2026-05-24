@@ -45,11 +45,11 @@ image_end_date = t
 context_vector[t] = [
     fg_value[t or previous available],
     fg_mean_60[t],
-    fg_delta_20[t],
-    bollinger_percent_b_20[t],
-    bollinger_bandwidth_20[t],
-    mfi_14[t],
-    realized_volatility_20[t],
+    fg_delta_60[t],
+    fg_std_60[t],
+    bollinger_percent_b_60[t],
+    bollinger_bandwidth_60[t],
+    mfi_60[t],
     realized_volatility_60[t],
 ]
 ```
@@ -63,6 +63,9 @@ All context features must satisfy:
   volatility are derived from BTC OHLCV.
 - The first run uses compact trailing summaries, not a raw 60-step context
   sequence.
+- The first run uses `context_window = image_window`. For the selected `I60`
+  baseline this means 60-day context features. `BB20` and `MFI14` are kept only
+  as later standard-window diagnostics.
 
 ## Four Model Flows
 
@@ -171,11 +174,11 @@ image_end_date = t
 context_vector[t] = [
     fg_value[t 또는 직전 available 값],
     fg_mean_60[t],
-    fg_delta_20[t],
-    bollinger_percent_b_20[t],
-    bollinger_bandwidth_20[t],
-    mfi_14[t],
-    realized_volatility_20[t],
+    fg_delta_60[t],
+    fg_std_60[t],
+    bollinger_percent_b_60[t],
+    bollinger_bandwidth_60[t],
+    mfi_60[t],
     realized_volatility_60[t],
 ]
 ```
@@ -189,6 +192,9 @@ context_vector[t] = [
   volatility는 BTC OHLCV에서 파생합니다.
 - 첫 run은 raw 60-step context sequence가 아니라 compact trailing summary를
   사용합니다.
+- 첫 run은 `context_window = image_window`를 사용합니다. 선택된 `I60` baseline에서는
+  60일 context feature를 뜻합니다. `BB20`, `MFI14`는 나중의 standard-window
+  diagnostic으로만 유지합니다.
 
 ## 네 가지 model flow
 

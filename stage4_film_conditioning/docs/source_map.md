@@ -147,7 +147,21 @@ Implementation-source distinction:
   - Parameter count is `2,954,370`, which is `+1,408` vs Stage 2 I60 baseline.
   - The local model shape checker passed on dummy tensors and real normalized
     context rows from the local `4-I2` context table.
-  - Next implementation item is `4-I5`, `CNN + context gating`.
+- 4-I5 context gating model decision:
+  - Extended `src/stage4_film/models/context_stock_cnn.py` with
+    `GatedContextStockCNN`.
+  - Extended `scripts/check_stage4_model_shapes.py` with `--model gating`.
+  - Stage 2 I60 Stock_CNN convolution blocks are reused unchanged.
+  - Primary tensor path:
+    image `(B, 1, 96, 180) -> final feature map (B, 512, 2, 180)`;
+    context `(B, 8) -> embedding (B, 32) -> raw gate (B, 512)`;
+    `gate = 2 * sigmoid(raw_gate)`;
+    gated feature `(B, 512, 2, 180) -> flatten (B, 184320) -> logits (B, 2)`.
+  - Gate head is zero-initialized, so initial gate min/max is `1.0 / 1.0`.
+  - Parameter count is `2,971,202`, which is `+18,240` vs Stage 2 I60 baseline.
+  - The local model shape checker passed on dummy tensors and real normalized
+    context rows from the local `4-I2` context table.
+  - Next implementation item is `4-I6`, FiLM layer and FiLM generator modules.
 
 ## 한국어
 
@@ -296,4 +310,18 @@ Implementation-source distinction:
   - Parameter count는 `2,954,370`이며 Stage 2 I60 baseline 대비 `+1,408`입니다.
   - Local model shape checker가 dummy tensor와 local `4-I2` context table의
     실제 normalized context row 모두에서 통과했습니다.
-  - 다음 구현 항목은 `4-I5`, `CNN + context gating`입니다.
+- 4-I5 context gating model 결정:
+  - `src/stage4_film/models/context_stock_cnn.py`에 `GatedContextStockCNN`을
+    추가했습니다.
+  - `scripts/check_stage4_model_shapes.py`에 `--model gating`을 추가했습니다.
+  - Stage 2 I60 Stock_CNN convolution block은 그대로 재사용합니다.
+  - Primary tensor path:
+    image `(B, 1, 96, 180) -> final feature map (B, 512, 2, 180)`;
+    context `(B, 8) -> embedding (B, 32) -> raw gate (B, 512)`;
+    `gate = 2 * sigmoid(raw_gate)`;
+    gated feature `(B, 512, 2, 180) -> flatten (B, 184320) -> logits (B, 2)`.
+  - Gate head는 zero-initialized라서 initial gate min/max는 `1.0 / 1.0`입니다.
+  - Parameter count는 `2,971,202`이며 Stage 2 I60 baseline 대비 `+18,240`입니다.
+  - Local model shape checker가 dummy tensor와 local `4-I2` context table의
+    실제 normalized context row 모두에서 통과했습니다.
+  - 다음 구현 항목은 `4-I6`, FiLM layer와 FiLM generator module입니다.

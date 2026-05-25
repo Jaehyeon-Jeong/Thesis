@@ -18,7 +18,7 @@ tracked.
 | `stage1_reimage_reproduction` | Reproduce the Re-image CNN pipeline on public I20 stock images | In progress: `I20/R60` seed-42 fast diagnostic archived; `I20/R20` archive is smoke-only; `I20/R5`, strict batch-128 run, and five-seed reproduction are later |
 | `stage2_btc_extension` | Extend the confirmed pipeline to BTC OHLCV | Single-seed 36-run complete; selected `I20/R20` and `I60/R20` five-seed robustness check complete; full 180-run five-seed grid later |
 | `stage3_linear_adapter` | Add a Linear comparison model | First test on Stage 2 best config completed; result dropped to majority level; remaining grid runs pending |
-| `stage4_film_conditioning` | Compare market-context concat, gating, gamma-only FiLM, and full FiLM on the fixed BTC CNN | Planning through 4-8 and implementation 4-I0 through 4-I4 complete; next: CNN + context gating |
+| `stage4_film_conditioning` | Compare market-context concat, gating, gamma-only FiLM, and full FiLM on the fixed BTC CNN | Planning through 4-8 and implementation 4-I0 through 4-I5 complete; next: FiLM layer/generator |
 
 ### Current Status
 
@@ -140,7 +140,15 @@ Stage 4:
   - parameter count is `2,954,370`, only `+1,408` vs the Stage 2 I60 baseline;
   - local shape/parameter check passed on dummy tensors and real normalized
     context rows.
-- Next implementation step is 4-I5 `CNN + context gating`.
+- 4-I5 completed the `CNN + context gating` model:
+  - Stage 2 I60 Stock_CNN convolution blocks are reused unchanged;
+  - context embedding `(B, 32)` generates a channel gate `(B, 512)`;
+  - gate formula is `gate = 2 * sigmoid(raw_gate)`;
+  - the gate is applied to the final feature map `(B, 512, 2, 180)`;
+  - classifier input remains `(B, 184320)`;
+  - gate head is zero-initialized, so initial gate min/max is `1.0 / 1.0`;
+  - parameter count is `2,971,202`, `+18,240` vs the Stage 2 I60 baseline.
+- Next implementation step is 4-I6 FiLM layer and FiLM generator modules.
 - News context is preserved as a second-phase track after source/date/leakage
   audit. Candidate source: Hugging Face `edaschau/bitcoin_news`.
 - Advisor-direction mapping is documented in the Stage 4 README/source map and
@@ -195,7 +203,7 @@ config, 코드 scaffold만 올립니다. 대용량 데이터, 논문 PDF, checkp
 | `stage1_reimage_reproduction` | public I20 stock image로 Re-image CNN pipeline 재현 | 진행 중: `I20/R60` seed-42 fast diagnostic 보존; `I20/R20` archive는 smoke-only; `I20/R5`, strict batch-128 run, five-seed reproduction은 later |
 | `stage2_btc_extension` | 확인된 pipeline을 BTC OHLCV로 확장 | single-seed 36-run 완료; `I20/R20`, `I60/R20` 선별 five-seed robustness check 완료; full 180-run five-seed grid는 later |
 | `stage3_linear_adapter` | Linear 비교 모델 추가 | Stage 2 best config 1회 테스트 완료; majority 수준으로 하락; 나머지 grid run 예정 |
-| `stage4_film_conditioning` | 고정 BTC CNN 위에서 market-context concat, gating, gamma-only FiLM, full FiLM 비교 | 4-8 계획과 4-I0부터 4-I4까지 구현 완료; 다음은 CNN + context gating |
+| `stage4_film_conditioning` | 고정 BTC CNN 위에서 market-context concat, gating, gamma-only FiLM, full FiLM 비교 | 4-8 계획과 4-I0부터 4-I5까지 구현 완료; 다음은 FiLM layer/generator |
 
 ### 현재 상태
 
@@ -314,7 +322,15 @@ Stage 4:
   - parameter count는 `2,954,370`이며 Stage 2 I60 baseline 대비 `+1,408`입니다.
   - dummy tensor와 실제 normalized context row에서 local shape/parameter check를
     통과했습니다.
-- 다음 구현 단계는 4-I5 `CNN + context gating`입니다.
+- 4-I5에서 `CNN + context gating` model을 완료했습니다.
+  - Stage 2 I60 Stock_CNN convolution block은 그대로 재사용합니다.
+  - context embedding `(B, 32)`이 channel gate `(B, 512)`를 만듭니다.
+  - gate formula는 `gate = 2 * sigmoid(raw_gate)`입니다.
+  - gate는 마지막 feature map `(B, 512, 2, 180)`에 적용됩니다.
+  - classifier input은 `(B, 184320)` 그대로 유지됩니다.
+  - gate head는 zero-initialized라서 initial gate min/max가 `1.0 / 1.0`입니다.
+  - parameter count는 `2,971,202`이며 Stage 2 I60 baseline 대비 `+18,240`입니다.
+- 다음 구현 단계는 4-I6 FiLM layer와 FiLM generator module입니다.
 - News context는 제거하지 않고 source/date/leakage audit 이후 second-phase track으로
   유지합니다. 후보 source는 Hugging Face `edaschau/bitcoin_news`입니다.
 - 교수님 방향성 파일과 Stage 4 실험 결정의 연결은 Stage 4 README/source map과

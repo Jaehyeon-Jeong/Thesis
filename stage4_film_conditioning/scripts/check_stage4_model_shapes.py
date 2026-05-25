@@ -28,7 +28,9 @@ from stage4_film.context.features import make_context_output_name
 from stage4_film.context.normalization import normalized_feature_columns
 from stage4_film.models import (
     build_concat_context_stock_cnn_for_window,
+    build_gated_context_stock_cnn_for_window,
     expected_concat_context_parameter_count,
+    expected_gated_context_parameter_count,
 )
 from stage4_film.seed import set_global_seed
 
@@ -38,7 +40,7 @@ def parse_args() -> argparse.Namespace:
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="configs/env_local.yaml")
-    parser.add_argument("--model", default="concat", choices=["concat"])
+    parser.add_argument("--model", default="concat", choices=["concat", "gating"])
     parser.add_argument("--image-window", type=int, default=0)
     parser.add_argument("--image-spec", default="")
     parser.add_argument("--return-horizon", type=int, default=0)
@@ -70,13 +72,18 @@ def main() -> None:
     method = validate_context_method(str(args.model))
     batch_size = int(args.batch_size)
 
-    if method != "concat":
-        raise ValueError("4-I4 only implements and checks the concat context model.")
     if image_window not in VARIANT_SPECS:
         raise KeyError(f"Unsupported image_window: {image_window}")
 
     spec = VARIANT_SPECS[image_window]
-    model = build_concat_context_stock_cnn_for_window(config, image_window=image_window)
+    if method == "concat":
+        model = build_concat_context_stock_cnn_for_window(config, image_window=image_window)
+        expected_params = expected_concat_context_parameter_count(config, image_window)
+    elif method == "gating":
+        model = build_gated_context_stock_cnn_for_window(config, image_window=image_window)
+        expected_params = expected_gated_context_parameter_count(config, image_window)
+    else:
+        raise ValueError(f"Unsupported model checker method: {method}")
     model.eval()
 
     context_dim = int(stage4_model["context_dim"])
@@ -88,17 +95,22 @@ def main() -> None:
         logits = model(dummy_image, dummy_context)
 
     _assert_shape("logits", logits.shape, (batch_size, 2))
-    _assert_shape("flatten", shapes["flatten"], (batch_size, spec.expected_flatten_dim))
     _assert_shape("context_embedding", shapes["context_embedding"], (batch_size, embedding_dim))
-    _assert_shape(
-        "concat_feature",
-        shapes["concat_feature"],
-        (batch_size, spec.expected_flatten_dim + embedding_dim),
-    )
+    _assert_shape("flatten", shapes["flatten"], (batch_size, spec.expected_flatten_dim))
+    if method == "concat":
+        _assert_shape(
+            "concat_feature",
+            shapes["concat_feature"],
+            (batch_size, spec.expected_flatten_dim + embedding_dim),
+        )
+    elif method == "gating":
+        final_channels = int(spec.channels[-1])
+        _assert_shape("raw_gate", shapes["raw_gate"], (batch_size, final_channels))
+        _assert_shape("gate", shapes["gate"], (batch_size, final_channels))
+        _assert_shape("gated_feature_map", shapes["gated_feature_map"], shapes["final_feature_map"])
     if not torch.isfinite(logits).all():
-        raise RuntimeError("Concat context model produced non-finite dummy logits.")
+        raise RuntimeError(f"{method} context model produced non-finite dummy logits.")
 
-    expected_params = expected_concat_context_parameter_count(config, image_window)
     actual_params = count_parameters(model)
     if actual_params != expected_params:
         raise RuntimeError(
@@ -121,8 +133,24 @@ def main() -> None:
         normalized_columns,
         model,
         spec,
+        method=method,
         batch_size=batch_size,
     )
+
+    gate_identity_check = None
+    if method == "gating":
+        with torch.no_grad():
+            details = model.forward_with_gate_values(dummy_image, dummy_context)
+        gate = details["gate"]
+        gate_identity_check = {
+            "raw_gate_shape": list(details["raw_gate"].shape),
+            "gate_shape": list(gate.shape),
+            "gate_min": float(gate.min().item()),
+            "gate_max": float(gate.max().item()),
+            "allclose_to_one_at_initialization": bool(
+                torch.allclose(gate, torch.ones_like(gate))
+            ),
+        }
 
     experiment_name = make_stage4_experiment_name(
         image_window=image_window,
@@ -162,6 +190,7 @@ def main() -> None:
                 "dummy_shapes": {key: list(value) for key, value in shapes.items()},
                 "dummy_logits_shape": list(logits.shape),
                 "dummy_logits_finite": bool(torch.isfinite(logits).all().item()),
+                "gate_identity_check": gate_identity_check,
                 "real_context_check": real_context_check,
             },
             indent=2,
@@ -209,6 +238,7 @@ def _check_real_context_rows(
     model: Any,
     spec: Any,
     *,
+    method: str,
     batch_size: int,
 ) -> dict[str, Any]:
     """Run the full model with real normalized context rows when available."""
@@ -237,18 +267,35 @@ def _check_real_context_rows(
     with torch.no_grad():
         logits = model(image, context)
         shapes = model.forward_with_shapes(image, context)
+        gate_summary = None
+        if method == "gating":
+            details = model.forward_with_gate_values(image, context)
+            gate = details["gate"]
+            gate_summary = {
+                "shape": list(gate.shape),
+                "min": float(gate.min().item()),
+                "max": float(gate.max().item()),
+                "allclose_to_one_at_initialization": bool(
+                    torch.allclose(gate, torch.ones_like(gate))
+                ),
+            }
     if not torch.isfinite(logits).all():
         raise RuntimeError("Model produced non-finite logits for real context rows.")
 
-    return {
+    result = {
         "available": True,
         "path": str(context_file),
         "rows_checked": int(len(frame)),
         "context_shape": list(context.shape),
         "logits_shape": list(logits.shape),
-        "concat_feature_shape": list(shapes["concat_feature"]),
         "logits_finite": bool(torch.isfinite(logits).all().item()),
     }
+    if method == "concat":
+        result["concat_feature_shape"] = list(shapes["concat_feature"])
+    if method == "gating":
+        result["gated_feature_map_shape"] = list(shapes["gated_feature_map"])
+        result["gate"] = gate_summary
+    return result
 
 
 if __name__ == "__main__":

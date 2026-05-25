@@ -24,6 +24,11 @@ Added in `4-I4`:
 - `check_stage4_model_shapes.py`: validates the Stage 4 concat model tensor
   path, parameter count, and real normalized context forward pass.
 
+Updated in `4-I5`:
+- `check_stage4_model_shapes.py`: now also validates `--model gating`,
+  final-block gate shape, identity initialization, and real-context forward
+  pass.
+
 Planned next scripts:
 - `check_stage4_film_layers.py`
 - `run_stage4_context_model.py`
@@ -62,6 +67,10 @@ Stage 4 script는 구현 단계에서 순차적으로 추가합니다.
 `4-I4`에서 추가한 script:
 - `check_stage4_model_shapes.py`: Stage 4 concat model의 tensor path,
   parameter count, 실제 normalized context forward pass를 검증합니다.
+
+`4-I5`에서 수정한 script:
+- `check_stage4_model_shapes.py`: `--model gating`, final-block gate shape,
+  identity initialization, 실제 context forward pass도 검증합니다.
 
 다음 예정 script:
 - `check_stage4_film_layers.py`

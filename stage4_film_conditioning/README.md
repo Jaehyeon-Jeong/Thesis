@@ -194,7 +194,18 @@ Implementation status:
     concat `(B, 184352) -> logits (B, 2)`.
   - Parameter count check passed: `2,954,370`, which is `+1,408` vs the Stage
     2 I60 baseline.
-- Next step: `4-I5` `CNN + context gating`.
+- `4-I5` is complete.
+- Added the `CNN + context gating` model:
+  - Stage 2 I60 Stock_CNN convolution blocks are reused unchanged.
+  - Context embedding `(B, 32)` generates a channel gate `(B, 512)`.
+  - Gate formula: `gate = 2 * sigmoid(raw_gate)`.
+  - The gate is applied to the final feature map `(B, 512, 2, 180)`.
+  - The classifier input remains `(B, 184320)`.
+  - Gate head is zero-initialized, so the model starts from identity
+    modulation with gate min/max `1.0 / 1.0`.
+  - Parameter count check passed: `2,971,202`, which is `+18,240` vs the Stage
+    2 I60 baseline.
+- Next step: `4-I6` FiLM layer and FiLM generator modules.
 
 Main documents:
 - [Checklist](checklist.md)
@@ -216,6 +227,7 @@ Main documents:
 - [Structured context feature builder](checklist_results/4-I2_structured_context_feature_builder.md)
 - [Context MLP encoder](checklist_results/4-I3_context_mlp_encoder.md)
 - [Context concat model](checklist_results/4-I4_context_concat_model.md)
+- [Context gating model](checklist_results/4-I5_context_gating_model.md)
 
 ## 한국어
 
@@ -405,7 +417,18 @@ Implementation status:
     concat `(B, 184352) -> logits (B, 2)`.
   - Parameter count check 통과: `2,954,370`, Stage 2 I60 baseline 대비
     `+1,408`.
-- 다음 단계는 `4-I5` `CNN + context gating`입니다.
+- `4-I5`를 완료했습니다.
+- `CNN + context gating` model을 추가했습니다:
+  - Stage 2 I60 Stock_CNN convolution block은 그대로 재사용합니다.
+  - Context embedding `(B, 32)`이 channel gate `(B, 512)`를 만듭니다.
+  - Gate formula: `gate = 2 * sigmoid(raw_gate)`.
+  - Gate는 마지막 feature map `(B, 512, 2, 180)`에 적용됩니다.
+  - Classifier input은 `(B, 184320)` 그대로 유지됩니다.
+  - Gate head는 zero-initialized라서 gate min/max `1.0 / 1.0`의 identity
+    modulation에서 시작합니다.
+  - Parameter count check 통과: `2,971,202`, Stage 2 I60 baseline 대비
+    `+18,240`.
+- 다음 단계는 `4-I6` FiLM layer와 FiLM generator module입니다.
 
 주요 문서:
 - [Checklist](checklist.md)
@@ -427,3 +450,4 @@ Implementation status:
 - [Structured context feature builder](checklist_results/4-I2_structured_context_feature_builder.md)
 - [Context MLP encoder](checklist_results/4-I3_context_mlp_encoder.md)
 - [Context concat model](checklist_results/4-I4_context_concat_model.md)
+- [Context gating model](checklist_results/4-I5_context_gating_model.md)

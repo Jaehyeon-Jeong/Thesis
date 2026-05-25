@@ -272,6 +272,13 @@
   - gating model은 context embedding으로 channel gate를 만들고 CNN feature를 곱해서 조절한다.
     - 4-6 기준: 첫 run에서는 final block feature map `(B, 512, 2, 180)`에만
       channel-wise gate를 적용하고 `gate = 2 * sigmoid(raw_gate)`를 사용한다.
+    - 4-I5에서 `CNN + context gating` model을 구현했다. Context embedding
+      `(B, 32)`이 raw gate `(B, 512)`를 만들고, `gate = 2 * sigmoid(raw_gate)`를
+      마지막 I60 feature map `(B, 512, 2, 180)`에 곱한다.
+    - 4-I5 gate head는 zero-initialized라 초기 gate는 정확히 `1.0`이고,
+      Stage 2 feature path와 같은 identity modulation에서 시작한다.
+    - 4-I5 parameter count는 `2,971,202`이며 Stage 2 I60 baseline 대비
+      `+18,240`이다.
   - gamma-only FiLM은 block별 gamma만 만들어 `F' = gamma * F`를 적용한다.
   - full FiLM은 block별 gamma/beta를 만들어 `F' = gamma * F + beta`를 적용한다.
   - FiLM layer는 feature map에 channel-wise modulation을 적용한다.

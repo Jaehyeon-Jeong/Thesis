@@ -21,6 +21,9 @@ Added in `4-I3`:
 Added in `4-I4`:
 - `models/context_stock_cnn.py`
 
+Updated in `4-I5`:
+- `models/context_stock_cnn.py`: added `GatedContextStockCNN`.
+
 Planned next modules:
 - `layers/film.py`
 - `models/film_stock_cnn.py`
@@ -53,6 +56,9 @@ Stage 4 FiLM/context-conditioning 구현 package입니다.
 
 `4-I4`에서 추가한 module:
 - `models/context_stock_cnn.py`
+
+`4-I5`에서 수정한 module:
+- `models/context_stock_cnn.py`: `GatedContextStockCNN`을 추가했습니다.
 
 다음 예정 module:
 - `layers/film.py`

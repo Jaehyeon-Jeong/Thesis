@@ -129,7 +129,15 @@ Implementation phase:
   - Parameter check passed: `2,954,370` parameters, `+1,408` vs Stage 2 I60
     baseline.
   - Result: [4-I4 Context concat model](checklist_results/4-I4_context_concat_model.md)
-- [ ] 4-I5. `CNN + context gating` model
+- [x] 4-I5. `CNN + context gating` model
+  - Added final-block channel gating with `gate = 2 * sigmoid(raw_gate)`.
+  - Context embedding `(B, 32)` generates `(B, 512)` gates for the final I60
+    feature map `(B, 512, 2, 180)`.
+  - Gate head is zero-initialized, so the model starts from identity
+    modulation with gate min/max `1.0 / 1.0`.
+  - Parameter check passed: `2,971,202` parameters, `+18,240` vs Stage 2 I60
+    baseline.
+  - Result: [4-I5 Context gating model](checklist_results/4-I5_context_gating_model.md)
 - [ ] 4-I6. FiLM layer and FiLM generator modules
 - [ ] 4-I7. `CNN + FiLM gamma-only` and `CNN + FiLM full` models
 - [ ] 4-I8. BTC Stage 4 runner using fixed Stage 2 data pipeline
@@ -288,7 +296,16 @@ Stage 4 main ablation:
   - Parameter check 통과: `2,954,370` parameters, Stage 2 I60 baseline 대비
     `+1,408`.
   - 결과: [4-I4 Context concat model](checklist_results/4-I4_context_concat_model.md)
-- [ ] 4-I5. `CNN + context gating` model
+- [x] 4-I5. `CNN + context gating` model
+  - Final-block channel gating을 추가했고 `gate = 2 * sigmoid(raw_gate)`를
+    사용합니다.
+  - Context embedding `(B, 32)`이 마지막 I60 feature map `(B, 512, 2, 180)`에
+    곱할 `(B, 512)` gate를 만듭니다.
+  - Gate head는 zero-initialized라서 gate min/max `1.0 / 1.0`의 identity
+    modulation에서 시작합니다.
+  - Parameter check 통과: `2,971,202` parameters, Stage 2 I60 baseline 대비
+    `+18,240`.
+  - 결과: [4-I5 Context gating model](checklist_results/4-I5_context_gating_model.md)
 - [ ] 4-I6. FiLM layer와 FiLM generator module
 - [ ] 4-I7. `CNN + FiLM gamma-only`와 `CNN + FiLM full` model
 - [ ] 4-I8. 고정된 Stage 2 data pipeline을 쓰는 BTC Stage 4 runner

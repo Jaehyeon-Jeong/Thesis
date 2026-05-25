@@ -24,6 +24,15 @@ Primary Stage 4 image input:
   - accuracy mean `0.5793`
   - accuracy std `0.0182`
   - ROC-AUC mean `0.5849`
+- The seed-42 Stage 2 run is useful for metadata and Grad-CAM inspection, but
+  the Stage 4 baseline claim should use the five-seed mean.
+
+Stage 3 dependency position:
+- Stage 3 Linear is not a Stage 4 architecture dependency.
+- It is kept as a negative/simple-parameter ablation.
+- The preliminary matching seed-42 test dropped from Stage 2 accuracy
+  `0.603053` and ROC-AUC `0.616950` to Stage 3 Linear accuracy `0.541291` and
+  ROC-AUC `0.522101`.
 
 Structured market context candidates:
 - Fear & Greed score.
@@ -94,6 +103,7 @@ Main documents:
 - [Source map](docs/source_map.md)
 - [Planning report](checklist_results/4-1_context_fusion_and_news_plan.md)
 - [News dataset audit](checklist_results/4-3_news_dataset_audit_and_feasibility.md)
+- [Stage 2/Stage 3 dependency review](checklist_results/4-4_stage2_stage3_dependency_and_baseline_output_review.md)
 
 ## 한국어
 
@@ -118,6 +128,15 @@ Stage 4 primary image input:
   - accuracy mean `0.5793`
   - accuracy std `0.0182`
   - ROC-AUC mean `0.5849`
+- seed 42 Stage 2 run은 metadata와 Grad-CAM 확인에 유용하지만, Stage 4 baseline
+  claim은 five-seed mean을 기준으로 둡니다.
+
+Stage 3 dependency 위치:
+- Stage 3 Linear는 Stage 4 architecture dependency가 아닙니다.
+- negative/simple-parameter ablation으로만 둡니다.
+- 같은 조합의 seed 42 preliminary test에서 Stage 2 accuracy `0.603053`,
+  ROC-AUC `0.616950`이 Stage 3 Linear accuracy `0.541291`, ROC-AUC `0.522101`로
+  하락했습니다.
 
 Structured market context 후보:
 - Fear & Greed score.
@@ -185,3 +204,4 @@ Stage 4 주요 ablation model:
 - [Source map](docs/source_map.md)
 - [Planning report](checklist_results/4-1_context_fusion_and_news_plan.md)
 - [News dataset audit](checklist_results/4-3_news_dataset_audit_and_feasibility.md)
+- [Stage 2/Stage 3 dependency review](checklist_results/4-4_stage2_stage3_dependency_and_baseline_output_review.md)

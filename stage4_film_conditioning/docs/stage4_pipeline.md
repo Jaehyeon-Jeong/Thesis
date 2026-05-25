@@ -17,6 +17,9 @@ From Stage 2:
 From Stage 3:
 - Linear adapter result is a comparison point only.
 - It does not change the Stage 4 architecture.
+- The matching seed-42 Linear test is treated as a negative/simple-parameter
+  ablation: Stage 2 `I60/R20/ohlc_ma_vb` accuracy `0.603053`, ROC-AUC
+  `0.616950`; Stage 3 Linear accuracy `0.541291`, ROC-AUC `0.522101`.
 
 ## Stage 4 Data Flow
 
@@ -146,6 +149,9 @@ Stage 2에서 고정해서 가져오는 것:
 Stage 3에서 가져오는 것:
 - Linear adapter 결과는 비교 대상일 뿐입니다.
 - Stage 4 architecture를 바꾸는 dependency가 아닙니다.
+- 같은 조합의 seed 42 Linear test는 negative/simple-parameter ablation으로
+  둡니다. Stage 2 `I60/R20/ohlc_ma_vb` accuracy `0.603053`, ROC-AUC
+  `0.616950`; Stage 3 Linear accuracy `0.541291`, ROC-AUC `0.522101`입니다.
 
 ## Stage 4 데이터 흐름
 

@@ -50,7 +50,13 @@ Planning phase:
   - Defer article summaries and LLM embeddings until leakage-safe headline
     context is stable.
   - Result: [4-3 News dataset audit and feasibility decision](checklist_results/4-3_news_dataset_audit_and_feasibility.md)
-- [ ] 4-4. Stage 2/Stage 3 dependency and baseline-output review
+- [x] 4-4. Stage 2/Stage 3 dependency and baseline-output review
+  - Locked primary baseline: Stage 2 `I60/R20/ohlc_ma_vb`.
+  - Primary comparison target: five-seed accuracy mean `0.579320`,
+    ROC-AUC mean `0.584862`.
+  - Stage 3 Linear is a negative/simple-parameter ablation, not a Stage 4 code
+    dependency.
+  - Result: [4-4 Stage 2/Stage 3 dependency and baseline output review](checklist_results/4-4_stage2_stage3_dependency_and_baseline_output_review.md)
 - [ ] 4-5. Context encoder and normalization plan
 - [ ] 4-6. Concat/gating/FiLM insertion design
 - [ ] 4-7. Grad-CAM plus context/gate/gamma/beta export plan
@@ -155,7 +161,13 @@ Stage 4 main ablation:
   - Article summary와 LLM embedding은 leakage-safe headline context가 안정화된
     뒤로 미룹니다.
   - 결과: [4-3 News dataset audit and feasibility decision](checklist_results/4-3_news_dataset_audit_and_feasibility.md)
-- [ ] 4-4. Stage 2/Stage 3 dependency와 baseline output 확인
+- [x] 4-4. Stage 2/Stage 3 dependency와 baseline output 확인
+  - Primary baseline 고정: Stage 2 `I60/R20/ohlc_ma_vb`.
+  - Primary comparison target: five-seed accuracy mean `0.579320`,
+    ROC-AUC mean `0.584862`.
+  - Stage 3 Linear는 negative/simple-parameter ablation이며, Stage 4 code
+    dependency가 아닙니다.
+  - 결과: [4-4 Stage 2/Stage 3 dependency and baseline output review](checklist_results/4-4_stage2_stage3_dependency_and_baseline_output_review.md)
 - [ ] 4-5. Context encoder와 normalization 계획
 - [ ] 4-6. Concat/gating/FiLM 삽입 설계
 - [ ] 4-7. Grad-CAM plus context/gate/gamma/beta export 계획

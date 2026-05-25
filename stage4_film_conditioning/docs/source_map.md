@@ -40,6 +40,12 @@ Implementation-source distinction:
   - "Optional attention-based fusion"
 - Implementation choice for the first Stage 4 main run: structured numeric
   context first; news context remains a second-phase track after audit.
+- 4-4 baseline dependency decision:
+  - Stage 4 primary image/model baseline is Stage 2 `I60/R20/ohlc_ma_vb`.
+  - Primary comparison target is the Stage 2 selected five-seed mean:
+    accuracy `0.579320`, ROC-AUC `0.584862`.
+  - Stage 3 Linear is a negative/simple-parameter ablation only; it is not a
+    Stage 4 architecture dependency.
 - 4-3 news-context decision:
   - `edaschau/bitcoin_news` is feasible because it overlaps the Stage 2 BTC
     period and has timestamped title/article/source fields.
@@ -93,6 +99,12 @@ Implementation-source distinction:
   - "Optional attention-based fusion"
 - 첫 Stage 4 main run 구현 선택: structured numeric context를 먼저 사용합니다.
   news context는 audit 이후 second-phase track으로 유지합니다.
+- 4-4 baseline dependency 결정:
+  - Stage 4 primary image/model baseline은 Stage 2 `I60/R20/ohlc_ma_vb`입니다.
+  - Primary comparison target은 Stage 2 selected five-seed mean입니다:
+    accuracy `0.579320`, ROC-AUC `0.584862`.
+  - Stage 3 Linear는 negative/simple-parameter ablation일 뿐이며 Stage 4
+    architecture dependency가 아닙니다.
 - 4-3 news-context 결정:
   - `edaschau/bitcoin_news`는 Stage 2 BTC 기간과 겹치고 timestamp/title/article/source
     field가 있으므로 사용 가능합니다.

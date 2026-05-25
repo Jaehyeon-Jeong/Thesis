@@ -65,7 +65,8 @@
   - evaluation 직후 prediction/metric이 생기면 다시 backup한다.
   - Grad-CAM/figure 생성 직후 다시 backup한다.
   - backup zip은 `PROJECT_ROOT` 밖, 예를 들어 `/kaggle/working/stage1_saved_outputs/`
-    또는 `/kaggle/working/stage2_saved_outputs/`에 저장한다.
+    또는 `/kaggle/working/stage2_saved_outputs/`,
+    `/kaggle/working/stage4_saved_outputs/`에 저장한다.
   - 이유: 다음 horizon/model 실행 때 `PROJECT_ROOT`를 새 code snapshot으로 다시 만들면
     이전 run의 checkpoint, prediction, metric, Grad-CAM이 삭제될 수 있기 때문이다.
   - 이 backup은 실험 로직 변경이 아니라 output 보존을 위한 실행 안정성 장치다.
@@ -259,6 +260,17 @@
   - 4-7 기준: primary Grad-CAM target은 predicted-class pre-softmax logit이다.
   - 최종 figure는 test split에서 Predicted Up 10개, Predicted Down 10개를 사용한다.
   - 4-C/4-D는 post-FiLM conditioned feature map을 primary Grad-CAM target layer로 사용한다.
+- Kaggle 실행:
+  - 4-8 기준: 첫 Stage 4 Kaggle runner는 structured numeric context 네 ablation
+    `concat`, `gating`, `film_gamma`, `film_full`만 실행한다.
+  - 첫 full sanity run은 seed `42`, 이후 robustness run은 seed
+    `42, 43, 44, 45, 46`으로 실행한다.
+  - Backup root는 `/kaggle/working/stage4_saved_outputs/`로 고정한다.
+  - Runner는 context build, training, prediction evaluation, trading evaluation,
+    Grad-CAM/export, output check, summary 뒤에 backup zip과 receipt JSON을 만든다.
+  - 완료 판정은 output checker 통과 기준이다. Checkpoint만 있고 predictions,
+    metrics, trading metrics, Grad-CAM, context/modulation export, manifests가 없으면
+    incomplete run으로 본다.
 - 추가 해석:
   - context feature 저장
   - concat/gate/gamma/beta 저장

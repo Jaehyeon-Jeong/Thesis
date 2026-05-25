@@ -39,6 +39,8 @@ flowchart TD
     L1 --> R
     L2 --> R
     L3 --> R
+    R --> OC[Output checker]
+    OC --> BK[Kaggle backup zips<br/>/kaggle/working/stage4_saved_outputs]
 
     N[News context later<br/>edaschau/bitcoin_news] -. audit/alignment .-> NG[News daily vector]
     NG -. same four heads .-> H1
@@ -86,6 +88,8 @@ flowchart TD
     L1 --> R
     L2 --> R
     L3 --> R
+    R --> OC[Output checker]
+    OC --> BK[Kaggle backup zips<br/>/kaggle/working/stage4_saved_outputs]
 
     N[News context later<br/>edaschau/bitcoin_news] -. audit/alignment .-> NG[News daily vector]
     NG -. same four heads .-> H1

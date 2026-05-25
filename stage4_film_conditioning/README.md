@@ -89,6 +89,20 @@ Explanation/export decision:
 - 4-D exports Grad-CAM on post-gamma/beta feature maps plus context, gamma, and
   beta values.
 
+Kaggle runner and backup decision:
+- The first implementation runner should execute the numeric-context four-way
+  ablation only: `concat`, `gating`, `film_gamma`, and `film_full`.
+- First full sanity run: all four ablations with seed `42`.
+- Later robustness run: the same four ablations with seeds
+  `42, 43, 44, 45, 46`.
+- Backup root is fixed to `/kaggle/working/stage4_saved_outputs`.
+- The runner must backup after context build, training, prediction evaluation,
+  trading evaluation, Grad-CAM/export, output check, and summary.
+- An experiment is complete only when the output checker confirms checkpoint,
+  predictions, metrics, trading metrics, Grad-CAM, context exports, modulation
+  exports where applicable, and manifests. Checkpoint existence alone is not a
+  completed Stage 4 result.
+
 Why this matches the advisor's direction:
 - The chart-image CNN baseline is already strong.
 - The research question is not simply whether chart images work.
@@ -138,6 +152,7 @@ Main documents:
 - [Context encoder and normalization plan](checklist_results/4-5_context_encoder_and_normalization_plan.md)
 - [Concat/gating/FiLM insertion design](checklist_results/4-6_concat_gating_film_insertion_design.md)
 - [Grad-CAM plus context/gate/gamma/beta export plan](checklist_results/4-7_gradcam_context_modulation_export_plan.md)
+- [Kaggle runner and output backup plan](checklist_results/4-8_kaggle_runner_and_output_backup_plan.md)
 
 ## 한국어
 
@@ -225,6 +240,19 @@ Explanation/export 결정:
 - 4-C는 post-gamma feature map 기준 Grad-CAM과 context/gamma 값을 export합니다.
 - 4-D는 post-gamma/beta feature map 기준 Grad-CAM과 context/gamma/beta 값을
   export합니다.
+
+Kaggle runner와 backup 결정:
+- 첫 구현 runner는 numeric-context 네 가지 ablation만 실행합니다:
+  `concat`, `gating`, `film_gamma`, `film_full`.
+- 첫 full sanity run은 네 ablation을 seed `42`로 실행합니다.
+- 이후 robustness run은 같은 네 ablation을 seed `42, 43, 44, 45, 46`으로
+  실행합니다.
+- Backup root는 `/kaggle/working/stage4_saved_outputs`로 고정합니다.
+- Runner는 context build, training, prediction evaluation, trading evaluation,
+  Grad-CAM/export, output check, summary 뒤에 backup을 만들어야 합니다.
+- Experiment는 output checker가 checkpoint, predictions, metrics, trading
+  metrics, Grad-CAM, context exports, 해당 model의 modulation exports, manifest를
+  확인해야 완료입니다. Checkpoint만 존재하는 것은 Stage 4 완료 결과가 아닙니다.
 
 교수님 방향성과 맞는 이유:
 - chart-image CNN baseline은 이미 강합니다.

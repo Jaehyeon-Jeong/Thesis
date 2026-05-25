@@ -161,6 +161,46 @@ Explanation exports are fixed by 4-7:
 - Dense gate/gamma/beta values are stored for selected Grad-CAM samples; full
   split exports default to compact per-sample/per-channel summaries.
 
+## Kaggle Execution And Backup
+
+The Stage 4 Kaggle runner is fixed by checklist item 4-8.
+
+Execution order:
+
+```text
+copy code snapshot
+  -> patch Kaggle config
+  -> audit BTC and F&G sources
+  -> build context features and train-only scaler
+  -> train ablation model
+  -> evaluate predictions
+  -> evaluate trading metrics
+  -> generate Grad-CAM and context/modulation exports
+  -> run output checker
+  -> summarize results
+```
+
+Backup phases:
+- `after_context_build`
+- `after_train`
+- `after_prediction_eval`
+- `after_trading_eval`
+- `after_gradcam`
+- `after_output_check`
+- `after_summary`
+
+Backup root:
+
+```text
+/kaggle/working/stage4_saved_outputs
+```
+
+Completion rule:
+- A Stage 4 experiment is complete only after the output checker passes.
+- A checkpoint without predictions, metrics, trading metrics, Grad-CAM,
+  context exports, applicable gate/gamma/beta exports, and manifests is an
+  incomplete run.
+
 ## 한국어
 
 Stage 4는 Stage 2 BTC chart-image pipeline을 고정하고, 두 번째 입력으로 market
@@ -322,3 +362,43 @@ Explanation export는 4-7에서 다음처럼 고정했습니다.
   저장합니다.
 - Dense gate/gamma/beta 값은 선택된 Grad-CAM sample에 대해 저장하고, 전체 split은
   compact per-sample/per-channel summary를 기본으로 저장합니다.
+
+## Kaggle 실행과 backup
+
+Stage 4 Kaggle runner는 checklist item 4-8에서 고정했습니다.
+
+실행 순서:
+
+```text
+code snapshot 복사
+  -> Kaggle config patch
+  -> BTC/F&G source audit
+  -> context feature와 train-only scaler 생성
+  -> ablation model 학습
+  -> prediction 평가
+  -> trading metric 평가
+  -> Grad-CAM과 context/modulation export 생성
+  -> output checker 실행
+  -> result summary 생성
+```
+
+Backup phase:
+- `after_context_build`
+- `after_train`
+- `after_prediction_eval`
+- `after_trading_eval`
+- `after_gradcam`
+- `after_output_check`
+- `after_summary`
+
+Backup root:
+
+```text
+/kaggle/working/stage4_saved_outputs
+```
+
+완료 판정:
+- Stage 4 experiment는 output checker가 통과해야 완료입니다.
+- Checkpoint만 있고 predictions, metrics, trading metrics, Grad-CAM, context
+  exports, 해당 model의 gate/gamma/beta exports, manifests가 없으면 incomplete
+  run입니다.

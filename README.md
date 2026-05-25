@@ -18,7 +18,7 @@ tracked.
 | `stage1_reimage_reproduction` | Reproduce the Re-image CNN pipeline on public I20 stock images | In progress: `I20/R60` seed-42 fast diagnostic archived; `I20/R20` archive is smoke-only; `I20/R5`, strict batch-128 run, and five-seed reproduction are later |
 | `stage2_btc_extension` | Extend the confirmed pipeline to BTC OHLCV | Single-seed 36-run complete; selected `I20/R20` and `I60/R20` five-seed robustness check complete; full 180-run five-seed grid later |
 | `stage3_linear_adapter` | Add a Linear comparison model | First test on Stage 2 best config completed; result dropped to majority level; remaining grid runs pending |
-| `stage4_film_conditioning` | Compare market-context concat, gating, gamma-only FiLM, and full FiLM on the fixed BTC CNN | Planning through 4-7 complete; context vector, insertion points, and explanation/export policy locked |
+| `stage4_film_conditioning` | Compare market-context concat, gating, gamma-only FiLM, and full FiLM on the fixed BTC CNN | Planning through 4-8 complete; context vector, insertion points, explanation/export policy, and Kaggle backup contract locked |
 
 ### Current Status
 
@@ -90,6 +90,12 @@ Stage 4:
   - final figures use 10 Predicted Up and 10 Predicted Down test samples;
   - context and gate/gamma/beta values are exported beside selected Grad-CAM
     samples.
+- 4-8 fixed the Kaggle runner/output backup contract:
+  - first full sanity run is the four numeric-context ablations with seed `42`;
+  - later robustness run is the same four ablations with seeds
+    `42, 43, 44, 45, 46`;
+  - backup root is `/kaggle/working/stage4_saved_outputs`;
+  - completion requires output-check success, not checkpoint existence alone.
 - News context is preserved as a second-phase track after source/date/leakage
   audit. Candidate source: Hugging Face `edaschau/bitcoin_news`.
 - Advisor-direction mapping is documented in the Stage 4 README/source map and
@@ -144,7 +150,7 @@ config, 코드 scaffold만 올립니다. 대용량 데이터, 논문 PDF, checkp
 | `stage1_reimage_reproduction` | public I20 stock image로 Re-image CNN pipeline 재현 | 진행 중: `I20/R60` seed-42 fast diagnostic 보존; `I20/R20` archive는 smoke-only; `I20/R5`, strict batch-128 run, five-seed reproduction은 later |
 | `stage2_btc_extension` | 확인된 pipeline을 BTC OHLCV로 확장 | single-seed 36-run 완료; `I20/R20`, `I60/R20` 선별 five-seed robustness check 완료; full 180-run five-seed grid는 later |
 | `stage3_linear_adapter` | Linear 비교 모델 추가 | Stage 2 best config 1회 테스트 완료; majority 수준으로 하락; 나머지 grid run 예정 |
-| `stage4_film_conditioning` | 고정 BTC CNN 위에서 market-context concat, gating, gamma-only FiLM, full FiLM 비교 | 4-7까지 계획 완료; context vector, 삽입 위치, explanation/export 정책 고정 |
+| `stage4_film_conditioning` | 고정 BTC CNN 위에서 market-context concat, gating, gamma-only FiLM, full FiLM 비교 | 4-8까지 계획 완료; context vector, 삽입 위치, explanation/export 정책, Kaggle backup 계약 고정 |
 
 ### 현재 상태
 
@@ -215,6 +221,11 @@ Stage 4:
   - Grad-CAM target은 predicted-class pre-softmax logit입니다.
   - 최종 figure는 test sample에서 Predicted Up 10개, Predicted Down 10개를 사용합니다.
   - 선택된 Grad-CAM sample 옆에 context와 gate/gamma/beta 값을 같이 export합니다.
+- 4-8에서 Kaggle runner/output backup 계약을 고정했습니다.
+  - 첫 full sanity run은 structured numeric context 네 ablation을 seed `42`로 실행합니다.
+  - 이후 robustness run은 같은 네 ablation을 seed `42, 43, 44, 45, 46`으로 실행합니다.
+  - Backup root는 `/kaggle/working/stage4_saved_outputs`입니다.
+  - 완료 판정은 checkpoint 존재가 아니라 output check 통과 기준입니다.
 - News context는 제거하지 않고 source/date/leakage audit 이후 second-phase track으로
   유지합니다. 후보 source는 Hugging Face `edaschau/bitcoin_news`입니다.
 - 교수님 방향성 파일과 Stage 4 실험 결정의 연결은 Stage 4 README/source map과

@@ -75,7 +75,13 @@ Planning phase:
   - Final report figure uses 10 Predicted Up and 10 Predicted Down test samples.
   - Export context values and gate/gamma/beta values beside Grad-CAM samples.
   - Result: [4-7 Grad-CAM plus context/gate/gamma/beta export plan](checklist_results/4-7_gradcam_context_modulation_export_plan.md)
-- [ ] 4-8. Kaggle runner and output backup plan
+- [x] 4-8. Kaggle runner and output backup plan
+  - Runner stages: context build, training, prediction evaluation, trading
+    evaluation, Grad-CAM/export, output check, and summary.
+  - Backup root: `/kaggle/working/stage4_saved_outputs`.
+  - Completion requires the output checker to pass; checkpoint existence alone
+    is not enough.
+  - Result: [4-8 Kaggle runner and output backup plan](checklist_results/4-8_kaggle_runner_and_output_backup_plan.md)
 
 Advisor confirmation/reporting:
 - [x] 4-R1. Professor meeting direction brief
@@ -202,7 +208,13 @@ Stage 4 main ablation:
     사용합니다.
   - Grad-CAM sample 옆에 context 값과 gate/gamma/beta 값을 같이 export합니다.
   - 결과: [4-7 Grad-CAM plus context/gate/gamma/beta export plan](checklist_results/4-7_gradcam_context_modulation_export_plan.md)
-- [ ] 4-8. Kaggle runner와 output backup 계획
+- [x] 4-8. Kaggle runner와 output backup 계획
+  - Runner 단계: context build, training, prediction evaluation, trading
+    evaluation, Grad-CAM/export, output check, summary.
+  - Backup root: `/kaggle/working/stage4_saved_outputs`.
+  - 완료 판정은 output checker 통과 기준입니다. Checkpoint 존재만으로는 완료가
+    아닙니다.
+  - 결과: [4-8 Kaggle runner and output backup plan](checklist_results/4-8_kaggle_runner_and_output_backup_plan.md)
 
 교수님 확인/보고:
 - [x] 4-R1. 교수님 미팅용 방향성 brief

@@ -81,6 +81,15 @@ Implementation-source distinction:
     Grad-CAM samples.
   - FiLM heatmaps use post-FiLM conditioned feature maps as the primary target
     layers.
+- 4-8 Kaggle runner/output backup decision:
+  - The first Stage 4 Kaggle runner executes the four numeric-context
+    ablations: `concat`, `gating`, `film_gamma`, and `film_full`.
+  - First full sanity run uses seed `42`; later robustness run uses seeds
+    `42, 43, 44, 45, 46`.
+  - Backup root is `/kaggle/working/stage4_saved_outputs`.
+  - Completion is defined by output-check success, not checkpoint existence.
+  - If checkpoint exists but prediction/metric/Grad-CAM exports are missing,
+    the runner resumes evaluation/export instead of declaring the run complete.
 
 ## 한국어
 
@@ -163,3 +172,13 @@ Implementation-source distinction:
     같이 export합니다.
   - FiLM heatmap은 post-FiLM conditioned feature map을 primary target layer로
     사용합니다.
+- 4-8 Kaggle runner/output backup 결정:
+  - 첫 Stage 4 Kaggle runner는 structured numeric context 기반 네 ablation
+    `concat`, `gating`, `film_gamma`, `film_full`을 실행합니다.
+  - 첫 full sanity run은 seed `42`, 이후 robustness run은 seed
+    `42, 43, 44, 45, 46`으로 실행합니다.
+  - Backup root는 `/kaggle/working/stage4_saved_outputs`입니다.
+  - 완료 판정은 output check 통과 기준이며, checkpoint 존재만으로 완료 처리하지
+    않습니다.
+  - Checkpoint는 있지만 prediction/metric/Grad-CAM export가 없으면 완료가 아니라
+    evaluation/export를 이어서 실행합니다.

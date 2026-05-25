@@ -79,6 +79,16 @@ Insertion decision:
 - Gate, gamma, and beta heads are zero-initialized so gating starts at `1`,
   gamma starts at `1`, and beta starts at `0`.
 
+Explanation/export decision:
+- Grad-CAM target is the predicted-class pre-softmax logit.
+- Final Stage 4 figures use `10` Predicted Up and `10` Predicted Down test
+  samples; smoke runs may use `2` per predicted class.
+- 4-A exports Grad-CAM plus context values.
+- 4-B exports Grad-CAM plus context and final-layer gate values.
+- 4-C exports Grad-CAM on post-gamma feature maps plus context and gamma values.
+- 4-D exports Grad-CAM on post-gamma/beta feature maps plus context, gamma, and
+  beta values.
+
 Why this matches the advisor's direction:
 - The chart-image CNN baseline is already strong.
 - The research question is not simply whether chart images work.
@@ -127,6 +137,7 @@ Main documents:
 - [Stage 2/Stage 3 dependency review](checklist_results/4-4_stage2_stage3_dependency_and_baseline_output_review.md)
 - [Context encoder and normalization plan](checklist_results/4-5_context_encoder_and_normalization_plan.md)
 - [Concat/gating/FiLM insertion design](checklist_results/4-6_concat_gating_film_insertion_design.md)
+- [Grad-CAM plus context/gate/gamma/beta export plan](checklist_results/4-7_gradcam_context_modulation_export_plan.md)
 
 ## 한국어
 
@@ -205,6 +216,16 @@ Stage 4 주요 ablation model:
 - Gate/gamma/beta head는 zero-initialize해서 gate는 `1`, gamma는 `1`, beta는
   `0`에서 시작하게 합니다.
 
+Explanation/export 결정:
+- Grad-CAM target은 predicted-class pre-softmax logit입니다.
+- 최종 Stage 4 figure는 test sample에서 Predicted Up 10개, Predicted Down 10개를
+  사용합니다. Smoke run에서는 predicted class별 2개를 허용합니다.
+- 4-A는 Grad-CAM과 context 값을 export합니다.
+- 4-B는 Grad-CAM, context, final-layer gate 값을 export합니다.
+- 4-C는 post-gamma feature map 기준 Grad-CAM과 context/gamma 값을 export합니다.
+- 4-D는 post-gamma/beta feature map 기준 Grad-CAM과 context/gamma/beta 값을
+  export합니다.
+
 교수님 방향성과 맞는 이유:
 - chart-image CNN baseline은 이미 강합니다.
 - 핵심 질문은 chart image 자체가 예측력이 있는지가 아닙니다.
@@ -251,3 +272,4 @@ Stage 4 주요 ablation model:
 - [Stage 2/Stage 3 dependency review](checklist_results/4-4_stage2_stage3_dependency_and_baseline_output_review.md)
 - [Context encoder and normalization plan](checklist_results/4-5_context_encoder_and_normalization_plan.md)
 - [Concat/gating/FiLM insertion design](checklist_results/4-6_concat_gating_film_insertion_design.md)
+- [Grad-CAM plus context/gate/gamma/beta export plan](checklist_results/4-7_gradcam_context_modulation_export_plan.md)

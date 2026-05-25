@@ -18,7 +18,7 @@ tracked.
 | `stage1_reimage_reproduction` | Reproduce the Re-image CNN pipeline on public I20 stock images | In progress: `I20/R60` seed-42 fast diagnostic archived; `I20/R20` archive is smoke-only; `I20/R5`, strict batch-128 run, and five-seed reproduction are later |
 | `stage2_btc_extension` | Extend the confirmed pipeline to BTC OHLCV | Single-seed 36-run complete; selected `I20/R20` and `I60/R20` five-seed robustness check complete; full 180-run five-seed grid later |
 | `stage3_linear_adapter` | Add a Linear comparison model | First test on Stage 2 best config completed; result dropped to majority level; remaining grid runs pending |
-| `stage4_film_conditioning` | Compare market-context concat, gating, gamma-only FiLM, and full FiLM on the fixed BTC CNN | Planning through 4-6 complete; context vector, encoder, and concat/gating/FiLM insertion points locked |
+| `stage4_film_conditioning` | Compare market-context concat, gating, gamma-only FiLM, and full FiLM on the fixed BTC CNN | Planning through 4-7 complete; context vector, insertion points, and explanation/export policy locked |
 
 ### Current Status
 
@@ -85,6 +85,11 @@ Stage 4:
   - concat attaches after I60 flatten: `(B, 184320) + (B, 32) -> (B, 184352)`;
   - gating applies a final-block channel gate to `(B, 512, 2, 180)`;
   - FiLM is inserted after BatchNorm and before LeakyReLU in every I60 block.
+- 4-7 fixed the explanation/export policy:
+  - Grad-CAM target is the predicted-class pre-softmax logit;
+  - final figures use 10 Predicted Up and 10 Predicted Down test samples;
+  - context and gate/gamma/beta values are exported beside selected Grad-CAM
+    samples.
 - News context is preserved as a second-phase track after source/date/leakage
   audit. Candidate source: Hugging Face `edaschau/bitcoin_news`.
 - Advisor-direction mapping is documented in the Stage 4 README/source map and
@@ -139,7 +144,7 @@ config, 코드 scaffold만 올립니다. 대용량 데이터, 논문 PDF, checkp
 | `stage1_reimage_reproduction` | public I20 stock image로 Re-image CNN pipeline 재현 | 진행 중: `I20/R60` seed-42 fast diagnostic 보존; `I20/R20` archive는 smoke-only; `I20/R5`, strict batch-128 run, five-seed reproduction은 later |
 | `stage2_btc_extension` | 확인된 pipeline을 BTC OHLCV로 확장 | single-seed 36-run 완료; `I20/R20`, `I60/R20` 선별 five-seed robustness check 완료; full 180-run five-seed grid는 later |
 | `stage3_linear_adapter` | Linear 비교 모델 추가 | Stage 2 best config 1회 테스트 완료; majority 수준으로 하락; 나머지 grid run 예정 |
-| `stage4_film_conditioning` | 고정 BTC CNN 위에서 market-context concat, gating, gamma-only FiLM, full FiLM 비교 | 4-6까지 계획 완료; context vector, encoder, concat/gating/FiLM 삽입 위치 고정 |
+| `stage4_film_conditioning` | 고정 BTC CNN 위에서 market-context concat, gating, gamma-only FiLM, full FiLM 비교 | 4-7까지 계획 완료; context vector, 삽입 위치, explanation/export 정책 고정 |
 
 ### 현재 상태
 
@@ -206,6 +211,10 @@ Stage 4:
   - concat은 I60 flatten 뒤에 붙입니다: `(B, 184320) + (B, 32) -> (B, 184352)`.
   - gating은 final block feature map `(B, 512, 2, 180)`에 channel gate를 적용합니다.
   - FiLM은 모든 I60 block에서 BatchNorm 뒤, LeakyReLU 전에 삽입합니다.
+- 4-7에서 explanation/export 정책을 고정했습니다.
+  - Grad-CAM target은 predicted-class pre-softmax logit입니다.
+  - 최종 figure는 test sample에서 Predicted Up 10개, Predicted Down 10개를 사용합니다.
+  - 선택된 Grad-CAM sample 옆에 context와 gate/gamma/beta 값을 같이 export합니다.
 - News context는 제거하지 않고 source/date/leakage audit 이후 second-phase track으로
   유지합니다. 후보 source는 Hugging Face `edaschau/bitcoin_news`입니다.
 - 교수님 방향성 파일과 Stage 4 실험 결정의 연결은 Stage 4 README/source map과

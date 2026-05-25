@@ -256,6 +256,9 @@
 - FiLM 단계에서도 BTC Grad-CAM 필수.
   - FiLM이 삽입된 block의 modulation 이후 feature와 기존 CNN block feature를 구분해서 기록한다.
   - Grad-CAM heatmap과 gate/gamma/beta를 같은 date/sample/layer 기준으로 연결해 해석한다.
+  - 4-7 기준: primary Grad-CAM target은 predicted-class pre-softmax logit이다.
+  - 최종 figure는 test split에서 Predicted Up 10개, Predicted Down 10개를 사용한다.
+  - 4-C/4-D는 post-FiLM conditioned feature map을 primary Grad-CAM target layer로 사용한다.
 - 추가 해석:
   - context feature 저장
   - concat/gate/gamma/beta 저장

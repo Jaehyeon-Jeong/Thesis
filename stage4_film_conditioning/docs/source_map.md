@@ -73,6 +73,14 @@ Implementation-source distinction:
     in every I60 block.
   - Gate/FiLM output heads are zero-initialized so gate/gamma/beta start as
     identity modulation.
+- 4-7 Grad-CAM/export decision:
+  - Primary Grad-CAM target is the predicted-class pre-softmax logit.
+  - Final report selection is 10 Predicted Up and 10 Predicted Down test
+    samples.
+  - 4-B/4-C/4-D export context plus gate/gamma/beta values beside the selected
+    Grad-CAM samples.
+  - FiLM heatmaps use post-FiLM conditioned feature maps as the primary target
+    layers.
 
 ## 한국어
 
@@ -148,3 +156,10 @@ Implementation-source distinction:
     삽입합니다.
   - Gate/FiLM output head는 zero-initialize해서 gate/gamma/beta가 identity
     modulation에서 시작하게 합니다.
+- 4-7 Grad-CAM/export 결정:
+  - Primary Grad-CAM target은 predicted-class pre-softmax logit입니다.
+  - 최종 보고 sample은 test split에서 Predicted Up 10개, Predicted Down 10개입니다.
+  - 4-B/4-C/4-D는 선택된 Grad-CAM sample 옆에 context와 gate/gamma/beta 값을
+    같이 export합니다.
+  - FiLM heatmap은 post-FiLM conditioned feature map을 primary target layer로
+    사용합니다.

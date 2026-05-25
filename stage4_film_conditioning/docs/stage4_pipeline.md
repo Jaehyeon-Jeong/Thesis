@@ -150,6 +150,17 @@ Each Stage 4 run must save:
 - Grad-CAM figures;
 - run manifest with config, seed, source version, and Git commit.
 
+Explanation exports are fixed by 4-7:
+- Grad-CAM uses the predicted-class pre-softmax logit as the primary target.
+- Final report figures use 10 Predicted Up and 10 Predicted Down test samples.
+- 4-A stores Grad-CAM plus context values.
+- 4-B stores Grad-CAM plus context and final-layer gate values.
+- 4-C stores Grad-CAM on post-gamma feature maps plus context and gamma values.
+- 4-D stores Grad-CAM on post-gamma/beta feature maps plus context, gamma, and
+  beta values.
+- Dense gate/gamma/beta values are stored for selected Grad-CAM samples; full
+  split exports default to compact per-sample/per-channel summaries.
+
 ## 한국어
 
 Stage 4는 Stage 2 BTC chart-image pipeline을 고정하고, 두 번째 입력으로 market
@@ -299,3 +310,15 @@ BTC news rows
 - 필요한 경우 gate/gamma/beta logs;
 - Grad-CAM figures;
 - config, seed, source version, Git commit이 들어간 run manifest.
+
+Explanation export는 4-7에서 다음처럼 고정했습니다.
+- Grad-CAM은 predicted-class pre-softmax logit을 primary target으로 사용합니다.
+- 최종 보고 figure는 test sample에서 Predicted Up 10개, Predicted Down 10개를
+  사용합니다.
+- 4-A는 Grad-CAM과 context 값을 저장합니다.
+- 4-B는 Grad-CAM, context, final-layer gate 값을 저장합니다.
+- 4-C는 post-gamma feature map 기준 Grad-CAM과 context/gamma 값을 저장합니다.
+- 4-D는 post-gamma/beta feature map 기준 Grad-CAM과 context/gamma/beta 값을
+  저장합니다.
+- Dense gate/gamma/beta 값은 선택된 Grad-CAM sample에 대해 저장하고, 전체 split은
+  compact per-sample/per-channel summary를 기본으로 저장합니다.

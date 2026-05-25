@@ -70,7 +70,11 @@ Planning phase:
   - 4-C/4-D FiLM is inserted after BatchNorm and before LeakyReLU in every I60
     block.
   - Result: [4-6 Concat/gating/FiLM insertion design](checklist_results/4-6_concat_gating_film_insertion_design.md)
-- [ ] 4-7. Grad-CAM plus context/gate/gamma/beta export plan
+- [x] 4-7. Grad-CAM plus context/gate/gamma/beta export plan
+  - Primary target is the predicted-class pre-softmax logit.
+  - Final report figure uses 10 Predicted Up and 10 Predicted Down test samples.
+  - Export context values and gate/gamma/beta values beside Grad-CAM samples.
+  - Result: [4-7 Grad-CAM plus context/gate/gamma/beta export plan](checklist_results/4-7_gradcam_context_modulation_export_plan.md)
 - [ ] 4-8. Kaggle runner and output backup plan
 
 Advisor confirmation/reporting:
@@ -192,7 +196,12 @@ Stage 4 main ablation:
     적용합니다.
   - 4-C/4-D FiLM은 모든 I60 block에서 BatchNorm 뒤, LeakyReLU 전에 삽입합니다.
   - 결과: [4-6 Concat/gating/FiLM insertion design](checklist_results/4-6_concat_gating_film_insertion_design.md)
-- [ ] 4-7. Grad-CAM plus context/gate/gamma/beta export 계획
+- [x] 4-7. Grad-CAM plus context/gate/gamma/beta export 계획
+  - Primary target은 predicted-class pre-softmax logit입니다.
+  - 최종 보고 figure는 test sample에서 Predicted Up 10개, Predicted Down 10개를
+    사용합니다.
+  - Grad-CAM sample 옆에 context 값과 gate/gamma/beta 값을 같이 export합니다.
+  - 결과: [4-7 Grad-CAM plus context/gate/gamma/beta export plan](checklist_results/4-7_gradcam_context_modulation_export_plan.md)
 - [ ] 4-8. Kaggle runner와 output backup 계획
 
 교수님 확인/보고:

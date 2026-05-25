@@ -238,8 +238,16 @@ Implementation status:
   - `src/stage4_film/training/loop.py` trains with `model(image, context)`.
   - Gate/FiLM heads are reset to identity after generic weight initialization.
   - Local smoke training passed for `concat` and `film_gamma`.
-- Next step: `4-I9` prediction, classification metric, and trading metric
-  export.
+- `4-I9` is complete.
+- Added Stage 4 prediction and trading exports:
+  - `scripts/evaluate_stage4_predictions.py` reloads a Stage 4 checkpoint and
+    writes prediction CSV plus classification metrics.
+  - `scripts/evaluate_stage4_trading.py` reads the prediction CSV and writes
+    BTC long/flat and long/short trading metrics.
+  - Classification/trading metric formulas reuse Stage 2; model inference uses
+    `model(image, context)`.
+  - Local export checks passed for `concat` and `film_gamma` smoke checkpoints.
+- Next step: `4-I10` Grad-CAM plus context/gate/gamma/beta export.
 
 Main documents:
 - [Checklist](checklist.md)
@@ -265,6 +273,7 @@ Main documents:
 - [FiLM layer and generator](checklist_results/4-I6_film_layer_generator.md)
 - [FiLM context models](checklist_results/4-I7_film_context_models.md)
 - [Stage 4 context runner](checklist_results/4-I8_stage4_context_runner.md)
+- [Prediction and trading exports](checklist_results/4-I9_prediction_trading_exports.md)
 
 ## 한국어
 
@@ -500,7 +509,16 @@ Implementation status:
     학습합니다.
   - 일반 weight initialization 뒤 gate/FiLM head를 identity로 다시 reset합니다.
   - `concat`, `film_gamma` local smoke training을 통과했습니다.
-- 다음 단계는 `4-I9` prediction, classification metric, trading metric export입니다.
+- `4-I9`를 완료했습니다.
+- Stage 4 prediction/trading export를 추가했습니다:
+  - `scripts/evaluate_stage4_predictions.py`는 Stage 4 checkpoint를 다시 로드하고
+    prediction CSV와 classification metrics를 저장합니다.
+  - `scripts/evaluate_stage4_trading.py`는 prediction CSV를 읽고 BTC long/flat,
+    long/short trading metrics를 저장합니다.
+  - Classification/trading metric 공식은 Stage 2를 재사용하고, inference만
+    `model(image, context)`를 사용합니다.
+  - `concat`, `film_gamma` smoke checkpoint에서 local export check를 통과했습니다.
+- 다음 단계는 `4-I10` Grad-CAM plus context/gate/gamma/beta export입니다.
 
 주요 문서:
 - [Checklist](checklist.md)
@@ -526,3 +544,4 @@ Implementation status:
 - [FiLM layer and generator](checklist_results/4-I6_film_layer_generator.md)
 - [FiLM context models](checklist_results/4-I7_film_context_models.md)
 - [Stage 4 context runner](checklist_results/4-I8_stage4_context_runner.md)
+- [Prediction and trading exports](checklist_results/4-I9_prediction_trading_exports.md)

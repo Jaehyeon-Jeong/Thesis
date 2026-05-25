@@ -42,8 +42,11 @@ Added in `4-I8`:
   2 BTC samples, images, split, and pixel normalization, then attaches
   normalized context vectors.
 
+Added in `4-I9`:
+- `evaluation/prediction.py`: context-aware prediction helper that reloads a
+  Stage 4 checkpoint and exports rows from `model(image, context)`.
+
 Planned next modules:
-- `evaluation/`
 - `interpretability/`
 
 Stage 4 should import Stage 2 helpers through a configurable Stage 2 `src`
@@ -92,8 +95,11 @@ Stage 4 FiLM/context-conditioning 구현 package입니다.
   pixel normalization을 재사용하고 normalized context vector를 붙이는 Stage 4
   data/model runner입니다.
 
+`4-I9`에서 추가한 module:
+- `evaluation/prediction.py`: Stage 4 checkpoint를 로드하고
+  `model(image, context)`의 prediction row를 export하는 helper입니다.
+
 다음 예정 module:
-- `evaluation/`
 - `interpretability/`
 
 Stage 4는 configurable Stage 2 `src` path를 통해 Stage 2 helper를 import해야

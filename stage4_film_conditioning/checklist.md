@@ -161,7 +161,14 @@ Implementation phase:
     adds normalized context tensors to each batch.
   - Local smoke training passed for `concat` and `film_gamma`.
   - Result: [4-I8 Stage 4 context runner](checklist_results/4-I8_stage4_context_runner.md)
-- [ ] 4-I9. Prediction, classification metric, and trading metric export
+- [x] 4-I9. Prediction, classification metric, and trading metric export
+  - Added Stage 4 prediction helper and evaluation scripts.
+  - Exports `test_predictions.csv`, `test_metrics.json`, and
+    `test_trading_metrics.json`.
+  - Reuses Stage 2 classification/trading metric implementations, with
+    `model(image, context)` for Stage 4.
+  - Local export checks passed for `concat` and `film_gamma` smoke checkpoints.
+  - Result: [4-I9 Prediction and trading exports](checklist_results/4-I9_prediction_trading_exports.md)
 - [ ] 4-I10. Grad-CAM plus context/gate/gamma/beta export
 - [ ] 4-I11. Local or small Kaggle smoke test
 - [ ] 4-I12. Kaggle single-config run for the four main ablations
@@ -349,7 +356,14 @@ Stage 4 main ablation:
     각 batch에 normalized context tensor를 붙입니다.
   - `concat`, `film_gamma` local smoke training을 통과했습니다.
   - 결과: [4-I8 Stage 4 context runner](checklist_results/4-I8_stage4_context_runner.md)
-- [ ] 4-I9. prediction, classification metric, trading metric export
+- [x] 4-I9. prediction, classification metric, trading metric export
+  - Stage 4 prediction helper와 evaluation script를 추가했습니다.
+  - `test_predictions.csv`, `test_metrics.json`, `test_trading_metrics.json`를
+    저장합니다.
+  - Classification/trading metric 구현은 Stage 2를 재사용하고, 모델 호출만
+    `model(image, context)`로 바꿨습니다.
+  - `concat`, `film_gamma` smoke checkpoint에서 local export check를 통과했습니다.
+  - 결과: [4-I9 Prediction and trading exports](checklist_results/4-I9_prediction_trading_exports.md)
 - [ ] 4-I10. Grad-CAM plus context/gate/gamma/beta export
 - [ ] 4-I11. local 또는 작은 Kaggle smoke test
 - [ ] 4-I12. 네 가지 main ablation의 Kaggle single-config run

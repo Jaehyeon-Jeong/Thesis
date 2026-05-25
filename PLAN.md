@@ -313,6 +313,15 @@
       다시 reset한다. 따라서 gating은 `gate=1`, FiLM은 `gamma=1`, `beta=0`에서
       시작한다.
     - Local smoke training은 `concat`과 `film_gamma`에서 통과했다.
+  - 4-I9에서 Stage 4 prediction/classification/trading export를 구현했다.
+    - `scripts/evaluate_stage4_predictions.py`는 Stage 4 checkpoint를 다시 로드하고
+      `model(image, context)`로 prediction CSV와 classification metrics를 저장한다.
+    - `scripts/evaluate_stage4_trading.py`는 prediction CSV를 읽고 BTC long/flat,
+      long/short trading metrics를 저장한다.
+    - Metric 공식은 Stage 2와 동일하게 재사용한다.
+    - Prediction CSV에는 `context_method`, `stage4_experiment_name`, normalized
+      context columns도 함께 남긴다.
+    - Local smoke checkpoint 기준 `concat`, `film_gamma` export가 통과했다.
 - Re-image CNN에 이식:
   - 기존 CNN 구조는 유지하고, block 내부에 FiLM만 삽입한다.
   - 기본 위치: `Conv -> BN -> FiLM -> LeakyReLU -> MaxPool`

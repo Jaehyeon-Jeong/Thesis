@@ -211,8 +211,18 @@ Implementation-source distinction:
     reset for gate/FiLM output heads so modulation starts from the Stage 2
     visual path.
   - Local smoke training passed for `concat` and `film_gamma`.
-  - Next implementation item is `4-I9`, prediction/classification/trading
-    metric export.
+- 4-I9 prediction/trading export decision:
+  - Added `src/stage4_film/evaluation/prediction.py`.
+  - Added `scripts/evaluate_stage4_predictions.py`.
+  - Added `scripts/evaluate_stage4_trading.py`.
+  - Classification metrics reuse Stage 2 `compute_classification_metrics`.
+  - Trading metrics reuse Stage 2 `compute_trading_metrics`.
+  - The prediction helper changes inference from `model(image)` to
+    `model(image, context)` and appends normalized context columns to the
+    prediction CSV.
+  - Local export checks passed for `concat` and `film_gamma` smoke checkpoints.
+  - Next implementation item is `4-I10`, Grad-CAM plus context/gate/gamma/beta
+    export.
 
 ## 한국어
 
@@ -421,4 +431,14 @@ Implementation-source distinction:
   - Stage 2 일반 weight initialization 뒤 gate/FiLM output head를 identity로 다시
     reset해서 modulation이 Stage 2 visual path에서 시작하게 합니다.
   - `concat`, `film_gamma` local smoke training을 통과했습니다.
-  - 다음 구현 항목은 `4-I9`, prediction/classification/trading metric export입니다.
+- 4-I9 prediction/trading export 결정:
+  - `src/stage4_film/evaluation/prediction.py`를 추가했습니다.
+  - `scripts/evaluate_stage4_predictions.py`를 추가했습니다.
+  - `scripts/evaluate_stage4_trading.py`를 추가했습니다.
+  - Classification metric은 Stage 2 `compute_classification_metrics`를
+    재사용합니다.
+  - Trading metric은 Stage 2 `compute_trading_metrics`를 재사용합니다.
+  - Prediction helper는 inference를 `model(image)`에서 `model(image, context)`로
+    바꾸고 prediction CSV에 normalized context column을 같이 붙입니다.
+  - `concat`, `film_gamma` smoke checkpoint에서 local export check를 통과했습니다.
+  - 다음 구현 항목은 `4-I10`, Grad-CAM plus context/gate/gamma/beta export입니다.

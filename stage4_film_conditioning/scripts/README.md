@@ -47,9 +47,14 @@ Added in `4-I8`:
   - Smoke example:
     `python scripts/run_stage4_context_model.py --config configs/env_local.yaml --context-method concat --max-epochs 1 --max-train-rows 16 --max-validation-rows 8 --max-test-rows 8`
 
+Added in `4-I9`:
+- `evaluate_stage4_predictions.py`: reloads a Stage 4 checkpoint, calls
+  `model(image, context)`, and writes prediction CSV plus classification
+  metrics.
+- `evaluate_stage4_trading.py`: reads Stage 4 prediction CSV and writes BTC
+  long/flat and long/short trading metrics.
+
 Planned next scripts:
-- `evaluate_stage4_predictions.py`
-- `evaluate_stage4_trading.py`
 - `generate_stage4_gradcam_context.py`
 - `check_stage4_outputs.py`
 - `summarize_stage4_results.py`
@@ -106,9 +111,14 @@ Stage 4 script는 구현 단계에서 순차적으로 추가합니다.
   - Smoke 예시:
     `python scripts/run_stage4_context_model.py --config configs/env_local.yaml --context-method concat --max-epochs 1 --max-train-rows 16 --max-validation-rows 8 --max-test-rows 8`
 
+`4-I9`에서 추가한 script:
+- `evaluate_stage4_predictions.py`: Stage 4 checkpoint를 다시 로드하고
+  `model(image, context)`를 호출해 prediction CSV와 classification metrics를
+  저장합니다.
+- `evaluate_stage4_trading.py`: Stage 4 prediction CSV를 읽고 BTC long/flat,
+  long/short trading metrics를 저장합니다.
+
 다음 예정 script:
-- `evaluate_stage4_predictions.py`
-- `evaluate_stage4_trading.py`
 - `generate_stage4_gradcam_context.py`
 - `check_stage4_outputs.py`
 - `summarize_stage4_results.py`

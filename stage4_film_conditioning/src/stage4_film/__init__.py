@@ -19,6 +19,7 @@ from stage4_film.conditions import (
     build_context_encoder_from_config,
     build_film_generator_for_window,
 )
+from stage4_film.evaluation import load_stage4_checkpoint_into_model, predict_context_loader
 from stage4_film.layers import FeatureWiseAffineModulation
 from stage4_film.models import (
     ConcatContextStockCNN,
@@ -55,8 +56,10 @@ __all__ = [
     "get_context_config",
     "get_stage2_dependency_config",
     "get_stage4_model_config",
+    "load_stage4_checkpoint_into_model",
     "load_config",
     "make_stage4_experiment_name",
+    "predict_context_loader",
     "prepare_stage4_context_experiment_data",
     "run_stage4_context_training",
 ]

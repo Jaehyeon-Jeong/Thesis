@@ -205,7 +205,19 @@ Implementation status:
     modulation with gate min/max `1.0 / 1.0`.
   - Parameter count check passed: `2,971,202`, which is `+18,240` vs the Stage
     2 I60 baseline.
-- Next step: `4-I6` FiLM layer and FiLM generator modules.
+- `4-I6` is complete.
+- Added the reusable FiLM building blocks:
+  - `FeatureWiseAffineModulation` applies channel-wise `F' = gamma * F` or
+    `F' = gamma * F + beta` to a CNN feature map.
+  - `FilmParameterGenerator` maps the 32-dim context embedding to block-wise
+    gamma/beta tensors for I60 channels `[64, 128, 256, 512]`.
+  - Gamma-only generator parameter count: `31,680`.
+  - Full gamma/beta generator parameter count: `63,360`.
+  - Heads are zero-initialized so gamma starts at `1.0` and beta starts at
+    `0.0`, preserving the Stage 2 CNN feature path at initialization.
+  - Local FiLM layer/generator check passed on dummy feature maps and real
+    normalized context rows.
+- Next step: `4-I7` gamma-only and full FiLM Stock_CNN models.
 
 Main documents:
 - [Checklist](checklist.md)
@@ -228,6 +240,7 @@ Main documents:
 - [Context MLP encoder](checklist_results/4-I3_context_mlp_encoder.md)
 - [Context concat model](checklist_results/4-I4_context_concat_model.md)
 - [Context gating model](checklist_results/4-I5_context_gating_model.md)
+- [FiLM layer and generator](checklist_results/4-I6_film_layer_generator.md)
 
 ## 한국어
 
@@ -428,7 +441,19 @@ Implementation status:
     modulation에서 시작합니다.
   - Parameter count check 통과: `2,971,202`, Stage 2 I60 baseline 대비
     `+18,240`.
-- 다음 단계는 `4-I6` FiLM layer와 FiLM generator module입니다.
+- `4-I6`을 완료했습니다.
+- 재사용 가능한 FiLM building block을 추가했습니다:
+  - `FeatureWiseAffineModulation`은 CNN feature map에 channel-wise
+    `F' = gamma * F` 또는 `F' = gamma * F + beta`를 적용합니다.
+  - `FilmParameterGenerator`는 32차원 context embedding에서 I60 channel
+    `[64, 128, 256, 512]`에 맞는 block별 gamma/beta tensor를 만듭니다.
+  - Gamma-only generator parameter count: `31,680`.
+  - Full gamma/beta generator parameter count: `63,360`.
+  - Head는 zero-initialized라서 gamma는 `1.0`, beta는 `0.0`에서 시작하고,
+    initialization 시 Stage 2 CNN feature path를 보존합니다.
+  - Local FiLM layer/generator check가 dummy feature map과 실제 normalized
+    context row 모두에서 통과했습니다.
+- 다음 단계는 `4-I7` gamma-only/full FiLM Stock_CNN model입니다.
 
 주요 문서:
 - [Checklist](checklist.md)
@@ -451,3 +476,4 @@ Implementation status:
 - [Context MLP encoder](checklist_results/4-I3_context_mlp_encoder.md)
 - [Context concat model](checklist_results/4-I4_context_concat_model.md)
 - [Context gating model](checklist_results/4-I5_context_gating_model.md)
+- [FiLM layer and generator](checklist_results/4-I6_film_layer_generator.md)

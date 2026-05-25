@@ -282,6 +282,17 @@
   - gamma-only FiLM은 block별 gamma만 만들어 `F' = gamma * F`를 적용한다.
   - full FiLM은 block별 gamma/beta를 만들어 `F' = gamma * F + beta`를 적용한다.
   - FiLM layer는 feature map에 channel-wise modulation을 적용한다.
+    - 4-I6에서 `FeatureWiseAffineModulation` layer를 구현했다.
+    - 4-I6에서 context embedding `(B, 32)`을 받아 I60 block channel
+      `[64, 128, 256, 512]`별 gamma/beta를 만드는 `FilmParameterGenerator`를
+      구현했다.
+    - Gamma는 `1 + delta_gamma`로 만들고, gamma/beta head는 zero-initialize한다.
+      따라서 초기값은 gamma `1.0`, beta `0.0`이고 Stage 2 feature path를
+      identity로 보존한다.
+    - 4-I6 local check 결과 gamma-only generator parameter count는 `31,680`,
+      full FiLM generator parameter count는 `63,360`이었다.
+    - Dummy I60 feature map과 local 4-I2 normalized context row 모두에서
+      FiLM identity initialization check를 통과했다.
 - Re-image CNN에 이식:
   - 기존 CNN 구조는 유지하고, block 내부에 FiLM만 삽입한다.
   - 기본 위치: `Conv -> BN -> FiLM -> LeakyReLU -> MaxPool`

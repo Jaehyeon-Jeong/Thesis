@@ -26,6 +26,27 @@ Model structure:
   - Final classifier: `Dropout(0.5) -> Linear(184352, 2)`.
   - Output logits: `(B, 2)`.
 
+What concat means here:
+- Concat does not draw F&G/Bollinger/MFI/RV into the image.
+- It also does not change any CNN convolution block.
+- The image branch first produces one flattened visual vector per sample:
+  `(B, 184320)`.
+- The market-context branch separately produces one context embedding per
+  sample: `(B, 32)`.
+- These two vectors are appended along the feature dimension:
+  `torch.cat([image_feature, context_embedding], dim=1)`.
+- Therefore the final classifier sees both visual pattern information and
+  context information at the same time, but the context does not directly
+  modulate the CNN feature map.
+
+Why this ablation matters:
+- It is the simplest "side information" baseline.
+- If concat alone improves over Stage 2, then context is useful even without
+  feature modulation.
+- If FiLM/gating improves over concat, then the argument is stronger that
+  market context should change the interpretation of visual features, not only
+  be appended before the classifier.
+
 Parameter check:
 - Stage 2 I60 baseline expected parameters: `2,952,962`.
 - Stage 4 concat actual/expected parameters: `2,954,370`.
@@ -81,6 +102,25 @@ Interpretation:
   - Concat feature: `(B, 184320 + 32) = (B, 184352)`.
   - Final classifier: `Dropout(0.5) -> Linear(184352, 2)`.
   - Output logits: `(B, 2)`.
+
+여기서 concat이 의미하는 것:
+- F&G/Bollinger/MFI/RV를 image 위에 그리는 것이 아닙니다.
+- CNN convolution block을 바꾸는 것도 아닙니다.
+- Image branch는 먼저 sample마다 하나의 visual vector를 만듭니다:
+  `(B, 184320)`.
+- Market-context branch는 별도로 sample마다 하나의 context embedding을 만듭니다:
+  `(B, 32)`.
+- 두 vector를 feature dimension 방향으로 붙입니다:
+  `torch.cat([image_feature, context_embedding], dim=1)`.
+- 그래서 마지막 classifier는 visual pattern 정보와 context 정보를 동시에 보지만,
+  context가 CNN feature map 자체를 직접 조절하지는 않습니다.
+
+이 ablation이 필요한 이유:
+- 가장 단순한 side information baseline입니다.
+- concat만으로 Stage 2보다 좋아지면 context 자체가 도움이 된다는 뜻입니다.
+- FiLM/gating이 concat보다 좋아지면, market context는 단순히 classifier 앞에
+  추가되는 정보가 아니라 visual feature의 해석을 바꾸는 방식으로 붙어야 한다는
+  주장이 강해집니다.
 
 Parameter check:
 - Stage 2 I60 baseline expected parameters: `2,952,962`.

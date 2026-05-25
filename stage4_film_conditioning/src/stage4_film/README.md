@@ -24,8 +24,12 @@ Added in `4-I4`:
 Updated in `4-I5`:
 - `models/context_stock_cnn.py`: added `GatedContextStockCNN`.
 
+Added in `4-I6`:
+- `layers/film.py`: reusable feature-wise affine modulation layer.
+- `conditions/film_generator.py`: context-embedding-to-gamma/beta generator
+  for gamma-only and full FiLM.
+
 Planned next modules:
-- `layers/film.py`
 - `models/film_stock_cnn.py`
 - `training/`
 - `evaluation/`
@@ -60,8 +64,12 @@ Stage 4 FiLM/context-conditioning 구현 package입니다.
 `4-I5`에서 수정한 module:
 - `models/context_stock_cnn.py`: `GatedContextStockCNN`을 추가했습니다.
 
+`4-I6`에서 추가한 module:
+- `layers/film.py`: 재사용 가능한 feature-wise affine modulation layer입니다.
+- `conditions/film_generator.py`: context embedding에서 gamma/beta를 만드는
+  gamma-only/full FiLM generator입니다.
+
 다음 예정 module:
-- `layers/film.py`
 - `models/film_stock_cnn.py`
 - `training/`
 - `evaluation/`

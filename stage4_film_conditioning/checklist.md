@@ -138,7 +138,14 @@ Implementation phase:
   - Parameter check passed: `2,971,202` parameters, `+18,240` vs Stage 2 I60
     baseline.
   - Result: [4-I5 Context gating model](checklist_results/4-I5_context_gating_model.md)
-- [ ] 4-I6. FiLM layer and FiLM generator modules
+- [x] 4-I6. FiLM layer and FiLM generator modules
+  - Added reusable `FeatureWiseAffineModulation`.
+  - Added `FilmParameterGenerator` for `film_gamma` and `film_full`.
+  - Gamma is initialized as `1 + delta_gamma`; beta is initialized to `0`.
+  - Local check passed for all I60 block feature maps.
+  - Generator parameter checks passed: `31,680` for `film_gamma`, `63,360` for
+    `film_full`.
+  - Result: [4-I6 FiLM layer and generator](checklist_results/4-I6_film_layer_generator.md)
 - [ ] 4-I7. `CNN + FiLM gamma-only` and `CNN + FiLM full` models
 - [ ] 4-I8. BTC Stage 4 runner using fixed Stage 2 data pipeline
 - [ ] 4-I9. Prediction, classification metric, and trading metric export
@@ -306,7 +313,14 @@ Stage 4 main ablation:
   - Parameter check 통과: `2,971,202` parameters, Stage 2 I60 baseline 대비
     `+18,240`.
   - 결과: [4-I5 Context gating model](checklist_results/4-I5_context_gating_model.md)
-- [ ] 4-I6. FiLM layer와 FiLM generator module
+- [x] 4-I6. FiLM layer와 FiLM generator module
+  - 재사용 가능한 `FeatureWiseAffineModulation`을 추가했습니다.
+  - `film_gamma`, `film_full`용 `FilmParameterGenerator`를 추가했습니다.
+  - Gamma는 `1 + delta_gamma`로 초기화하고 beta는 `0`으로 초기화합니다.
+  - 모든 I60 block feature map에서 local check를 통과했습니다.
+  - Generator parameter check 통과: `film_gamma`는 `31,680`, `film_full`은
+    `63,360`.
+  - 결과: [4-I6 FiLM layer and generator](checklist_results/4-I6_film_layer_generator.md)
 - [ ] 4-I7. `CNN + FiLM gamma-only`와 `CNN + FiLM full` model
 - [ ] 4-I8. 고정된 Stage 2 data pipeline을 쓰는 BTC Stage 4 runner
 - [ ] 4-I9. prediction, classification metric, trading metric export

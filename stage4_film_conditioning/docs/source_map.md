@@ -161,7 +161,26 @@ Implementation-source distinction:
   - Parameter count is `2,971,202`, which is `+18,240` vs Stage 2 I60 baseline.
   - The local model shape checker passed on dummy tensors and real normalized
     context rows from the local `4-I2` context table.
-  - Next implementation item is `4-I6`, FiLM layer and FiLM generator modules.
+- 4-I6 FiLM layer/generator decision:
+  - Added `src/stage4_film/layers/film.py`.
+  - Added `src/stage4_film/conditions/film_generator.py`.
+  - Added `scripts/check_stage4_film_layers.py`.
+  - FiLM applies channel-wise modulation to a feature map:
+    gamma-only `F' = gamma * F`; full FiLM `F' = gamma * F + beta`.
+  - The generator uses the shared context embedding `(B, 32)` and emits
+    block-wise gamma/beta parameters for I60 channels `[64, 128, 256, 512]`.
+  - Gamma is implemented as `1 + delta_gamma`, with zero-initialized heads.
+    Full FiLM beta is also zero-initialized.
+  - This gives identity initialization: gamma min/max `1.0 / 1.0`, beta
+    min/max `0.0 / 0.0`, and the modulated feature maps equal the original
+    feature maps at initialization.
+  - Generator parameter counts:
+    - gamma-only: `31,680`
+    - full gamma/beta: `63,360`
+  - The local FiLM checker passed on dummy I60 feature maps and real normalized
+    context rows from the local `4-I2` context table.
+  - Next implementation item is `4-I7`, gamma-only and full FiLM Stock_CNN
+    models.
 
 ## 한국어
 
@@ -324,4 +343,21 @@ Implementation-source distinction:
   - Parameter count는 `2,971,202`이며 Stage 2 I60 baseline 대비 `+18,240`입니다.
   - Local model shape checker가 dummy tensor와 local `4-I2` context table의
     실제 normalized context row 모두에서 통과했습니다.
-  - 다음 구현 항목은 `4-I6`, FiLM layer와 FiLM generator module입니다.
+- 4-I6 FiLM layer/generator 결정:
+  - `src/stage4_film/layers/film.py`를 추가했습니다.
+  - `src/stage4_film/conditions/film_generator.py`를 추가했습니다.
+  - `scripts/check_stage4_film_layers.py`를 추가했습니다.
+  - FiLM은 feature map에 channel-wise modulation을 적용합니다:
+    gamma-only `F' = gamma * F`; full FiLM `F' = gamma * F + beta`.
+  - Generator는 shared context embedding `(B, 32)`을 받아 I60 channel
+    `[64, 128, 256, 512]`에 맞는 block별 gamma/beta parameter를 만듭니다.
+  - Gamma는 `1 + delta_gamma`로 구현했고 head는 zero-initialized입니다.
+    Full FiLM beta도 zero-initialized입니다.
+  - 그래서 initialization에서 identity가 됩니다: gamma min/max `1.0 / 1.0`,
+    beta min/max `0.0 / 0.0`, modulated feature map은 원래 feature map과 같습니다.
+  - Generator parameter count:
+    - gamma-only: `31,680`
+    - full gamma/beta: `63,360`
+  - Local FiLM checker가 dummy I60 feature map과 local `4-I2` context table의
+    실제 normalized context row 모두에서 통과했습니다.
+  - 다음 구현 항목은 `4-I7`, gamma-only/full FiLM Stock_CNN model입니다.

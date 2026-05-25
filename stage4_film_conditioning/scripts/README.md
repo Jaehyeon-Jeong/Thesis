@@ -29,8 +29,12 @@ Updated in `4-I5`:
   final-block gate shape, identity initialization, and real-context forward
   pass.
 
+Added in `4-I6`:
+- `check_stage4_film_layers.py`: validates gamma-only and full FiLM parameter
+  generators, block-wise gamma/beta shapes, identity initialization, and
+  feature-wise affine modulation on I60 block feature maps.
+
 Planned next scripts:
-- `check_stage4_film_layers.py`
 - `run_stage4_context_model.py`
 - `evaluate_stage4_predictions.py`
 - `evaluate_stage4_trading.py`
@@ -72,8 +76,12 @@ Stage 4 script는 구현 단계에서 순차적으로 추가합니다.
 - `check_stage4_model_shapes.py`: `--model gating`, final-block gate shape,
   identity initialization, 실제 context forward pass도 검증합니다.
 
+`4-I6`에서 추가한 script:
+- `check_stage4_film_layers.py`: gamma-only/full FiLM parameter generator,
+  block별 gamma/beta shape, identity initialization, I60 block feature map의
+  feature-wise affine modulation을 검증합니다.
+
 다음 예정 script:
-- `check_stage4_film_layers.py`
 - `run_stage4_context_model.py`
 - `evaluate_stage4_predictions.py`
 - `evaluate_stage4_trading.py`

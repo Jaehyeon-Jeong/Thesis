@@ -31,6 +31,33 @@ Model structure:
   - Final classifier: `Dropout(0.5) -> Linear(184320, 2)`.
   - Output logits: `(B, 2)`.
 
+What the gate does:
+- The final I60 CNN feature map has `512` channels.
+- Each channel can be understood as one learned visual pattern detector.
+- The gate gives one scalar multiplier per channel and per sample:
+  `gate[:, channel]`.
+- The model applies it as:
+  `gated_feature[:, c, :, :] = feature[:, c, :, :] * gate[:, c]`.
+- If a gate value is above `1`, that feature channel is amplified.
+- If a gate value is below `1`, that feature channel is suppressed.
+- If a gate value is exactly `1`, that channel is unchanged.
+- Therefore gating tests whether the same chart pattern should be weighted
+  differently under different market context states.
+
+Why `gate = 2 * sigmoid(raw_gate)`:
+- A sigmoid alone returns values in `(0, 1)`.
+- If the gate head is zero-initialized, then `raw_gate = 0`.
+- `sigmoid(0) = 0.5`, so using sigmoid alone would shrink every CNN channel by
+  half at initialization.
+- Multiplying by `2` changes the neutral point:
+  `2 * sigmoid(0) = 1`.
+- This makes the initial model an identity modulation of the Stage 2 feature
+  map, so training starts from the baseline feature path instead of damaging it.
+- During training:
+  - `raw_gate < 0` gives `gate < 1`, suppressing the channel.
+  - `raw_gate = 0` gives `gate = 1`, keeping the channel.
+  - `raw_gate > 0` gives `gate > 1`, amplifying the channel.
+
 Identity initialization:
 - `gate_head.weight` and `gate_head.bias` are zero-initialized.
 - Therefore the first forward pass starts from `raw_gate = 0` and
@@ -102,6 +129,33 @@ Interpretation:
   - Flattened feature: `(B, 184320)`.
   - Final classifier: `Dropout(0.5) -> Linear(184320, 2)`.
   - Output logits: `(B, 2)`.
+
+gate가 하는 일:
+- 마지막 I60 CNN feature map에는 `512`개 channel이 있습니다.
+- 각 channel은 CNN이 학습한 하나의 visual pattern detector로 볼 수 있습니다.
+- gate는 sample마다, channel마다 scalar multiplier 하나를 줍니다:
+  `gate[:, channel]`.
+- 적용 방식은 다음과 같습니다:
+  `gated_feature[:, c, :, :] = feature[:, c, :, :] * gate[:, c]`.
+- gate 값이 `1`보다 크면 해당 feature channel을 키웁니다.
+- gate 값이 `1`보다 작으면 해당 feature channel을 줄입니다.
+- gate 값이 정확히 `1`이면 해당 channel은 그대로 둡니다.
+- 따라서 gating은 같은 chart pattern이라도 market context 상태에 따라 다르게
+  가중해야 하는지 테스트합니다.
+
+`gate = 2 * sigmoid(raw_gate)`를 쓰는 이유:
+- sigmoid만 쓰면 출력 범위는 `(0, 1)`입니다.
+- gate head를 0으로 초기화하면 `raw_gate = 0`입니다.
+- `sigmoid(0) = 0.5`이므로 sigmoid만 gate로 쓰면 초기 상태에서 모든 CNN channel을
+  절반으로 줄여버립니다.
+- 그래서 `2`를 곱해 neutral point를 바꿉니다:
+  `2 * sigmoid(0) = 1`.
+- 이렇게 하면 초기 모델은 Stage 2 feature map을 그대로 통과시키는 identity
+  modulation에서 시작합니다.
+- 학습 중에는:
+  - `raw_gate < 0`이면 `gate < 1`, channel을 약화합니다.
+  - `raw_gate = 0`이면 `gate = 1`, channel을 유지합니다.
+  - `raw_gate > 0`이면 `gate > 1`, channel을 강화합니다.
 
 Identity initialization:
 - `gate_head.weight`와 `gate_head.bias`는 0으로 초기화합니다.

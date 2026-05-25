@@ -18,7 +18,7 @@ tracked.
 | `stage1_reimage_reproduction` | Reproduce the Re-image CNN pipeline on public I20 stock images | In progress: `I20/R60` seed-42 fast diagnostic archived; `I20/R20` archive is smoke-only; `I20/R5`, strict batch-128 run, and five-seed reproduction are later |
 | `stage2_btc_extension` | Extend the confirmed pipeline to BTC OHLCV | Single-seed 36-run complete; selected `I20/R20` and `I60/R20` five-seed robustness check complete; full 180-run five-seed grid later |
 | `stage3_linear_adapter` | Add a Linear comparison model | First test on Stage 2 best config completed; result dropped to majority level; remaining grid runs pending |
-| `stage4_film_conditioning` | Compare market-context concat, gating, gamma-only FiLM, and full FiLM on the fixed BTC CNN | Planning through 4-8 and implementation 4-I0 through 4-I5 complete; next: FiLM layer/generator |
+| `stage4_film_conditioning` | Compare market-context concat, gating, gamma-only FiLM, and full FiLM on the fixed BTC CNN | Planning through 4-8 and implementation 4-I0 through 4-I6 complete; next: gamma-only/full FiLM models |
 
 ### Current Status
 
@@ -148,7 +148,16 @@ Stage 4:
   - classifier input remains `(B, 184320)`;
   - gate head is zero-initialized, so initial gate min/max is `1.0 / 1.0`;
   - parameter count is `2,971,202`, `+18,240` vs the Stage 2 I60 baseline.
-- Next implementation step is 4-I6 FiLM layer and FiLM generator modules.
+- 4-I6 completed the reusable FiLM layer/generator modules:
+  - `FeatureWiseAffineModulation` applies channel-wise `F' = gamma * F` or
+    `F' = gamma * F + beta`;
+  - `FilmParameterGenerator` maps context embedding `(B, 32)` to block-wise
+    gamma/beta for I60 channels `[64, 128, 256, 512]`;
+  - gamma-only generator parameter count is `31,680`;
+  - full gamma/beta generator parameter count is `63,360`;
+  - identity initialization passed locally with gamma `1.0`, beta `0.0`, and
+    unchanged feature maps.
+- Next implementation step is 4-I7 gamma-only and full FiLM Stock_CNN models.
 - News context is preserved as a second-phase track after source/date/leakage
   audit. Candidate source: Hugging Face `edaschau/bitcoin_news`.
 - Advisor-direction mapping is documented in the Stage 4 README/source map and
@@ -203,7 +212,7 @@ config, 코드 scaffold만 올립니다. 대용량 데이터, 논문 PDF, checkp
 | `stage1_reimage_reproduction` | public I20 stock image로 Re-image CNN pipeline 재현 | 진행 중: `I20/R60` seed-42 fast diagnostic 보존; `I20/R20` archive는 smoke-only; `I20/R5`, strict batch-128 run, five-seed reproduction은 later |
 | `stage2_btc_extension` | 확인된 pipeline을 BTC OHLCV로 확장 | single-seed 36-run 완료; `I20/R20`, `I60/R20` 선별 five-seed robustness check 완료; full 180-run five-seed grid는 later |
 | `stage3_linear_adapter` | Linear 비교 모델 추가 | Stage 2 best config 1회 테스트 완료; majority 수준으로 하락; 나머지 grid run 예정 |
-| `stage4_film_conditioning` | 고정 BTC CNN 위에서 market-context concat, gating, gamma-only FiLM, full FiLM 비교 | 4-8 계획과 4-I0부터 4-I5까지 구현 완료; 다음은 FiLM layer/generator |
+| `stage4_film_conditioning` | 고정 BTC CNN 위에서 market-context concat, gating, gamma-only FiLM, full FiLM 비교 | 4-8 계획과 4-I0부터 4-I6까지 구현 완료; 다음은 gamma-only/full FiLM model |
 
 ### 현재 상태
 
@@ -330,7 +339,16 @@ Stage 4:
   - classifier input은 `(B, 184320)` 그대로 유지됩니다.
   - gate head는 zero-initialized라서 initial gate min/max가 `1.0 / 1.0`입니다.
   - parameter count는 `2,971,202`이며 Stage 2 I60 baseline 대비 `+18,240`입니다.
-- 다음 구현 단계는 4-I6 FiLM layer와 FiLM generator module입니다.
+- 4-I6에서 재사용 가능한 FiLM layer/generator module을 완료했습니다.
+  - `FeatureWiseAffineModulation`은 channel-wise `F' = gamma * F` 또는
+    `F' = gamma * F + beta`를 적용합니다.
+  - `FilmParameterGenerator`는 context embedding `(B, 32)`을 I60 channel
+    `[64, 128, 256, 512]`의 block별 gamma/beta로 바꿉니다.
+  - Gamma-only generator parameter count는 `31,680`입니다.
+  - Full gamma/beta generator parameter count는 `63,360`입니다.
+  - Local identity initialization check에서 gamma `1.0`, beta `0.0`, feature
+    map 보존을 확인했습니다.
+- 다음 구현 단계는 4-I7 gamma-only/full FiLM Stock_CNN model입니다.
 - News context는 제거하지 않고 source/date/leakage audit 이후 second-phase track으로
   유지합니다. 후보 source는 Hugging Face `edaschau/bitcoin_news`입니다.
 - 교수님 방향성 파일과 Stage 4 실험 결정의 연결은 Stage 4 README/source map과

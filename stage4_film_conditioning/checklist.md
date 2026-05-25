@@ -178,7 +178,13 @@ Implementation phase:
   - Local Grad-CAM export checks passed for `concat` and `film_gamma` smoke
     checkpoints.
   - Result: [4-I10 Grad-CAM context/modulation export](checklist_results/4-I10_gradcam_context_modulation_export.md)
-- [ ] 4-I11. Local or small Kaggle smoke test
+- [x] 4-I11. Local or small Kaggle smoke test
+  - Added `check_stage4_outputs.py`.
+  - The checker verifies checkpoint, training metadata, predictions,
+    classification metrics, trading metrics, Grad-CAM, samples,
+    modulation exports, context artifacts, and manifest.
+  - Local output checks passed for `concat` and `film_gamma` smoke runs.
+  - Result: [4-I11 Smoke output check](checklist_results/4-I11_smoke_output_check.md)
 - [ ] 4-I12. Kaggle single-config run for the four main ablations
 - [ ] 4-I13. Kaggle selected grid/five-seed runner
 - [ ] 4-I14. Stage 4 result report
@@ -381,7 +387,13 @@ Stage 4 main ablation:
   - `concat`, `film_gamma` smoke checkpoint에서 local Grad-CAM export check를
     통과했습니다.
   - 결과: [4-I10 Grad-CAM context/modulation export](checklist_results/4-I10_gradcam_context_modulation_export.md)
-- [ ] 4-I11. local 또는 작은 Kaggle smoke test
+- [x] 4-I11. local 또는 작은 Kaggle smoke test
+  - `check_stage4_outputs.py`를 추가했습니다.
+  - Checker는 checkpoint, training metadata, prediction, classification metric,
+    trading metric, Grad-CAM, samples, modulation export, context artifact,
+    manifest를 확인합니다.
+  - `concat`, `film_gamma` smoke run에서 local output check를 통과했습니다.
+  - 결과: [4-I11 Smoke output check](checklist_results/4-I11_smoke_output_check.md)
 - [ ] 4-I12. 네 가지 main ablation의 Kaggle single-config run
 - [ ] 4-I13. Kaggle selected grid/five-seed runner
 - [ ] 4-I14. Stage 4 결과 보고

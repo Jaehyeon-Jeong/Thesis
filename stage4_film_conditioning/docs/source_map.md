@@ -233,6 +233,14 @@ Implementation-source distinction:
     to avoid PyTorch full-backward-hook conflicts with in-place LeakyReLU.
   - Local Grad-CAM export checks passed for `concat` and `film_gamma` smoke
     checkpoints.
+- 4-I11 smoke output check decision:
+  - Added `scripts/check_stage4_outputs.py`.
+  - The checker treats a Stage 4 run as complete only when checkpoint,
+    train metadata, predictions, classification metrics, trading metrics,
+    Grad-CAM, selected samples, modulation exports, context artifacts, and run
+    manifest are all present and parseable.
+  - It checks CSV row counts and JSON parseability, not only file existence.
+  - Local output checks passed for `concat` and `film_gamma` smoke runs.
 
 ## 한국어
 
@@ -465,3 +473,12 @@ Implementation-source distinction:
     gradient hook을 사용합니다.
   - `concat`, `film_gamma` smoke checkpoint에서 local Grad-CAM export check를
     통과했습니다.
+- 4-I11 smoke output check 결정:
+  - `scripts/check_stage4_outputs.py`를 추가했습니다.
+  - Stage 4 run 완료 기준은 checkpoint, train metadata, prediction,
+    classification metric, trading metric, Grad-CAM, selected samples,
+    modulation export, context artifact, run manifest가 모두 존재하고
+    parse 가능한 상태입니다.
+  - 단순 file existence뿐 아니라 CSV row count와 JSON parse 가능 여부도
+    확인합니다.
+  - `concat`, `film_gamma` smoke run에서 local output check를 통과했습니다.

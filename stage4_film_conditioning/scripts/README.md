@@ -64,8 +64,13 @@ Added in `4-I10`:
 - For `gating`, it additionally exports raw gate and final gate values.
 - For `film_gamma`/`film_full`, it exports block-wise gamma and beta values.
 
+Added in `4-I11`:
+- `check_stage4_outputs.py`: checks the complete Stage 4 output bundle for one
+  experiment/seed. It verifies checkpoint, training metadata, predictions,
+  classification metrics, trading metrics, Grad-CAM, samples, modulation
+  summary/value exports, context artifacts, and run manifest.
+
 Planned next scripts:
-- `check_stage4_outputs.py`
 - `summarize_stage4_results.py`
 
 Checklist item 4-8 fixes the expected Kaggle execution order and backup
@@ -135,8 +140,13 @@ Stage 4 script는 구현 단계에서 순차적으로 추가합니다.
 - `gating`은 raw gate와 최종 gate 값까지 저장합니다.
 - `film_gamma`/`film_full`은 block별 gamma/beta 값을 저장합니다.
 
+`4-I11`에서 추가한 script:
+- `check_stage4_outputs.py`: 한 experiment/seed의 Stage 4 output bundle 전체를
+  확인합니다. Checkpoint, training metadata, prediction, classification metric,
+  trading metric, Grad-CAM, samples, modulation summary/value export, context
+  artifact, run manifest를 검사합니다.
+
 다음 예정 script:
-- `check_stage4_outputs.py`
 - `summarize_stage4_results.py`
 
 4-8에서 이 script들의 Kaggle 실행 순서와 backup 계약을 고정했습니다.

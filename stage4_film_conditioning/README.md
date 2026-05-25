@@ -259,7 +259,15 @@ Implementation status:
   - `film_gamma`/`film_full` export block-wise gamma and beta values.
   - Local Grad-CAM export checks passed for `concat` and `film_gamma` smoke
     checkpoints.
-- Next step: `4-I11` local or small Kaggle smoke test.
+- `4-I11` is complete.
+- Added local smoke output checking:
+  - `scripts/check_stage4_outputs.py` verifies the full Stage 4 artifact bundle:
+    checkpoint, train history/metadata, predictions, classification metrics,
+    trading metrics, Grad-CAM, samples, modulation exports, context artifacts,
+    and run manifest.
+  - Local checker passed for `concat` and `film_gamma` smoke runs.
+  - Compact smoke summary: `reports/smoke_tests/stage4_smoke_summary.json`.
+- Next step: `4-I12` Kaggle single-config run for the four main ablations.
 
 Main documents:
 - [Checklist](checklist.md)
@@ -287,6 +295,7 @@ Main documents:
 - [Stage 4 context runner](checklist_results/4-I8_stage4_context_runner.md)
 - [Prediction and trading exports](checklist_results/4-I9_prediction_trading_exports.md)
 - [Grad-CAM context/modulation export](checklist_results/4-I10_gradcam_context_modulation_export.md)
+- [Smoke output check](checklist_results/4-I11_smoke_output_check.md)
 
 ## 한국어
 
@@ -543,7 +552,15 @@ Implementation status:
   - `film_gamma`/`film_full`은 block별 gamma/beta 값을 export합니다.
   - `concat`, `film_gamma` smoke checkpoint에서 local Grad-CAM export check를
     통과했습니다.
-- 다음 단계는 `4-I11` local 또는 작은 Kaggle smoke test입니다.
+- `4-I11`을 완료했습니다.
+- Local smoke output checking을 추가했습니다:
+  - `scripts/check_stage4_outputs.py`는 checkpoint, train history/metadata,
+    prediction, classification metric, trading metric, Grad-CAM, samples,
+    modulation export, context artifact, run manifest까지 전체 Stage 4 artifact
+    bundle을 확인합니다.
+  - `concat`, `film_gamma` smoke run에서 local checker를 통과했습니다.
+  - Compact smoke summary: `reports/smoke_tests/stage4_smoke_summary.json`.
+- 다음 단계는 `4-I12` 네 가지 main ablation의 Kaggle single-config run입니다.
 
 주요 문서:
 - [Checklist](checklist.md)
@@ -571,3 +588,4 @@ Implementation status:
 - [Stage 4 context runner](checklist_results/4-I8_stage4_context_runner.md)
 - [Prediction and trading exports](checklist_results/4-I9_prediction_trading_exports.md)
 - [Grad-CAM context/modulation export](checklist_results/4-I10_gradcam_context_modulation_export.md)
+- [Smoke output check](checklist_results/4-I11_smoke_output_check.md)

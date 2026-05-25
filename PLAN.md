@@ -335,6 +335,14 @@
     - FiLM Grad-CAM hook은 post-FiLM module에 걸며, PyTorch inplace activation
       충돌을 피하기 위해 tensor-level gradient hook을 사용한다.
     - Local smoke checkpoint 기준 `concat`, `film_gamma` Grad-CAM export가 통과했다.
+  - 4-I11에서 Stage 4 smoke output checker를 구현했다.
+    - `scripts/check_stage4_outputs.py`는 checkpoint, train history/metadata,
+      predictions, classification metrics, trading metrics, Grad-CAM, selected
+      samples, modulation summary/value export, context artifacts, run manifest를
+      한 번에 확인한다.
+    - Checker는 파일 존재뿐 아니라 CSV parse/row count와 JSON parse도 확인한다.
+    - Local smoke output check는 `concat`, `film_gamma` 모두 통과했다.
+    - Compact summary는 `reports/smoke_tests/stage4_smoke_summary.json`에 저장했다.
 - Re-image CNN에 이식:
   - 기존 CNN 구조는 유지하고, block 내부에 FiLM만 삽입한다.
   - 기본 위치: `Conv -> BN -> FiLM -> LeakyReLU -> MaxPool`

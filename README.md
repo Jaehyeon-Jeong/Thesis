@@ -18,7 +18,7 @@ tracked.
 | `stage1_reimage_reproduction` | Reproduce the Re-image CNN pipeline on public I20 stock images | In progress: `I20/R60` seed-42 fast diagnostic archived; `I20/R20` archive is smoke-only; `I20/R5`, strict batch-128 run, and five-seed reproduction are later |
 | `stage2_btc_extension` | Extend the confirmed pipeline to BTC OHLCV | Single-seed 36-run complete; selected `I20/R20` and `I60/R20` five-seed robustness check complete; full 180-run five-seed grid later |
 | `stage3_linear_adapter` | Add a Linear comparison model | First test on Stage 2 best config completed; result dropped to majority level; remaining grid runs pending |
-| `stage4_film_conditioning` | Compare market-context concat, gating, gamma-only FiLM, and full FiLM on the fixed BTC CNN | Planning through 4-8, implementation readiness 4-I0, shared scaffold 4-I1, and structured context feature builder 4-I2 complete; next: context MLP encoder |
+| `stage4_film_conditioning` | Compare market-context concat, gating, gamma-only FiLM, and full FiLM on the fixed BTC CNN | Planning through 4-8 and implementation 4-I0 through 4-I3 complete; next: CNN + context concat |
 
 ### Current Status
 
@@ -81,6 +81,17 @@ Stage 4:
   1/99% clipping, and z-score normalization are fit on train only.
 - Shared context encoder:
   `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`.
+- Primary sample timing note:
+  - `I60/R20/ohlc_ma_vb` requires both a 60-day image and valid MA60 values for
+    every day inside the image.
+  - BTC OHLCV starts on `2018-01-01`; the first valid primary sample end date
+    is therefore `2018-04-29`.
+  - The offset is `118` days because both windows are inclusive:
+    `(60 - 1) + (60 - 1) = 118`.
+  - F&G starts on `2018-02-01`, so the F&G start date does not remove any valid
+    primary samples.
+  - Only one raw F&G missing date directly overlaps a primary sample end date:
+    `2024-10-26`; it is handled with previous-available-value as-of merge.
 - 4-6 fixed the insertion design:
   - concat attaches after I60 flatten: `(B, 184320) + (B, 32) -> (B, 184352)`;
   - gating applies a final-block channel gate to `(B, 512, 2, 180)`;
@@ -116,7 +127,12 @@ Stage 4:
 - Local I60/R20/ohlc_ma_vb context build produced `2,399` rows:
   train `671`, validation `287`, test `1,441`.
 - Primary context feature missing-rate warnings: none.
-- Next implementation step is 4-I3 context MLP encoder.
+- 4-I3 completed the shared context MLP encoder:
+  - `(B, 8) -> (B, 32)`;
+  - parameter count `1,344`;
+  - local check passed on dummy tensors and real normalized rows from the 4-I2
+    context table.
+- Next implementation step is 4-I4 `CNN + context concat`.
 - News context is preserved as a second-phase track after source/date/leakage
   audit. Candidate source: Hugging Face `edaschau/bitcoin_news`.
 - Advisor-direction mapping is documented in the Stage 4 README/source map and
@@ -171,7 +187,7 @@ config, 코드 scaffold만 올립니다. 대용량 데이터, 논문 PDF, checkp
 | `stage1_reimage_reproduction` | public I20 stock image로 Re-image CNN pipeline 재현 | 진행 중: `I20/R60` seed-42 fast diagnostic 보존; `I20/R20` archive는 smoke-only; `I20/R5`, strict batch-128 run, five-seed reproduction은 later |
 | `stage2_btc_extension` | 확인된 pipeline을 BTC OHLCV로 확장 | single-seed 36-run 완료; `I20/R20`, `I60/R20` 선별 five-seed robustness check 완료; full 180-run five-seed grid는 later |
 | `stage3_linear_adapter` | Linear 비교 모델 추가 | Stage 2 best config 1회 테스트 완료; majority 수준으로 하락; 나머지 grid run 예정 |
-| `stage4_film_conditioning` | 고정 BTC CNN 위에서 market-context concat, gating, gamma-only FiLM, full FiLM 비교 | 4-8 계획, 4-I0 구현 준비, 4-I1 공통 scaffold, 4-I2 structured context feature builder 완료; 다음은 context MLP encoder |
+| `stage4_film_conditioning` | 고정 BTC CNN 위에서 market-context concat, gating, gamma-only FiLM, full FiLM 비교 | 4-8 계획과 4-I0부터 4-I3까지 구현 완료; 다음은 CNN + context concat |
 
 ### 현재 상태
 
@@ -234,6 +250,16 @@ Stage 4:
   1/99% clipping, z-score normalization을 train split에서만 fit합니다.
 - Shared context encoder:
   `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`.
+- Primary sample timing note:
+  - `I60/R20/ohlc_ma_vb`는 60일 image와 image 안 모든 날짜의 유효한 MA60이
+    필요합니다.
+  - BTC OHLCV는 `2018-01-01`부터 시작하므로 첫 primary sample end date는
+    `2018-04-29`입니다.
+  - Offset은 `118`일입니다. 두 window가 모두 inclusive라서
+    `(60 - 1) + (60 - 1) = 118`입니다.
+  - F&G는 `2018-02-01`부터 시작하므로 valid primary sample을 제거하지 않습니다.
+  - Primary sample end date와 직접 겹치는 F&G 원본 missing date는
+    `2024-10-26` 하루뿐이며, previous-available-value as-of merge로 처리합니다.
 - 4-6에서 삽입 설계를 고정했습니다.
   - concat은 I60 flatten 뒤에 붙입니다: `(B, 184320) + (B, 32) -> (B, 184352)`.
   - gating은 final block feature map `(B, 512, 2, 180)`에 channel gate를 적용합니다.
@@ -267,7 +293,12 @@ Stage 4:
 - Local I60/R20/ohlc_ma_vb context build에서 `2,399` row가 생성됐습니다:
   train `671`, validation `287`, test `1,441`.
 - Primary context feature missing-rate warning은 없습니다.
-- 다음 구현 단계는 4-I3 context MLP encoder입니다.
+- 4-I3에서 shared context MLP encoder를 완료했습니다.
+  - `(B, 8) -> (B, 32)`;
+  - parameter count `1,344`;
+  - dummy tensor와 4-I2 context table의 실제 normalized row에서 local check를
+    통과했습니다.
+- 다음 구현 단계는 4-I4 `CNN + context concat`입니다.
 - News context는 제거하지 않고 source/date/leakage audit 이후 second-phase track으로
   유지합니다. 후보 source는 Hugging Face `edaschau/bitcoin_news`입니다.
 - 교수님 방향성 파일과 Stage 4 실험 결정의 연결은 Stage 4 README/source map과

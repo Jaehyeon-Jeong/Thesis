@@ -221,6 +221,12 @@
     - 4-I2 local build 결과, primary `I60/R20/ohlc_ma_vb` context table은
       2,399 rows(train 671, validation 287, test 1,441)이며 8개 primary feature의
       missing-rate warning은 없었다.
+    - Primary `I60/R20/ohlc_ma_vb`의 첫 valid sample end date는 `2018-04-29`다.
+      BTC OHLCV는 `2018-01-01`부터 시작하지만, MA60 첫 유효일과 I60 window가 모두
+      inclusive라 정확한 offset은 `(60 - 1) + (60 - 1) = 118`일이다.
+      F&G는 `2018-02-01`부터 시작하므로 valid primary sample을 제거하지 않으며,
+      primary sample end date와 직접 겹치는 F&G 원본 missing date는 `2024-10-26`
+      하루뿐이다.
   - News context는 버리지 않는다. 다만 바로 LLM/VLM prompt로 처리하지 않고,
     별도 `4-N` track에서 dataset audit, publication-time alignment, daily aggregation,
     leakage check를 먼저 수행한다.
@@ -249,6 +255,8 @@
   - context encoder는 numeric market context vector를 MLP로 condition embedding으로 바꾼다.
   - 4-5에서 shared context encoder를
     `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`로 고정했다.
+  - 4-I3에서 이 shared context encoder를 구현했고, dummy tensor와 local 4-I2
+    normalized context row 모두에서 `(B, 8) -> (B, 32)` shape check를 통과했다.
   - concat model은 CNN feature와 context embedding을 classifier 직전에 연결한다.
     - 4-6 기준: I60 flatten feature `(B, 184320)` 뒤에 context embedding `(B, 32)`를
       붙여 `(B, 184352)` classifier input을 만든다.

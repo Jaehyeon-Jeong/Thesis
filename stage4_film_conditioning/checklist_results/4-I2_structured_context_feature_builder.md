@@ -88,6 +88,20 @@ Notable implementation note:
   numeric context run. It appears to be transaction/order-style data rather
   than the Fear & Greed index table.
 - The raw F&G CSV files are not tracked in GitHub.
+- Primary sample start-date note:
+  - The selected Stage 2 baseline is `I60/R20/ohlc_ma_vb`.
+  - This requires both a 60-day image window and a valid 60-day moving-average
+    line inside that image.
+  - With BTC OHLCV starting on `2018-01-01`, the first valid MA60 date is
+    `2018-03-01`, and the first valid 60-day image whose every day has MA60
+    ends on `2018-04-29`.
+  - The exact offset is `118` days, not `120`, because both 60-day windows are
+    inclusive: `(60 - 1) + (60 - 1) = 118`.
+  - F&G starts on `2018-02-01`, so the F&G start date does not remove any valid
+    primary samples.
+  - Among the four raw F&G missing calendar dates, only `2024-10-26` directly
+    overlaps a primary sample end date. It is filled with the previous available
+    F&G value, so no future leakage is introduced.
 
 Next:
 - `4-I3`: implement the small shared context MLP encoder.
@@ -179,6 +193,20 @@ GitHub에 올리는 report copy:
   사용하지 않습니다. Fear & Greed index table이라기보다 transaction/order 성격의
   데이터로 보입니다.
 - Raw F&G CSV 파일은 GitHub에 track하지 않습니다.
+- Primary sample 시작일 note:
+  - 선택된 Stage 2 baseline은 `I60/R20/ohlc_ma_vb`입니다.
+  - 이 설정은 60일 image window와 이미지 내부의 유효한 60일 이동평균선이 모두
+    필요합니다.
+  - BTC OHLCV가 `2018-01-01`부터 시작하므로 첫 MA60 유효일은
+    `2018-03-01`이고, window 안의 모든 날짜가 MA60을 갖는 첫 60일 image의
+    end date는 `2018-04-29`입니다.
+  - 정확한 offset은 `118`일입니다. 두 60일 window가 모두 inclusive이므로
+    `(60 - 1) + (60 - 1) = 118`입니다.
+  - F&G는 `2018-02-01`부터 시작하므로 F&G 시작일 때문에 primary sample이
+    제거되지는 않습니다.
+  - F&G 원본 missing calendar date 4개 중 primary sample end date와 직접 겹치는
+    것은 `2024-10-26` 하루뿐입니다. 이 값은 직전 이용 가능 F&G 값으로 채우므로
+    future leakage가 없습니다.
 
 다음:
 - `4-I3`: 작은 shared context MLP encoder 구현.

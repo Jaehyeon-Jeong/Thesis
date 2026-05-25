@@ -116,7 +116,12 @@ Implementation phase:
   - Local I60/R20/ohlc_ma_vb context build produced 2,399 rows with no primary
     feature missing-rate warnings.
   - Result: [4-I2 Structured context feature builder](checklist_results/4-I2_structured_context_feature_builder.md)
-- [ ] 4-I3. Context MLP encoder
+- [x] 4-I3. Context MLP encoder
+  - Added shared `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`
+    context encoder.
+  - Shape check passed on dummy tensors and real normalized rows from the local
+    `4-I2` context table.
+  - Result: [4-I3 Context MLP encoder](checklist_results/4-I3_context_mlp_encoder.md)
 - [ ] 4-I4. `CNN + context concat` model
 - [ ] 4-I5. `CNN + context gating` model
 - [ ] 4-I6. FiLM layer and FiLM generator modules
@@ -264,7 +269,12 @@ Stage 4 main ablation:
   - Local I60/R20/ohlc_ma_vb context build에서 2,399 row가 생성됐고 primary
     feature missing-rate warning은 없었습니다.
   - 결과: [4-I2 Structured context feature builder](checklist_results/4-I2_structured_context_feature_builder.md)
-- [ ] 4-I3. Context MLP encoder
+- [x] 4-I3. Context MLP encoder
+  - 공통 `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`
+    context encoder를 추가했습니다.
+  - Dummy tensor와 local `4-I2` context table의 실제 normalized row에서 shape
+    check를 통과했습니다.
+  - 결과: [4-I3 Context MLP encoder](checklist_results/4-I3_context_mlp_encoder.md)
 - [ ] 4-I4. `CNN + context concat` model
 - [ ] 4-I5. `CNN + context gating` model
 - [ ] 4-I6. FiLM layer와 FiLM generator module

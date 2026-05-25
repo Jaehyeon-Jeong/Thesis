@@ -13,11 +13,14 @@ from stage4_film.config import (
     load_config,
     make_stage4_experiment_name,
 )
+from stage4_film.conditions import ContextEncoder, build_context_encoder_from_config
 from stage4_film.paths import Stage4Paths, build_stage4_paths, ensure_stage4_output_dirs
 
 __all__ = [
     "CONTEXT_METHODS",
+    "ContextEncoder",
     "Stage4Paths",
+    "build_context_encoder_from_config",
     "build_stage4_paths",
     "ensure_stage4_output_dirs",
     "get_context_config",

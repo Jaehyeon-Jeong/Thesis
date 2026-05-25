@@ -118,7 +118,24 @@ Implementation-source distinction:
     1 day because the F&G dataset has a missing calendar date on 2024-10-26.
   - All 8 primary context features have 0.0 missing rate in train,
     validation, and test after the matched-window sample restrictions.
-  - Next implementation item is `4-I3`, context MLP encoder.
+  - Primary sample timing detail:
+    - `I60/R20/ohlc_ma_vb` requires a 60-day image and valid MA60 values for
+      every day inside the image.
+    - With BTC OHLCV starting on 2018-01-01, the first valid sample end date is
+      2018-04-29.
+    - The exact offset is 118 days because both windows are inclusive:
+      `(60 - 1) + (60 - 1) = 118`.
+    - F&G starts on 2018-02-01, so it does not remove valid primary samples.
+    - The only raw F&G missing date directly overlapping a primary sample end
+      date is 2024-10-26, handled by previous-available-value as-of merge.
+- 4-I3 context MLP encoder decision:
+  - Added `src/stage4_film/conditions/context_encoder.py`.
+  - Shared encoder architecture:
+    `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`.
+  - Parameter count is 1,344.
+  - `scripts/check_stage4_context_encoder.py` passed on both dummy tensors and
+    real normalized rows from the local `4-I2` context table.
+  - Next implementation item is `4-I4`, `CNN + context concat`.
 
 ## 한국어
 
@@ -238,4 +255,21 @@ Implementation-source distinction:
     2024-10-26 missing date가 있어 max as-of age는 1일입니다.
   - Matched-window sample restriction 이후 8개 primary context feature는
     train/validation/test 모두 missing rate 0.0입니다.
-  - 다음 구현 항목은 `4-I3`, context MLP encoder입니다.
+  - Primary sample timing detail:
+    - `I60/R20/ohlc_ma_vb`는 60일 image와 image 안 모든 날짜의 유효한 MA60이
+      필요합니다.
+    - BTC OHLCV가 2018-01-01부터 시작하므로 첫 valid sample end date는
+      2018-04-29입니다.
+    - 정확한 offset은 118일입니다. 두 window가 모두 inclusive라서
+      `(60 - 1) + (60 - 1) = 118`입니다.
+    - F&G는 2018-02-01부터 시작하므로 valid primary sample을 제거하지 않습니다.
+    - Primary sample end date와 직접 겹치는 F&G 원본 missing date는
+      2024-10-26 하루뿐이고, previous-available-value as-of merge로 처리합니다.
+- 4-I3 context MLP encoder 결정:
+  - `src/stage4_film/conditions/context_encoder.py`를 추가했습니다.
+  - Shared encoder 구조:
+    `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`.
+  - Parameter count는 1,344입니다.
+  - `scripts/check_stage4_context_encoder.py`가 dummy tensor와 local `4-I2`
+    context table의 실제 normalized row 모두에서 통과했습니다.
+  - 다음 구현 항목은 `4-I4`, `CNN + context concat`입니다.

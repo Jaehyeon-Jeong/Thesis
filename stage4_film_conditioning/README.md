@@ -59,6 +59,17 @@ Context encoder and normalization decision:
   train-only z-score normalization.
 - The shared context encoder is intentionally small:
   `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`.
+- Primary sample timing note:
+  - `I60/R20/ohlc_ma_vb` requires both a 60-day image and a valid 60-day MA
+    line inside that image.
+  - With BTC OHLCV starting on `2018-01-01`, the first valid primary sample end
+    date is `2018-04-29`.
+  - The offset is `118` days because the MA60 and image windows are both
+    inclusive: `(60 - 1) + (60 - 1) = 118`.
+  - F&G starts on `2018-02-01`, so the F&G start date does not remove any valid
+    primary samples.
+  - Only one raw F&G missing date directly overlaps a primary sample end date:
+    `2024-10-26`; it is handled with the previous available F&G value.
 
 Main Stage 4 ablation models:
 
@@ -167,7 +178,12 @@ Implementation status:
 - Local I60/R20/ohlc_ma_vb context build produced `2,399` rows:
   train `671`, validation `287`, test `1,441`.
 - Primary context feature missing-rate warnings: none.
-- Next step: `4-I3` shared context MLP encoder.
+- `4-I3` is complete.
+- Added the shared context MLP encoder:
+  `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`.
+- Local check passed on dummy context tensors and real normalized rows from the
+  `4-I2` context table.
+- Next step: `4-I4` `CNN + context concat`.
 
 Main documents:
 - [Checklist](checklist.md)
@@ -187,6 +203,7 @@ Main documents:
 - [Implementation readiness review](checklist_results/4-I0_implementation_readiness_review.md)
 - [Shared config/code scaffold](checklist_results/4-I1_shared_code_config_scaffold.md)
 - [Structured context feature builder](checklist_results/4-I2_structured_context_feature_builder.md)
+- [Context MLP encoder](checklist_results/4-I3_context_mlp_encoder.md)
 
 ## 한국어
 
@@ -245,6 +262,17 @@ Context encoder와 normalization 결정:
   train-only z-score normalization을 적용합니다.
 - Shared context encoder는 작게 고정합니다:
   `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`.
+- Primary sample timing note:
+  - `I60/R20/ohlc_ma_vb`는 60일 image와 이미지 내부의 유효한 60일 MA line이
+    모두 필요합니다.
+  - BTC OHLCV가 `2018-01-01`부터 시작하므로 첫 primary sample end date는
+    `2018-04-29`입니다.
+  - Offset은 `118`일입니다. MA60과 image window가 모두 inclusive라서
+    `(60 - 1) + (60 - 1) = 118`입니다.
+  - F&G는 `2018-02-01`부터 시작하므로 F&G 시작일 때문에 valid primary sample이
+    제거되지는 않습니다.
+  - Primary sample end date와 직접 겹치는 F&G 원본 missing date는
+    `2024-10-26` 하루뿐이며, 직전 이용 가능 F&G 값으로 처리합니다.
 
 Stage 4 주요 ablation model:
 
@@ -349,7 +377,12 @@ Implementation status:
 - Local I60/R20/ohlc_ma_vb context build에서 `2,399` row가 생성됐습니다:
   train `671`, validation `287`, test `1,441`.
 - Primary context feature missing-rate warning은 없습니다.
-- 다음 단계는 `4-I3` shared context MLP encoder입니다.
+- `4-I3`을 완료했습니다.
+- Shared context MLP encoder를 추가했습니다:
+  `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`.
+- Dummy context tensor와 `4-I2` context table의 실제 normalized row 모두에서
+  local check를 통과했습니다.
+- 다음 단계는 `4-I4` `CNN + context concat`입니다.
 
 주요 문서:
 - [Checklist](checklist.md)
@@ -369,3 +402,4 @@ Implementation status:
 - [Implementation readiness review](checklist_results/4-I0_implementation_readiness_review.md)
 - [Shared config/code scaffold](checklist_results/4-I1_shared_code_config_scaffold.md)
 - [Structured context feature builder](checklist_results/4-I2_structured_context_feature_builder.md)
+- [Context MLP encoder](checklist_results/4-I3_context_mlp_encoder.md)

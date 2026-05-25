@@ -16,8 +16,11 @@ Added in `4-I2`:
 - `build_stage4_context_features.py`: builds raw/normalized structured context
   features and the train-only context scaler.
 
+Added in `4-I3`:
+- `check_stage4_context_encoder.py`: validates the shared numeric context MLP
+  on dummy tensors and, when available, real normalized context rows.
+
 Planned next scripts:
-- `check_stage4_context_encoder.py`
 - `check_stage4_model_shapes.py`
 - `check_stage4_film_layers.py`
 - `run_stage4_context_model.py`
@@ -49,8 +52,11 @@ Stage 4 script는 구현 단계에서 순차적으로 추가합니다.
 - `build_stage4_context_features.py`: raw/normalized structured context feature와
   train-only context scaler를 생성합니다.
 
+`4-I3`에서 추가한 script:
+- `check_stage4_context_encoder.py`: shared numeric context MLP를 dummy tensor와,
+  가능하면 실제 normalized context row로 검증합니다.
+
 다음 예정 script:
-- `check_stage4_context_encoder.py`
 - `check_stage4_model_shapes.py`
 - `check_stage4_film_layers.py`
 - `run_stage4_context_model.py`

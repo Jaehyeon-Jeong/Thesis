@@ -15,11 +15,13 @@ Added in `4-I2`:
 - `context/features.py`
 - `context/normalization.py`
 
+Added in `4-I3`:
+- `conditions/context_encoder.py`
+
 Planned next modules:
 - `layers/film.py`
 - `models/film_stock_cnn.py`
 - `models/context_stock_cnn.py`
-- `conditions/`
 - `training/`
 - `evaluation/`
 - `interpretability/`
@@ -44,11 +46,13 @@ Stage 4 FiLM/context-conditioning 구현 package입니다.
 - `context/features.py`
 - `context/normalization.py`
 
+`4-I3`에서 추가한 module:
+- `conditions/context_encoder.py`
+
 다음 예정 module:
 - `layers/film.py`
 - `models/film_stock_cnn.py`
 - `models/context_stock_cnn.py`
-- `conditions/`
 - `training/`
 - `evaluation/`
 - `interpretability/`

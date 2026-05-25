@@ -141,7 +141,7 @@ News-context position:
   encoded with train-fit non-LLM text features.
 
 Implementation readiness decision:
-- `4-I0` is complete and Stage 4 can proceed to `4-I1`.
+- `4-I0` is complete.
 - Stage 4 code should add a `stage2_dependency` config section and import Stage
   2 helpers for BTC loading, sample generation, image generation, split,
   normalization, evaluation, and trading metrics.
@@ -154,6 +154,14 @@ Implementation readiness decision:
   development can now use the supplied F&G CSV.
 - The detailed task map is stored in
   `reports/tables/stage4_implementation_task_map.csv`.
+
+Implementation status:
+- `4-I1` is complete.
+- Added local/Kaggle configs, Stage 4 config/path/runtime/seed helpers, script
+  path utilities, and `check_stage4_scaffold.py`.
+- Local scaffold check passed and confirmed BTC, F&G, and Stage 2 `src`
+  availability.
+- Next step: `4-I2` structured context source audit and feature builder.
 
 Main documents:
 - [Checklist](checklist.md)
@@ -171,6 +179,7 @@ Main documents:
 - [Grad-CAM plus context/gate/gamma/beta export plan](checklist_results/4-7_gradcam_context_modulation_export_plan.md)
 - [Kaggle runner and output backup plan](checklist_results/4-8_kaggle_runner_and_output_backup_plan.md)
 - [Implementation readiness review](checklist_results/4-I0_implementation_readiness_review.md)
+- [Shared config/code scaffold](checklist_results/4-I1_shared_code_config_scaffold.md)
 
 ## 한국어
 
@@ -308,7 +317,7 @@ Kaggle runner와 backup 결정:
   text feature encoder로 시작합니다.
 
 Implementation readiness 결정:
-- `4-I0`은 완료됐고 Stage 4는 `4-I1`로 진행할 수 있습니다.
+- `4-I0`은 완료됐습니다.
 - Stage 4 code는 `stage2_dependency` config section을 추가하고, BTC loading,
   sample generation, image generation, split, normalization, evaluation,
   trading metric은 Stage 2 helper를 import해서 사용해야 합니다.
@@ -320,6 +329,14 @@ Implementation readiness 결정:
 - 첫 full 실행 target은 여전히 Kaggle이지만, local context feature 개발은 이제
   제공된 F&G CSV로 진행할 수 있습니다.
 - 상세 task map은 `reports/tables/stage4_implementation_task_map.csv`에 저장했습니다.
+
+Implementation status:
+- `4-I1`을 완료했습니다.
+- Local/Kaggle config, Stage 4 config/path/runtime/seed helper, script path
+  utility, `check_stage4_scaffold.py`를 추가했습니다.
+- Local scaffold check를 통과했고 BTC, F&G, Stage 2 `src` 사용 가능성을
+  확인했습니다.
+- 다음 단계는 `4-I2` structured context source audit and feature builder입니다.
 
 주요 문서:
 - [Checklist](checklist.md)
@@ -335,3 +352,6 @@ Implementation readiness 결정:
 - [Context encoder and normalization plan](checklist_results/4-5_context_encoder_and_normalization_plan.md)
 - [Concat/gating/FiLM insertion design](checklist_results/4-6_concat_gating_film_insertion_design.md)
 - [Grad-CAM plus context/gate/gamma/beta export plan](checklist_results/4-7_gradcam_context_modulation_export_plan.md)
+- [Kaggle runner and output backup plan](checklist_results/4-8_kaggle_runner_and_output_backup_plan.md)
+- [Implementation readiness review](checklist_results/4-I0_implementation_readiness_review.md)
+- [Shared config/code scaffold](checklist_results/4-I1_shared_code_config_scaffold.md)

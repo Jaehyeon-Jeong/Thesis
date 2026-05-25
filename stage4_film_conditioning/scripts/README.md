@@ -2,11 +2,15 @@
 
 ## English
 
-Stage 4 scripts will be added during implementation.
+Stage 4 scripts are added incrementally during implementation.
 
-Planned scripts:
-- `_stage4_script_utils.py`
-- `check_stage4_scaffold.py`
+Added in `4-I1`:
+- `_stage4_script_utils.py`: adds Stage 4 `src` and Stage 2 `src` to
+  `sys.path`.
+- `check_stage4_scaffold.py`: validates config, local BTC/F&G paths, Stage 2
+  dependency, and primary experiment names.
+
+Planned next scripts:
 - `audit_stage4_context_sources.py`
 - `build_stage4_context_features.py`
 - `check_stage4_context_encoder.py`
@@ -27,11 +31,15 @@ Stage 2 `src` to `sys.path`.
 
 ## 한국어
 
-Stage 4 script는 구현 단계에서 추가합니다.
+Stage 4 script는 구현 단계에서 순차적으로 추가합니다.
 
-예정 script:
-- `_stage4_script_utils.py`
-- `check_stage4_scaffold.py`
+`4-I1`에서 추가한 script:
+- `_stage4_script_utils.py`: Stage 4 `src`와 Stage 2 `src`를 `sys.path`에
+  추가합니다.
+- `check_stage4_scaffold.py`: config, local BTC/F&G path, Stage 2 dependency,
+  primary experiment name을 검증합니다.
+
+다음 예정 script:
 - `audit_stage4_context_sources.py`
 - `build_stage4_context_features.py`
 - `check_stage4_context_encoder.py`

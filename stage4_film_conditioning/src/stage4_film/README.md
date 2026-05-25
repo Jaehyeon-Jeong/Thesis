@@ -2,13 +2,15 @@
 
 ## English
 
-Placeholder for the Stage 4 FiLM implementation.
+Stage 4 FiLM/context-conditioning implementation package.
 
-Planned modules:
+Added in `4-I1`:
 - `config.py`
 - `paths.py`
 - `runtime.py`
 - `seed.py`
+
+Planned next modules:
 - `layers/film.py`
 - `models/film_stock_cnn.py`
 - `models/context_stock_cnn.py`
@@ -25,13 +27,15 @@ blocker requires it.
 
 ## 한국어
 
-Stage 4 FiLM 구현을 위한 placeholder입니다.
+Stage 4 FiLM/context-conditioning 구현 package입니다.
 
-예정 module:
+`4-I1`에서 추가한 module:
 - `config.py`
 - `paths.py`
 - `runtime.py`
 - `seed.py`
+
+다음 예정 module:
 - `layers/film.py`
 - `models/film_stock_cnn.py`
 - `models/context_stock_cnn.py`

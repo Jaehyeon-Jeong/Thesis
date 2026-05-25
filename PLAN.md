@@ -237,6 +237,9 @@
     `stage4_film_conditioning/F&G_data/fear_greed_index.csv`에 추가됐다.
     Raw F&G CSV는 GitHub에 올리지 않고, Kaggle run에서는 public F&G dataset을
     attach해서 재현성을 유지한다.
+  - 4-I1 기준: Stage 4 local/Kaggle config, path/runtime/seed helper,
+    Stage 2 dependency import utility, scaffold checker가 추가됐고 local check가
+    통과했다. 다음 구현은 `4-I2` context source audit/feature builder다.
 - 모델 구현:
   - `ethanjperez/film`의 핵심 구조를 최대한 동일하게 따른다.
   - context encoder와 fusion/modulation head를 분리한다.

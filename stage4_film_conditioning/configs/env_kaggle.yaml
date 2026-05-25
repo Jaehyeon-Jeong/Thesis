@@ -1,0 +1,272 @@
+environment:
+  name: kaggle
+  description: "Stage 4 Kaggle full-run environment."
+
+paths:
+  project_root: "/kaggle/working/stage4_film_conditioning"
+  data_root: "/kaggle/input"
+  source_file: ""
+  fear_greed_file: ""
+  output_root: "/kaggle/working/stage4_film_conditioning/outputs/stage4"
+  checkpoint_root: "/kaggle/working/stage4_film_conditioning/outputs/stage4/checkpoints"
+  metrics_root: "/kaggle/working/stage4_film_conditioning/outputs/stage4/metrics"
+  predictions_root: "/kaggle/working/stage4_film_conditioning/outputs/stage4/predictions"
+  figures_root: "/kaggle/working/stage4_film_conditioning/outputs/stage4/figures"
+  context_root: "/kaggle/working/stage4_film_conditioning/outputs/stage4/context"
+  run_manifest_root: "/kaggle/working/stage4_film_conditioning/outputs/stage4/run_manifests"
+  reports_root: "/kaggle/working/stage4_film_conditioning/reports"
+  tables_root: "/kaggle/working/stage4_film_conditioning/reports/tables"
+
+stage2_dependency:
+  project_root: "/kaggle/working/stage2_btc_extension"
+  src_path: "/kaggle/working/stage2_btc_extension/src"
+  baseline_output_root: "/kaggle/working/stage2_btc_extension/outputs/stage2"
+  selected_baseline_experiment: "stage2_i60_ohlc_ma_vb_r20"
+  selected_baseline_accuracy_mean: 0.579320
+  selected_baseline_roc_auc_mean: 0.584862
+  note: "Stage 4 imports Stage 2 BTC data/image/split/evaluation helpers and changes only the context branch/model wrapper."
+
+data:
+  dataset_name: "bitcoin-historical-datasets-2018-2024"
+  kaggle_url: "https://www.kaggle.com/datasets/novandraanugrah/bitcoin-historical-datasets-2018-2024"
+  source_filename: "btc_1d_data_2018_to_2025.csv"
+  source_file: ""
+  auto_detect_source_file: true
+  report_end_date: "2024-12-31"
+  optional_holdout_start_date: "2025-01-01"
+  timestamp_column: "Open time"
+  canonical_columns:
+    date: "Date"
+    open: "Open"
+    high: "High"
+    low: "Low"
+    close: "Close"
+    volume: "Volume"
+
+context:
+  context_window: 60
+  policy: matched_window
+  source_timing: "features available at or before image end date t"
+  fear_greed:
+    dataset_name: "historical-and-fear-greed-index-datasets"
+    kaggle_url: "https://www.kaggle.com/datasets/ashishpatel8736/historical-and-fear-greed-index-datasets"
+    local_file: ""
+    kaggle_file: ""
+    source_filename: "fear_greed_index.csv"
+    auto_detect_source_file: true
+    date_column: "date"
+    value_column: "value"
+    classification_column: "classification"
+    merge_policy: previous_available_value
+  primary_features:
+    - fg_value
+    - fg_mean_60
+    - fg_delta_60
+    - fg_std_60
+    - bb_percent_b_60
+    - bb_bandwidth_60
+    - mfi_60
+    - rv_60
+  preprocessing:
+    fit_on: train
+    imputation: train_median
+    clipping:
+      enabled: true
+      lower_quantile: 0.01
+      upper_quantile: 0.99
+      fit_on: train
+    scaling:
+      method: zscore
+      fit_on: train
+      epsilon: 1.0e-8
+
+runtime:
+  device: cuda
+  fail_if_cuda_unavailable_for_full_run: true
+  num_workers: 2
+  pin_memory: true
+  persistent_workers: true
+  preload_train_val_images: false
+  preload_chunk_size: 1024
+
+run:
+  default_run_mode: full_single_seed
+  default_image_windows: [60]
+  default_image_specs: ["ohlc_ma_vb"]
+  default_return_horizons: [20]
+  default_context_methods: ["concat", "gating", "film_gamma", "film_full"]
+  full_single_seed_run_seeds: [42]
+  full_paper_style_run_seeds: [42, 43, 44, 45, 46]
+
+split:
+  train_val_start_date: "2018-01-01"
+  train_val_end_date: "2020-12-31"
+  test_start_date: "2021-01-01"
+  test_end_date: "2024-12-31"
+  train_ratio: 0.70
+  validation_ratio: 0.30
+  split_seed: 42
+  split_method: random_within_train_val_pool
+  stratify: false
+  purge_label_end_date: true
+
+imaging:
+  image_windows: [5, 20, 60]
+  return_horizons: [5, 20, 60]
+  image_specs: ["ohlc", "ohlc_vb", "ohlc_ma", "ohlc_ma_vb"]
+  pixels_per_day: 3
+  background_value: 0
+  foreground_value: 255
+  image_dtype: uint8
+  ma_type: simple_moving_average
+  ma_min_periods_policy: full_window_only
+  window_specs:
+    "5":
+      height: 32
+      width: 15
+      price_height: 25
+      volume_height: 6
+      gap_height: 1
+      ma_window: 5
+    "20":
+      height: 64
+      width: 60
+      price_height: 51
+      volume_height: 12
+      gap_height: 1
+      ma_window: 20
+    "60":
+      height: 96
+      width: 180
+      price_height: 76
+      volume_height: 19
+      gap_height: 1
+      ma_window: 60
+
+normalization:
+  pixel_scale: 255.0
+  fit_on: train
+  scope: per_image_window_spec_horizon
+  epsilon: 1.0e-8
+
+model:
+  family: stock_cnn_style_plus_context_conditioning
+  input_channels: 1
+  num_classes: 2
+  kernel_size: [5, 3]
+  pool_size: [2, 1]
+  leaky_relu_slope: 0.01
+  dropout: 0.5
+  weight_initialization: xavier_uniform
+  window_models:
+    "5":
+      name: stock_cnn_i5
+      input_shape: [1, 32, 15]
+      num_blocks: 2
+      channels: [64, 128]
+      first_vertical_dilation: 1
+      expected_flatten_dim: 15360
+      expected_num_params: 155138
+    "20":
+      name: stock_cnn_i20
+      input_shape: [1, 64, 60]
+      num_blocks: 3
+      channels: [64, 128, 256]
+      first_vertical_dilation: 2
+      expected_flatten_dim: 46080
+      expected_num_params: 708866
+    "60":
+      name: stock_cnn_i60
+      input_shape: [1, 96, 180]
+      num_blocks: 4
+      channels: [64, 128, 256, 512]
+      first_vertical_dilation: 3
+      expected_flatten_dim: 184320
+      expected_num_params: 2952962
+
+stage4_model:
+  primary_image_window: 60
+  primary_return_horizon: 20
+  primary_image_spec: "ohlc_ma_vb"
+  context_dim: 8
+  context_embedding_dim: 32
+  context_encoder_hidden_dim: 32
+  context_encoder_dropout: 0.10
+  context_methods: ["concat", "gating", "film_gamma", "film_full"]
+  concat:
+    insertion_point: after_flatten_before_logits
+  gating:
+    insertion_point: final_block_feature_map
+    gate_formula: "2 * sigmoid(raw_gate)"
+    initial_gate: 1.0
+  film:
+    insertion_point: after_batchnorm_before_leakyrelu
+    apply_to_blocks: all
+    gamma_initial_value: 1.0
+    beta_initial_value: 0.0
+    zero_init_generator_output: true
+
+training:
+  batch_size: 128
+  max_epochs: 100
+  optimizer: adam
+  learning_rate: 1.0e-5
+  loss: cross_entropy
+  early_stopping:
+    monitor: val_loss
+    mode: min
+    patience: 2
+  mixed_precision: false
+  data_parallel: false
+  log_every_batches: 20
+  determinism:
+    enabled: true
+    cudnn_deterministic: true
+    cudnn_benchmark: false
+
+evaluation:
+  batch_size: 128
+  threshold: 0.5
+  threshold_tie_class: 1
+  target_probability_column: prob_up
+  metrics:
+    - accuracy
+    - majority_class_accuracy
+    - precision
+    - recall
+    - f1
+    - roc_auc
+    - average_precision
+    - brier_score
+    - log_loss
+    - confusion_matrix
+    - probability_return_correlation
+    - calibration_10_bins
+
+trading:
+  strategies: ["long_flat", "long_short"]
+  annualization_periods: 365
+  transaction_cost_bps: 10.0
+  overlapping_horizon_backtest: true
+  metrics:
+    - annualized_return
+    - annualized_volatility
+    - sharpe
+    - max_drawdown
+    - turnover
+    - transaction_cost_adjusted_return
+
+gradcam:
+  enabled: true
+  target_score: pre_softmax_logit
+  quick_samples_per_class: 2
+  report_samples_per_class: 10
+  write_report_copy: true
+  export_context_values: true
+  export_gate_gamma_beta: true
+
+reproducibility:
+  require_config_copy: true
+  require_run_manifest: true
+  require_git_commit_hash: true
+  require_kaggle_dataset_version: true

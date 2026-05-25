@@ -105,7 +105,11 @@ Implementation phase:
   - Kaggle runs should still attach the public F&G dataset for reproducibility.
   - Result: [4-I0 Implementation readiness review](checklist_results/4-I0_implementation_readiness_review.md)
   - Data update: [4-I0 Fear & Greed local data check](checklist_results/4-I0_fear_greed_local_data_check.md)
-- [ ] 4-I1. Shared Stage 4 config/code scaffold
+- [x] 4-I1. Shared Stage 4 config/code scaffold
+  - Added local/Kaggle configs, Stage 4 config/path/runtime/seed helpers, and a
+    scaffold checker.
+  - The local scaffold check finds BTC, F&G, and Stage 2 `src` successfully.
+  - Result: [4-I1 Shared Stage 4 config/code scaffold](checklist_results/4-I1_shared_code_config_scaffold.md)
 - [ ] 4-I2. Structured context feature builder
 - [ ] 4-I3. Context MLP encoder
 - [ ] 4-I4. `CNN + context concat` model
@@ -244,7 +248,11 @@ Stage 4 main ablation:
   - Kaggle run에서는 재현성을 위해 public F&G dataset을 계속 attach해야 합니다.
   - 결과: [4-I0 Implementation readiness review](checklist_results/4-I0_implementation_readiness_review.md)
   - 데이터 업데이트: [4-I0 Fear & Greed local data check](checklist_results/4-I0_fear_greed_local_data_check.md)
-- [ ] 4-I1. Stage 4 공통 config/code scaffold
+- [x] 4-I1. Stage 4 공통 config/code scaffold
+  - Local/Kaggle config, Stage 4 config/path/runtime/seed helper, scaffold
+    checker를 추가했습니다.
+  - Local scaffold check에서 BTC, F&G, Stage 2 `src`를 정상 확인했습니다.
+  - 결과: [4-I1 Shared Stage 4 config/code scaffold](checklist_results/4-I1_shared_code_config_scaffold.md)
 - [ ] 4-I2. Structured context feature builder
 - [ ] 4-I3. Context MLP encoder
 - [ ] 4-I4. `CNN + context concat` model

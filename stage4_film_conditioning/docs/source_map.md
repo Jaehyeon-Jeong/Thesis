@@ -95,10 +95,19 @@ Implementation-source distinction:
   - Stage 4 reuses Stage 2 BTC loading, sample/image generation,
     split/normalization, prediction metric, trading metric, and Grad-CAM helper
     code through a configurable Stage 2 `src` dependency.
-  - Local BTC OHLCV data is available, but F&G data is not present locally in
-    the active dataset folder; full context feature construction is Kaggle-first
-    unless a local F&G CSV is supplied.
-  - Next implementation item is `4-I1`, shared config/code scaffold.
+  - Local BTC OHLCV data is available.
+  - Local F&G data is now available at
+    `stage4_film_conditioning/F&G_data/fear_greed_index.csv`; raw F&G CSV files
+    are not tracked in GitHub.
+- 4-I1 scaffold decision:
+  - Added `configs/env_local.yaml` and `configs/env_kaggle.yaml`.
+  - Added Stage 4 config/path/runtime/seed helpers.
+  - Added shared script path utility that exposes both Stage 4 `src` and
+    Stage 2 `src`.
+  - Added `scripts/check_stage4_scaffold.py`; local scaffold check passed for
+    BTC, F&G, and Stage 2 dependency paths.
+  - Next implementation item is `4-I2`, structured context source audit and
+    feature builder.
 
 ## 한국어
 
@@ -196,7 +205,15 @@ Implementation-source distinction:
   - Stage 4는 configurable Stage 2 `src` dependency를 통해 Stage 2 BTC loading,
     sample/image generation, split/normalization, prediction metric, trading
     metric, Grad-CAM helper code를 재사용합니다.
-  - 로컬 BTC OHLCV data는 있지만 active dataset folder에 F&G data는 없습니다.
-    local F&G CSV를 따로 제공하지 않는 한 full context feature construction은
-    Kaggle-first입니다.
-  - 다음 구현 항목은 `4-I1`, shared config/code scaffold입니다.
+  - 로컬 BTC OHLCV data가 있습니다.
+  - 로컬 F&G data도 `stage4_film_conditioning/F&G_data/fear_greed_index.csv`에
+    추가됐습니다. Raw F&G CSV 파일은 GitHub에 track하지 않습니다.
+- 4-I1 scaffold 결정:
+  - `configs/env_local.yaml`, `configs/env_kaggle.yaml`을 추가했습니다.
+  - Stage 4 config/path/runtime/seed helper를 추가했습니다.
+  - Stage 4 `src`와 Stage 2 `src`를 함께 노출하는 shared script path utility를
+    추가했습니다.
+  - `scripts/check_stage4_scaffold.py`를 추가했고, local scaffold check에서 BTC,
+    F&G, Stage 2 dependency path가 모두 통과했습니다.
+  - 다음 구현 항목은 `4-I2`, structured context source audit and feature
+    builder입니다.

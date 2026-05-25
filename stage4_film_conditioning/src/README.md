@@ -2,10 +2,16 @@
 
 ## English
 
-Stage 4 source code will be added from checklist item `4-I1`.
+Stage 4 source code started in checklist item `4-I1`.
 
-Planned package:
+Package:
 - `src/stage4_film/`
+
+Added in `4-I1`:
+- `config.py`
+- `paths.py`
+- `runtime.py`
+- `seed.py`
 
 Implementation readiness decision:
 - Reuse Stage 2 `src/stage2_btc` for BTC data/image/split/evaluation helpers.
@@ -15,10 +21,16 @@ Implementation readiness decision:
 
 ## 한국어
 
-Stage 4 source code는 checklist item `4-I1`부터 추가합니다.
+Stage 4 source code는 checklist item `4-I1`부터 추가했습니다.
 
-예정 package:
+Package:
 - `src/stage4_film/`
+
+`4-I1`에서 추가한 module:
+- `config.py`
+- `paths.py`
+- `runtime.py`
+- `seed.py`
 
 Implementation readiness 결정:
 - BTC data/image/split/evaluation helper는 Stage 2 `src/stage2_btc`를 재사용합니다.

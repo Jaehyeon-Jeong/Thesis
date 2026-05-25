@@ -35,6 +35,11 @@ The Stage 4 Kaggle notebook should attach:
 - Stage 4 code snapshot:
   `/kaggle/input/datasets/moskow/stage4/stage4_film_conditioning`
   or the equivalent uploaded folder/zip.
+- Stage 2 code snapshot or a larger repository snapshot containing Stage 2:
+  Stage 4 reuses Stage 2 BTC loading, image generation, split, normalization,
+  evaluation, trading, and Grad-CAM helpers. If Stage 4 is uploaded as a
+  standalone folder, the runner must also attach/copy Stage 2 code and add its
+  `src` directory to `sys.path`.
 - BTC OHLCV source:
   `/kaggle/input/datasets/novandraanugrah/bitcoin-historical-datasets-2018-2024/btc_1d_data_2018_to_2025.csv`
   or auto-detected BTC CSV under `/kaggle/input`.
@@ -53,7 +58,9 @@ The first 4-A/B/C/D runner must fail early if:
 
 ```python
 CODE_INPUT = Path("/kaggle/input/datasets/moskow/stage4/stage4_film_conditioning")
+STAGE2_CODE_INPUT = Path("/kaggle/input/datasets/moskow/stage2/stage2_btc_extension")
 PROJECT_ROOT = Path("/kaggle/working/stage4_film_conditioning")
+STAGE2_PROJECT_ROOT = Path("/kaggle/working/stage2_btc_extension")
 DATA_ROOT = Path("/kaggle/input")
 BACKUP_ROOT = Path("/kaggle/working/stage4_saved_outputs")
 ```
@@ -66,16 +73,17 @@ must not change the dataset contents or split logic.
 The one-cell Kaggle runner should execute the following stages in this order:
 
 1. Copy or extract the Stage 4 code snapshot into `PROJECT_ROOT`.
-2. Assert required Stage 4 scripts exist.
-3. Patch `configs/env_kaggle.yaml` with Kaggle paths and runtime settings.
-4. Audit BTC and F&G sources.
-5. Build context features and the train-only context scaler.
-6. Train the selected ablation model.
-7. Evaluate classification predictions.
-8. Evaluate trading metrics.
-9. Generate Grad-CAM and context/gate/gamma/beta exports.
-10. Run an output receipt check.
-11. Summarize available Stage 4 results.
+2. Copy or locate the Stage 2 code dependency and expose Stage 2 `src`.
+3. Assert required Stage 4 scripts and Stage 2 dependency modules exist.
+4. Patch `configs/env_kaggle.yaml` with Kaggle paths and runtime settings.
+5. Audit BTC and F&G sources.
+6. Build context features and the train-only context scaler.
+7. Train the selected ablation model.
+8. Evaluate classification predictions.
+9. Evaluate trading metrics.
+10. Generate Grad-CAM and context/gate/gamma/beta exports.
+11. Run an output receipt check.
+12. Summarize available Stage 4 results.
 
 Expected implementation scripts:
 - `scripts/audit_stage4_context_sources.py`
@@ -244,6 +252,11 @@ Stage 4 Kaggle notebook은 다음 input을 attach해야 합니다.
 - Stage 4 code snapshot:
   `/kaggle/input/datasets/moskow/stage4/stage4_film_conditioning`
   또는 동일한 uploaded folder/zip.
+- Stage 2 code snapshot 또는 Stage 2가 포함된 더 큰 repository snapshot:
+  Stage 4는 Stage 2의 BTC loading, image generation, split, normalization,
+  evaluation, trading, Grad-CAM helper를 재사용합니다. Stage 4만 단독 folder로
+  업로드하면 runner가 Stage 2 code도 attach/copy하고 Stage 2 `src`를 `sys.path`에
+  추가해야 합니다.
 - BTC OHLCV source:
   `/kaggle/input/datasets/novandraanugrah/bitcoin-historical-datasets-2018-2024/btc_1d_data_2018_to_2025.csv`
   또는 `/kaggle/input` 아래에서 auto-detect되는 BTC CSV.
@@ -262,7 +275,9 @@ Stage 4 Kaggle notebook은 다음 input을 attach해야 합니다.
 
 ```python
 CODE_INPUT = Path("/kaggle/input/datasets/moskow/stage4/stage4_film_conditioning")
+STAGE2_CODE_INPUT = Path("/kaggle/input/datasets/moskow/stage2/stage2_btc_extension")
 PROJECT_ROOT = Path("/kaggle/working/stage4_film_conditioning")
+STAGE2_PROJECT_ROOT = Path("/kaggle/working/stage2_btc_extension")
 DATA_ROOT = Path("/kaggle/input")
 BACKUP_ROOT = Path("/kaggle/working/stage4_saved_outputs")
 ```
@@ -275,16 +290,17 @@ split logic은 절대 바꾸지 않습니다.
 Kaggle one-cell runner는 다음 순서로 실행해야 합니다.
 
 1. Stage 4 code snapshot을 `PROJECT_ROOT`로 복사/압축해제.
-2. 필요한 Stage 4 script 존재 여부 확인.
-3. `configs/env_kaggle.yaml`에 Kaggle path와 runtime setting patch.
-4. BTC와 F&G source audit.
-5. Context feature와 train-only context scaler 생성.
-6. 선택한 ablation model 학습.
-7. Classification prediction 평가.
-8. Trading metric 평가.
-9. Grad-CAM과 context/gate/gamma/beta export 생성.
-10. Output receipt check 실행.
-11. 사용 가능한 Stage 4 result summary 생성.
+2. Stage 2 code dependency를 복사하거나 위치를 확인하고 Stage 2 `src`를 노출.
+3. 필요한 Stage 4 script와 Stage 2 dependency module 존재 여부 확인.
+4. `configs/env_kaggle.yaml`에 Kaggle path와 runtime setting patch.
+5. BTC와 F&G source audit.
+6. Context feature와 train-only context scaler 생성.
+7. 선택한 ablation model 학습.
+8. Classification prediction 평가.
+9. Trading metric 평가.
+10. Grad-CAM과 context/gate/gamma/beta export 생성.
+11. Output receipt check 실행.
+12. 사용 가능한 Stage 4 result summary 생성.
 
 구현 대상 script 이름:
 - `scripts/audit_stage4_context_sources.py`

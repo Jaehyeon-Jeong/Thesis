@@ -2,8 +2,16 @@
 
 ## English
 
-Selected Stage 4 summary tables will be stored here.
+Current planning tables:
+- `stage4_implementation_task_map.csv`: implementation checklist item to file
+  map fixed by `4-I0`.
+
+Future result tables will be added after Kaggle runs.
 
 ## 한국어
 
-선택된 Stage 4 summary table을 여기에 저장합니다.
+현재 planning table:
+- `stage4_implementation_task_map.csv`: `4-I0`에서 고정한 구현 checklist와 파일
+  mapping입니다.
+
+Kaggle 실행 후 result table을 추가합니다.

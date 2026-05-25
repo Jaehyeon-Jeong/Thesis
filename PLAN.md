@@ -226,6 +226,13 @@
     요약하거나 non-LLM/LLM encoder로 embedding해서 context vector로 사용한다.
   - 현재 Stage 4 main은 structured numeric market context를 사용한
     FiLM/concat/gating 비교이고, news context는 같은 fusion 방식에 붙일 2차 확장이다.
+- 구현 dependency:
+  - 4-I0 기준: Stage 4는 Stage 2 BTC pipeline을 재작성하지 않는다.
+  - Stage 4 config는 `stage2_dependency` section을 갖고, Stage 2 project root와
+    Stage 2 `src` path를 명시한다.
+  - Stage 4 script는 Stage 4 `src`와 Stage 2 `src`를 모두 import path에 추가한다.
+  - Kaggle runner는 Stage 4 code snapshot만이 아니라 Stage 2 code snapshot도
+    attach/copy하거나, Stage 2와 Stage 4가 같이 들어 있는 larger snapshot을 사용한다.
 - 모델 구현:
   - `ethanjperez/film`의 핵심 구조를 최대한 동일하게 따른다.
   - context encoder와 fusion/modulation head를 분리한다.

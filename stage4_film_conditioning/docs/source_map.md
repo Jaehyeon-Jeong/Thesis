@@ -90,6 +90,15 @@ Implementation-source distinction:
   - Completion is defined by output-check success, not checkpoint existence.
   - If checkpoint exists but prediction/metric/Grad-CAM exports are missing,
     the runner resumes evaluation/export instead of declaring the run complete.
+- 4-I0 implementation readiness decision:
+  - Stage 4 can proceed to implementation.
+  - Stage 4 reuses Stage 2 BTC loading, sample/image generation,
+    split/normalization, prediction metric, trading metric, and Grad-CAM helper
+    code through a configurable Stage 2 `src` dependency.
+  - Local BTC OHLCV data is available, but F&G data is not present locally in
+    the active dataset folder; full context feature construction is Kaggle-first
+    unless a local F&G CSV is supplied.
+  - Next implementation item is `4-I1`, shared config/code scaffold.
 
 ## 한국어
 
@@ -182,3 +191,12 @@ Implementation-source distinction:
     않습니다.
   - Checkpoint는 있지만 prediction/metric/Grad-CAM export가 없으면 완료가 아니라
     evaluation/export를 이어서 실행합니다.
+- 4-I0 implementation readiness 결정:
+  - Stage 4는 implementation으로 진행할 수 있습니다.
+  - Stage 4는 configurable Stage 2 `src` dependency를 통해 Stage 2 BTC loading,
+    sample/image generation, split/normalization, prediction metric, trading
+    metric, Grad-CAM helper code를 재사용합니다.
+  - 로컬 BTC OHLCV data는 있지만 active dataset folder에 F&G data는 없습니다.
+    local F&G CSV를 따로 제공하지 않는 한 full context feature construction은
+    Kaggle-first입니다.
+  - 다음 구현 항목은 `4-I1`, shared config/code scaffold입니다.

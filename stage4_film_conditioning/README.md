@@ -92,6 +92,8 @@ Explanation/export decision:
 Kaggle runner and backup decision:
 - The first implementation runner should execute the numeric-context four-way
   ablation only: `concat`, `gating`, `film_gamma`, and `film_full`.
+- The runner needs access to the Stage 2 `src` package because Stage 4 reuses
+  the fixed BTC data/image/split/evaluation pipeline instead of rewriting it.
 - First full sanity run: all four ablations with seed `42`.
 - Later robustness run: the same four ablations with seeds
   `42, 43, 44, 45, 46`.
@@ -138,6 +140,17 @@ News-context position:
 - 4-3 decision: first news version should be headline-only, strict `t-1`, and
   encoded with train-fit non-LLM text features.
 
+Implementation readiness decision:
+- `4-I0` is complete and Stage 4 can proceed to `4-I1`.
+- Stage 4 code should add a `stage2_dependency` config section and import Stage
+  2 helpers for BTC loading, sample generation, image generation, split,
+  normalization, evaluation, and trading metrics.
+- Local BTC OHLCV data exists, but F&G data is not present in the local active
+  dataset folder. Full context feature construction is therefore Kaggle-first
+  unless a local F&G CSV is supplied.
+- The detailed task map is stored in
+  `reports/tables/stage4_implementation_task_map.csv`.
+
 Main documents:
 - [Checklist](checklist.md)
 - [Workflow diagram](workflow_diagram.md)
@@ -153,6 +166,7 @@ Main documents:
 - [Concat/gating/FiLM insertion design](checklist_results/4-6_concat_gating_film_insertion_design.md)
 - [Grad-CAM plus context/gate/gamma/beta export plan](checklist_results/4-7_gradcam_context_modulation_export_plan.md)
 - [Kaggle runner and output backup plan](checklist_results/4-8_kaggle_runner_and_output_backup_plan.md)
+- [Implementation readiness review](checklist_results/4-I0_implementation_readiness_review.md)
 
 ## 한국어
 
@@ -244,6 +258,8 @@ Explanation/export 결정:
 Kaggle runner와 backup 결정:
 - 첫 구현 runner는 numeric-context 네 가지 ablation만 실행합니다:
   `concat`, `gating`, `film_gamma`, `film_full`.
+- Stage 4는 고정된 BTC data/image/split/evaluation pipeline을 재작성하지 않고
+  Stage 2 `src` package를 재사용하므로 runner는 Stage 2 `src`에도 접근해야 합니다.
 - 첫 full sanity run은 네 ablation을 seed `42`로 실행합니다.
 - 이후 robustness run은 같은 네 ablation을 seed `42, 43, 44, 45, 46`으로
   실행합니다.
@@ -286,6 +302,16 @@ Kaggle runner와 backup 결정:
   track으로 유지합니다.
 - 4-3 결정: 첫 news version은 headline-only, strict `t-1`, train-fit non-LLM
   text feature encoder로 시작합니다.
+
+Implementation readiness 결정:
+- `4-I0`은 완료됐고 Stage 4는 `4-I1`로 진행할 수 있습니다.
+- Stage 4 code는 `stage2_dependency` config section을 추가하고, BTC loading,
+  sample generation, image generation, split, normalization, evaluation,
+  trading metric은 Stage 2 helper를 import해서 사용해야 합니다.
+- 로컬 BTC OHLCV data는 있지만 local active dataset folder에는 F&G data가 없습니다.
+  따라서 full context feature construction은 local F&G CSV를 따로 제공하지 않는 한
+  Kaggle-first입니다.
+- 상세 task map은 `reports/tables/stage4_implementation_task_map.csv`에 저장했습니다.
 
 주요 문서:
 - [Checklist](checklist.md)

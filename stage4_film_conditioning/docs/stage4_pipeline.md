@@ -13,6 +13,8 @@ From Stage 2:
 - Label construction: future `R20` return up/down.
 - Split, normalization, evaluation, trading metrics, Grad-CAM conventions.
 - Primary model family: `I60/R20/ohlc_ma_vb`.
+- Implementation dependency: Stage 4 imports Stage 2 helpers through a
+  configurable Stage 2 `src` path instead of rewriting the BTC pipeline.
 
 From Stage 3:
 - Linear adapter result is a comparison point only.
@@ -169,6 +171,7 @@ Execution order:
 
 ```text
 copy code snapshot
+  -> expose Stage 2 src dependency
   -> patch Kaggle config
   -> audit BTC and F&G sources
   -> build context features and train-only scaler
@@ -214,6 +217,8 @@ Stage 2에서 고정해서 가져오는 것:
 - Label construction: future `R20` return up/down.
 - Split, normalization, evaluation, trading metrics, Grad-CAM 규칙.
 - Primary model family: `I60/R20/ohlc_ma_vb`.
+- 구현 dependency: Stage 4는 BTC pipeline을 다시 작성하지 않고 configurable Stage 2
+  `src` path를 통해 Stage 2 helper를 import합니다.
 
 Stage 3에서 가져오는 것:
 - Linear adapter 결과는 비교 대상일 뿐입니다.
@@ -371,6 +376,7 @@ Stage 4 Kaggle runner는 checklist item 4-8에서 고정했습니다.
 
 ```text
 code snapshot 복사
+  -> Stage 2 src dependency 노출
   -> Kaggle config patch
   -> BTC/F&G source audit
   -> context feature와 train-only scaler 생성

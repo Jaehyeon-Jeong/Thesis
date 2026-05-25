@@ -106,8 +106,19 @@ Implementation-source distinction:
     Stage 2 `src`.
   - Added `scripts/check_stage4_scaffold.py`; local scaffold check passed for
     BTC, F&G, and Stage 2 dependency paths.
-  - Next implementation item is `4-I2`, structured context source audit and
-    feature builder.
+- 4-I2 structured context feature builder decision:
+  - Added `src/stage4_film/context/sources.py`,
+    `src/stage4_film/context/features.py`, and
+    `src/stage4_film/context/normalization.py`.
+  - Added `scripts/audit_stage4_context_sources.py` and
+    `scripts/build_stage4_context_features.py`.
+  - Local I60/R20/ohlc_ma_vb context build produced 2,399 rows:
+    train 671, validation 287, test 1,441.
+  - F&G as-of coverage is complete for the primary sample set; max as-of age is
+    1 day because the F&G dataset has a missing calendar date on 2024-10-26.
+  - All 8 primary context features have 0.0 missing rate in train,
+    validation, and test after the matched-window sample restrictions.
+  - Next implementation item is `4-I3`, context MLP encoder.
 
 ## 한국어
 
@@ -215,5 +226,16 @@ Implementation-source distinction:
     추가했습니다.
   - `scripts/check_stage4_scaffold.py`를 추가했고, local scaffold check에서 BTC,
     F&G, Stage 2 dependency path가 모두 통과했습니다.
-  - 다음 구현 항목은 `4-I2`, structured context source audit and feature
-    builder입니다.
+- 4-I2 structured context feature builder 결정:
+  - `src/stage4_film/context/sources.py`,
+    `src/stage4_film/context/features.py`,
+    `src/stage4_film/context/normalization.py`를 추가했습니다.
+  - `scripts/audit_stage4_context_sources.py`,
+    `scripts/build_stage4_context_features.py`를 추가했습니다.
+  - Local I60/R20/ohlc_ma_vb context build에서 2,399 row가 생성됐습니다:
+    train 671, validation 287, test 1,441.
+  - Primary sample set에서 F&G as-of coverage는 완전합니다. F&G dataset에
+    2024-10-26 missing date가 있어 max as-of age는 1일입니다.
+  - Matched-window sample restriction 이후 8개 primary context feature는
+    train/validation/test 모두 missing rate 0.0입니다.
+  - 다음 구현 항목은 `4-I3`, context MLP encoder입니다.

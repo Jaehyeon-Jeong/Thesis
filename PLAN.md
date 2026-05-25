@@ -218,6 +218,9 @@
       `bb_percent_b_60`, `bb_bandwidth_60`, `mfi_60`, `rv_60`.
     - Preprocessing은 feature-specific transform 이후 train-only median imputation,
       train-only 1/99% clipping, train-only z-score normalization을 사용한다.
+    - 4-I2 local build 결과, primary `I60/R20/ohlc_ma_vb` context table은
+      2,399 rows(train 671, validation 287, test 1,441)이며 8개 primary feature의
+      missing-rate warning은 없었다.
   - News context는 버리지 않는다. 다만 바로 LLM/VLM prompt로 처리하지 않고,
     별도 `4-N` track에서 dataset audit, publication-time alignment, daily aggregation,
     leakage check를 먼저 수행한다.

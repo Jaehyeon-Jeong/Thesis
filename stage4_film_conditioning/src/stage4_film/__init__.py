@@ -13,12 +13,13 @@ from stage4_film.config import (
     load_config,
     make_stage4_experiment_name,
 )
-from stage4_film.paths import Stage4Paths, build_stage4_paths
+from stage4_film.paths import Stage4Paths, build_stage4_paths, ensure_stage4_output_dirs
 
 __all__ = [
     "CONTEXT_METHODS",
     "Stage4Paths",
     "build_stage4_paths",
+    "ensure_stage4_output_dirs",
     "get_context_config",
     "get_stage2_dependency_config",
     "get_stage4_model_config",

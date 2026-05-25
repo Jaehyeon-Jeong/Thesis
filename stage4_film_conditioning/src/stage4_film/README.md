@@ -10,12 +10,16 @@ Added in `4-I1`:
 - `runtime.py`
 - `seed.py`
 
+Added in `4-I2`:
+- `context/sources.py`
+- `context/features.py`
+- `context/normalization.py`
+
 Planned next modules:
 - `layers/film.py`
 - `models/film_stock_cnn.py`
 - `models/context_stock_cnn.py`
 - `conditions/`
-- `context/`
 - `training/`
 - `evaluation/`
 - `interpretability/`
@@ -35,12 +39,16 @@ Stage 4 FiLM/context-conditioning 구현 package입니다.
 - `runtime.py`
 - `seed.py`
 
+`4-I2`에서 추가한 module:
+- `context/sources.py`
+- `context/features.py`
+- `context/normalization.py`
+
 다음 예정 module:
 - `layers/film.py`
 - `models/film_stock_cnn.py`
 - `models/context_stock_cnn.py`
 - `conditions/`
-- `context/`
 - `training/`
 - `evaluation/`
 - `interpretability/`

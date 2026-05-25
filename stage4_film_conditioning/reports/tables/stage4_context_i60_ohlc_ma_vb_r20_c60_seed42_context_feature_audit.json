@@ -1,0 +1,57 @@
+{
+  "num_rows": 2399,
+  "split_counts": {
+    "test": 1441,
+    "train": 671,
+    "validation": 287
+  },
+  "date_min": "2018-04-29",
+  "date_max": "2024-12-11",
+  "primary_features": [
+    "fg_value",
+    "fg_mean_60",
+    "fg_delta_60",
+    "fg_std_60",
+    "bb_percent_b_60",
+    "bb_bandwidth_60",
+    "mfi_60",
+    "rv_60"
+  ],
+  "missing_rate_by_split": {
+    "test": {
+      "fg_value": 0.0,
+      "fg_mean_60": 0.0,
+      "fg_delta_60": 0.0,
+      "fg_std_60": 0.0,
+      "bb_percent_b_60": 0.0,
+      "bb_bandwidth_60": 0.0,
+      "mfi_60": 0.0,
+      "rv_60": 0.0
+    },
+    "train": {
+      "fg_value": 0.0,
+      "fg_mean_60": 0.0,
+      "fg_delta_60": 0.0,
+      "fg_std_60": 0.0,
+      "bb_percent_b_60": 0.0,
+      "bb_bandwidth_60": 0.0,
+      "mfi_60": 0.0,
+      "rv_60": 0.0
+    },
+    "validation": {
+      "fg_value": 0.0,
+      "fg_mean_60": 0.0,
+      "fg_delta_60": 0.0,
+      "fg_std_60": 0.0,
+      "bb_percent_b_60": 0.0,
+      "bb_bandwidth_60": 0.0,
+      "mfi_60": 0.0,
+      "rv_60": 0.0
+    }
+  },
+  "warnings": [],
+  "fg_age_days": {
+    "max": 1.0,
+    "mean": 0.00041684035014589413
+  }
+}

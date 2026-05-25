@@ -110,7 +110,12 @@ Implementation phase:
     scaffold checker.
   - The local scaffold check finds BTC, F&G, and Stage 2 `src` successfully.
   - Result: [4-I1 Shared Stage 4 config/code scaffold](checklist_results/4-I1_shared_code_config_scaffold.md)
-- [ ] 4-I2. Structured context feature builder
+- [x] 4-I2. Structured context feature builder
+  - Added F&G source audit, OHLCV-derived context features, and train-only
+    context preprocessing.
+  - Local I60/R20/ohlc_ma_vb context build produced 2,399 rows with no primary
+    feature missing-rate warnings.
+  - Result: [4-I2 Structured context feature builder](checklist_results/4-I2_structured_context_feature_builder.md)
 - [ ] 4-I3. Context MLP encoder
 - [ ] 4-I4. `CNN + context concat` model
 - [ ] 4-I5. `CNN + context gating` model
@@ -253,7 +258,12 @@ Stage 4 main ablation:
     checker를 추가했습니다.
   - Local scaffold check에서 BTC, F&G, Stage 2 `src`를 정상 확인했습니다.
   - 결과: [4-I1 Shared Stage 4 config/code scaffold](checklist_results/4-I1_shared_code_config_scaffold.md)
-- [ ] 4-I2. Structured context feature builder
+- [x] 4-I2. Structured context feature builder
+  - F&G source audit, OHLCV-derived context feature, train-only context
+    preprocessing을 추가했습니다.
+  - Local I60/R20/ohlc_ma_vb context build에서 2,399 row가 생성됐고 primary
+    feature missing-rate warning은 없었습니다.
+  - 결과: [4-I2 Structured context feature builder](checklist_results/4-I2_structured_context_feature_builder.md)
 - [ ] 4-I3. Context MLP encoder
 - [ ] 4-I4. `CNN + context concat` model
 - [ ] 4-I5. `CNN + context gating` model

@@ -10,9 +10,13 @@ Added in `4-I1`:
 - `check_stage4_scaffold.py`: validates config, local BTC/F&G paths, Stage 2
   dependency, and primary experiment names.
 
+Added in `4-I2`:
+- `audit_stage4_context_sources.py`: audits BTC/F&G coverage and the as-of
+  no-future-leakage merge policy.
+- `build_stage4_context_features.py`: builds raw/normalized structured context
+  features and the train-only context scaler.
+
 Planned next scripts:
-- `audit_stage4_context_sources.py`
-- `build_stage4_context_features.py`
 - `check_stage4_context_encoder.py`
 - `check_stage4_model_shapes.py`
 - `check_stage4_film_layers.py`
@@ -39,9 +43,13 @@ Stage 4 script는 구현 단계에서 순차적으로 추가합니다.
 - `check_stage4_scaffold.py`: config, local BTC/F&G path, Stage 2 dependency,
   primary experiment name을 검증합니다.
 
+`4-I2`에서 추가한 script:
+- `audit_stage4_context_sources.py`: BTC/F&G coverage와 as-of no-future-leakage
+  merge policy를 감사합니다.
+- `build_stage4_context_features.py`: raw/normalized structured context feature와
+  train-only context scaler를 생성합니다.
+
 다음 예정 script:
-- `audit_stage4_context_sources.py`
-- `build_stage4_context_features.py`
 - `check_stage4_context_encoder.py`
 - `check_stage4_model_shapes.py`
 - `check_stage4_film_layers.py`

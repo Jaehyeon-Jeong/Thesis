@@ -161,7 +161,13 @@ Implementation status:
   path utilities, and `check_stage4_scaffold.py`.
 - Local scaffold check passed and confirmed BTC, F&G, and Stage 2 `src`
   availability.
-- Next step: `4-I2` structured context source audit and feature builder.
+- `4-I2` is complete.
+- Added F&G source audit, OHLCV-derived context features, and train-only context
+  preprocessing.
+- Local I60/R20/ohlc_ma_vb context build produced `2,399` rows:
+  train `671`, validation `287`, test `1,441`.
+- Primary context feature missing-rate warnings: none.
+- Next step: `4-I3` shared context MLP encoder.
 
 Main documents:
 - [Checklist](checklist.md)
@@ -180,6 +186,7 @@ Main documents:
 - [Kaggle runner and output backup plan](checklist_results/4-8_kaggle_runner_and_output_backup_plan.md)
 - [Implementation readiness review](checklist_results/4-I0_implementation_readiness_review.md)
 - [Shared config/code scaffold](checklist_results/4-I1_shared_code_config_scaffold.md)
+- [Structured context feature builder](checklist_results/4-I2_structured_context_feature_builder.md)
 
 ## 한국어
 
@@ -336,7 +343,13 @@ Implementation status:
   utility, `check_stage4_scaffold.py`를 추가했습니다.
 - Local scaffold check를 통과했고 BTC, F&G, Stage 2 `src` 사용 가능성을
   확인했습니다.
-- 다음 단계는 `4-I2` structured context source audit and feature builder입니다.
+- `4-I2`를 완료했습니다.
+- F&G source audit, OHLCV-derived context feature, train-only context
+  preprocessing을 추가했습니다.
+- Local I60/R20/ohlc_ma_vb context build에서 `2,399` row가 생성됐습니다:
+  train `671`, validation `287`, test `1,441`.
+- Primary context feature missing-rate warning은 없습니다.
+- 다음 단계는 `4-I3` shared context MLP encoder입니다.
 
 주요 문서:
 - [Checklist](checklist.md)
@@ -355,3 +368,4 @@ Implementation status:
 - [Kaggle runner and output backup plan](checklist_results/4-8_kaggle_runner_and_output_backup_plan.md)
 - [Implementation readiness review](checklist_results/4-I0_implementation_readiness_review.md)
 - [Shared config/code scaffold](checklist_results/4-I1_shared_code_config_scaffold.md)
+- [Structured context feature builder](checklist_results/4-I2_structured_context_feature_builder.md)

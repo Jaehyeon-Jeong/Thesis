@@ -20,6 +20,10 @@ from stage4_film.conditions import (
     build_film_generator_for_window,
 )
 from stage4_film.evaluation import load_stage4_checkpoint_into_model, predict_context_loader
+from stage4_film.interpretability import (
+    compute_stage4_gradcam_for_image,
+    generate_stage4_gradcam_context_figure,
+)
 from stage4_film.layers import FeatureWiseAffineModulation
 from stage4_film.models import (
     ConcatContextStockCNN,
@@ -52,7 +56,9 @@ __all__ = [
     "build_gated_context_stock_cnn_for_window",
     "build_stage4_paths",
     "build_stage4_context_model",
+    "compute_stage4_gradcam_for_image",
     "ensure_stage4_output_dirs",
+    "generate_stage4_gradcam_context_figure",
     "get_context_config",
     "get_stage2_dependency_config",
     "get_stage4_model_config",

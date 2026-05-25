@@ -247,7 +247,19 @@ Implementation status:
   - Classification/trading metric formulas reuse Stage 2; model inference uses
     `model(image, context)`.
   - Local export checks passed for `concat` and `film_gamma` smoke checkpoints.
-- Next step: `4-I10` Grad-CAM plus context/gate/gamma/beta export.
+- `4-I10` is complete.
+- Added Stage 4 Grad-CAM plus context/modulation export:
+  - `scripts/generate_stage4_gradcam_context.py` reloads a Stage 4 checkpoint
+    and prediction CSV, then computes predicted-class Grad-CAM through
+    `model(image, context)`.
+  - The figure is saved with `samples.csv`, `modulation_summary.csv`, and
+    `modulation_values.json`.
+  - `concat` exports context values and context embedding summaries.
+  - `gating` additionally exports raw gate and final gate values.
+  - `film_gamma`/`film_full` export block-wise gamma and beta values.
+  - Local Grad-CAM export checks passed for `concat` and `film_gamma` smoke
+    checkpoints.
+- Next step: `4-I11` local or small Kaggle smoke test.
 
 Main documents:
 - [Checklist](checklist.md)
@@ -274,6 +286,7 @@ Main documents:
 - [FiLM context models](checklist_results/4-I7_film_context_models.md)
 - [Stage 4 context runner](checklist_results/4-I8_stage4_context_runner.md)
 - [Prediction and trading exports](checklist_results/4-I9_prediction_trading_exports.md)
+- [Grad-CAM context/modulation export](checklist_results/4-I10_gradcam_context_modulation_export.md)
 
 ## 한국어
 
@@ -518,7 +531,19 @@ Implementation status:
   - Classification/trading metric 공식은 Stage 2를 재사용하고, inference만
     `model(image, context)`를 사용합니다.
   - `concat`, `film_gamma` smoke checkpoint에서 local export check를 통과했습니다.
-- 다음 단계는 `4-I10` Grad-CAM plus context/gate/gamma/beta export입니다.
+- `4-I10`을 완료했습니다.
+- Stage 4 Grad-CAM plus context/modulation export를 추가했습니다:
+  - `scripts/generate_stage4_gradcam_context.py`는 Stage 4 checkpoint와
+    prediction CSV를 다시 로드하고 `model(image, context)` 경로로
+    predicted-class Grad-CAM을 계산합니다.
+  - Figure와 함께 `samples.csv`, `modulation_summary.csv`,
+    `modulation_values.json`를 저장합니다.
+  - `concat`은 context 값과 context embedding summary를 export합니다.
+  - `gating`은 raw gate와 최종 gate 값까지 export합니다.
+  - `film_gamma`/`film_full`은 block별 gamma/beta 값을 export합니다.
+  - `concat`, `film_gamma` smoke checkpoint에서 local Grad-CAM export check를
+    통과했습니다.
+- 다음 단계는 `4-I11` local 또는 작은 Kaggle smoke test입니다.
 
 주요 문서:
 - [Checklist](checklist.md)
@@ -545,3 +570,4 @@ Implementation status:
 - [FiLM context models](checklist_results/4-I7_film_context_models.md)
 - [Stage 4 context runner](checklist_results/4-I8_stage4_context_runner.md)
 - [Prediction and trading exports](checklist_results/4-I9_prediction_trading_exports.md)
+- [Grad-CAM context/modulation export](checklist_results/4-I10_gradcam_context_modulation_export.md)

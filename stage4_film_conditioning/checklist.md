@@ -169,7 +169,15 @@ Implementation phase:
     `model(image, context)` for Stage 4.
   - Local export checks passed for `concat` and `film_gamma` smoke checkpoints.
   - Result: [4-I9 Prediction and trading exports](checklist_results/4-I9_prediction_trading_exports.md)
-- [ ] 4-I10. Grad-CAM plus context/gate/gamma/beta export
+- [x] 4-I10. Grad-CAM plus context/gate/gamma/beta export
+  - Added Stage 4 Grad-CAM helper and export script.
+  - Grad-CAM target remains the predicted-class pre-softmax logit, now through
+    `model(image, context)`.
+  - Exports `samples.csv`, `modulation_summary.csv`, and
+    `modulation_values.json` beside the figure.
+  - Local Grad-CAM export checks passed for `concat` and `film_gamma` smoke
+    checkpoints.
+  - Result: [4-I10 Grad-CAM context/modulation export](checklist_results/4-I10_gradcam_context_modulation_export.md)
 - [ ] 4-I11. Local or small Kaggle smoke test
 - [ ] 4-I12. Kaggle single-config run for the four main ablations
 - [ ] 4-I13. Kaggle selected grid/five-seed runner
@@ -364,7 +372,15 @@ Stage 4 main ablation:
     `model(image, context)`로 바꿨습니다.
   - `concat`, `film_gamma` smoke checkpoint에서 local export check를 통과했습니다.
   - 결과: [4-I9 Prediction and trading exports](checklist_results/4-I9_prediction_trading_exports.md)
-- [ ] 4-I10. Grad-CAM plus context/gate/gamma/beta export
+- [x] 4-I10. Grad-CAM plus context/gate/gamma/beta export
+  - Stage 4 Grad-CAM helper와 export script를 추가했습니다.
+  - Grad-CAM target은 계속 predicted-class pre-softmax logit이며, 이제
+    `model(image, context)` 경로로 계산합니다.
+  - Figure 옆에 `samples.csv`, `modulation_summary.csv`,
+    `modulation_values.json`을 저장합니다.
+  - `concat`, `film_gamma` smoke checkpoint에서 local Grad-CAM export check를
+    통과했습니다.
+  - 결과: [4-I10 Grad-CAM context/modulation export](checklist_results/4-I10_gradcam_context_modulation_export.md)
 - [ ] 4-I11. local 또는 작은 Kaggle smoke test
 - [ ] 4-I12. 네 가지 main ablation의 Kaggle single-config run
 - [ ] 4-I13. Kaggle selected grid/five-seed runner

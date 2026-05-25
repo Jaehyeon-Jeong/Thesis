@@ -221,8 +221,18 @@ Implementation-source distinction:
     `model(image, context)` and appends normalized context columns to the
     prediction CSV.
   - Local export checks passed for `concat` and `film_gamma` smoke checkpoints.
-  - Next implementation item is `4-I10`, Grad-CAM plus context/gate/gamma/beta
-    export.
+- 4-I10 Grad-CAM/context/modulation export decision:
+  - Added `src/stage4_film/interpretability/gradcam_context.py`.
+  - Added `scripts/generate_stage4_gradcam_context.py`.
+  - Grad-CAM target remains the predicted-class pre-softmax logit.
+  - Stage 4 Grad-CAM calls `model(image, context)` instead of `model(image)`.
+  - Concat exports context values and context embedding summaries.
+  - Gating exports context values, raw gate, and final gate values.
+  - FiLM exports context values plus block-wise gamma/beta values.
+  - FiLM Grad-CAM uses post-FiLM target modules and tensor-level gradient hooks
+    to avoid PyTorch full-backward-hook conflicts with in-place LeakyReLU.
+  - Local Grad-CAM export checks passed for `concat` and `film_gamma` smoke
+    checkpoints.
 
 ## 한국어
 
@@ -441,4 +451,17 @@ Implementation-source distinction:
   - Prediction helper는 inference를 `model(image)`에서 `model(image, context)`로
     바꾸고 prediction CSV에 normalized context column을 같이 붙입니다.
   - `concat`, `film_gamma` smoke checkpoint에서 local export check를 통과했습니다.
-  - 다음 구현 항목은 `4-I10`, Grad-CAM plus context/gate/gamma/beta export입니다.
+- 4-I10 Grad-CAM/context/modulation export 결정:
+  - `src/stage4_film/interpretability/gradcam_context.py`를 추가했습니다.
+  - `scripts/generate_stage4_gradcam_context.py`를 추가했습니다.
+  - Grad-CAM target은 계속 predicted-class pre-softmax logit입니다.
+  - Stage 4 Grad-CAM은 `model(image)`가 아니라 `model(image, context)`를
+    호출합니다.
+  - Concat은 context 값과 context embedding summary를 export합니다.
+  - Gating은 context 값, raw gate, final gate 값을 export합니다.
+  - FiLM은 context 값과 block-wise gamma/beta 값을 export합니다.
+  - FiLM Grad-CAM은 post-FiLM module을 target으로 쓰고, PyTorch
+    full-backward-hook과 inplace LeakyReLU 충돌을 피하기 위해 tensor-level
+    gradient hook을 사용합니다.
+  - `concat`, `film_gamma` smoke checkpoint에서 local Grad-CAM export check를
+    통과했습니다.

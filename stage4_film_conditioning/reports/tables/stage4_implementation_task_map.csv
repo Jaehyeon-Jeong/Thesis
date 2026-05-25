@@ -8,7 +8,7 @@ checklist_item,task,primary_files_to_create_or_update,depends_on,readiness_statu
 4-I7,gamma-only and full FiLM models,"src/stage4_film/models/film_stock_cnn.py; scripts/check_stage4_model_shapes.py",4-I6,complete
 4-I8,Stage 4 runner using fixed Stage 2 data pipeline,"src/stage4_film/runners/context_experiment.py; src/stage4_film/training/loop.py; scripts/run_stage4_context_model.py",4-I2 through 4-I7,complete
 4-I9,prediction classification and trading exports,"src/stage4_film/evaluation/prediction.py; scripts/evaluate_stage4_predictions.py; scripts/evaluate_stage4_trading.py",4-I8,complete
-4-I10,Grad-CAM plus context/gate/gamma/beta export,"src/stage4_film/interpretability/gradcam_context.py; scripts/generate_stage4_gradcam_context.py",4-I8 and 4-I9,ready_after_eval
+4-I10,Grad-CAM plus context/gate/gamma/beta export,"src/stage4_film/interpretability/gradcam_context.py; scripts/generate_stage4_gradcam_context.py",4-I8 and 4-I9,complete
 4-I11,local or small Kaggle smoke test,"scripts/check_stage4_outputs.py; reports/smoke_tests/stage4_smoke_summary.json",4-I8 through 4-I10,ready_after_exports
 4-I12,Kaggle four-ablation single-seed run,"notebooks/kaggle_stage4_four_ablation_single_seed_one_cell.md; outputs/stage4/*",4-I11,ready_after_smoke
 4-I13,Kaggle selected five-seed runner,"notebooks/kaggle_stage4_four_ablation_five_seed_one_cell.md; scripts/run_stage4_grid.py; scripts/summarize_stage4_results.py",4-I12,ready_after_single_seed

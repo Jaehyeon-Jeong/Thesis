@@ -322,6 +322,19 @@
     - Prediction CSV에는 `context_method`, `stage4_experiment_name`, normalized
       context columns도 함께 남긴다.
     - Local smoke checkpoint 기준 `concat`, `film_gamma` export가 통과했다.
+  - 4-I10에서 Stage 4 Grad-CAM plus context/modulation export를 구현했다.
+    - `scripts/generate_stage4_gradcam_context.py`는 checkpoint와 prediction CSV를
+      다시 로드하고 `model(image, context)` 기준 predicted-class Grad-CAM을 만든다.
+    - `src/stage4_film/interpretability/gradcam_context.py`는 Stage 2 sample
+      selection을 재사용하되, 선택 sample마다 context vector와 modulation 값을
+      같이 export한다.
+    - 출력은 figure, `samples.csv`, `modulation_summary.csv`,
+      `modulation_values.json`이다.
+    - `concat`은 context/context embedding을, `gating`은 raw gate/final gate를,
+      `film_gamma`와 `film_full`은 block-wise gamma/beta를 저장한다.
+    - FiLM Grad-CAM hook은 post-FiLM module에 걸며, PyTorch inplace activation
+      충돌을 피하기 위해 tensor-level gradient hook을 사용한다.
+    - Local smoke checkpoint 기준 `concat`, `film_gamma` Grad-CAM export가 통과했다.
 - Re-image CNN에 이식:
   - 기존 CNN 구조는 유지하고, block 내부에 FiLM만 삽입한다.
   - 기본 위치: `Conv -> BN -> FiLM -> LeakyReLU -> MaxPool`

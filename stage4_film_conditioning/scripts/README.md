@@ -54,8 +54,17 @@ Added in `4-I9`:
 - `evaluate_stage4_trading.py`: reads Stage 4 prediction CSV and writes BTC
   long/flat and long/short trading metrics.
 
+Added in `4-I10`:
+- `generate_stage4_gradcam_context.py`: reloads a Stage 4 checkpoint and
+  prediction CSV, generates predicted-class Grad-CAM with `model(image,
+  context)`, and writes `samples.csv`, `modulation_summary.csv`, and
+  `modulation_values.json`.
+- For `concat`, the export contains normalized context values and context
+  embedding summaries.
+- For `gating`, it additionally exports raw gate and final gate values.
+- For `film_gamma`/`film_full`, it exports block-wise gamma and beta values.
+
 Planned next scripts:
-- `generate_stage4_gradcam_context.py`
 - `check_stage4_outputs.py`
 - `summarize_stage4_results.py`
 
@@ -118,8 +127,15 @@ Stage 4 script는 구현 단계에서 순차적으로 추가합니다.
 - `evaluate_stage4_trading.py`: Stage 4 prediction CSV를 읽고 BTC long/flat,
   long/short trading metrics를 저장합니다.
 
+`4-I10`에서 추가한 script:
+- `generate_stage4_gradcam_context.py`: Stage 4 checkpoint와 prediction CSV를
+  다시 로드하고 `model(image, context)` 기준 predicted-class Grad-CAM을 만든 뒤
+  `samples.csv`, `modulation_summary.csv`, `modulation_values.json`를 저장합니다.
+- `concat`은 normalized context 값과 context embedding summary를 저장합니다.
+- `gating`은 raw gate와 최종 gate 값까지 저장합니다.
+- `film_gamma`/`film_full`은 block별 gamma/beta 값을 저장합니다.
+
 다음 예정 script:
-- `generate_stage4_gradcam_context.py`
 - `check_stage4_outputs.py`
 - `summarize_stage4_results.py`
 

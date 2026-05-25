@@ -46,8 +46,10 @@ Added in `4-I9`:
 - `evaluation/prediction.py`: context-aware prediction helper that reloads a
   Stage 4 checkpoint and exports rows from `model(image, context)`.
 
-Planned next modules:
-- `interpretability/`
+Added in `4-I10`:
+- `interpretability/gradcam_context.py`: Stage 4 Grad-CAM helper that calls
+  `model(image, context)` and exports context/gate/gamma/beta interpretation
+  metadata beside the Grad-CAM samples.
 
 Stage 4 should import Stage 2 helpers through a configurable Stage 2 `src`
 path. Do not duplicate the Stage 2 BTC pipeline unless a later implementation
@@ -99,8 +101,10 @@ Stage 4 FiLM/context-conditioning 구현 package입니다.
 - `evaluation/prediction.py`: Stage 4 checkpoint를 로드하고
   `model(image, context)`의 prediction row를 export하는 helper입니다.
 
-다음 예정 module:
-- `interpretability/`
+`4-I10`에서 추가한 module:
+- `interpretability/gradcam_context.py`: `model(image, context)` 기준
+  Stage 4 Grad-CAM을 만들고, 선택 sample의 context/gate/gamma/beta 해석 metadata를
+  같이 export하는 helper입니다.
 
 Stage 4는 configurable Stage 2 `src` path를 통해 Stage 2 helper를 import해야
 합니다. 구현 blocker가 생기기 전에는 Stage 2 BTC pipeline을 중복 작성하지 않습니다.

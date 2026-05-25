@@ -74,13 +74,15 @@ Advisor direction file mapping:
 News-context position:
 - News is not removed from the thesis.
 - Candidate source: Hugging Face `edaschau/bitcoin_news`.
-- Public metadata checked on 2026-05-21 shows about `210k` rows, date range
+- Public metadata checked on 2026-05-25 shows `210,832` rows, date range
   2011-2025, and columns such as `date_time`, `title`, `source`, `url`, and
   `article_text`.
 - News requires source audit, publication-time alignment, daily aggregation, and
   encoder/cache rules before model training.
 - Therefore it is kept as a second-phase context track after the structured
   numeric-context ablation is stable.
+- 4-3 decision: first news version should be headline-only, strict `t-1`, and
+  encoded with train-fit non-LLM text features.
 
 Main documents:
 - [Checklist](checklist.md)
@@ -91,6 +93,7 @@ Main documents:
 - [FiLM insertion design](docs/film_insertion_design.md)
 - [Source map](docs/source_map.md)
 - [Planning report](checklist_results/4-1_context_fusion_and_news_plan.md)
+- [News dataset audit](checklist_results/4-3_news_dataset_audit_and_feasibility.md)
 
 ## 한국어
 
@@ -163,12 +166,14 @@ Stage 4 주요 ablation model:
 뉴스 context 위치:
 - 뉴스는 논문에서 제거하지 않습니다.
 - 후보 source: Hugging Face `edaschau/bitcoin_news`.
-- 2026-05-21 기준 공개 metadata 확인 결과 약 `210k` rows, 2011-2025 date range,
+- 2026-05-25 기준 공개 metadata 확인 결과 `210,832` rows, 2011-2025 date range,
   `date_time`, `title`, `source`, `url`, `article_text` columns를 포함합니다.
 - 뉴스는 source audit, publication-time alignment, daily aggregation,
   encoder/cache rule이 필요합니다.
 - 따라서 structured numeric-context ablation이 안정화된 뒤 second-phase context
   track으로 유지합니다.
+- 4-3 결정: 첫 news version은 headline-only, strict `t-1`, train-fit non-LLM
+  text feature encoder로 시작합니다.
 
 주요 문서:
 - [Checklist](checklist.md)
@@ -179,3 +184,4 @@ Stage 4 주요 ablation model:
 - [FiLM insertion design](docs/film_insertion_design.md)
 - [Source map](docs/source_map.md)
 - [Planning report](checklist_results/4-1_context_fusion_and_news_plan.md)
+- [News dataset audit](checklist_results/4-3_news_dataset_audit_and_feasibility.md)

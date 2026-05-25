@@ -13,7 +13,7 @@
 | Stage 3 Linear model | `stage3_linear_adapter/src/stage3_linear/models/linear_stock_cnn.py` | Comparison model only |
 | Grad-CAM local summary | `자료조사/Grad-CAM요약.md` | Stage 4 Grad-CAM rule and interpretation |
 | Fear & Greed candidate dataset | `https://www.kaggle.com/datasets/ashishpatel8736/historical-and-fear-greed-index-datasets` | Candidate external sentiment/regime context source; must be audited for crypto-vs-equity meaning, date coverage, scale, and missing dates |
-| BTC news candidate dataset | `https://huggingface.co/datasets/edaschau/bitcoin_news` | Candidate second-phase news context source after source/date/leakage audit |
+| BTC news candidate dataset | `https://huggingface.co/datasets/edaschau/bitcoin_news` | 4-3 audit source; feasible second-phase news context with strict `t-1` headline-only first policy |
 
 Implementation-source distinction:
 - Paper/reference reported: FiLM is feature-wise affine modulation with gamma
@@ -40,6 +40,13 @@ Implementation-source distinction:
   - "Optional attention-based fusion"
 - Implementation choice for the first Stage 4 main run: structured numeric
   context first; news context remains a second-phase track after audit.
+- 4-3 news-context decision:
+  - `edaschau/bitcoin_news` is feasible because it overlaps the Stage 2 BTC
+    period and has timestamped title/article/source fields.
+  - First news version is headline-only, strict `t-1`, train-fit non-LLM
+    encoder.
+  - Full article summaries and LLM embeddings are deferred until leakage-safe
+    headline context is stable.
 - Structured context source split:
   - F&G requires an external dataset.
   - Bollinger %B, Bollinger bandwidth, MFI, and realized volatility are derived
@@ -58,7 +65,7 @@ Implementation-source distinction:
 | Stage 3 Linear model | `stage3_linear_adapter/src/stage3_linear/models/linear_stock_cnn.py` | 비교 모델로만 사용 |
 | Grad-CAM local summary | `자료조사/Grad-CAM요약.md` | Stage 4 Grad-CAM 규칙과 해석 |
 | Fear & Greed 후보 dataset | `https://www.kaggle.com/datasets/ashishpatel8736/historical-and-fear-greed-index-datasets` | 외부 sentiment/regime context 후보. crypto-vs-equity 의미, date coverage, scale, missing date audit 필요 |
-| BTC news 후보 dataset | `https://huggingface.co/datasets/edaschau/bitcoin_news` | source/date/leakage audit 이후 second-phase news context source 후보 |
+| BTC news 후보 dataset | `https://huggingface.co/datasets/edaschau/bitcoin_news` | 4-3 audit source. strict `t-1` headline-only first policy로 second-phase news context 사용 가능 |
 
 구현 근거 구분:
 - Paper/reference reported: FiLM은 condition에서 생성한 gamma와 beta로 feature-wise
@@ -86,6 +93,12 @@ Implementation-source distinction:
   - "Optional attention-based fusion"
 - 첫 Stage 4 main run 구현 선택: structured numeric context를 먼저 사용합니다.
   news context는 audit 이후 second-phase track으로 유지합니다.
+- 4-3 news-context 결정:
+  - `edaschau/bitcoin_news`는 Stage 2 BTC 기간과 겹치고 timestamp/title/article/source
+    field가 있으므로 사용 가능합니다.
+  - 첫 news version은 headline-only, strict `t-1`, train-fit non-LLM encoder입니다.
+  - Full article summary와 LLM embedding은 leakage-safe headline context가 안정화된
+    뒤로 미룹니다.
 - Structured context source 구분:
   - F&G는 외부 dataset이 필요합니다.
   - Bollinger %B, Bollinger bandwidth, MFI, realized volatility는 BTC OHLCV에서

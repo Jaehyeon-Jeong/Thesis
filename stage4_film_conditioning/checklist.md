@@ -42,9 +42,14 @@ Planning phase:
   - Keep `BB20`, `MFI14`, and short F&G summaries only as later
     `standard_window` or `multi_scale` diagnostics.
   - Result: [4-2 Structured context audit and leakage policy](checklist_results/4-2_structured_context_audit_and_leakage_policy.md)
-- [ ] 4-3. News dataset audit and news-context feasibility decision
+- [x] 4-3. News dataset audit and news-context feasibility decision
   - Candidate: `edaschau/bitcoin_news`.
-  - Decide whether to use headline-only, article summaries, or embeddings.
+  - Decision: feasible as a second-phase context source.
+  - First news version: headline-only, strict `t-1` alignment, train-fit
+    non-LLM encoder.
+  - Defer article summaries and LLM embeddings until leakage-safe headline
+    context is stable.
+  - Result: [4-3 News dataset audit and feasibility decision](checklist_results/4-3_news_dataset_audit_and_feasibility.md)
 - [ ] 4-4. Stage 2/Stage 3 dependency and baseline-output review
 - [ ] 4-5. Context encoder and normalization plan
 - [ ] 4-6. Concat/gating/FiLM insertion design
@@ -142,9 +147,14 @@ Stage 4 main ablation:
   - `BB20`, `MFI14`, short F&G summary는 나중의 `standard_window` 또는
     `multi_scale` diagnostic으로만 유지합니다.
   - 결과: [4-2 Structured context audit and leakage policy](checklist_results/4-2_structured_context_audit_and_leakage_policy.md)
-- [ ] 4-3. News dataset audit와 news-context 사용 가능성 결정
+- [x] 4-3. News dataset audit와 news-context 사용 가능성 결정
   - 후보: `edaschau/bitcoin_news`.
-  - headline-only, article summary, embedding 중 무엇을 쓸지 결정합니다.
+  - 결정: second-phase context source로 사용 가능.
+  - 첫 news version: headline-only, strict `t-1` alignment, train-fit
+    non-LLM encoder.
+  - Article summary와 LLM embedding은 leakage-safe headline context가 안정화된
+    뒤로 미룹니다.
+  - 결과: [4-3 News dataset audit and feasibility decision](checklist_results/4-3_news_dataset_audit_and_feasibility.md)
 - [ ] 4-4. Stage 2/Stage 3 dependency와 baseline output 확인
 - [ ] 4-5. Context encoder와 normalization 계획
 - [ ] 4-6. Concat/gating/FiLM 삽입 설계

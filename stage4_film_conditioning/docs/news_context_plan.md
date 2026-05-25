@@ -13,9 +13,9 @@ Candidate:
 - Hugging Face: `edaschau/bitcoin_news`
 - URL: `https://huggingface.co/datasets/edaschau/bitcoin_news`
 
-Current public metadata checked on 2026-05-21:
+Current public metadata checked on 2026-05-25:
 - Split: `train`
-- Rows: about `210,832`
+- Rows: `210,832`
 - Date range in viewer: 2011-06-22 to 2025-06-04
 - Format: CSV/Parquet
 - Text language: English
@@ -32,6 +32,14 @@ Current public metadata checked on 2026-05-21:
 
 The dataset appears usable for BTC news context because it overlaps the BTC
 test period used in Stage 2 (`2021-01-01` to `2024-12-31`).
+
+Planning decision from 4-3:
+- Use this dataset as a second-phase news-context source.
+- First news experiment should be headline-only.
+- Use strict `t-1` alignment by default.
+- Fit text preprocessing, TF-IDF, and SVD on train-period news only.
+- Defer article summaries, sentence-transformer embeddings, LLM summaries, and
+  LLM embeddings until the no-leakage headline track is stable.
 
 ## Why News Is Not the First Main Experiment
 
@@ -75,21 +83,22 @@ For each BTC image ending at date `t`, allowed news should be:
 news_time <= t close cutoff
 ```
 
-Simpler first policy:
-- use all news from calendar date `t-1` through date `t` before UTC daily close;
-- if exact intraday cutoff is uncertain, use news up to `t-1` for a stricter
-  no-leakage baseline.
+First policy:
+- use news up to the end of calendar date `t-1`;
+- do not use same-calendar-day news until BTC candle cutoff and news timestamp
+  cutoff are explicitly defined.
 
-The strict `t-1` policy is safer for the first news experiment.
+The strict `t-1` policy is the default for the first news experiment.
 
 ### 3. Daily Aggregation Options
 
 Start simple:
-1. latest headline of the allowed day;
-2. top-k headlines by recency;
-3. concatenated headlines with max token limit;
-4. daily bag-of-words/TF-IDF;
-5. article summaries only after caching rules are stable.
+1. exact title/url duplicate removal;
+2. concatenated headlines with fixed top-k or max-character limit;
+3. daily bag-of-words/TF-IDF;
+4. TF-IDF + SVD daily vector fit on train-period news only;
+5. add trailing 7-day and 60-day news-count/embedding summaries as ablations;
+6. article summaries only after caching rules are stable.
 
 ### 4. Encoder Options
 
@@ -132,9 +141,9 @@ preserving the advisor-facing News/LLM direction.
 - Hugging Face: `edaschau/bitcoin_news`
 - URL: `https://huggingface.co/datasets/edaschau/bitcoin_news`
 
-2026-05-21 기준 공개 metadata 확인:
+2026-05-25 기준 공개 metadata 확인:
 - Split: `train`
-- Rows: 약 `210,832`
+- Rows: `210,832`
 - Viewer 기준 date range: 2011-06-22 to 2025-06-04
 - Format: CSV/Parquet
 - Text language: English
@@ -151,6 +160,14 @@ preserving the advisor-facing News/LLM direction.
 
 이 dataset은 Stage 2 BTC test period인 `2021-01-01` to `2024-12-31`과 겹치므로
 BTC news context 후보로 사용할 수 있습니다.
+
+4-3 계획 결정:
+- 이 dataset은 second-phase news-context source로 사용합니다.
+- 첫 news experiment는 headline-only로 시작합니다.
+- 기본 alignment는 strict `t-1`입니다.
+- Text preprocessing, TF-IDF, SVD는 train-period news에만 fit합니다.
+- Article summary, sentence-transformer embedding, LLM summary, LLM embedding은
+  no-leakage headline track이 안정화된 뒤로 미룹니다.
 
 ## 뉴스가 첫 main experiment가 아닌 이유
 
@@ -193,20 +210,22 @@ news context full FiLM
 news_time <= t close cutoff
 ```
 
-첫 실험용 단순 정책:
-- calendar date `t-1`부터 `t`의 UTC daily close 전 뉴스만 사용;
-- intraday cutoff가 애매하면 더 보수적으로 `t-1`까지만 사용.
+첫 정책:
+- calendar date `t-1`의 끝까지 나온 뉴스만 사용합니다.
+- BTC candle cutoff와 news timestamp cutoff가 명확해지기 전까지 same-day news는
+  사용하지 않습니다.
 
-첫 뉴스 실험은 strict `t-1` 정책이 더 안전합니다.
+첫 뉴스 실험은 strict `t-1` 정책을 기본값으로 둡니다.
 
 ### 3. Daily aggregation 선택지
 
 간단한 순서:
-1. 해당 날짜의 latest headline;
-2. recency 기준 top-k headlines;
-3. max token limit 안에서 concatenated headlines;
-4. daily bag-of-words/TF-IDF;
-5. cache rule이 안정화된 뒤 article summaries.
+1. exact title/url duplicate 제거;
+2. fixed top-k 또는 max-character limit 안에서 headline concat;
+3. daily bag-of-words/TF-IDF;
+4. train-period news에만 fit한 TF-IDF + SVD daily vector;
+5. trailing 7-day와 60-day news-count/embedding summary를 ablation으로 추가;
+6. cache rule이 안정화된 뒤 article summaries.
 
 ### 4. Encoder 선택지
 

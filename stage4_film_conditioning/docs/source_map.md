@@ -65,6 +65,14 @@ Implementation-source distinction:
     and train-only z-score normalization after feature-specific transforms.
   - Shared encoder is
     `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`.
+- 4-6 insertion decision:
+  - Concat attaches the `(B, 32)` context embedding after I60 flatten:
+    `(B, 184320) -> (B, 184352)`.
+  - Gating uses only a final-block channel gate on `(B, 512, 2, 180)`.
+  - Gamma-only and full FiLM are inserted after BatchNorm and before LeakyReLU
+    in every I60 block.
+  - Gate/FiLM output heads are zero-initialized so gate/gamma/beta start as
+    identity modulation.
 
 ## 한국어
 
@@ -131,3 +139,12 @@ Implementation-source distinction:
     train-only 1/99% clipping, train-only z-score normalization을 사용합니다.
   - Shared encoder는
     `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`입니다.
+- 4-6 insertion 결정:
+  - Concat은 I60 flatten 뒤 `(B, 32)` context embedding을 붙입니다:
+    `(B, 184320) -> (B, 184352)`.
+  - Gating은 final block feature map `(B, 512, 2, 180)`에만 channel gate를
+    적용합니다.
+  - Gamma-only와 full FiLM은 모든 I60 block에서 BatchNorm 뒤, LeakyReLU 전에
+    삽입합니다.
+  - Gate/FiLM output head는 zero-initialize해서 gate/gamma/beta가 identity
+    modulation에서 시작하게 합니다.

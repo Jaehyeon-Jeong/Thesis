@@ -69,6 +69,16 @@ Main Stage 4 ablation models:
 | `4-C` | CNN + context FiLM gamma-only | Use context to generate block-wise `gamma`; apply `F' = gamma * F` | Tests FiLM scaling without additive shift |
 | `4-D` | CNN + context FiLM full | Use context to generate block-wise `gamma` and `beta`; apply `F' = gamma * F + beta` | Main FiLM model and interpretability target |
 
+Insertion decision:
+- `4-A` concatenates the context embedding after the I60 CNN flatten feature:
+  `(B, 184320) + (B, 32) -> (B, 184352)`.
+- `4-B` gates the final I60 feature map only:
+  `(B, 512, 2, 180)` with `gate = 2 * sigmoid(raw_gate)`.
+- `4-C` and `4-D` insert FiLM after BatchNorm and before LeakyReLU in every
+  I60 convolution block.
+- Gate, gamma, and beta heads are zero-initialized so gating starts at `1`,
+  gamma starts at `1`, and beta starts at `0`.
+
 Why this matches the advisor's direction:
 - The chart-image CNN baseline is already strong.
 - The research question is not simply whether chart images work.
@@ -116,6 +126,7 @@ Main documents:
 - [News dataset audit](checklist_results/4-3_news_dataset_audit_and_feasibility.md)
 - [Stage 2/Stage 3 dependency review](checklist_results/4-4_stage2_stage3_dependency_and_baseline_output_review.md)
 - [Context encoder and normalization plan](checklist_results/4-5_context_encoder_and_normalization_plan.md)
+- [Concat/gating/FiLM insertion design](checklist_results/4-6_concat_gating_film_insertion_design.md)
 
 ## 한국어
 
@@ -184,6 +195,16 @@ Stage 4 주요 ablation model:
 | `4-C` | CNN + context FiLM gamma-only | context가 block별 `gamma`를 만들고 `F' = gamma * F` 적용 | additive shift 없는 FiLM scaling |
 | `4-D` | CNN + context FiLM full | context가 block별 `gamma`, `beta`를 만들고 `F' = gamma * F + beta` 적용 | main FiLM model과 해석력 대상 |
 
+삽입 위치 결정:
+- `4-A`는 I60 CNN flatten feature 뒤에 context embedding을 붙입니다:
+  `(B, 184320) + (B, 32) -> (B, 184352)`.
+- `4-B`는 final I60 feature map 하나만 gate합니다:
+  `(B, 512, 2, 180)`, `gate = 2 * sigmoid(raw_gate)`.
+- `4-C`와 `4-D`는 모든 I60 convolution block에서 BatchNorm 뒤, LeakyReLU 전에
+  FiLM을 삽입합니다.
+- Gate/gamma/beta head는 zero-initialize해서 gate는 `1`, gamma는 `1`, beta는
+  `0`에서 시작하게 합니다.
+
 교수님 방향성과 맞는 이유:
 - chart-image CNN baseline은 이미 강합니다.
 - 핵심 질문은 chart image 자체가 예측력이 있는지가 아닙니다.
@@ -229,3 +250,4 @@ Stage 4 주요 ablation model:
 - [News dataset audit](checklist_results/4-3_news_dataset_audit_and_feasibility.md)
 - [Stage 2/Stage 3 dependency review](checklist_results/4-4_stage2_stage3_dependency_and_baseline_output_review.md)
 - [Context encoder and normalization plan](checklist_results/4-5_context_encoder_and_normalization_plan.md)
+- [Concat/gating/FiLM insertion design](checklist_results/4-6_concat_gating_film_insertion_design.md)

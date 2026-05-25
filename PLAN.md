@@ -232,13 +232,19 @@
   - 4-5에서 shared context encoder를
     `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`로 고정했다.
   - concat model은 CNN feature와 context embedding을 classifier 직전에 연결한다.
+    - 4-6 기준: I60 flatten feature `(B, 184320)` 뒤에 context embedding `(B, 32)`를
+      붙여 `(B, 184352)` classifier input을 만든다.
   - gating model은 context embedding으로 channel gate를 만들고 CNN feature를 곱해서 조절한다.
+    - 4-6 기준: 첫 run에서는 final block feature map `(B, 512, 2, 180)`에만
+      channel-wise gate를 적용하고 `gate = 2 * sigmoid(raw_gate)`를 사용한다.
   - gamma-only FiLM은 block별 gamma만 만들어 `F' = gamma * F`를 적용한다.
   - full FiLM은 block별 gamma/beta를 만들어 `F' = gamma * F + beta`를 적용한다.
   - FiLM layer는 feature map에 channel-wise modulation을 적용한다.
 - Re-image CNN에 이식:
   - 기존 CNN 구조는 유지하고, block 내부에 FiLM만 삽입한다.
   - 기본 위치: `Conv -> BN -> FiLM -> LeakyReLU -> MaxPool`
+  - 4-6 기준: gate/FiLM output head는 zero-initialize해서 gate와 gamma는 `1`,
+    beta는 `0`에서 시작하게 한다.
 - 비교:
   - BTC baseline
   - BTC Linear

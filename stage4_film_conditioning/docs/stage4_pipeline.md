@@ -90,17 +90,18 @@ features are already standardized and the BTC train split is small.
 ### 4-A. Concat
 
 ```text
-image -> CNN -> final image feature
-context -> MLP -> context embedding
-[image feature, context embedding] -> classifier
+image -> CNN -> flatten image feature (B, 184320)
+context -> MLP -> context embedding (B, 32)
+[image feature, context embedding] -> (B, 184352) -> classifier
 ```
 
 ### 4-B. Gating
 
 ```text
-image -> CNN -> image feature
-context -> MLP -> gate
-image feature * gate -> classifier
+image -> CNN -> final feature map F4 (B, 512, 2, 180)
+context -> MLP -> raw_gate (B, 512)
+gate = 2 * sigmoid(raw_gate)
+F4 * gate[:, :, None, None] -> classifier
 ```
 
 ### 4-C. Gamma-only FiLM
@@ -108,6 +109,7 @@ image feature * gate -> classifier
 ```text
 context -> MLP -> block-wise gamma
 Conv -> BN -> gamma * feature -> LeakyReLU -> MaxPool
+gamma = 1 + delta_gamma
 ```
 
 ### 4-D. Full FiLM
@@ -115,6 +117,7 @@ Conv -> BN -> gamma * feature -> LeakyReLU -> MaxPool
 ```text
 context -> MLP -> block-wise gamma, beta
 Conv -> BN -> gamma * feature + beta -> LeakyReLU -> MaxPool
+gamma = 1 + delta_gamma
 ```
 
 ## News Context Extension
@@ -237,17 +240,18 @@ standardization되고, BTC train split이 작기 때문입니다.
 ### 4-A. Concat
 
 ```text
-image -> CNN -> final image feature
-context -> MLP -> context embedding
-[image feature, context embedding] -> classifier
+image -> CNN -> flatten image feature (B, 184320)
+context -> MLP -> context embedding (B, 32)
+[image feature, context embedding] -> (B, 184352) -> classifier
 ```
 
 ### 4-B. Gating
 
 ```text
-image -> CNN -> image feature
-context -> MLP -> gate
-image feature * gate -> classifier
+image -> CNN -> final feature map F4 (B, 512, 2, 180)
+context -> MLP -> raw_gate (B, 512)
+gate = 2 * sigmoid(raw_gate)
+F4 * gate[:, :, None, None] -> classifier
 ```
 
 ### 4-C. Gamma-only FiLM
@@ -255,6 +259,7 @@ image feature * gate -> classifier
 ```text
 context -> MLP -> block-wise gamma
 Conv -> BN -> gamma * feature -> LeakyReLU -> MaxPool
+gamma = 1 + delta_gamma
 ```
 
 ### 4-D. Full FiLM
@@ -262,6 +267,7 @@ Conv -> BN -> gamma * feature -> LeakyReLU -> MaxPool
 ```text
 context -> MLP -> block-wise gamma, beta
 Conv -> BN -> gamma * feature + beta -> LeakyReLU -> MaxPool
+gamma = 1 + delta_gamma
 ```
 
 ## News context 확장

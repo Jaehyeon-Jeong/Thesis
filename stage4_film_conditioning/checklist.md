@@ -63,7 +63,13 @@ Planning phase:
     train-only 1/99% clipping, train-only z-score normalization.
   - Shared encoder: `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`.
   - Result: [4-5 Context encoder and normalization plan](checklist_results/4-5_context_encoder_and_normalization_plan.md)
-- [ ] 4-6. Concat/gating/FiLM insertion design
+- [x] 4-6. Concat/gating/FiLM insertion design
+  - 4-A concat attaches the 32-dim context embedding after CNN flatten:
+    `184320 + 32 -> Linear(..., 2)`.
+  - 4-B gating applies a final-block channel gate to `(B, 512, 2, 180)`.
+  - 4-C/4-D FiLM is inserted after BatchNorm and before LeakyReLU in every I60
+    block.
+  - Result: [4-6 Concat/gating/FiLM insertion design](checklist_results/4-6_concat_gating_film_insertion_design.md)
 - [ ] 4-7. Grad-CAM plus context/gate/gamma/beta export plan
 - [ ] 4-8. Kaggle runner and output backup plan
 
@@ -179,7 +185,13 @@ Stage 4 main ablation:
     train-only 1/99% clipping, train-only z-score normalization.
   - Shared encoder: `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`.
   - 결과: [4-5 Context encoder and normalization plan](checklist_results/4-5_context_encoder_and_normalization_plan.md)
-- [ ] 4-6. Concat/gating/FiLM 삽입 설계
+- [x] 4-6. Concat/gating/FiLM 삽입 설계
+  - 4-A concat은 CNN flatten 뒤 32차원 context embedding을 붙입니다:
+    `184320 + 32 -> Linear(..., 2)`.
+  - 4-B gating은 final block feature map `(B, 512, 2, 180)`에 channel gate를
+    적용합니다.
+  - 4-C/4-D FiLM은 모든 I60 block에서 BatchNorm 뒤, LeakyReLU 전에 삽입합니다.
+  - 결과: [4-6 Concat/gating/FiLM insertion design](checklist_results/4-6_concat_gating_film_insertion_design.md)
 - [ ] 4-7. Grad-CAM plus context/gate/gamma/beta export 계획
 - [ ] 4-8. Kaggle runner와 output backup 계획
 

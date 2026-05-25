@@ -183,7 +183,18 @@ Implementation status:
   `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`.
 - Local check passed on dummy context tensors and real normalized rows from the
   `4-I2` context table.
-- Next step: `4-I4` `CNN + context concat`.
+- `4-I4` is complete.
+- Added the `CNN + context concat` model:
+  - Stage 2 I60 Stock_CNN convolution blocks are reused unchanged.
+  - The Stage 2 final classifier is replaced with
+    `Dropout(0.5) -> Linear(184352, 2)`.
+  - Tensor path:
+    `(B, 1, 96, 180) -> CNN -> (B, 512, 2, 180) -> flatten (B, 184320)`;
+    context `(B, 8) -> MLP -> (B, 32)`;
+    concat `(B, 184352) -> logits (B, 2)`.
+  - Parameter count check passed: `2,954,370`, which is `+1,408` vs the Stage
+    2 I60 baseline.
+- Next step: `4-I5` `CNN + context gating`.
 
 Main documents:
 - [Checklist](checklist.md)
@@ -204,6 +215,7 @@ Main documents:
 - [Shared config/code scaffold](checklist_results/4-I1_shared_code_config_scaffold.md)
 - [Structured context feature builder](checklist_results/4-I2_structured_context_feature_builder.md)
 - [Context MLP encoder](checklist_results/4-I3_context_mlp_encoder.md)
+- [Context concat model](checklist_results/4-I4_context_concat_model.md)
 
 ## 한국어
 
@@ -382,7 +394,18 @@ Implementation status:
   `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`.
 - Dummy context tensor와 `4-I2` context table의 실제 normalized row 모두에서
   local check를 통과했습니다.
-- 다음 단계는 `4-I4` `CNN + context concat`입니다.
+- `4-I4`를 완료했습니다.
+- `CNN + context concat` model을 추가했습니다:
+  - Stage 2 I60 Stock_CNN convolution block은 그대로 재사용합니다.
+  - Stage 2 final classifier를 `Dropout(0.5) -> Linear(184352, 2)`로
+    교체합니다.
+  - Tensor path:
+    `(B, 1, 96, 180) -> CNN -> (B, 512, 2, 180) -> flatten (B, 184320)`;
+    context `(B, 8) -> MLP -> (B, 32)`;
+    concat `(B, 184352) -> logits (B, 2)`.
+  - Parameter count check 통과: `2,954,370`, Stage 2 I60 baseline 대비
+    `+1,408`.
+- 다음 단계는 `4-I5` `CNN + context gating`입니다.
 
 주요 문서:
 - [Checklist](checklist.md)
@@ -403,3 +426,4 @@ Implementation status:
 - [Shared config/code scaffold](checklist_results/4-I1_shared_code_config_scaffold.md)
 - [Structured context feature builder](checklist_results/4-I2_structured_context_feature_builder.md)
 - [Context MLP encoder](checklist_results/4-I3_context_mlp_encoder.md)
+- [Context concat model](checklist_results/4-I4_context_concat_model.md)

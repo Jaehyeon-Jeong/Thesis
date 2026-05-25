@@ -20,8 +20,11 @@ Added in `4-I3`:
 - `check_stage4_context_encoder.py`: validates the shared numeric context MLP
   on dummy tensors and, when available, real normalized context rows.
 
+Added in `4-I4`:
+- `check_stage4_model_shapes.py`: validates the Stage 4 concat model tensor
+  path, parameter count, and real normalized context forward pass.
+
 Planned next scripts:
-- `check_stage4_model_shapes.py`
 - `check_stage4_film_layers.py`
 - `run_stage4_context_model.py`
 - `evaluate_stage4_predictions.py`
@@ -56,8 +59,11 @@ Stage 4 script는 구현 단계에서 순차적으로 추가합니다.
 - `check_stage4_context_encoder.py`: shared numeric context MLP를 dummy tensor와,
   가능하면 실제 normalized context row로 검증합니다.
 
+`4-I4`에서 추가한 script:
+- `check_stage4_model_shapes.py`: Stage 4 concat model의 tensor path,
+  parameter count, 실제 normalized context forward pass를 검증합니다.
+
 다음 예정 script:
-- `check_stage4_model_shapes.py`
 - `check_stage4_film_layers.py`
 - `run_stage4_context_model.py`
 - `evaluate_stage4_predictions.py`

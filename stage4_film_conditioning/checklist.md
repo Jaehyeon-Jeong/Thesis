@@ -122,7 +122,13 @@ Implementation phase:
   - Shape check passed on dummy tensors and real normalized rows from the local
     `4-I2` context table.
   - Result: [4-I3 Context MLP encoder](checklist_results/4-I3_context_mlp_encoder.md)
-- [ ] 4-I4. `CNN + context concat` model
+- [x] 4-I4. `CNN + context concat` model
+  - Reused the Stage 2 I60 Stock_CNN convolution blocks unchanged.
+  - Replaced only the final classifier so `(B, 184320)` image features and
+    `(B, 32)` context embeddings become `(B, 184352)` before logits.
+  - Parameter check passed: `2,954,370` parameters, `+1,408` vs Stage 2 I60
+    baseline.
+  - Result: [4-I4 Context concat model](checklist_results/4-I4_context_concat_model.md)
 - [ ] 4-I5. `CNN + context gating` model
 - [ ] 4-I6. FiLM layer and FiLM generator modules
 - [ ] 4-I7. `CNN + FiLM gamma-only` and `CNN + FiLM full` models
@@ -275,7 +281,13 @@ Stage 4 main ablation:
   - Dummy tensor와 local `4-I2` context table의 실제 normalized row에서 shape
     check를 통과했습니다.
   - 결과: [4-I3 Context MLP encoder](checklist_results/4-I3_context_mlp_encoder.md)
-- [ ] 4-I4. `CNN + context concat` model
+- [x] 4-I4. `CNN + context concat` model
+  - Stage 2 I60 Stock_CNN convolution block은 그대로 재사용했습니다.
+  - 마지막 classifier만 교체해서 `(B, 184320)` image feature와 `(B, 32)`
+    context embedding을 `(B, 184352)`로 붙인 뒤 logits를 만듭니다.
+  - Parameter check 통과: `2,954,370` parameters, Stage 2 I60 baseline 대비
+    `+1,408`.
+  - 결과: [4-I4 Context concat model](checklist_results/4-I4_context_concat_model.md)
 - [ ] 4-I5. `CNN + context gating` model
 - [ ] 4-I6. FiLM layer와 FiLM generator module
 - [ ] 4-I7. `CNN + FiLM gamma-only`와 `CNN + FiLM full` model

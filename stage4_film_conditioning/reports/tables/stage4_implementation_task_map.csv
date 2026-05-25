@@ -2,7 +2,7 @@ checklist_item,task,primary_files_to_create_or_update,depends_on,readiness_statu
 4-I1,shared config/code scaffold,"configs/env_local.yaml; configs/env_kaggle.yaml; src/stage4_film/config.py; src/stage4_film/paths.py; src/stage4_film/runtime.py; src/stage4_film/seed.py; scripts/_stage4_script_utils.py; scripts/check_stage4_scaffold.py",4-I0,complete
 4-I2,structured context source audit and feature builder,"src/stage4_film/context/sources.py; src/stage4_film/context/features.py; src/stage4_film/context/normalization.py; scripts/audit_stage4_context_sources.py; scripts/build_stage4_context_features.py",4-I1,complete
 4-I3,context MLP encoder,"src/stage4_film/conditions/context_encoder.py; scripts/check_stage4_context_encoder.py",4-I1 and 4-I2,complete
-4-I4,CNN + context concat model,"src/stage4_film/models/context_stock_cnn.py; scripts/check_stage4_model_shapes.py",4-I1 and 4-I3,ready
+4-I4,CNN + context concat model,"src/stage4_film/models/context_stock_cnn.py; scripts/check_stage4_model_shapes.py",4-I1 and 4-I3,complete
 4-I5,CNN + context gating model,"src/stage4_film/models/context_stock_cnn.py; scripts/check_stage4_model_shapes.py",4-I1 and 4-I3,ready
 4-I6,FiLM layer and FiLM generator modules,"src/stage4_film/layers/film.py; src/stage4_film/conditions/film_generator.py; scripts/check_stage4_film_layers.py",4-I1 and 4-I3,ready
 4-I7,gamma-only and full FiLM models,"src/stage4_film/models/film_stock_cnn.py; scripts/check_stage4_model_shapes.py",4-I6,ready_after_film_layer

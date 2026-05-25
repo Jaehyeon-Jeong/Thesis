@@ -260,6 +260,15 @@
   - concat model은 CNN feature와 context embedding을 classifier 직전에 연결한다.
     - 4-6 기준: I60 flatten feature `(B, 184320)` 뒤에 context embedding `(B, 32)`를
       붙여 `(B, 184352)` classifier input을 만든다.
+    - 4-I4에서 `CNN + context concat` model을 구현했다. Stage 2 I60 Stock_CNN
+      convolution blocks는 그대로 재사용하고, final classifier만
+      `Dropout(0.5) -> Linear(184352, 2)`로 교체했다.
+    - 4-I4 local shape check 결과:
+      image `(B, 1, 96, 180) -> flatten (B, 184320)`,
+      context `(B, 8) -> embedding (B, 32)`,
+      concat `(B, 184352) -> logits (B, 2)`.
+    - 4-I4 parameter count는 `2,954,370`이며 Stage 2 I60 baseline 대비
+      `+1,408`이다.
   - gating model은 context embedding으로 channel gate를 만들고 CNN feature를 곱해서 조절한다.
     - 4-6 기준: 첫 run에서는 final block feature map `(B, 512, 2, 180)`에만
       channel-wise gate를 적용하고 `gate = 2 * sigmoid(raw_gate)`를 사용한다.

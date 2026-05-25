@@ -15,6 +15,7 @@ outputs/
 **/checkpoints/
 **/predictions/
 **/large_outputs/
+**/F&G_data/
 __pycache__/
 .ipynb_checkpoints/
 .venv/

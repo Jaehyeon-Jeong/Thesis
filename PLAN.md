@@ -233,6 +233,10 @@
   - Stage 4 script는 Stage 4 `src`와 Stage 2 `src`를 모두 import path에 추가한다.
   - Kaggle runner는 Stage 4 code snapshot만이 아니라 Stage 2 code snapshot도
     attach/copy하거나, Stage 2와 Stage 4가 같이 들어 있는 larger snapshot을 사용한다.
+  - 4-I0 data update: local F&G data가
+    `stage4_film_conditioning/F&G_data/fear_greed_index.csv`에 추가됐다.
+    Raw F&G CSV는 GitHub에 올리지 않고, Kaggle run에서는 public F&G dataset을
+    attach해서 재현성을 유지한다.
 - 모델 구현:
   - `ethanjperez/film`의 핵심 구조를 최대한 동일하게 따른다.
   - context encoder와 fusion/modulation head를 분리한다.

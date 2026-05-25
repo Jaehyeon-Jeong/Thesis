@@ -25,9 +25,12 @@ Main implementation constraints:
   trading metric code.
 - Stage 4 must add a `stage2_dependency` config section so Kaggle/local scripts
   can import Stage 2 `src`.
-- Local BTC OHLCV data exists, but local F&G data is not present in the active
-  dataset folder. Full context feature construction is therefore a Kaggle-first
-  path unless a local F&G CSV is supplied.
+- Local BTC OHLCV data exists.
+- Local F&G data is now available at
+  `stage4_film_conditioning/F&G_data/fear_greed_index.csv`.
+  Quick check: `2,644` rows, `2018-02-01` to `2025-05-02`, value range `5-95`,
+  and `1,460/1,461` Stage 2 test-period days covered.
+- Raw F&G CSV files are local data and should not be tracked in GitHub.
 - Output completion must be based on the Stage 4 output checker, not checkpoint
   existence.
 
@@ -61,9 +64,12 @@ Readiness 결정:
   code를 수정하지 않습니다.
 - Stage 4 config에는 Kaggle/local script가 Stage 2 `src`를 import할 수 있도록
   `stage2_dependency` section이 필요합니다.
-- 로컬 BTC OHLCV data는 있지만 active dataset folder에 F&G data는 없습니다.
-  따라서 local F&G CSV를 제공하지 않는 한 full context feature construction은
-  Kaggle-first path입니다.
+- 로컬 BTC OHLCV data가 있습니다.
+- 로컬 F&G data도
+  `stage4_film_conditioning/F&G_data/fear_greed_index.csv`에 추가됐습니다.
+  빠른 확인 결과 `2,644` rows, `2018-02-01` to `2025-05-02`, value range
+  `5-95`, Stage 2 test-period coverage `1,460/1,461` days입니다.
+- Raw F&G CSV 파일은 local data이므로 GitHub에 track하지 않습니다.
 - 완료 판정은 checkpoint 존재가 아니라 Stage 4 output checker 기준입니다.
 
 상세 review:

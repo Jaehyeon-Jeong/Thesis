@@ -121,15 +121,29 @@ pipeline.
 Available locally:
 - BTC daily OHLCV:
   `/Users/jaehyeonjeong/Desktop/논문/데이터셋/BTC _OHLCV/btc_1d_data_2018_to_2025.csv`
-
-Not available locally in the active dataset folder:
-- Fear & Greed CSV.
+- Fear & Greed daily index:
+  `stage4_film_conditioning/F&G_data/fear_greed_index.csv`
 
 Implication:
 - Model shape checks and non-data smoke tests can run locally.
-- Full context feature construction needs the F&G dataset attached on Kaggle or
-  a local F&G CSV path supplied later.
-- The first full execution target remains Kaggle.
+- Full context feature construction can now be developed locally with the
+  supplied F&G CSV.
+- The first full execution target remains Kaggle because the intended final run
+  should attach the same public F&G dataset and preserve the Kaggle output
+  backup contract.
+
+Quick F&G availability check:
+- file: `fear_greed_index.csv`;
+- columns: `timestamp`, `value`, `classification`, `date`;
+- rows: `2,644`;
+- date range: `2018-02-01` to `2025-05-02`;
+- missing days inside that range: `4`
+  (`2018-04-14`, `2018-04-15`, `2018-04-16`, `2024-10-26`);
+- Stage 2 test period coverage: `1,460/1,461` days;
+- value range: `5` to `95`;
+- `historical_data.csv` in the same folder is not the first-run F&G input. It
+  appears to be transaction/order data and should be excluded from the primary
+  numeric context vector unless a separate audit justifies it.
 
 ## Implementation Risks And Guardrails
 
@@ -285,15 +299,26 @@ Stage 4는 Stage 2 BTC pipeline을 복사/재작성하지 않고 재사용해야
 로컬에 있는 것:
 - BTC daily OHLCV:
   `/Users/jaehyeonjeong/Desktop/논문/데이터셋/BTC _OHLCV/btc_1d_data_2018_to_2025.csv`
-
-현재 active dataset folder에 없는 것:
-- Fear & Greed CSV.
+- Fear & Greed daily index:
+  `stage4_film_conditioning/F&G_data/fear_greed_index.csv`
 
 의미:
 - Model shape check와 non-data smoke test는 로컬에서 가능합니다.
-- Full context feature construction은 Kaggle에서 F&G dataset을 attach하거나, 나중에
-  로컬 F&G CSV path를 제공해야 합니다.
-- 첫 full 실행 target은 여전히 Kaggle입니다.
+- Full context feature construction은 이제 제공된 F&G CSV로 로컬 개발이 가능합니다.
+- 첫 full 실행 target은 여전히 Kaggle입니다. 최종 run에서는 같은 public F&G dataset을
+  attach하고 Kaggle output backup 계약을 유지해야 합니다.
+
+빠른 F&G availability check:
+- file: `fear_greed_index.csv`;
+- columns: `timestamp`, `value`, `classification`, `date`;
+- rows: `2,644`;
+- date range: `2018-02-01` to `2025-05-02`;
+- 해당 범위 안의 missing day: `4`
+  (`2018-04-14`, `2018-04-15`, `2018-04-16`, `2024-10-26`);
+- Stage 2 test period coverage: `1,460/1,461` days;
+- value range: `5` to `95`;
+- 같은 폴더의 `historical_data.csv`는 첫 run의 F&G input이 아닙니다. 거래/order
+  data로 보이므로 별도 audit 없이 primary numeric context vector에 넣지 않습니다.
 
 ## 구현 리스크와 guardrail
 

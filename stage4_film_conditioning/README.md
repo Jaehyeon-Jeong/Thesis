@@ -145,9 +145,13 @@ Implementation readiness decision:
 - Stage 4 code should add a `stage2_dependency` config section and import Stage
   2 helpers for BTC loading, sample generation, image generation, split,
   normalization, evaluation, and trading metrics.
-- Local BTC OHLCV data exists, but F&G data is not present in the local active
-  dataset folder. Full context feature construction is therefore Kaggle-first
-  unless a local F&G CSV is supplied.
+- Local BTC OHLCV data exists.
+- Local F&G data is now available at
+  `stage4_film_conditioning/F&G_data/fear_greed_index.csv`.
+  The raw CSV is not tracked in GitHub; only the data availability note and
+  audit summary are tracked.
+- The first full execution target remains Kaggle, but local context feature
+  development can now use the supplied F&G CSV.
 - The detailed task map is stored in
   `reports/tables/stage4_implementation_task_map.csv`.
 
@@ -308,9 +312,13 @@ Implementation readiness 결정:
 - Stage 4 code는 `stage2_dependency` config section을 추가하고, BTC loading,
   sample generation, image generation, split, normalization, evaluation,
   trading metric은 Stage 2 helper를 import해서 사용해야 합니다.
-- 로컬 BTC OHLCV data는 있지만 local active dataset folder에는 F&G data가 없습니다.
-  따라서 full context feature construction은 local F&G CSV를 따로 제공하지 않는 한
-  Kaggle-first입니다.
+- 로컬 BTC OHLCV data가 있습니다.
+- 로컬 F&G data도
+  `stage4_film_conditioning/F&G_data/fear_greed_index.csv`에 추가됐습니다.
+  Raw CSV는 GitHub에 올리지 않고, data availability note와 audit summary만
+  추적합니다.
+- 첫 full 실행 target은 여전히 Kaggle이지만, local context feature 개발은 이제
+  제공된 F&G CSV로 진행할 수 있습니다.
 - 상세 task map은 `reports/tables/stage4_implementation_task_map.csv`에 저장했습니다.
 
 주요 문서:

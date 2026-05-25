@@ -101,9 +101,10 @@ Implementation phase:
   - Decision: implementation can proceed to `4-I1`.
   - Stage 4 will reuse Stage 2 BTC data/image/split/evaluation helpers through
     a configurable Stage 2 `src` dependency.
-  - Local BTC data is available; full context feature construction needs Kaggle
-    F&G attachment or a supplied local F&G CSV.
+  - Local BTC and F&G data are available for local context feature development.
+  - Kaggle runs should still attach the public F&G dataset for reproducibility.
   - Result: [4-I0 Implementation readiness review](checklist_results/4-I0_implementation_readiness_review.md)
+  - Data update: [4-I0 Fear & Greed local data check](checklist_results/4-I0_fear_greed_local_data_check.md)
 - [ ] 4-I1. Shared Stage 4 config/code scaffold
 - [ ] 4-I2. Structured context feature builder
 - [ ] 4-I3. Context MLP encoder
@@ -239,9 +240,10 @@ Stage 4 main ablation:
   - 결정: `4-I1` 구현으로 진행할 수 있습니다.
   - Stage 4는 configurable Stage 2 `src` dependency를 통해 Stage 2 BTC
     data/image/split/evaluation helper를 재사용합니다.
-  - 로컬 BTC data는 있지만 full context feature construction에는 Kaggle F&G
-    attach 또는 별도 local F&G CSV가 필요합니다.
+  - 로컬 BTC와 F&G data가 local context feature 개발에 사용 가능합니다.
+  - Kaggle run에서는 재현성을 위해 public F&G dataset을 계속 attach해야 합니다.
   - 결과: [4-I0 Implementation readiness review](checklist_results/4-I0_implementation_readiness_review.md)
+  - 데이터 업데이트: [4-I0 Fear & Greed local data check](checklist_results/4-I0_fear_greed_local_data_check.md)
 - [ ] 4-I1. Stage 4 공통 config/code scaffold
 - [ ] 4-I2. Structured context feature builder
 - [ ] 4-I3. Context MLP encoder

@@ -241,6 +241,17 @@ Implementation-source distinction:
     manifest are all present and parseable.
   - It checks CSV row counts and JSON parseability, not only file existence.
   - Local output checks passed for `concat` and `film_gamma` smoke runs.
+- 4-I12 Kaggle runner decision:
+  - Added `notebooks/kaggle_stage4_four_ablation_single_seed_one_cell.md`.
+  - The first real Kaggle run is fixed to `I60/R20/ohlc_ma_vb`,
+    `context_window=60`, seed `42`, and methods `concat`, `gating`,
+    `film_gamma`, `film_full`.
+  - The cell copies Stage 4 and Stage 2 code snapshots, patches
+    `configs/env_kaggle.yaml`, audits BTC/F&G sources, builds context features,
+    runs train/evaluation/trading/Grad-CAM/output-check per method, and writes
+    backup zips under `/kaggle/working/stage4_saved_outputs`.
+  - This is an execution wrapper. It does not change model definitions, context
+    feature definitions, split rules, or evaluation metrics.
 
 ## 한국어
 
@@ -482,3 +493,14 @@ Implementation-source distinction:
   - 단순 file existence뿐 아니라 CSV row count와 JSON parse 가능 여부도
     확인합니다.
   - `concat`, `film_gamma` smoke run에서 local output check를 통과했습니다.
+- 4-I12 Kaggle runner 결정:
+  - `notebooks/kaggle_stage4_four_ablation_single_seed_one_cell.md`를 추가했습니다.
+  - 첫 실제 Kaggle run은 `I60/R20/ohlc_ma_vb`, `context_window=60`,
+    seed `42`, methods `concat`, `gating`, `film_gamma`, `film_full`로
+    고정합니다.
+  - Cell은 Stage 4/Stage 2 code snapshot을 복사하고,
+    `configs/env_kaggle.yaml`을 patch한 뒤 BTC/F&G source audit, context
+    feature build, method별 training/evaluation/trading/Grad-CAM/output-check를
+    실행하고 `/kaggle/working/stage4_saved_outputs`에 backup zip을 저장합니다.
+  - 이 파일은 execution wrapper입니다. model 정의, context feature 정의,
+    split rule, evaluation metric은 바꾸지 않습니다.

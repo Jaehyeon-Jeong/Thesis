@@ -343,6 +343,15 @@
     - Checker는 파일 존재뿐 아니라 CSV parse/row count와 JSON parse도 확인한다.
     - Local smoke output check는 `concat`, `film_gamma` 모두 통과했다.
     - Compact summary는 `reports/smoke_tests/stage4_smoke_summary.json`에 저장했다.
+  - 4-I12에서 Kaggle four-ablation single-seed runner를 준비했다.
+    - `notebooks/kaggle_stage4_four_ablation_single_seed_one_cell.md`는
+      `I60/R20/ohlc_ma_vb`, context window `60`, seed `42`를 고정하고
+      `concat`, `gating`, `film_gamma`, `film_full`을 순서대로 실행한다.
+    - Cell은 Stage 4/Stage 2 code snapshot copy, Kaggle config patch,
+      BTC/F&G source audit, context feature build, method별 train/evaluation/
+      trading/Grad-CAM/output-check, backup zip, summary table까지 수행한다.
+    - 아직 실제 Kaggle full run 결과는 아니므로 output check와 metric이
+      보고될 때까지 4-I12는 open 상태로 유지한다.
 - Re-image CNN에 이식:
   - 기존 CNN 구조는 유지하고, block 내부에 FiLM만 삽입한다.
   - 기본 위치: `Conv -> BN -> FiLM -> LeakyReLU -> MaxPool`
@@ -365,6 +374,9 @@
 - Kaggle 실행:
   - 4-8 기준: 첫 Stage 4 Kaggle runner는 structured numeric context 네 ablation
     `concat`, `gating`, `film_gamma`, `film_full`만 실행한다.
+  - 4-I12 기준: 실제 실행 cell은
+    `stage4_film_conditioning/notebooks/kaggle_stage4_four_ablation_single_seed_one_cell.md`
+    에 준비되어 있다.
   - 첫 full sanity run은 seed `42`, 이후 robustness run은 seed
     `42, 43, 44, 45, 46`으로 실행한다.
   - Backup root는 `/kaggle/working/stage4_saved_outputs/`로 고정한다.

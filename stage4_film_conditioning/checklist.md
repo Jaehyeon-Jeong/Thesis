@@ -186,6 +186,13 @@ Implementation phase:
   - Local output checks passed for `concat` and `film_gamma` smoke runs.
   - Result: [4-I11 Smoke output check](checklist_results/4-I11_smoke_output_check.md)
 - [ ] 4-I12. Kaggle single-config run for the four main ablations
+  - Kaggle one-cell runner is ready:
+    `notebooks/kaggle_stage4_four_ablation_single_seed_one_cell.md`.
+  - Fixed run: `I60/R20/ohlc_ma_vb`, context window `60`, seed `42`,
+    methods `concat`, `gating`, `film_gamma`, `film_full`.
+  - The item remains unchecked until the real Kaggle output check passes and
+    metrics are reported.
+  - Result prep: [4-I12 Kaggle four-ablation runner](checklist_results/4-I12_kaggle_four_ablation_runner.md)
 - [ ] 4-I13. Kaggle selected grid/five-seed runner
 - [ ] 4-I14. Stage 4 result report
 
@@ -395,6 +402,13 @@ Stage 4 main ablation:
   - `concat`, `film_gamma` smoke run에서 local output check를 통과했습니다.
   - 결과: [4-I11 Smoke output check](checklist_results/4-I11_smoke_output_check.md)
 - [ ] 4-I12. 네 가지 main ablation의 Kaggle single-config run
+  - Kaggle one-cell runner 준비 완료:
+    `notebooks/kaggle_stage4_four_ablation_single_seed_one_cell.md`.
+  - 고정 run: `I60/R20/ohlc_ma_vb`, context window `60`, seed `42`,
+    methods `concat`, `gating`, `film_gamma`, `film_full`.
+  - 실제 Kaggle output check가 통과하고 metric이 보고되기 전까지는 미완료로
+    유지합니다.
+  - 준비 결과: [4-I12 Kaggle four-ablation runner](checklist_results/4-I12_kaggle_four_ablation_runner.md)
 - [ ] 4-I13. Kaggle selected grid/five-seed runner
 - [ ] 4-I14. Stage 4 결과 보고
 

@@ -267,7 +267,14 @@ Implementation status:
     and run manifest.
   - Local checker passed for `concat` and `film_gamma` smoke runs.
   - Compact smoke summary: `reports/smoke_tests/stage4_smoke_summary.json`.
-- Next step: `4-I12` Kaggle single-config run for the four main ablations.
+- `4-I12` Kaggle runner is ready, but the real run is not complete yet.
+  - Added `notebooks/kaggle_stage4_four_ablation_single_seed_one_cell.md`.
+  - It runs `I60/R20/ohlc_ma_vb`, context window `60`, seed `42`, and the four
+    methods `concat`, `gating`, `film_gamma`, `film_full`.
+  - It backs up after context build, training, prediction evaluation, trading
+    evaluation, Grad-CAM, output check, and summary.
+  - Keep `4-I12` open until Kaggle output check passes and metrics are reported.
+- Next step: run the 4-I12 Kaggle cell and inspect the summary/output zips.
 
 Main documents:
 - [Checklist](checklist.md)
@@ -296,6 +303,7 @@ Main documents:
 - [Prediction and trading exports](checklist_results/4-I9_prediction_trading_exports.md)
 - [Grad-CAM context/modulation export](checklist_results/4-I10_gradcam_context_modulation_export.md)
 - [Smoke output check](checklist_results/4-I11_smoke_output_check.md)
+- [Kaggle four-ablation runner](checklist_results/4-I12_kaggle_four_ablation_runner.md)
 
 ## 한국어
 
@@ -560,7 +568,15 @@ Implementation status:
     bundle을 확인합니다.
   - `concat`, `film_gamma` smoke run에서 local checker를 통과했습니다.
   - Compact smoke summary: `reports/smoke_tests/stage4_smoke_summary.json`.
-- 다음 단계는 `4-I12` 네 가지 main ablation의 Kaggle single-config run입니다.
+- `4-I12` Kaggle runner는 준비됐지만, 실제 run은 아직 완료가 아닙니다.
+  - `notebooks/kaggle_stage4_four_ablation_single_seed_one_cell.md`를 추가했습니다.
+  - `I60/R20/ohlc_ma_vb`, context window `60`, seed `42`, 네 method
+    `concat`, `gating`, `film_gamma`, `film_full`을 실행합니다.
+  - context build, training, prediction evaluation, trading evaluation,
+    Grad-CAM, output check, summary 이후 backup zip을 저장합니다.
+  - Kaggle output check가 통과하고 metric이 보고될 때까지 `4-I12`는 open으로
+    유지합니다.
+- 다음 단계는 4-I12 Kaggle cell 실행과 summary/output zip 확인입니다.
 
 주요 문서:
 - [Checklist](checklist.md)
@@ -589,3 +605,4 @@ Implementation status:
 - [Prediction and trading exports](checklist_results/4-I9_prediction_trading_exports.md)
 - [Grad-CAM context/modulation export](checklist_results/4-I10_gradcam_context_modulation_export.md)
 - [Smoke output check](checklist_results/4-I11_smoke_output_check.md)
+- [Kaggle four-ablation runner](checklist_results/4-I12_kaggle_four_ablation_runner.md)

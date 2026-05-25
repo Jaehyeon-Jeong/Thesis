@@ -57,7 +57,12 @@ Planning phase:
   - Stage 3 Linear is a negative/simple-parameter ablation, not a Stage 4 code
     dependency.
   - Result: [4-4 Stage 2/Stage 3 dependency and baseline output review](checklist_results/4-4_stage2_stage3_dependency_and_baseline_output_review.md)
-- [ ] 4-5. Context encoder and normalization plan
+- [x] 4-5. Context encoder and normalization plan
+  - Primary context vector: 8 matched-window features.
+  - Preprocessing: feature transform, train-only median imputation,
+    train-only 1/99% clipping, train-only z-score normalization.
+  - Shared encoder: `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`.
+  - Result: [4-5 Context encoder and normalization plan](checklist_results/4-5_context_encoder_and_normalization_plan.md)
 - [ ] 4-6. Concat/gating/FiLM insertion design
 - [ ] 4-7. Grad-CAM plus context/gate/gamma/beta export plan
 - [ ] 4-8. Kaggle runner and output backup plan
@@ -168,7 +173,12 @@ Stage 4 main ablation:
   - Stage 3 Linear는 negative/simple-parameter ablation이며, Stage 4 code
     dependency가 아닙니다.
   - 결과: [4-4 Stage 2/Stage 3 dependency and baseline output review](checklist_results/4-4_stage2_stage3_dependency_and_baseline_output_review.md)
-- [ ] 4-5. Context encoder와 normalization 계획
+- [x] 4-5. Context encoder와 normalization 계획
+  - Primary context vector: matched-window 8개 feature.
+  - Preprocessing: feature transform, train-only median imputation,
+    train-only 1/99% clipping, train-only z-score normalization.
+  - Shared encoder: `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`.
+  - 결과: [4-5 Context encoder and normalization plan](checklist_results/4-5_context_encoder_and_normalization_plan.md)
 - [ ] 4-6. Concat/gating/FiLM 삽입 설계
 - [ ] 4-7. Grad-CAM plus context/gate/gamma/beta export 계획
 - [ ] 4-8. Kaggle runner와 output backup 계획

@@ -49,6 +49,17 @@ Important modeling rule:
 - The numeric context vector is normalized with train-only statistics, encoded
   by an MLP, and then used by the fusion/modulation model.
 
+Context encoder and normalization decision:
+- Primary model input uses 8 matched-window features:
+  `fg_value`, `fg_mean_60`, `fg_delta_60`, `fg_std_60`,
+  `bb_percent_b_60`, `bb_bandwidth_60`, `mfi_60`, and `rv_60`.
+- F&G and MFI-style 0-100 values are scaled by `100`; positive skewed
+  volatility/range values use `log1p`.
+- All splits use train-only median imputation, train-only 1/99% clipping, and
+  train-only z-score normalization.
+- The shared context encoder is intentionally small:
+  `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`.
+
 Main Stage 4 ablation models:
 
 | Track | Model | What changes | Interpretation |
@@ -104,6 +115,7 @@ Main documents:
 - [Planning report](checklist_results/4-1_context_fusion_and_news_plan.md)
 - [News dataset audit](checklist_results/4-3_news_dataset_audit_and_feasibility.md)
 - [Stage 2/Stage 3 dependency review](checklist_results/4-4_stage2_stage3_dependency_and_baseline_output_review.md)
+- [Context encoder and normalization plan](checklist_results/4-5_context_encoder_and_normalization_plan.md)
 
 ## 한국어
 
@@ -151,6 +163,17 @@ Structured market context 후보:
 - context 값은 별도 numeric vector로 모델에 들어갑니다.
 - numeric context vector는 train split 통계로만 normalize하고, MLP로 encoding한 뒤
   fusion/modulation model에서 사용합니다.
+
+Context encoder와 normalization 결정:
+- Primary model input은 matched-window 8개 feature를 사용합니다:
+  `fg_value`, `fg_mean_60`, `fg_delta_60`, `fg_std_60`,
+  `bb_percent_b_60`, `bb_bandwidth_60`, `mfi_60`, `rv_60`.
+- F&G와 MFI처럼 0-100 scale인 값은 `100`으로 나누고, 양수 skew가 큰 volatility/range
+  값은 `log1p`를 적용합니다.
+- 모든 split에는 train-only median imputation, train-only 1/99% clipping,
+  train-only z-score normalization을 적용합니다.
+- Shared context encoder는 작게 고정합니다:
+  `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`.
 
 Stage 4 주요 ablation model:
 
@@ -205,3 +228,4 @@ Stage 4 주요 ablation model:
 - [Planning report](checklist_results/4-1_context_fusion_and_news_plan.md)
 - [News dataset audit](checklist_results/4-3_news_dataset_audit_and_feasibility.md)
 - [Stage 2/Stage 3 dependency review](checklist_results/4-4_stage2_stage3_dependency_and_baseline_output_review.md)
+- [Context encoder and normalization plan](checklist_results/4-5_context_encoder_and_normalization_plan.md)

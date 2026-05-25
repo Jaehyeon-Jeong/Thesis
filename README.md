@@ -18,7 +18,7 @@ tracked.
 | `stage1_reimage_reproduction` | Reproduce the Re-image CNN pipeline on public I20 stock images | In progress: `I20/R60` seed-42 fast diagnostic archived; `I20/R20` archive is smoke-only; `I20/R5`, strict batch-128 run, and five-seed reproduction are later |
 | `stage2_btc_extension` | Extend the confirmed pipeline to BTC OHLCV | Single-seed 36-run complete; selected `I20/R20` and `I60/R20` five-seed robustness check complete; full 180-run five-seed grid later |
 | `stage3_linear_adapter` | Add a Linear comparison model | First test on Stage 2 best config completed; result dropped to majority level; remaining grid runs pending |
-| `stage4_film_conditioning` | Compare market-context concat, gating, gamma-only FiLM, and full FiLM on the fixed BTC CNN | Planning updated; numeric context first, news context kept as second-phase track |
+| `stage4_film_conditioning` | Compare market-context concat, gating, gamma-only FiLM, and full FiLM on the fixed BTC CNN | Planning through 4-5 complete; context vector, train-only normalization, and shared MLP encoder locked |
 
 ### Current Status
 
@@ -74,6 +74,13 @@ Stage 4:
   `4-C CNN + context FiLM gamma-only`, and `4-D CNN + context FiLM full`.
 - First context source: structured numeric market context, including F&G,
   Bollinger %B, Bollinger bandwidth, MFI, and realized volatility.
+- 4-5 fixed the first model input as 8 matched-window features:
+  `fg_value`, `fg_mean_60`, `fg_delta_60`, `fg_std_60`,
+  `bb_percent_b_60`, `bb_bandwidth_60`, `mfi_60`, and `rv_60`.
+- Context preprocessing is train-only: feature transform, median imputation,
+  1/99% clipping, and z-score normalization are fit on train only.
+- Shared context encoder:
+  `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`.
 - News context is preserved as a second-phase track after source/date/leakage
   audit. Candidate source: Hugging Face `edaschau/bitcoin_news`.
 - Advisor-direction mapping is documented in the Stage 4 README/source map and
@@ -128,7 +135,7 @@ config, 코드 scaffold만 올립니다. 대용량 데이터, 논문 PDF, checkp
 | `stage1_reimage_reproduction` | public I20 stock image로 Re-image CNN pipeline 재현 | 진행 중: `I20/R60` seed-42 fast diagnostic 보존; `I20/R20` archive는 smoke-only; `I20/R5`, strict batch-128 run, five-seed reproduction은 later |
 | `stage2_btc_extension` | 확인된 pipeline을 BTC OHLCV로 확장 | single-seed 36-run 완료; `I20/R20`, `I60/R20` 선별 five-seed robustness check 완료; full 180-run five-seed grid는 later |
 | `stage3_linear_adapter` | Linear 비교 모델 추가 | Stage 2 best config 1회 테스트 완료; majority 수준으로 하락; 나머지 grid run 예정 |
-| `stage4_film_conditioning` | 고정 BTC CNN 위에서 market-context concat, gating, gamma-only FiLM, full FiLM 비교 | 계획 업데이트; numeric context 먼저, news context는 second-phase track으로 유지 |
+| `stage4_film_conditioning` | 고정 BTC CNN 위에서 market-context concat, gating, gamma-only FiLM, full FiLM 비교 | 4-5까지 계획 완료; context vector, train-only normalization, shared MLP encoder 고정 |
 
 ### 현재 상태
 
@@ -184,6 +191,13 @@ Stage 4:
   `4-C CNN + context FiLM gamma-only`, `4-D CNN + context FiLM full`.
 - 첫 context source는 structured numeric market context입니다: F&G, Bollinger %B,
   Bollinger bandwidth, MFI, realized volatility.
+- 4-5에서 첫 model input을 matched-window 8개 feature로 고정했습니다:
+  `fg_value`, `fg_mean_60`, `fg_delta_60`, `fg_std_60`,
+  `bb_percent_b_60`, `bb_bandwidth_60`, `mfi_60`, `rv_60`.
+- Context preprocessing은 train-only입니다. Feature transform, median imputation,
+  1/99% clipping, z-score normalization을 train split에서만 fit합니다.
+- Shared context encoder:
+  `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`.
 - News context는 제거하지 않고 source/date/leakage audit 이후 second-phase track으로
   유지합니다. 후보 source는 Hugging Face `edaschau/bitcoin_news`입니다.
 - 교수님 방향성 파일과 Stage 4 실험 결정의 연결은 Stage 4 README/source map과

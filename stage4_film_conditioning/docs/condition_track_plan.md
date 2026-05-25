@@ -39,14 +39,30 @@ The first Stage 4 run should use structured numeric context:
 | MFI | volume-aware overbought/oversold proxy | computed from BTC OHLCV | rolling window ending at `t` only |
 | realized volatility | recent market risk state | computed from BTC OHLCV | rolling window ending at `t` only |
 
-These values become:
+These values become the first-run model input:
 
 ```text
-context_vector[t] = [fg, bb_percent_b, bb_width, mfi, realized_vol]
+context_vector[t] = [
+    fg_value,
+    fg_mean_60,
+    fg_delta_60,
+    fg_std_60,
+    bb_percent_b_60,
+    bb_bandwidth_60,
+    mfi_60,
+    rv_60,
+]
 ```
 
-The context vector is normalized using train-split statistics only, then passed
-through a small MLP context encoder.
+The final vector is deliberately compact but still keeps current sentiment,
+60-day sentiment level/change/instability, 60-day band location/range,
+volume-aware pressure, and realized volatility. It is normalized using
+train-split statistics only, then passed through the shared small MLP context
+encoder:
+
+```text
+Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU
+```
 
 ## Four Main Ablations
 
@@ -203,14 +219,29 @@ Main experiment에서는 market context를 image에 그리지 않습니다. 이�
 | MFI | volume-aware overbought/oversold proxy | BTC OHLCV 계산값 | `t`까지의 rolling window만 사용 |
 | realized volatility | 최근 시장 위험 상태 | BTC OHLCV 계산값 | `t`까지의 rolling window만 사용 |
 
-이 값들은 다음 벡터가 됩니다.
+이 값들은 첫 run의 model input vector가 됩니다.
 
 ```text
-context_vector[t] = [fg, bb_percent_b, bb_width, mfi, realized_vol]
+context_vector[t] = [
+    fg_value,
+    fg_mean_60,
+    fg_delta_60,
+    fg_std_60,
+    bb_percent_b_60,
+    bb_bandwidth_60,
+    mfi_60,
+    rv_60,
+]
 ```
 
-context vector는 train split 통계로만 normalize하고, 작은 MLP context encoder에
+최종 벡터는 작게 유지하지만 current sentiment, 60일 sentiment level/change/instability,
+60일 band location/range, volume-aware pressure, realized volatility를 포함합니다.
+context vector는 train split 통계로만 normalize하고, 아래 shared MLP context encoder에
 넣습니다.
+
+```text
+Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU
+```
 
 ## 네 가지 main ablation
 

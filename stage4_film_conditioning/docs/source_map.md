@@ -57,6 +57,14 @@ Implementation-source distinction:
   - F&G requires an external dataset.
   - Bollinger %B, Bollinger bandwidth, MFI, and realized volatility are derived
     from BTC OHLCV and do not require additional data.
+- 4-5 context encoder and normalization decision:
+  - Primary first-run model input has 8 features:
+    `fg_value`, `fg_mean_60`, `fg_delta_60`, `fg_std_60`,
+    `bb_percent_b_60`, `bb_bandwidth_60`, `mfi_60`, `rv_60`.
+  - Preprocessing uses train-only median imputation, train-only 1/99% clipping,
+    and train-only z-score normalization after feature-specific transforms.
+  - Shared encoder is
+    `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`.
 
 ## 한국어
 
@@ -115,3 +123,11 @@ Implementation-source distinction:
   - F&G는 외부 dataset이 필요합니다.
   - Bollinger %B, Bollinger bandwidth, MFI, realized volatility는 BTC OHLCV에서
     파생하므로 추가 dataset이 필요 없습니다.
+- 4-5 context encoder와 normalization 결정:
+  - 첫 run의 primary model input은 8개 feature입니다:
+    `fg_value`, `fg_mean_60`, `fg_delta_60`, `fg_std_60`,
+    `bb_percent_b_60`, `bb_bandwidth_60`, `mfi_60`, `rv_60`.
+  - Preprocessing은 feature-specific transform 이후 train-only median imputation,
+    train-only 1/99% clipping, train-only z-score normalization을 사용합니다.
+  - Shared encoder는
+    `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`입니다.

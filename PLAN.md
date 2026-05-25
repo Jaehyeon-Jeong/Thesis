@@ -212,6 +212,11 @@
     - 후보: F&G score, Bollinger %B, Bollinger bandwidth, MFI, realized volatility.
     - 모든 context feature는 image end date `t`까지의 정보만 사용한다.
     - context feature scaling/normalization은 train split에서만 fit한다.
+    - 4-5에서 첫 model input은 아래 8개 matched-window feature로 고정했다:
+      `fg_value`, `fg_mean_60`, `fg_delta_60`, `fg_std_60`,
+      `bb_percent_b_60`, `bb_bandwidth_60`, `mfi_60`, `rv_60`.
+    - Preprocessing은 feature-specific transform 이후 train-only median imputation,
+      train-only 1/99% clipping, train-only z-score normalization을 사용한다.
   - News context는 버리지 않는다. 다만 바로 LLM/VLM prompt로 처리하지 않고,
     별도 `4-N` track에서 dataset audit, publication-time alignment, daily aggregation,
     leakage check를 먼저 수행한다.
@@ -224,6 +229,8 @@
   - `ethanjperez/film`의 핵심 구조를 최대한 동일하게 따른다.
   - context encoder와 fusion/modulation head를 분리한다.
   - context encoder는 numeric market context vector를 MLP로 condition embedding으로 바꾼다.
+  - 4-5에서 shared context encoder를
+    `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`로 고정했다.
   - concat model은 CNN feature와 context embedding을 classifier 직전에 연결한다.
   - gating model은 context embedding으로 channel gate를 만들고 CNN feature를 곱해서 조절한다.
   - gamma-only FiLM은 block별 gamma만 만들어 `F' = gamma * F`를 적용한다.

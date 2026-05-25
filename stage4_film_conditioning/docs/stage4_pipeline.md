@@ -70,6 +70,21 @@ All context features must satisfy:
   baseline this means 60-day context features. `BB20` and `MFI14` are kept only
   as later standard-window diagnostics.
 
+Preprocessing and encoder are fixed by 4-5:
+
+```text
+raw value
+  -> feature-specific transform
+  -> train-only median imputation
+  -> train-only 1/99% clipping
+  -> train-only z-score normalization
+  -> Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU
+  -> context_embedding
+```
+
+The first run does not use BatchNorm in the context encoder because the context
+features are already standardized and the BTC train split is small.
+
 ## Four Model Flows
 
 ### 4-A. Concat
@@ -201,6 +216,21 @@ context_vector[t] = [
 - 첫 run은 `context_window = image_window`를 사용합니다. 선택된 `I60` baseline에서는
   60일 context feature를 뜻합니다. `BB20`, `MFI14`는 나중의 standard-window
   diagnostic으로만 유지합니다.
+
+Preprocessing과 encoder는 4-5에서 다음처럼 고정했습니다.
+
+```text
+raw value
+  -> feature-specific transform
+  -> train-only median imputation
+  -> train-only 1/99% clipping
+  -> train-only z-score normalization
+  -> Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU
+  -> context_embedding
+```
+
+첫 run에서는 context encoder에 BatchNorm을 쓰지 않습니다. context feature는 이미
+standardization되고, BTC train split이 작기 때문입니다.
 
 ## 네 가지 model flow
 

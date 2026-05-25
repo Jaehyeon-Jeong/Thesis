@@ -6,7 +6,7 @@ checklist_item,task,primary_files_to_create_or_update,depends_on,readiness_statu
 4-I5,CNN + context gating model,"src/stage4_film/models/context_stock_cnn.py; scripts/check_stage4_model_shapes.py",4-I1 and 4-I3,complete
 4-I6,FiLM layer and FiLM generator modules,"src/stage4_film/layers/film.py; src/stage4_film/conditions/film_generator.py; scripts/check_stage4_film_layers.py",4-I1 and 4-I3,complete
 4-I7,gamma-only and full FiLM models,"src/stage4_film/models/film_stock_cnn.py; scripts/check_stage4_model_shapes.py",4-I6,complete
-4-I8,Stage 4 runner using fixed Stage 2 data pipeline,"src/stage4_film/runners/context_experiment.py; scripts/run_stage4_context_model.py",4-I2 through 4-I7,ready_after_models
+4-I8,Stage 4 runner using fixed Stage 2 data pipeline,"src/stage4_film/runners/context_experiment.py; src/stage4_film/training/loop.py; scripts/run_stage4_context_model.py",4-I2 through 4-I7,complete
 4-I9,prediction classification and trading exports,"scripts/evaluate_stage4_predictions.py; scripts/evaluate_stage4_trading.py; src/stage4_film/evaluation/exports.py",4-I8,ready_after_runner
 4-I10,Grad-CAM plus context/gate/gamma/beta export,"src/stage4_film/interpretability/gradcam_context.py; scripts/generate_stage4_gradcam_context.py",4-I8 and 4-I9,ready_after_eval
 4-I11,local or small Kaggle smoke test,"scripts/check_stage4_outputs.py; reports/smoke_tests/stage4_smoke_summary.json",4-I8 through 4-I10,ready_after_exports

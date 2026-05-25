@@ -302,6 +302,17 @@
       `+64,704`이며 all-block identity initialization check를 통과했다.
     - Stage 2 block의 `LeakyReLU(inplace=True)` 때문에 해석 export용
       post-FiLM feature map은 activation 전에 복사해서 보관한다.
+  - 4-I8에서 Stage 4 context runner를 구현했다.
+    - `scripts/run_stage4_context_model.py`는 단일 Stage 4 context-conditioned
+      training job을 실행한다.
+    - `src/stage4_film/runners/context_experiment.py`는 Stage 2 BTC data loading,
+      sample generation, chart image generation, split, train-only pixel normalization을
+      재사용하고 normalized context tensor를 각 batch에 붙인다.
+    - `src/stage4_film/training/loop.py`는 `model(image, context)` 형태로 학습한다.
+    - Stage 2 일반 weight initialization 이후 gate/FiLM output head를 identity로
+      다시 reset한다. 따라서 gating은 `gate=1`, FiLM은 `gamma=1`, `beta=0`에서
+      시작한다.
+    - Local smoke training은 `concat`과 `film_gamma`에서 통과했다.
 - Re-image CNN에 이식:
   - 기존 CNN 구조는 유지하고, block 내부에 FiLM만 삽입한다.
   - 기본 위치: `Conv -> BN -> FiLM -> LeakyReLU -> MaxPool`

@@ -75,7 +75,7 @@ class FilmParameterGenerator(nn.Module):
                 nn.Linear(self.spec.context_embedding_dim, channels)
                 for channels in self.spec.block_channels
             )
-        self._init_identity_outputs()
+        self.reset_to_identity()
 
     def forward(self, context_embedding: torch.Tensor) -> list[dict[str, torch.Tensor | None]]:
         """Return a list of FiLM parameter dictionaries, one per CNN block."""
@@ -137,6 +137,11 @@ class FilmParameterGenerator(nn.Module):
             nn.init.zeros_(head.weight)
             if head.bias is not None:
                 nn.init.zeros_(head.bias)
+
+    def reset_to_identity(self) -> None:
+        """Public identity reset used after generic model initialization."""
+
+        self._init_identity_outputs()
 
 
 def build_film_generator_for_window(

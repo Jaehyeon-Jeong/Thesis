@@ -39,8 +39,15 @@ Updated in `4-I7`:
   `--model film_full`, block-wise FiLM parameter shapes, identity
   initialization, parameter counts, and real-context forward passes.
 
+Added in `4-I8`:
+- `run_stage4_context_model.py`: runs one Stage 4 context-conditioned training
+  job. It reuses the fixed Stage 2 BTC data/image/split/normalization path,
+  builds context features, attaches `batch["context"]`, and trains one of
+  `concat`, `gating`, `film_gamma`, or `film_full`.
+  - Smoke example:
+    `python scripts/run_stage4_context_model.py --config configs/env_local.yaml --context-method concat --max-epochs 1 --max-train-rows 16 --max-validation-rows 8 --max-test-rows 8`
+
 Planned next scripts:
-- `run_stage4_context_model.py`
 - `evaluate_stage4_predictions.py`
 - `evaluate_stage4_trading.py`
 - `generate_stage4_gradcam_context.py`
@@ -91,8 +98,15 @@ Stage 4 script는 구현 단계에서 순차적으로 추가합니다.
   block별 FiLM parameter shape, identity initialization, parameter count,
   실제 context forward pass도 검증합니다.
 
+`4-I8`에서 추가한 script:
+- `run_stage4_context_model.py`: Stage 4 context-conditioned training job 하나를
+  실행합니다. 고정된 Stage 2 BTC data/image/split/normalization 경로를 재사용하고,
+  context feature를 생성한 뒤 `batch["context"]`를 붙여 `concat`, `gating`,
+  `film_gamma`, `film_full` 중 하나를 학습합니다.
+  - Smoke 예시:
+    `python scripts/run_stage4_context_model.py --config configs/env_local.yaml --context-method concat --max-epochs 1 --max-train-rows 16 --max-validation-rows 8 --max-test-rows 8`
+
 다음 예정 script:
-- `run_stage4_context_model.py`
 - `evaluate_stage4_predictions.py`
 - `evaluate_stage4_trading.py`
 - `generate_stage4_gradcam_context.py`

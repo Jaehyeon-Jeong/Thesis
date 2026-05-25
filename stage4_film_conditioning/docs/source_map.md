@@ -197,8 +197,22 @@ Implementation-source distinction:
   - In-place `LeakyReLU` can mutate post-FiLM tensors; the model stores
     pre-FiLM/post-FiLM feature maps before activation for later interpretation
     export.
-  - Next implementation item is `4-I8`, the fixed Stage 2 BTC pipeline runner
-    for Stage 4.
+- 4-I8 Stage 4 context runner decision:
+  - Added `src/stage4_film/runners/context_experiment.py`.
+  - Added `src/stage4_film/training/loop.py`.
+  - Added `scripts/run_stage4_context_model.py`.
+  - The runner reuses Stage 2 BTC data loading, sample construction, chart
+    image generation, split, and train-only pixel normalization.
+  - Stage 4 context features are built from the same split sample universe,
+    normalized with train-only context statistics, and attached as
+    `batch["context"]`.
+  - Training calls `model(image, context)`.
+  - Generic Stage 2 weight initialization is followed by a Stage 4 identity
+    reset for gate/FiLM output heads so modulation starts from the Stage 2
+    visual path.
+  - Local smoke training passed for `concat` and `film_gamma`.
+  - Next implementation item is `4-I9`, prediction/classification/trading
+    metric export.
 
 ## 한국어
 
@@ -395,5 +409,16 @@ Implementation-source distinction:
     normalized context row 모두에서 통과했습니다.
   - In-place `LeakyReLU`가 post-FiLM tensor를 바꿀 수 있으므로, model은
     해석 export용 pre-FiLM/post-FiLM feature map을 activation 전에 저장합니다.
-  - 다음 구현 항목은 `4-I8`, 고정된 Stage 2 BTC pipeline을 쓰는 Stage 4
-    runner입니다.
+- 4-I8 Stage 4 context runner 결정:
+  - `src/stage4_film/runners/context_experiment.py`를 추가했습니다.
+  - `src/stage4_film/training/loop.py`를 추가했습니다.
+  - `scripts/run_stage4_context_model.py`를 추가했습니다.
+  - Runner는 Stage 2 BTC data loading, sample 생성, chart image 생성, split,
+    train-only pixel normalization을 그대로 재사용합니다.
+  - Stage 4 context feature는 같은 split sample universe에서 만들고, train-only
+    context 통계로 normalization한 뒤 `batch["context"]`로 붙입니다.
+  - 학습은 `model(image, context)`를 호출합니다.
+  - Stage 2 일반 weight initialization 뒤 gate/FiLM output head를 identity로 다시
+    reset해서 modulation이 Stage 2 visual path에서 시작하게 합니다.
+  - `concat`, `film_gamma` local smoke training을 통과했습니다.
+  - 다음 구현 항목은 `4-I9`, prediction/classification/trading metric export입니다.

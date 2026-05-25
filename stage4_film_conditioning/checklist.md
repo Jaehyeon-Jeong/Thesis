@@ -154,7 +154,13 @@ Implementation phase:
   - `film_full` parameter check passed: `3,017,666`, `+64,704` vs Stage 2 I60.
   - Identity initialization check passed for all four I60 FiLM blocks.
   - Result: [4-I7 FiLM context models](checklist_results/4-I7_film_context_models.md)
-- [ ] 4-I8. BTC Stage 4 runner using fixed Stage 2 data pipeline
+- [x] 4-I8. BTC Stage 4 runner using fixed Stage 2 data pipeline
+  - Added `run_stage4_context_model.py`, Stage 4 runner helpers, and a
+    context-aware training loop.
+  - The runner reuses Stage 2 BTC data/image/split/pixel-normalization and
+    adds normalized context tensors to each batch.
+  - Local smoke training passed for `concat` and `film_gamma`.
+  - Result: [4-I8 Stage 4 context runner](checklist_results/4-I8_stage4_context_runner.md)
 - [ ] 4-I9. Prediction, classification metric, and trading metric export
 - [ ] 4-I10. Grad-CAM plus context/gate/gamma/beta export
 - [ ] 4-I11. Local or small Kaggle smoke test
@@ -336,7 +342,13 @@ Stage 4 main ablation:
   - `film_full` parameter check 통과: `3,017,666`, Stage 2 I60 대비 `+64,704`.
   - 네 개 I60 FiLM block 모두에서 identity initialization check를 통과했습니다.
   - 결과: [4-I7 FiLM context models](checklist_results/4-I7_film_context_models.md)
-- [ ] 4-I8. 고정된 Stage 2 data pipeline을 쓰는 BTC Stage 4 runner
+- [x] 4-I8. 고정된 Stage 2 data pipeline을 쓰는 BTC Stage 4 runner
+  - `run_stage4_context_model.py`, Stage 4 runner helper, context-aware
+    training loop를 추가했습니다.
+  - Stage 2 BTC data/image/split/pixel-normalization을 그대로 재사용하고,
+    각 batch에 normalized context tensor를 붙입니다.
+  - `concat`, `film_gamma` local smoke training을 통과했습니다.
+  - 결과: [4-I8 Stage 4 context runner](checklist_results/4-I8_stage4_context_runner.md)
 - [ ] 4-I9. prediction, classification metric, trading metric export
 - [ ] 4-I10. Grad-CAM plus context/gate/gamma/beta export
 - [ ] 4-I11. local 또는 작은 Kaggle smoke test

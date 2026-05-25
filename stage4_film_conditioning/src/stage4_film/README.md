@@ -34,11 +34,17 @@ Added in `4-I7`:
   `film_full`, with FiLM inserted after BatchNorm and before LeakyReLU in every
   Stock_CNN block.
 
+Added in `4-I8`:
+- `training/loop.py`: context-aware training loop that calls
+  `model(image, context)` and preserves identity initialization for gate/FiLM
+  heads after generic weight initialization.
+- `runners/context_experiment.py`: Stage 4 data/model runner that reuses Stage
+  2 BTC samples, images, split, and pixel normalization, then attaches
+  normalized context vectors.
+
 Planned next modules:
-- `training/`
 - `evaluation/`
 - `interpretability/`
-- `runners/`
 
 Stage 4 should import Stage 2 helpers through a configurable Stage 2 `src`
 path. Do not duplicate the Stage 2 BTC pipeline unless a later implementation
@@ -78,11 +84,17 @@ Stage 4 FiLM/context-conditioning 구현 package입니다.
   `FilmContextStockCNN`입니다. 모든 Stock_CNN block에서 BatchNorm 뒤,
   LeakyReLU 전에 FiLM을 삽입합니다.
 
+`4-I8`에서 추가한 module:
+- `training/loop.py`: `model(image, context)`를 호출하는 context-aware training
+  loop입니다. 일반 weight initialization 뒤 gate/FiLM head를 identity로 다시
+  보존합니다.
+- `runners/context_experiment.py`: Stage 2 BTC sample, image, split,
+  pixel normalization을 재사용하고 normalized context vector를 붙이는 Stage 4
+  data/model runner입니다.
+
 다음 예정 module:
-- `training/`
 - `evaluation/`
 - `interpretability/`
-- `runners/`
 
 Stage 4는 configurable Stage 2 `src` path를 통해 Stage 2 helper를 import해야
 합니다. 구현 blocker가 생기기 전에는 Stage 2 BTC pipeline을 중복 작성하지 않습니다.

@@ -228,7 +228,18 @@ Implementation status:
     `+64,704` vs the Stage 2 I60 baseline.
   - Local model shape checks passed for both models, including dummy tensors,
     real normalized context rows, and all-block identity initialization.
-- Next step: `4-I8` Stage 4 runner using the fixed Stage 2 BTC data pipeline.
+- `4-I8` is complete.
+- Added the Stage 4 context runner:
+  - `scripts/run_stage4_context_model.py` runs one context-conditioned training
+    job.
+  - `src/stage4_film/runners/context_experiment.py` reuses Stage 2 BTC
+    data/image/split/pixel-normalization and attaches normalized context
+    tensors.
+  - `src/stage4_film/training/loop.py` trains with `model(image, context)`.
+  - Gate/FiLM heads are reset to identity after generic weight initialization.
+  - Local smoke training passed for `concat` and `film_gamma`.
+- Next step: `4-I9` prediction, classification metric, and trading metric
+  export.
 
 Main documents:
 - [Checklist](checklist.md)
@@ -253,6 +264,7 @@ Main documents:
 - [Context gating model](checklist_results/4-I5_context_gating_model.md)
 - [FiLM layer and generator](checklist_results/4-I6_film_layer_generator.md)
 - [FiLM context models](checklist_results/4-I7_film_context_models.md)
+- [Stage 4 context runner](checklist_results/4-I8_stage4_context_runner.md)
 
 ## 한국어
 
@@ -477,7 +489,18 @@ Implementation status:
     I60 baseline 대비 `+64,704`.
   - 두 model 모두 dummy tensor, 실제 normalized context row, all-block identity
     initialization을 포함한 local model shape check를 통과했습니다.
-- 다음 단계는 `4-I8` 고정된 Stage 2 BTC data pipeline을 사용하는 Stage 4 runner입니다.
+- `4-I8`을 완료했습니다.
+- Stage 4 context runner를 추가했습니다:
+  - `scripts/run_stage4_context_model.py`는 context-conditioned training job
+    하나를 실행합니다.
+  - `src/stage4_film/runners/context_experiment.py`는 Stage 2 BTC
+    data/image/split/pixel-normalization을 재사용하고 normalized context tensor를
+    붙입니다.
+  - `src/stage4_film/training/loop.py`는 `model(image, context)` 형태로
+    학습합니다.
+  - 일반 weight initialization 뒤 gate/FiLM head를 identity로 다시 reset합니다.
+  - `concat`, `film_gamma` local smoke training을 통과했습니다.
+- 다음 단계는 `4-I9` prediction, classification metric, trading metric export입니다.
 
 주요 문서:
 - [Checklist](checklist.md)
@@ -502,3 +525,4 @@ Implementation status:
 - [Context gating model](checklist_results/4-I5_context_gating_model.md)
 - [FiLM layer and generator](checklist_results/4-I6_film_layer_generator.md)
 - [FiLM context models](checklist_results/4-I7_film_context_models.md)
+- [Stage 4 context runner](checklist_results/4-I8_stage4_context_runner.md)

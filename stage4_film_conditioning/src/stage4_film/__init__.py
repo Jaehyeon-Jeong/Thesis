@@ -29,6 +29,11 @@ from stage4_film.models import (
     build_gated_context_stock_cnn_for_window,
 )
 from stage4_film.paths import Stage4Paths, build_stage4_paths, ensure_stage4_output_dirs
+from stage4_film.runners import (
+    build_stage4_context_model,
+    prepare_stage4_context_experiment_data,
+    run_stage4_context_training,
+)
 
 __all__ = [
     "CONTEXT_METHODS",
@@ -45,10 +50,13 @@ __all__ = [
     "build_film_generator_for_window",
     "build_gated_context_stock_cnn_for_window",
     "build_stage4_paths",
+    "build_stage4_context_model",
     "ensure_stage4_output_dirs",
     "get_context_config",
     "get_stage2_dependency_config",
     "get_stage4_model_config",
     "load_config",
     "make_stage4_experiment_name",
+    "prepare_stage4_context_experiment_data",
+    "run_stage4_context_training",
 ]

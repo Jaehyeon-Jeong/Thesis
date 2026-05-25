@@ -34,6 +34,11 @@ Added in `4-I6`:
   generators, block-wise gamma/beta shapes, identity initialization, and
   feature-wise affine modulation on I60 block feature maps.
 
+Updated in `4-I7`:
+- `check_stage4_model_shapes.py`: now also validates `--model film_gamma` and
+  `--model film_full`, block-wise FiLM parameter shapes, identity
+  initialization, parameter counts, and real-context forward passes.
+
 Planned next scripts:
 - `run_stage4_context_model.py`
 - `evaluate_stage4_predictions.py`
@@ -80,6 +85,11 @@ Stage 4 script는 구현 단계에서 순차적으로 추가합니다.
 - `check_stage4_film_layers.py`: gamma-only/full FiLM parameter generator,
   block별 gamma/beta shape, identity initialization, I60 block feature map의
   feature-wise affine modulation을 검증합니다.
+
+`4-I7`에서 수정한 script:
+- `check_stage4_model_shapes.py`: `--model film_gamma`, `--model film_full`,
+  block별 FiLM parameter shape, identity initialization, parameter count,
+  실제 context forward pass도 검증합니다.
 
 다음 예정 script:
 - `run_stage4_context_model.py`

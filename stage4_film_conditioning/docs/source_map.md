@@ -179,8 +179,26 @@ Implementation-source distinction:
     - full gamma/beta: `63,360`
   - The local FiLM checker passed on dummy I60 feature maps and real normalized
     context rows from the local `4-I2` context table.
-  - Next implementation item is `4-I7`, gamma-only and full FiLM Stock_CNN
-    models.
+- 4-I7 FiLM Stock_CNN model decision:
+  - Added `src/stage4_film/models/film_stock_cnn.py`.
+  - Extended `scripts/check_stage4_model_shapes.py` with `--model film_gamma`
+    and `--model film_full`.
+  - Stage 2 I60 Stock_CNN convolution blocks are reused, but each block is
+    executed as `Conv2d -> BatchNorm2d -> FiLM -> LeakyReLU -> MaxPool2d`.
+  - `film_gamma` tensor path:
+    context `(B, 8) -> embedding (B, 32) -> gamma for channels
+    `[64, 128, 256, 512]`; final flatten `(B, 184320) -> logits (B, 2)`.
+  - `film_full` uses the same path and additionally emits beta for every block.
+  - Parameter counts:
+    - `film_gamma`: `2,985,986`, `+33,024` vs Stage 2 I60 baseline.
+    - `film_full`: `3,017,666`, `+64,704` vs Stage 2 I60 baseline.
+  - Both local model checks passed on dummy tensors and real normalized context
+    rows from the local `4-I2` context table.
+  - In-place `LeakyReLU` can mutate post-FiLM tensors; the model stores
+    pre-FiLM/post-FiLM feature maps before activation for later interpretation
+    export.
+  - Next implementation item is `4-I8`, the fixed Stage 2 BTC pipeline runner
+    for Stage 4.
 
 ## 한국어
 
@@ -360,4 +378,22 @@ Implementation-source distinction:
     - full gamma/beta: `63,360`
   - Local FiLM checker가 dummy I60 feature map과 local `4-I2` context table의
     실제 normalized context row 모두에서 통과했습니다.
-  - 다음 구현 항목은 `4-I7`, gamma-only/full FiLM Stock_CNN model입니다.
+- 4-I7 FiLM Stock_CNN model 결정:
+  - `src/stage4_film/models/film_stock_cnn.py`를 추가했습니다.
+  - `scripts/check_stage4_model_shapes.py`에 `--model film_gamma`,
+    `--model film_full`을 추가했습니다.
+  - Stage 2 I60 Stock_CNN convolution block을 재사용하되, 각 block을
+    `Conv2d -> BatchNorm2d -> FiLM -> LeakyReLU -> MaxPool2d` 순서로 실행합니다.
+  - `film_gamma` tensor path:
+    context `(B, 8) -> embedding (B, 32) -> channel [64, 128, 256, 512]용
+    gamma; final flatten `(B, 184320) -> logits (B, 2)`.
+  - `film_full`은 같은 path에서 block별 beta도 함께 만듭니다.
+  - Parameter count:
+    - `film_gamma`: `2,985,986`, Stage 2 I60 baseline 대비 `+33,024`.
+    - `film_full`: `3,017,666`, Stage 2 I60 baseline 대비 `+64,704`.
+  - 두 local model check가 dummy tensor와 local `4-I2` context table의 실제
+    normalized context row 모두에서 통과했습니다.
+  - In-place `LeakyReLU`가 post-FiLM tensor를 바꿀 수 있으므로, model은
+    해석 export용 pre-FiLM/post-FiLM feature map을 activation 전에 저장합니다.
+  - 다음 구현 항목은 `4-I8`, 고정된 Stage 2 BTC pipeline을 쓰는 Stage 4
+    runner입니다.

@@ -28,8 +28,10 @@ from stage4_film.context.features import make_context_output_name
 from stage4_film.context.normalization import normalized_feature_columns
 from stage4_film.models import (
     build_concat_context_stock_cnn_for_window,
+    build_film_context_stock_cnn_for_window,
     build_gated_context_stock_cnn_for_window,
     expected_concat_context_parameter_count,
+    expected_film_context_parameter_count,
     expected_gated_context_parameter_count,
 )
 from stage4_film.seed import set_global_seed
@@ -40,7 +42,11 @@ def parse_args() -> argparse.Namespace:
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="configs/env_local.yaml")
-    parser.add_argument("--model", default="concat", choices=["concat", "gating"])
+    parser.add_argument(
+        "--model",
+        default="concat",
+        choices=["concat", "gating", "film_gamma", "film_full"],
+    )
     parser.add_argument("--image-window", type=int, default=0)
     parser.add_argument("--image-spec", default="")
     parser.add_argument("--return-horizon", type=int, default=0)
@@ -82,6 +88,17 @@ def main() -> None:
     elif method == "gating":
         model = build_gated_context_stock_cnn_for_window(config, image_window=image_window)
         expected_params = expected_gated_context_parameter_count(config, image_window)
+    elif method in {"film_gamma", "film_full"}:
+        model = build_film_context_stock_cnn_for_window(
+            config,
+            image_window=image_window,
+            mode=method,
+        )
+        expected_params = expected_film_context_parameter_count(
+            config,
+            image_window,
+            method,
+        )
     else:
         raise ValueError(f"Unsupported model checker method: {method}")
     model.eval()
@@ -108,6 +125,24 @@ def main() -> None:
         _assert_shape("raw_gate", shapes["raw_gate"], (batch_size, final_channels))
         _assert_shape("gate", shapes["gate"], (batch_size, final_channels))
         _assert_shape("gated_feature_map", shapes["gated_feature_map"], shapes["final_feature_map"])
+    elif method in {"film_gamma", "film_full"}:
+        for block_index, channels in enumerate(spec.channels, start=1):
+            _assert_shape(
+                f"gamma{block_index}",
+                shapes[f"gamma{block_index}"],
+                (batch_size, int(channels)),
+            )
+            if method == "film_full":
+                _assert_shape(
+                    f"beta{block_index}",
+                    shapes[f"beta{block_index}"],
+                    (batch_size, int(channels)),
+                )
+            _assert_shape(
+                f"layer{block_index}_film",
+                shapes[f"layer{block_index}_film"],
+                shapes[f"layer{block_index}_bn"],
+            )
     if not torch.isfinite(logits).all():
         raise RuntimeError(f"{method} context model produced non-finite dummy logits.")
 
@@ -138,6 +173,7 @@ def main() -> None:
     )
 
     gate_identity_check = None
+    film_identity_check = None
     if method == "gating":
         with torch.no_grad():
             details = model.forward_with_gate_values(dummy_image, dummy_context)
@@ -149,6 +185,49 @@ def main() -> None:
             "gate_max": float(gate.max().item()),
             "allclose_to_one_at_initialization": bool(
                 torch.allclose(gate, torch.ones_like(gate))
+            ),
+        }
+    if method in {"film_gamma", "film_full"}:
+        with torch.no_grad():
+            details = model.forward_with_modulation_values(
+                dummy_image,
+                dummy_context,
+                keep_feature_maps=True,
+            )
+        blocks = []
+        for index, block in enumerate(details["film_parameters"], start=1):
+            gamma = block["gamma"]
+            beta = block["beta"]
+            pre_film = details["pre_film_feature_maps"][index - 1]
+            post_film = details["post_film_feature_maps"][index - 1]
+            block_summary = {
+                "block": index,
+                "gamma_shape": list(gamma.shape),
+                "gamma_min": float(gamma.min().item()),
+                "gamma_max": float(gamma.max().item()),
+                "delta_gamma_shape": list(block["delta_gamma"].shape),
+                "delta_gamma_min": float(block["delta_gamma"].min().item()),
+                "delta_gamma_max": float(block["delta_gamma"].max().item()),
+                "pre_film_shape": list(pre_film.shape),
+                "post_film_shape": list(post_film.shape),
+                "post_film_equals_pre_film_at_initialization": bool(
+                    torch.allclose(post_film, pre_film)
+                ),
+            }
+            if beta is not None:
+                block_summary.update(
+                    {
+                        "beta_shape": list(beta.shape),
+                        "beta_min": float(beta.min().item()),
+                        "beta_max": float(beta.max().item()),
+                    }
+                )
+            blocks.append(block_summary)
+        film_identity_check = {
+            "mode": method,
+            "blocks": blocks,
+            "all_blocks_identity_at_initialization": all(
+                block["post_film_equals_pre_film_at_initialization"] for block in blocks
             ),
         }
 
@@ -191,6 +270,7 @@ def main() -> None:
                 "dummy_logits_shape": list(logits.shape),
                 "dummy_logits_finite": bool(torch.isfinite(logits).all().item()),
                 "gate_identity_check": gate_identity_check,
+                "film_identity_check": film_identity_check,
                 "real_context_check": real_context_check,
             },
             indent=2,
@@ -268,6 +348,7 @@ def _check_real_context_rows(
         logits = model(image, context)
         shapes = model.forward_with_shapes(image, context)
         gate_summary = None
+        film_summary = None
         if method == "gating":
             details = model.forward_with_gate_values(image, context)
             gate = details["gate"]
@@ -277,6 +358,41 @@ def _check_real_context_rows(
                 "max": float(gate.max().item()),
                 "allclose_to_one_at_initialization": bool(
                     torch.allclose(gate, torch.ones_like(gate))
+                ),
+            }
+        if method in {"film_gamma", "film_full"}:
+            details = model.forward_with_modulation_values(
+                image,
+                context,
+                keep_feature_maps=False,
+            )
+            blocks = []
+            for block in details["film_parameters"]:
+                gamma = block["gamma"]
+                beta = block["beta"]
+                block_summary = {
+                    "block": int(block["block"]),
+                    "gamma_shape": list(gamma.shape),
+                    "gamma_min": float(gamma.min().item()),
+                    "gamma_max": float(gamma.max().item()),
+                    "delta_gamma_min": float(block["delta_gamma"].min().item()),
+                    "delta_gamma_max": float(block["delta_gamma"].max().item()),
+                    "identity_at_initialization": bool(block["identity_at_initialization"]),
+                }
+                if beta is not None:
+                    block_summary.update(
+                        {
+                            "beta_shape": list(beta.shape),
+                            "beta_min": float(beta.min().item()),
+                            "beta_max": float(beta.max().item()),
+                        }
+                    )
+                blocks.append(block_summary)
+            film_summary = {
+                "mode": method,
+                "blocks": blocks,
+                "all_blocks_identity_at_initialization": all(
+                    block["identity_at_initialization"] for block in blocks
                 ),
             }
     if not torch.isfinite(logits).all():
@@ -295,6 +411,8 @@ def _check_real_context_rows(
     if method == "gating":
         result["gated_feature_map_shape"] = list(shapes["gated_feature_map"])
         result["gate"] = gate_summary
+    if method in {"film_gamma", "film_full"}:
+        result["film"] = film_summary
     return result
 
 

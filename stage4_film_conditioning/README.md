@@ -217,7 +217,18 @@ Implementation status:
     `0.0`, preserving the Stage 2 CNN feature path at initialization.
   - Local FiLM layer/generator check passed on dummy feature maps and real
     normalized context rows.
-- Next step: `4-I7` gamma-only and full FiLM Stock_CNN models.
+- `4-I7` is complete.
+- Added the gamma-only and full FiLM Stock_CNN models:
+  - `FilmContextStockCNN` reuses the Stage 2 Stock_CNN convolution blocks.
+  - FiLM is inserted in every I60 block as
+    `Conv2d -> BatchNorm2d -> FiLM -> LeakyReLU -> MaxPool2d`.
+  - `film_gamma`: `F' = gamma * F`; parameter count `2,985,986`, which is
+    `+33,024` vs the Stage 2 I60 baseline.
+  - `film_full`: `F' = gamma * F + beta`; parameter count `3,017,666`, which is
+    `+64,704` vs the Stage 2 I60 baseline.
+  - Local model shape checks passed for both models, including dummy tensors,
+    real normalized context rows, and all-block identity initialization.
+- Next step: `4-I8` Stage 4 runner using the fixed Stage 2 BTC data pipeline.
 
 Main documents:
 - [Checklist](checklist.md)
@@ -241,6 +252,7 @@ Main documents:
 - [Context concat model](checklist_results/4-I4_context_concat_model.md)
 - [Context gating model](checklist_results/4-I5_context_gating_model.md)
 - [FiLM layer and generator](checklist_results/4-I6_film_layer_generator.md)
+- [FiLM context models](checklist_results/4-I7_film_context_models.md)
 
 ## 한국어
 
@@ -453,7 +465,19 @@ Implementation status:
     initialization 시 Stage 2 CNN feature path를 보존합니다.
   - Local FiLM layer/generator check가 dummy feature map과 실제 normalized
     context row 모두에서 통과했습니다.
-- 다음 단계는 `4-I7` gamma-only/full FiLM Stock_CNN model입니다.
+- `4-I7`을 완료했습니다.
+- Gamma-only/full FiLM Stock_CNN model을 추가했습니다:
+  - `FilmContextStockCNN`은 Stage 2 Stock_CNN convolution block을 재사용합니다.
+  - 모든 I60 block에
+    `Conv2d -> BatchNorm2d -> FiLM -> LeakyReLU -> MaxPool2d` 순서로 FiLM을
+    삽입합니다.
+  - `film_gamma`: `F' = gamma * F`; parameter count `2,985,986`, Stage 2 I60
+    baseline 대비 `+33,024`.
+  - `film_full`: `F' = gamma * F + beta`; parameter count `3,017,666`, Stage 2
+    I60 baseline 대비 `+64,704`.
+  - 두 model 모두 dummy tensor, 실제 normalized context row, all-block identity
+    initialization을 포함한 local model shape check를 통과했습니다.
+- 다음 단계는 `4-I8` 고정된 Stage 2 BTC data pipeline을 사용하는 Stage 4 runner입니다.
 
 주요 문서:
 - [Checklist](checklist.md)
@@ -477,3 +501,4 @@ Implementation status:
 - [Context concat model](checklist_results/4-I4_context_concat_model.md)
 - [Context gating model](checklist_results/4-I5_context_gating_model.md)
 - [FiLM layer and generator](checklist_results/4-I6_film_layer_generator.md)
+- [FiLM context models](checklist_results/4-I7_film_context_models.md)

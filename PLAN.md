@@ -289,10 +289,19 @@
     - Gamma는 `1 + delta_gamma`로 만들고, gamma/beta head는 zero-initialize한다.
       따라서 초기값은 gamma `1.0`, beta `0.0`이고 Stage 2 feature path를
       identity로 보존한다.
-    - 4-I6 local check 결과 gamma-only generator parameter count는 `31,680`,
-      full FiLM generator parameter count는 `63,360`이었다.
-    - Dummy I60 feature map과 local 4-I2 normalized context row 모두에서
-      FiLM identity initialization check를 통과했다.
+	    - 4-I6 local check 결과 gamma-only generator parameter count는 `31,680`,
+	      full FiLM generator parameter count는 `63,360`이었다.
+	    - Dummy I60 feature map과 local 4-I2 normalized context row 모두에서
+	      FiLM identity initialization check를 통과했다.
+    - 4-I7에서 `FilmContextStockCNN`을 구현했다.
+    - Stage 2 I60 Stock_CNN convolution block을 재사용하되, 각 block을
+      `Conv -> BN -> FiLM -> LeakyReLU -> MaxPool` 순서로 실행한다.
+    - `film_gamma`는 parameter count `2,985,986`, Stage 2 I60 baseline 대비
+      `+33,024`이며 all-block identity initialization check를 통과했다.
+    - `film_full`은 parameter count `3,017,666`, Stage 2 I60 baseline 대비
+      `+64,704`이며 all-block identity initialization check를 통과했다.
+    - Stage 2 block의 `LeakyReLU(inplace=True)` 때문에 해석 export용
+      post-FiLM feature map은 activation 전에 복사해서 보관한다.
 - Re-image CNN에 이식:
   - 기존 CNN 구조는 유지하고, block 내부에 FiLM만 삽입한다.
   - 기본 위치: `Conv -> BN -> FiLM -> LeakyReLU -> MaxPool`

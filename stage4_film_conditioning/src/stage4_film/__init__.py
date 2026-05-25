@@ -22,8 +22,10 @@ from stage4_film.conditions import (
 from stage4_film.layers import FeatureWiseAffineModulation
 from stage4_film.models import (
     ConcatContextStockCNN,
+    FilmContextStockCNN,
     GatedContextStockCNN,
     build_concat_context_stock_cnn_for_window,
+    build_film_context_stock_cnn_for_window,
     build_gated_context_stock_cnn_for_window,
 )
 from stage4_film.paths import Stage4Paths, build_stage4_paths, ensure_stage4_output_dirs
@@ -33,11 +35,13 @@ __all__ = [
     "ConcatContextStockCNN",
     "ContextEncoder",
     "FeatureWiseAffineModulation",
+    "FilmContextStockCNN",
     "FilmParameterGenerator",
     "GatedContextStockCNN",
     "Stage4Paths",
     "build_concat_context_stock_cnn_for_window",
     "build_context_encoder_from_config",
+    "build_film_context_stock_cnn_for_window",
     "build_film_generator_for_window",
     "build_gated_context_stock_cnn_for_window",
     "build_stage4_paths",

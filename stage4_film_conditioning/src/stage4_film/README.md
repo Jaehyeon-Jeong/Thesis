@@ -29,8 +29,12 @@ Added in `4-I6`:
 - `conditions/film_generator.py`: context-embedding-to-gamma/beta generator
   for gamma-only and full FiLM.
 
+Added in `4-I7`:
+- `models/film_stock_cnn.py`: `FilmContextStockCNN` for `film_gamma` and
+  `film_full`, with FiLM inserted after BatchNorm and before LeakyReLU in every
+  Stock_CNN block.
+
 Planned next modules:
-- `models/film_stock_cnn.py`
 - `training/`
 - `evaluation/`
 - `interpretability/`
@@ -69,8 +73,12 @@ Stage 4 FiLM/context-conditioning 구현 package입니다.
 - `conditions/film_generator.py`: context embedding에서 gamma/beta를 만드는
   gamma-only/full FiLM generator입니다.
 
+`4-I7`에서 추가한 module:
+- `models/film_stock_cnn.py`: `film_gamma`, `film_full`용
+  `FilmContextStockCNN`입니다. 모든 Stock_CNN block에서 BatchNorm 뒤,
+  LeakyReLU 전에 FiLM을 삽입합니다.
+
 다음 예정 module:
-- `models/film_stock_cnn.py`
 - `training/`
 - `evaluation/`
 - `interpretability/`

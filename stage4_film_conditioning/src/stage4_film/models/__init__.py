@@ -8,12 +8,20 @@ from stage4_film.models.context_stock_cnn import (
     expected_concat_context_parameter_count,
     expected_gated_context_parameter_count,
 )
+from stage4_film.models.film_stock_cnn import (
+    FilmContextStockCNN,
+    build_film_context_stock_cnn_for_window,
+    expected_film_context_parameter_count,
+)
 
 __all__ = [
     "ConcatContextStockCNN",
+    "FilmContextStockCNN",
     "GatedContextStockCNN",
     "build_concat_context_stock_cnn_for_window",
+    "build_film_context_stock_cnn_for_window",
     "build_gated_context_stock_cnn_for_window",
     "expected_concat_context_parameter_count",
+    "expected_film_context_parameter_count",
     "expected_gated_context_parameter_count",
 ]

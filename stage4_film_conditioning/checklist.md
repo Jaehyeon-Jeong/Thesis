@@ -146,7 +146,14 @@ Implementation phase:
   - Generator parameter checks passed: `31,680` for `film_gamma`, `63,360` for
     `film_full`.
   - Result: [4-I6 FiLM layer and generator](checklist_results/4-I6_film_layer_generator.md)
-- [ ] 4-I7. `CNN + FiLM gamma-only` and `CNN + FiLM full` models
+- [x] 4-I7. `CNN + FiLM gamma-only` and `CNN + FiLM full` models
+  - Added `FilmContextStockCNN`.
+  - Inserted FiLM as `Conv2d -> BatchNorm2d -> FiLM -> LeakyReLU -> MaxPool2d`
+    in every I60 block.
+  - `film_gamma` parameter check passed: `2,985,986`, `+33,024` vs Stage 2 I60.
+  - `film_full` parameter check passed: `3,017,666`, `+64,704` vs Stage 2 I60.
+  - Identity initialization check passed for all four I60 FiLM blocks.
+  - Result: [4-I7 FiLM context models](checklist_results/4-I7_film_context_models.md)
 - [ ] 4-I8. BTC Stage 4 runner using fixed Stage 2 data pipeline
 - [ ] 4-I9. Prediction, classification metric, and trading metric export
 - [ ] 4-I10. Grad-CAM plus context/gate/gamma/beta export
@@ -321,7 +328,14 @@ Stage 4 main ablation:
   - Generator parameter check 통과: `film_gamma`는 `31,680`, `film_full`은
     `63,360`.
   - 결과: [4-I6 FiLM layer and generator](checklist_results/4-I6_film_layer_generator.md)
-- [ ] 4-I7. `CNN + FiLM gamma-only`와 `CNN + FiLM full` model
+- [x] 4-I7. `CNN + FiLM gamma-only`와 `CNN + FiLM full` model
+  - `FilmContextStockCNN`을 추가했습니다.
+  - 모든 I60 block에 `Conv2d -> BatchNorm2d -> FiLM -> LeakyReLU -> MaxPool2d`
+    순서로 FiLM을 삽입했습니다.
+  - `film_gamma` parameter check 통과: `2,985,986`, Stage 2 I60 대비 `+33,024`.
+  - `film_full` parameter check 통과: `3,017,666`, Stage 2 I60 대비 `+64,704`.
+  - 네 개 I60 FiLM block 모두에서 identity initialization check를 통과했습니다.
+  - 결과: [4-I7 FiLM context models](checklist_results/4-I7_film_context_models.md)
 - [ ] 4-I8. 고정된 Stage 2 data pipeline을 쓰는 BTC Stage 4 runner
 - [ ] 4-I9. prediction, classification metric, trading metric export
 - [ ] 4-I10. Grad-CAM plus context/gate/gamma/beta export

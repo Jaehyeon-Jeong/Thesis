@@ -261,6 +261,24 @@ Implementation-source distinction:
   - Both Kaggle cells are execution wrappers. They do not change model
     definitions, context feature definitions, split rules, or evaluation
     metrics.
+- Stage 4 v1 five-seed diagnosis:
+  - The five-seed run showed that `film_full` is the best Stage 4 v1 method,
+    but its mean accuracy `0.5510` and ROC-AUC `0.5677` remain below the
+    selected Stage 2 visual baseline.
+  - Seed `42` was promising, while seed `45` collapsed to all-Down predictions.
+  - The next stage is diagnostic separation, not immediate FiLM complexity.
+- Stage 4 v2 priority map:
+  - `4-V0`: `I60/R20/ohlc_ma_vb`, visual-only, no context.
+  - `4-V1`: `I60/R20/ohlc`, visual-only, no context.
+  - `4-V2`: `I60/R20/ohlc` + all structured context + `film_full`.
+  - `4-V3`: `I60/R20/ohlc` + F&G-only + `film_full`.
+  - `4-V4`: `I60/R20/ohlc` + technical-only context + `film_full`.
+  - `4-V5`: bounded/residual last-block FiLM.
+- 4-V0 runner decision:
+  - Added `notebooks/kaggle_stage4_v2_p1_visual_only_same_split_one_cell.md`.
+  - It intentionally uses the Stage 2 visual-only runner because the first v2
+    control has no context branch.
+  - It writes result summaries under `/kaggle/working/stage4_v2_visual_only_reports`.
 
 ## 한국어
 
@@ -521,3 +539,24 @@ Implementation-source distinction:
     `42, 43, 44, 45, 46`에 대해 네 context method를 실행합니다.
   - 두 Kaggle cell은 execution wrapper입니다. model 정의, context feature 정의,
     split rule, evaluation metric은 바꾸지 않습니다.
+- Stage 4 v1 five-seed 진단:
+  - five-seed run에서 `film_full`이 Stage 4 v1 best method였지만, mean
+    accuracy `0.5510`, ROC-AUC `0.5677`은 선택된 Stage 2 visual baseline보다
+    낮습니다.
+  - Seed `42`는 promising했지만 seed `45`는 all-Down prediction으로
+    collapse했습니다.
+  - 다음 단계는 FiLM을 바로 복잡하게 만드는 것이 아니라 원인을 분리하는
+    diagnostic입니다.
+- Stage 4 v2 priority map:
+  - `4-V0`: `I60/R20/ohlc_ma_vb`, visual-only, context 없음.
+  - `4-V1`: `I60/R20/ohlc`, visual-only, context 없음.
+  - `4-V2`: `I60/R20/ohlc` + all structured context + `film_full`.
+  - `4-V3`: `I60/R20/ohlc` + F&G-only + `film_full`.
+  - `4-V4`: `I60/R20/ohlc` + technical-only context + `film_full`.
+  - `4-V5`: bounded/residual last-block FiLM.
+- 4-V0 runner 결정:
+  - `notebooks/kaggle_stage4_v2_p1_visual_only_same_split_one_cell.md`를
+    추가했습니다.
+  - 첫 v2 control은 context branch가 없으므로 Stage 2 visual-only runner를
+    의도적으로 사용합니다.
+  - 결과 summary는 `/kaggle/working/stage4_v2_visual_only_reports`에 저장합니다.

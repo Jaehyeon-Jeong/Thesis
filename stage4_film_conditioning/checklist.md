@@ -202,6 +202,32 @@ Implementation phase:
   - Result prep: [4-I13 Kaggle five-seed runner](checklist_results/4-I13_kaggle_five_seed_runner.md)
 - [ ] 4-I14. Stage 4 result report
 
+Stage 4 v2 diagnostic priorities:
+- [ ] 4-V0. Priority 1: Stage 4 same-split visual-only baseline,
+  `I60/R20/ohlc_ma_vb`, no context
+  - Purpose: separate context/FiLM effects from the selected image baseline and
+    confirm whether the Stage 4 sample universe itself explains the v1 drop.
+  - Execution wrapper:
+    `notebooks/kaggle_stage4_v2_p1_visual_only_same_split_one_cell.md`.
+  - Result prep: [4-V0 Stage 4 v2 visual-only same-split plan](checklist_results/4-V0_stage4_v2_visual_only_same_split.md)
+- [ ] 4-V1. Priority 2: Stage 4 same-split visual-only baseline,
+  `I60/R20/ohlc`, no context
+  - Purpose: measure how much the strong `ohlc_ma_vb` image already encodes
+    technical information.
+- [ ] 4-V2. Priority 3: `I60/R20/ohlc` + all structured context + `film_full`
+  - Purpose: test the duplicate-feature hypothesis by removing MA/VB from the
+    image while keeping F&G/BB/MFI/RV as context.
+- [ ] 4-V3. Priority 4: `I60/R20/ohlc` + F&G-only + `film_full`
+  - Purpose: isolate image-external regime/sentiment context from OHLCV-derived
+    technical context.
+- [ ] 4-V4. Priority 5: `I60/R20/ohlc` + technical-only context + `film_full`
+  - Purpose: test whether BB/MFI/RV help when they are not already drawn into
+    the image through MA/VB-style visual cues.
+- [ ] 4-V5. Priority 6: bounded/residual last-block FiLM v2
+  - Purpose: preserve the Stage 2 visual evidence and reduce seed-dependent
+    collapse by limiting modulation strength and applying FiLM only to the
+    high-level final block first.
+
 News-context extension:
 - [ ] 4-N1. `edaschau/bitcoin_news` source audit
 - [ ] 4-N2. Publication-time alignment and no-future-leakage check
@@ -423,6 +449,30 @@ Stage 4 main ablation:
     `film_full`.
   - 준비 결과: [4-I13 Kaggle five-seed runner](checklist_results/4-I13_kaggle_five_seed_runner.md)
 - [ ] 4-I14. Stage 4 결과 보고
+
+Stage 4 v2 진단 우선순위:
+- [ ] 4-V0. 우선순위 1: Stage 4 same-split visual-only baseline,
+  `I60/R20/ohlc_ma_vb`, context 없음
+  - 목적: v1 성능 하락이 context/FiLM 때문인지, 선택된 Stage 4 sample universe
+    자체 때문인지 분리합니다.
+  - 실행 wrapper:
+    `notebooks/kaggle_stage4_v2_p1_visual_only_same_split_one_cell.md`.
+  - 준비 결과: [4-V0 Stage 4 v2 visual-only same-split plan](checklist_results/4-V0_stage4_v2_visual_only_same_split.md)
+- [ ] 4-V1. 우선순위 2: Stage 4 same-split visual-only baseline,
+  `I60/R20/ohlc`, context 없음
+  - 목적: 강한 `ohlc_ma_vb` 이미지가 technical 정보를 이미 얼마나 담고 있는지
+    확인합니다.
+- [ ] 4-V2. 우선순위 3: `I60/R20/ohlc` + all structured context + `film_full`
+  - 목적: 이미지에서 MA/VB를 덜어냈을 때 F&G/BB/MFI/RV context가 더 도움 되는지
+    확인해 duplicate-feature 가설을 검증합니다.
+- [ ] 4-V3. 우선순위 4: `I60/R20/ohlc` + F&G-only + `film_full`
+  - 목적: 이미지 밖 regime/sentiment context만 따로 효과가 있는지 확인합니다.
+- [ ] 4-V4. 우선순위 5: `I60/R20/ohlc` + technical-only context + `film_full`
+  - 목적: BB/MFI/RV가 MA/VB 이미지 정보와 분리됐을 때 독립적으로 도움 되는지
+    확인합니다.
+- [ ] 4-V5. 우선순위 6: bounded/residual last-block FiLM v2
+  - 목적: Stage 2 visual evidence를 보존하고 modulation strength를 제한해서
+    seed-dependent collapse를 줄입니다.
 
 News-context 확장:
 - [ ] 4-N1. `edaschau/bitcoin_news` source audit

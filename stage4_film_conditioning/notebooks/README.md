@@ -26,6 +26,12 @@ Available notebooks:
     modulation exports.
   - Writes a v1 diagnostic interpretation report and a zip package for
     download.
+- `kaggle_stage4_v2_p1_visual_only_same_split_one_cell.md`
+  - Stage 4 v2 priority 1 control.
+  - Runs `I60/R20/ohlc_ma_vb` with no context using the Stage 2 visual-only
+    runner.
+  - Purpose: determine whether Stage 4 v1 underperformance comes from
+    context/FiLM or from the selected sample/split/run conditions.
 
 Planned notebooks:
 - `kaggle_stage4_single_ablation_one_cell.md`
@@ -59,6 +65,12 @@ Required backup root:
   - five-seed summary table, prediction, Grad-CAM sample, modulation export를
     읽습니다.
   - v1 diagnostic interpretation report와 download용 zip package를 저장합니다.
+- `kaggle_stage4_v2_p1_visual_only_same_split_one_cell.md`
+  - Stage 4 v2 우선순위 1 control입니다.
+  - Stage 2 visual-only runner로 `I60/R20/ohlc_ma_vb`, context 없음 실험을
+    실행합니다.
+  - 목적: Stage 4 v1 성능 하락이 context/FiLM 때문인지, 선택된 sample/split/run
+    조건 때문인지 분리합니다.
 
 예정 notebook:
 - `kaggle_stage4_single_ablation_one_cell.md`

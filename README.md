@@ -18,7 +18,7 @@ tracked.
 | `stage1_reimage_reproduction` | Reproduce the Re-image CNN pipeline on public I20 stock images | In progress: `I20/R60` seed-42 fast diagnostic archived; `I20/R20` archive is smoke-only; `I20/R5`, strict batch-128 run, and five-seed reproduction are later |
 | `stage2_btc_extension` | Extend the confirmed pipeline to BTC OHLCV | Single-seed 36-run complete; selected `I20/R20` and `I60/R20` five-seed robustness check complete; full 180-run five-seed grid later |
 | `stage3_linear_adapter` | Add a Linear comparison model | First test on Stage 2 best config completed; result dropped to majority level; remaining grid runs pending |
-| `stage4_film_conditioning` | Compare market-context concat, gating, gamma-only FiLM, and full FiLM on the fixed BTC CNN | Planning through 4-8 and implementation 4-I0 through 4-I12 complete; seed-42 four-ablation result favors `film_full`; 4-I13 five-seed runner ready |
+| `stage4_film_conditioning` | Compare market-context concat, gating, gamma-only FiLM, and full FiLM on the fixed BTC CNN | v1 four-ablation five-seed run complete; `film_full` is best Stage 4 v1 method but below Stage 2 baseline on average; v2 diagnostic priority 1 visual-only control runner ready |
 
 ### Current Status
 
@@ -194,10 +194,20 @@ Stage 4:
   - best Stage 4 method: `film_full`, accuracy `0.584316`, ROC-AUC `0.596811`;
   - this is promising versus the Stage 2 five-seed mean, but it is not yet
     better than the same Stage 2 seed-42 baseline run.
-- 4-I13 Kaggle five-seed runner is ready:
-  - `stage4_film_conditioning/notebooks/kaggle_stage4_four_ablation_five_seed_one_cell.md`
-    runs the same four ablations for seeds `42, 43, 44, 45, 46`;
-  - this is the next check before claiming robust Stage 4 improvement.
+- 4-I13 Kaggle five-seed robustness run is complete for the same selected
+  configuration and seeds `42, 43, 44, 45, 46`.
+- Best Stage 4 v1 method: `film_full`, accuracy mean `0.5510`, ROC-AUC mean
+  `0.5677`.
+- The selected Stage 2 visual baseline remains stronger: accuracy mean
+  `0.5793`, ROC-AUC mean `0.5849`.
+- Diagnosis: `film_full` seed `42` was promising, but seed `45` collapsed to
+  all-Down predictions. Stage 4 v1 is therefore not robust enough to claim an
+  improvement.
+- Stage 4 v2 priorities are now tracked in the Stage 4 checklist. Priority 1 is
+  a visual-only same-split control:
+  `I60/R20/ohlc_ma_vb`, no context.
+- Priority 1 Kaggle runner is ready:
+  `stage4_film_conditioning/notebooks/kaggle_stage4_v2_p1_visual_only_same_split_one_cell.md`.
 - News context is preserved as a second-phase track after source/date/leakage
   audit. Candidate source: Hugging Face `edaschau/bitcoin_news`.
 - Advisor-direction mapping is documented in the Stage 4 README/source map and
@@ -252,7 +262,7 @@ config, 코드 scaffold만 올립니다. 대용량 데이터, 논문 PDF, checkp
 | `stage1_reimage_reproduction` | public I20 stock image로 Re-image CNN pipeline 재현 | 진행 중: `I20/R60` seed-42 fast diagnostic 보존; `I20/R20` archive는 smoke-only; `I20/R5`, strict batch-128 run, five-seed reproduction은 later |
 | `stage2_btc_extension` | 확인된 pipeline을 BTC OHLCV로 확장 | single-seed 36-run 완료; `I20/R20`, `I60/R20` 선별 five-seed robustness check 완료; full 180-run five-seed grid는 later |
 | `stage3_linear_adapter` | Linear 비교 모델 추가 | Stage 2 best config 1회 테스트 완료; majority 수준으로 하락; 나머지 grid run 예정 |
-| `stage4_film_conditioning` | 고정 BTC CNN 위에서 market-context concat, gating, gamma-only FiLM, full FiLM 비교 | 4-8 계획과 4-I0부터 4-I12까지 완료; seed-42 four-ablation 결과는 `film_full` 우세; 4-I13 five-seed runner 준비 완료 |
+| `stage4_film_conditioning` | 고정 BTC CNN 위에서 market-context concat, gating, gamma-only FiLM, full FiLM 비교 | v1 four-ablation five-seed run 완료; `film_full`이 Stage 4 v1 best지만 평균적으로 Stage 2 baseline보다 낮음; v2 진단 우선순위 1 visual-only control runner 준비 완료 |
 
 ### 현재 상태
 
@@ -427,10 +437,19 @@ Stage 4:
   - Stage 4 최고 방법: `film_full`, accuracy `0.584316`, ROC-AUC `0.596811`.
   - Stage 2 five-seed mean과 비교하면 promising하지만, 같은 Stage 2 seed-42
     baseline run보다 높지는 않아 robust improvement 주장은 보류합니다.
-- 4-I13 Kaggle five-seed runner를 준비했습니다.
-  - `stage4_film_conditioning/notebooks/kaggle_stage4_four_ablation_five_seed_one_cell.md`
-    는 같은 네 ablation을 seeds `42, 43, 44, 45, 46`으로 실행합니다.
-  - 이것이 Stage 4 improvement를 주장하기 전 필요한 다음 확인입니다.
+- 4-I13 Kaggle five-seed robustness run을 같은 selected configuration과
+  seeds `42, 43, 44, 45, 46`으로 완료했습니다.
+- Stage 4 v1 best method는 `film_full`이며 accuracy mean `0.5510`,
+  ROC-AUC mean `0.5677`입니다.
+- 선택된 Stage 2 visual baseline은 여전히 더 강합니다: accuracy mean
+  `0.5793`, ROC-AUC mean `0.5849`.
+- 진단: `film_full` seed `42`는 promising했지만, seed `45`는 all-Down
+  prediction으로 collapse했습니다. 따라서 Stage 4 v1은 robust improvement로
+  주장하기에는 부족합니다.
+- Stage 4 v2 우선순위는 Stage 4 checklist에 추가했습니다. 우선순위 1은
+  visual-only same-split control입니다: `I60/R20/ohlc_ma_vb`, context 없음.
+- 우선순위 1 Kaggle runner 준비 완료:
+  `stage4_film_conditioning/notebooks/kaggle_stage4_v2_p1_visual_only_same_split_one_cell.md`.
 - News context는 제거하지 않고 source/date/leakage audit 이후 second-phase track으로
   유지합니다. 후보 source는 Hugging Face `edaschau/bitcoin_news`입니다.
 - 교수님 방향성 파일과 Stage 4 실험 결정의 연결은 Stage 4 README/source map과

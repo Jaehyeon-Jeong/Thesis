@@ -151,6 +151,42 @@ News-context position:
 - 4-3 decision: first news version should be headline-only, strict `t-1`, and
   encoded with train-fit non-LLM text features.
 
+Stage 4 v1 five-seed interpretation:
+- The four-ablation five-seed run is complete for
+  `I60/R20/ohlc_ma_vb`, context window `60`, seeds `42, 43, 44, 45, 46`.
+- Best Stage 4 v1 method: `film_full`.
+- `film_full` five-seed summary:
+  - accuracy mean `0.5510`, accuracy std `0.0520`;
+  - ROC-AUC mean `0.5677`;
+  - F1 mean `0.5393`.
+- The selected Stage 2 visual baseline remains stronger:
+  - accuracy mean `0.5793`;
+  - ROC-AUC mean `0.5849`.
+- Seed-level diagnosis:
+  - seed `42` was promising: accuracy `0.5843`, ROC-AUC `0.5968`;
+  - seed `45` collapsed to all-Down prediction: predicted-positive rate `0.0`,
+    F1 `0.0`.
+- Current interpretation: v1 shows that context-conditioned FiLM is possible,
+  but not yet robust. The next step is not to make context more complex; it is
+  to isolate whether the drop comes from context redundancy, sample/run
+  conditions, or FiLM instability.
+
+Stage 4 v2 diagnostic priorities:
+
+| Priority | Experiment | Purpose |
+| --- | --- | --- |
+| `4-V0` | `I60/R20/ohlc_ma_vb`, visual-only, no context | Same selected visual baseline control before changing FiLM |
+| `4-V1` | `I60/R20/ohlc`, visual-only, no context | Measure how much MA/VB images already encode technical context |
+| `4-V2` | `I60/R20/ohlc` + all context + `film_full` | Test the duplicate-feature hypothesis |
+| `4-V3` | `I60/R20/ohlc` + F&G-only + `film_full` | Isolate image-external regime/sentiment context |
+| `4-V4` | `I60/R20/ohlc` + technical-only context + `film_full` | Test BB/MFI/RV without MA/VB image overlap |
+| `4-V5` | bounded/residual last-block FiLM | Preserve visual evidence and reduce seed collapse |
+
+Current v2 execution status:
+- `4-V0` runner is ready:
+  `notebooks/kaggle_stage4_v2_p1_visual_only_same_split_one_cell.md`.
+- `4-V0` full Kaggle result is pending.
+
 Implementation readiness decision:
 - `4-I0` is complete.
 - Stage 4 code should add a `stage2_dependency` config section and import Stage
@@ -457,6 +493,41 @@ Kaggle runner와 backup 결정:
   track으로 유지합니다.
 - 4-3 결정: 첫 news version은 headline-only, strict `t-1`, train-fit non-LLM
   text feature encoder로 시작합니다.
+
+Stage 4 v1 five-seed 해석:
+- `I60/R20/ohlc_ma_vb`, context window `60`, seeds `42, 43, 44, 45, 46`에서
+  네 ablation run이 완료됐습니다.
+- Stage 4 v1 best method는 `film_full`입니다.
+- `film_full` five-seed summary:
+  - accuracy mean `0.5510`, accuracy std `0.0520`;
+  - ROC-AUC mean `0.5677`;
+  - F1 mean `0.5393`.
+- 선택된 Stage 2 visual baseline이 여전히 더 강합니다:
+  - accuracy mean `0.5793`;
+  - ROC-AUC mean `0.5849`.
+- Seed-level 진단:
+  - seed `42`는 promising합니다: accuracy `0.5843`, ROC-AUC `0.5968`;
+  - seed `45`는 all-Down prediction으로 collapse했습니다:
+    predicted-positive rate `0.0`, F1 `0.0`.
+- 현재 해석: v1은 context-conditioned FiLM 가능성은 보여줬지만 robust하지 않습니다.
+  다음 단계는 context를 더 복잡하게 만드는 것이 아니라, 성능 하락 원인이 context
+  redundancy인지, sample/run 조건인지, FiLM instability인지 분리하는 것입니다.
+
+Stage 4 v2 진단 우선순위:
+
+| Priority | Experiment | Purpose |
+| --- | --- | --- |
+| `4-V0` | `I60/R20/ohlc_ma_vb`, visual-only, context 없음 | FiLM을 바꾸기 전 같은 selected visual baseline control |
+| `4-V1` | `I60/R20/ohlc`, visual-only, context 없음 | MA/VB image가 technical context를 얼마나 담는지 확인 |
+| `4-V2` | `I60/R20/ohlc` + all context + `film_full` | duplicate-feature 가설 검증 |
+| `4-V3` | `I60/R20/ohlc` + F&G-only + `film_full` | image-external regime/sentiment context 분리 |
+| `4-V4` | `I60/R20/ohlc` + technical-only context + `film_full` | MA/VB image overlap 없이 BB/MFI/RV 효과 확인 |
+| `4-V5` | bounded/residual last-block FiLM | visual evidence 보존과 seed collapse 감소 |
+
+현재 v2 실행 상태:
+- `4-V0` runner 준비 완료:
+  `notebooks/kaggle_stage4_v2_p1_visual_only_same_split_one_cell.md`.
+- `4-V0` full Kaggle 결과는 pending입니다.
 
 Implementation readiness 결정:
 - `4-I0`은 완료됐습니다.

@@ -20,6 +20,12 @@ Available notebooks:
   - Uses `SAVE_BACKUP_ZIPS=False` by default to avoid filling Kaggle disk.
   - If a previous run stopped from disk pressure, set
     `RESUME_EXISTING_PROJECT=True` before rerunning.
+- `kaggle_stage4_v1_interpretation_report_one_cell.md`
+  - Run below the five-seed output cell.
+  - Reads five-seed summary tables, predictions, Grad-CAM samples, and
+    modulation exports.
+  - Writes a v1 diagnostic interpretation report and a zip package for
+    download.
 
 Planned notebooks:
 - `kaggle_stage4_single_ablation_one_cell.md`
@@ -48,6 +54,11 @@ Required backup root:
   - Kaggle disk가 차지 않도록 `SAVE_BACKUP_ZIPS=False`가 기본값입니다.
   - 이전 run이 disk 문제로 중단됐으면 `RESUME_EXISTING_PROJECT=True`로 바꾸고
     다시 실행합니다.
+- `kaggle_stage4_v1_interpretation_report_one_cell.md`
+  - five-seed output cell 아래에서 실행합니다.
+  - five-seed summary table, prediction, Grad-CAM sample, modulation export를
+    읽습니다.
+  - v1 diagnostic interpretation report와 download용 zip package를 저장합니다.
 
 예정 notebook:
 - `kaggle_stage4_single_ablation_one_cell.md`

@@ -34,7 +34,16 @@ Output:
 - Run summary:
   `reports/tables/stage4_four_ablation_five_seed_run_summary.json`
 - Backup zips:
-  `/kaggle/working/stage4_saved_outputs`
+  disabled by default for the five-seed runner to avoid filling
+  `/kaggle/working`.
+
+Disk-space policy:
+- `SAVE_BACKUP_ZIPS=False` by default.
+- `DELETE_EXISTING_BACKUP_ZIPS_ON_START=True` by default.
+- If a run stops with `No space left on device`, set
+  `RESUME_EXISTING_PROJECT=True` and rerun the same cell. It will keep existing
+  `/kaggle/working/stage4_film_conditioning` outputs, remove old backup zips,
+  skip completed method/seed runs, and continue.
 
 Completion rule:
 - This item is complete only after the Kaggle five-seed cell runs and the
@@ -82,7 +91,15 @@ Output:
 - Run summary:
   `reports/tables/stage4_four_ablation_five_seed_run_summary.json`
 - Backup zip:
-  `/kaggle/working/stage4_saved_outputs`
+  five-seed runner에서는 `/kaggle/working` 디스크가 차지 않도록 기본 비활성화.
+
+Disk-space policy:
+- `SAVE_BACKUP_ZIPS=False`가 기본값입니다.
+- `DELETE_EXISTING_BACKUP_ZIPS_ON_START=True`가 기본값입니다.
+- `No space left on device`로 중단되면 `RESUME_EXISTING_PROJECT=True`로 바꾸고
+  같은 cell을 다시 실행합니다. 기존
+  `/kaggle/working/stage4_film_conditioning` output은 유지하고, 오래된 backup
+  zip은 삭제하며, 완료된 method/seed run은 skip하고 이어서 실행합니다.
 
 완료 기준:
 - Kaggle five-seed cell이 끝나고 20개 method/seed 조합의 output checker가

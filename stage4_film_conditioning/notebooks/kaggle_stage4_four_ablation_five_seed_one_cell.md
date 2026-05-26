@@ -26,6 +26,16 @@ It supports resume-style execution with `SKIP_COMPLETED=True`. Completion is
 checked using `check_stage4_outputs.py` plus `MIN_PREDICTIONS=1000`, so old
 smoke outputs will not be accepted as completed full runs.
 
+Disk-space note:
+- Five-seed runs can fill `/kaggle/working` if every intermediate backup zip is
+  kept.
+- Default settings below use `SAVE_BACKUP_ZIPS=False` and
+  `DELETE_EXISTING_BACKUP_ZIPS_ON_START=True`.
+- If a previous run stopped with `No space left on device`, set
+  `RESUME_EXISTING_PROJECT=True` and rerun this cell. It will keep the existing
+  project outputs, delete old backup zips, skip completed method/seed runs, and
+  continue.
+
 ```python
 from pathlib import Path
 from datetime import datetime, timezone
@@ -65,7 +75,9 @@ MIN_PREDICTIONS = 1000
 
 SKIP_COMPLETED = True
 CONTINUE_ON_ERROR = True
-SAVE_BACKUP_ZIPS = True
+SAVE_BACKUP_ZIPS = False
+RESUME_EXISTING_PROJECT = False
+DELETE_EXISTING_BACKUP_ZIPS_ON_START = True
 
 # Smoke check only. For the real 4-I13 run, keep False.
 SMOKE_TEST = False
@@ -244,7 +256,11 @@ def backup_outputs(label: str, phase: str, context_method: str | None = None, ru
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     seed_label = f"seed{run_seed}" if run_seed is not None else "allseeds"
     archive_base = BACKUP_ROOT / f"{label}_{seed_label}_{phase}_{timestamp}_outputs"
-    archive_path = Path(shutil.make_archive(str(archive_base), "zip", outputs_root))
+    try:
+        archive_path = Path(shutil.make_archive(str(archive_base), "zip", outputs_root))
+    except OSError as exc:
+        print(f"[backup:{label}:{phase}] skipped after OSError: {exc}", flush=True)
+        return None
     receipt = {
         "label": label,
         "context_method": context_method,
@@ -273,6 +289,27 @@ def backup_outputs(label: str, phase: str, context_method: str | None = None, ru
         flush=True,
     )
     return archive_path
+
+
+def delete_existing_backup_zips():
+    """Free Kaggle disk space by deleting old Stage 4 backup zips/receipts."""
+
+    if not DELETE_EXISTING_BACKUP_ZIPS_ON_START or not BACKUP_ROOT.exists():
+        return
+    removed = 0
+    removed_bytes = 0
+    for pattern in ["*.zip", "*receipt.json"]:
+        for path in BACKUP_ROOT.glob(pattern):
+            if path.is_file():
+                size = path.stat().st_size
+                path.unlink()
+                removed += 1
+                removed_bytes += size
+    print(
+        f"[cleanup] removed {removed} backup files "
+        f"({removed_bytes / (1024 * 1024):.1f} MB) from {BACKUP_ROOT}",
+        flush=True,
+    )
 
 
 def run_step(label: str, phase: str, cmd, context_method: str | None = None, run_seed: int | None = None):
@@ -364,12 +401,22 @@ def summarize_seed_results(seed_rows: list[dict]) -> pd.DataFrame:
 # ============================================================
 # 1. Copy code snapshots and patch config
 # ============================================================
-copy_or_extract_input(CODE_INPUT, PROJECT_ROOT, expected_child="stage4_film_conditioning")
-copy_or_extract_input(STAGE2_CODE_INPUT, STAGE2_PROJECT_ROOT, expected_child="stage2_btc_extension")
+if RESUME_EXISTING_PROJECT:
+    if not PROJECT_ROOT.exists() or not STAGE2_PROJECT_ROOT.exists():
+        raise FileNotFoundError(
+            "RESUME_EXISTING_PROJECT=True requires existing PROJECT_ROOT and "
+            "STAGE2_PROJECT_ROOT in /kaggle/working."
+        )
+    print(f"Resuming existing Stage 4 project: {PROJECT_ROOT}", flush=True)
+    print(f"Resuming existing Stage 2 dependency: {STAGE2_PROJECT_ROOT}", flush=True)
+else:
+    copy_or_extract_input(CODE_INPUT, PROJECT_ROOT, expected_child="stage4_film_conditioning")
+    copy_or_extract_input(STAGE2_CODE_INPUT, STAGE2_PROJECT_ROOT, expected_child="stage2_btc_extension")
 assert_required_code()
 patch_kaggle_config()
-print(f"Stage 4 code copied to: {PROJECT_ROOT}", flush=True)
-print(f"Stage 2 dependency copied to: {STAGE2_PROJECT_ROOT}", flush=True)
+delete_existing_backup_zips()
+print(f"Stage 4 project ready at: {PROJECT_ROOT}", flush=True)
+print(f"Stage 2 dependency ready at: {STAGE2_PROJECT_ROOT}", flush=True)
 
 
 # ============================================================

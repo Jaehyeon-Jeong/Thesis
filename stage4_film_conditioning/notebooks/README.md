@@ -17,6 +17,9 @@ Available notebooks:
   - Total: `4` context methods x `5` seeds = `20` runs.
   - Uses `MIN_PREDICTIONS=1000` so old smoke-test artifacts cannot be treated
     as completed full runs.
+  - Uses `SAVE_BACKUP_ZIPS=False` by default to avoid filling Kaggle disk.
+  - If a previous run stopped from disk pressure, set
+    `RESUME_EXISTING_PROJECT=True` before rerunning.
 
 Planned notebooks:
 - `kaggle_stage4_single_ablation_one_cell.md`
@@ -42,6 +45,9 @@ Required backup root:
   - 총 `4` context methods x `5` seeds = `20` runs입니다.
   - `MIN_PREDICTIONS=1000`을 사용해서 과거 smoke-test artifact가 full run
     완료로 처리되지 않게 합니다.
+  - Kaggle disk가 차지 않도록 `SAVE_BACKUP_ZIPS=False`가 기본값입니다.
+  - 이전 run이 disk 문제로 중단됐으면 `RESUME_EXISTING_PROJECT=True`로 바꾸고
+    다시 실행합니다.
 
 예정 notebook:
 - `kaggle_stage4_single_ablation_one_cell.md`

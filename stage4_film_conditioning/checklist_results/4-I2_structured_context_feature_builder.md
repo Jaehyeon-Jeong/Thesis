@@ -33,7 +33,7 @@ Primary context setting:
 
 Source audit result:
 - BTC source: local `btc_1d_data_2018_to_2025.csv`.
-- F&G source: local `F&G_data/fear_greed_index.csv`.
+- F&G source: local `FG_data/fear_greed_index.csv`.
 - F&G cleaned rows: `2,644`.
 - F&G date range: `2018-02-01` to `2025-05-02`.
 - F&G missing calendar days inside range: `4`
@@ -138,7 +138,7 @@ Primary context 설정:
 
 Source audit 결과:
 - BTC source: local `btc_1d_data_2018_to_2025.csv`.
-- F&G source: local `F&G_data/fear_greed_index.csv`.
+- F&G source: local `FG_data/fear_greed_index.csv`.
 - F&G cleaned rows: `2,644`.
 - F&G date range: `2018-02-01` to `2025-05-02`.
 - F&G 내부 calendar missing day: `4`

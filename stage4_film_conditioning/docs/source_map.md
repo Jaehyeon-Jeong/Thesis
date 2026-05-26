@@ -97,7 +97,7 @@ Implementation-source distinction:
     code through a configurable Stage 2 `src` dependency.
   - Local BTC OHLCV data is available.
   - Local F&G data is now available at
-    `stage4_film_conditioning/F&G_data/fear_greed_index.csv`; raw F&G CSV files
+    `stage4_film_conditioning/FG_data/fear_greed_index.csv`; raw F&G CSV files
     are not tracked in GitHub.
 - 4-I1 scaffold decision:
   - Added `configs/env_local.yaml` and `configs/env_kaggle.yaml`.
@@ -350,7 +350,7 @@ Implementation-source distinction:
     sample/image generation, split/normalization, prediction metric, trading
     metric, Grad-CAM helper code를 재사용합니다.
   - 로컬 BTC OHLCV data가 있습니다.
-  - 로컬 F&G data도 `stage4_film_conditioning/F&G_data/fear_greed_index.csv`에
+  - 로컬 F&G data도 `stage4_film_conditioning/FG_data/fear_greed_index.csv`에
     추가됐습니다. Raw F&G CSV 파일은 GitHub에 track하지 않습니다.
 - 4-I1 scaffold 결정:
   - `configs/env_local.yaml`, `configs/env_kaggle.yaml`을 추가했습니다.

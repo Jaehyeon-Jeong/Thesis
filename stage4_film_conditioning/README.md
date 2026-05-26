@@ -158,7 +158,7 @@ Implementation readiness decision:
   normalization, evaluation, and trading metrics.
 - Local BTC OHLCV data exists.
 - Local F&G data is now available at
-  `stage4_film_conditioning/F&G_data/fear_greed_index.csv`.
+  `stage4_film_conditioning/FG_data/fear_greed_index.csv`.
   The raw CSV is not tracked in GitHub; only the data availability note and
   audit summary are tracked.
 - The first full execution target remains Kaggle, but local context feature
@@ -458,7 +458,7 @@ Implementation readiness 결정:
   trading metric은 Stage 2 helper를 import해서 사용해야 합니다.
 - 로컬 BTC OHLCV data가 있습니다.
 - 로컬 F&G data도
-  `stage4_film_conditioning/F&G_data/fear_greed_index.csv`에 추가됐습니다.
+  `stage4_film_conditioning/FG_data/fear_greed_index.csv`에 추가됐습니다.
   Raw CSV는 GitHub에 올리지 않고, data availability note와 audit summary만
   추적합니다.
 - 첫 full 실행 target은 여전히 Kaggle이지만, local context feature 개발은 이제

@@ -7,7 +7,7 @@ Status: local F&G data added and quick-checked.
 Local folder:
 
 ```text
-stage4_film_conditioning/F&G_data
+stage4_film_conditioning/FG_data
 ```
 
 Files found:
@@ -44,7 +44,7 @@ Decision:
 로컬 폴더:
 
 ```text
-stage4_film_conditioning/F&G_data
+stage4_film_conditioning/FG_data
 ```
 
 확인된 파일:

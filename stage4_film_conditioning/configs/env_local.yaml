@@ -6,7 +6,7 @@ paths:
   project_root: "/Users/jaehyeonjeong/Desktop/논문/stage4_film_conditioning"
   data_root: "/Users/jaehyeonjeong/Desktop/논문/데이터셋/BTC _OHLCV"
   source_file: "/Users/jaehyeonjeong/Desktop/논문/데이터셋/BTC _OHLCV/btc_1d_data_2018_to_2025.csv"
-  fear_greed_file: "/Users/jaehyeonjeong/Desktop/논문/stage4_film_conditioning/F&G_data/fear_greed_index.csv"
+  fear_greed_file: "/Users/jaehyeonjeong/Desktop/논문/stage4_film_conditioning/FG_data/fear_greed_index.csv"
   output_root: "/Users/jaehyeonjeong/Desktop/논문/stage4_film_conditioning/outputs/stage4"
   checkpoint_root: "/Users/jaehyeonjeong/Desktop/논문/stage4_film_conditioning/outputs/stage4/checkpoints"
   metrics_root: "/Users/jaehyeonjeong/Desktop/논문/stage4_film_conditioning/outputs/stage4/metrics"
@@ -50,7 +50,7 @@ context:
   fear_greed:
     dataset_name: "historical-and-fear-greed-index-datasets"
     kaggle_url: "https://www.kaggle.com/datasets/ashishpatel8736/historical-and-fear-greed-index-datasets"
-    local_file: "/Users/jaehyeonjeong/Desktop/논문/stage4_film_conditioning/F&G_data/fear_greed_index.csv"
+    local_file: "/Users/jaehyeonjeong/Desktop/논문/stage4_film_conditioning/FG_data/fear_greed_index.csv"
     kaggle_file: ""
     date_column: "date"
     value_column: "value"

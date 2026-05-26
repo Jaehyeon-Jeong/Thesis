@@ -111,7 +111,7 @@ Stage 4:
   - Stage 4 will reuse Stage 2 BTC data/image/split/evaluation helpers through
     a configurable Stage 2 `src` dependency;
   - local BTC OHLCV data exists, and local F&G data is now available at
-    `stage4_film_conditioning/F&G_data/fear_greed_index.csv`;
+    `stage4_film_conditioning/FG_data/fear_greed_index.csv`;
   - raw F&G CSV files are not tracked in GitHub. Kaggle runs should still
     attach the public F&G dataset for final reproducibility.
 - 4-I1 completed the shared scaffold:
@@ -339,7 +339,7 @@ Stage 4:
   - Stage 4는 configurable Stage 2 `src` dependency를 통해 Stage 2 BTC
     data/image/split/evaluation helper를 재사용합니다.
   - 로컬 BTC OHLCV data가 있고, 로컬 F&G data도
-    `stage4_film_conditioning/F&G_data/fear_greed_index.csv`에 추가됐습니다.
+    `stage4_film_conditioning/FG_data/fear_greed_index.csv`에 추가됐습니다.
   - Raw F&G CSV는 GitHub에 track하지 않습니다. 최종 재현성을 위해 Kaggle run에서는
     public F&G dataset을 계속 attach해야 합니다.
 - 4-I1에서 공통 scaffold를 완료했습니다.

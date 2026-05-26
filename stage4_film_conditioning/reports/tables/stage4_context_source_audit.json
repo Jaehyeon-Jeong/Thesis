@@ -6,7 +6,7 @@
     "date_max": "2026-03-16"
   },
   "fear_greed": {
-    "source_file": "/Users/jaehyeonjeong/Desktop/\ub17c\ubb38/stage4_film_conditioning/F&G_data/fear_greed_index.csv",
+    "source_file": "/Users/jaehyeonjeong/Desktop/\ub17c\ubb38/stage4_film_conditioning/FG_data/fear_greed_index.csv",
     "num_rows": 2644,
     "date_min": "2018-02-01",
     "date_max": "2025-05-02",

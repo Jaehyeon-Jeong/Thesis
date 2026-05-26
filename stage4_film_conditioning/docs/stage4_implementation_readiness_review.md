@@ -122,7 +122,7 @@ Available locally:
 - BTC daily OHLCV:
   `/Users/jaehyeonjeong/Desktop/논문/데이터셋/BTC _OHLCV/btc_1d_data_2018_to_2025.csv`
 - Fear & Greed daily index:
-  `stage4_film_conditioning/F&G_data/fear_greed_index.csv`
+  `stage4_film_conditioning/FG_data/fear_greed_index.csv`
 
 Implication:
 - Model shape checks and non-data smoke tests can run locally.
@@ -300,7 +300,7 @@ Stage 4는 Stage 2 BTC pipeline을 복사/재작성하지 않고 재사용해야
 - BTC daily OHLCV:
   `/Users/jaehyeonjeong/Desktop/논문/데이터셋/BTC _OHLCV/btc_1d_data_2018_to_2025.csv`
 - Fear & Greed daily index:
-  `stage4_film_conditioning/F&G_data/fear_greed_index.csv`
+  `stage4_film_conditioning/FG_data/fear_greed_index.csv`
 
 의미:
 - Model shape check와 non-data smoke test는 로컬에서 가능합니다.

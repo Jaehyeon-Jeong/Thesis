@@ -56,7 +56,7 @@ Result:
 - BTC source found:
   `/Users/jaehyeonjeong/Desktop/논문/데이터셋/BTC _OHLCV/btc_1d_data_2018_to_2025.csv`
 - F&G source found:
-  `/Users/jaehyeonjeong/Desktop/논문/stage4_film_conditioning/F&G_data/fear_greed_index.csv`
+  `/Users/jaehyeonjeong/Desktop/논문/stage4_film_conditioning/FG_data/fear_greed_index.csv`
 - Stage 2 source dependency found:
   `/Users/jaehyeonjeong/Desktop/논문/stage2_btc_extension/src`
 
@@ -124,7 +124,7 @@ python scripts/check_stage4_scaffold.py --config configs/env_local.yaml
 - BTC source 확인:
   `/Users/jaehyeonjeong/Desktop/논문/데이터셋/BTC _OHLCV/btc_1d_data_2018_to_2025.csv`
 - F&G source 확인:
-  `/Users/jaehyeonjeong/Desktop/논문/stage4_film_conditioning/F&G_data/fear_greed_index.csv`
+  `/Users/jaehyeonjeong/Desktop/논문/stage4_film_conditioning/FG_data/fear_greed_index.csv`
 - Stage 2 source dependency 확인:
   `/Users/jaehyeonjeong/Desktop/논문/stage2_btc_extension/src`
 

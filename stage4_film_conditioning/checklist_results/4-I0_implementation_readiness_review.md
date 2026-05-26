@@ -27,7 +27,7 @@ Main implementation constraints:
   can import Stage 2 `src`.
 - Local BTC OHLCV data exists.
 - Local F&G data is now available at
-  `stage4_film_conditioning/F&G_data/fear_greed_index.csv`.
+  `stage4_film_conditioning/FG_data/fear_greed_index.csv`.
   Quick check: `2,644` rows, `2018-02-01` to `2025-05-02`, value range `5-95`,
   and `1,460/1,461` Stage 2 test-period days covered.
 - Raw F&G CSV files are local data and should not be tracked in GitHub.
@@ -66,7 +66,7 @@ Readiness 결정:
   `stage2_dependency` section이 필요합니다.
 - 로컬 BTC OHLCV data가 있습니다.
 - 로컬 F&G data도
-  `stage4_film_conditioning/F&G_data/fear_greed_index.csv`에 추가됐습니다.
+  `stage4_film_conditioning/FG_data/fear_greed_index.csv`에 추가됐습니다.
   빠른 확인 결과 `2,644` rows, `2018-02-01` to `2025-05-02`, value range
   `5-95`, Stage 2 test-period coverage `1,460/1,461` days입니다.
 - Raw F&G CSV 파일은 local data이므로 GitHub에 track하지 않습니다.

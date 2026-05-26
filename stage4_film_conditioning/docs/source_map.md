@@ -241,7 +241,7 @@ Implementation-source distinction:
     manifest are all present and parseable.
   - It checks CSV row counts and JSON parseability, not only file existence.
   - Local output checks passed for `concat` and `film_gamma` smoke runs.
-- 4-I12 Kaggle runner decision:
+- 4-I12 Kaggle four-ablation run decision/result:
   - Added `notebooks/kaggle_stage4_four_ablation_single_seed_one_cell.md`.
   - The first real Kaggle run is fixed to `I60/R20/ohlc_ma_vb`,
     `context_window=60`, seed `42`, and methods `concat`, `gating`,
@@ -250,8 +250,17 @@ Implementation-source distinction:
     `configs/env_kaggle.yaml`, audits BTC/F&G sources, builds context features,
     runs train/evaluation/trading/Grad-CAM/output-check per method, and writes
     backup zips under `/kaggle/working/stage4_saved_outputs`.
-  - This is an execution wrapper. It does not change model definitions, context
-    feature definitions, split rules, or evaluation metrics.
+  - Kaggle seed-42 result is complete. `film_full` is the best Stage 4 method:
+    accuracy `0.584316`, ROC-AUC `0.596811`.
+  - Result table:
+    `reports/tables/stage4_four_ablation_seed42_run_summary.csv`.
+- 4-I13 Kaggle five-seed runner decision:
+  - Added `notebooks/kaggle_stage4_four_ablation_five_seed_one_cell.md`.
+  - The robustness run keeps the same selected configuration and runs seeds
+    `42, 43, 44, 45, 46` for all four context methods.
+  - Both Kaggle cells are execution wrappers. They do not change model
+    definitions, context feature definitions, split rules, or evaluation
+    metrics.
 
 ## 한국어
 
@@ -493,7 +502,7 @@ Implementation-source distinction:
   - 단순 file existence뿐 아니라 CSV row count와 JSON parse 가능 여부도
     확인합니다.
   - `concat`, `film_gamma` smoke run에서 local output check를 통과했습니다.
-- 4-I12 Kaggle runner 결정:
+- 4-I12 Kaggle four-ablation run 결정/결과:
   - `notebooks/kaggle_stage4_four_ablation_single_seed_one_cell.md`를 추가했습니다.
   - 첫 실제 Kaggle run은 `I60/R20/ohlc_ma_vb`, `context_window=60`,
     seed `42`, methods `concat`, `gating`, `film_gamma`, `film_full`로
@@ -502,5 +511,13 @@ Implementation-source distinction:
     `configs/env_kaggle.yaml`을 patch한 뒤 BTC/F&G source audit, context
     feature build, method별 training/evaluation/trading/Grad-CAM/output-check를
     실행하고 `/kaggle/working/stage4_saved_outputs`에 backup zip을 저장합니다.
-  - 이 파일은 execution wrapper입니다. model 정의, context feature 정의,
+  - Kaggle seed-42 결과는 완료되었습니다. `film_full`이 Stage 4 방법 중
+    최고였고 accuracy `0.584316`, ROC-AUC `0.596811`입니다.
+  - Result table:
+    `reports/tables/stage4_four_ablation_seed42_run_summary.csv`.
+- 4-I13 Kaggle five-seed runner 결정:
+  - `notebooks/kaggle_stage4_four_ablation_five_seed_one_cell.md`를 추가했습니다.
+  - Robustness run은 같은 selected configuration을 고정하고 seeds
+    `42, 43, 44, 45, 46`에 대해 네 context method를 실행합니다.
+  - 두 Kaggle cell은 execution wrapper입니다. model 정의, context feature 정의,
     split rule, evaluation metric은 바꾸지 않습니다.

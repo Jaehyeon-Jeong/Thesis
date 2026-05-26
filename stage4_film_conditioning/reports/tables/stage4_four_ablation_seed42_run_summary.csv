@@ -1,0 +1,5 @@
+experiment_name,context_method,run_seed,status,error,classification_available,trading_available,num_samples,accuracy,majority_class_accuracy,roc_auc,f1,brier_score,long_flat_sharpe_net,long_short_sharpe_net,long_flat_annualized_return_net,long_short_annualized_return_net
+stage4_concat_i60_ohlc_ma_vb_r20_c60,concat,42,ok,,True,True,1441,0.4892435808466343,0.5412907702984039,0.5008155863299585,0.45961820851688695,0.25014584454275973,,,,
+stage4_gating_i60_ohlc_ma_vb_r20_c60,gating,42,ok,,True,True,1441,0.5523941707147814,0.5412907702984039,0.5559331238605065,0.6217008797653959,0.287192547493504,,,,
+stage4_film_gamma_i60_ohlc_ma_vb_r20_c60,film_gamma,42,ok,,True,True,1441,0.4594031922276197,0.5412907702984039,0.5261249466620117,0.002560819462227913,0.25185735061382425,,,,
+stage4_film_full_i60_ohlc_ma_vb_r20_c60,film_full,42,ok,,True,True,1441,0.5843164469118668,0.5412907702984039,0.5968113580821599,0.6805333333333332,0.27836313431252147,,,,

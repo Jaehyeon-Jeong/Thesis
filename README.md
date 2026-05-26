@@ -18,7 +18,7 @@ tracked.
 | `stage1_reimage_reproduction` | Reproduce the Re-image CNN pipeline on public I20 stock images | In progress: `I20/R60` seed-42 fast diagnostic archived; `I20/R20` archive is smoke-only; `I20/R5`, strict batch-128 run, and five-seed reproduction are later |
 | `stage2_btc_extension` | Extend the confirmed pipeline to BTC OHLCV | Single-seed 36-run complete; selected `I20/R20` and `I60/R20` five-seed robustness check complete; full 180-run five-seed grid later |
 | `stage3_linear_adapter` | Add a Linear comparison model | First test on Stage 2 best config completed; result dropped to majority level; remaining grid runs pending |
-| `stage4_film_conditioning` | Compare market-context concat, gating, gamma-only FiLM, and full FiLM on the fixed BTC CNN | Planning through 4-8 and implementation 4-I0 through 4-I11 complete; 4-I12 Kaggle four-ablation runner ready; awaiting real Kaggle output |
+| `stage4_film_conditioning` | Compare market-context concat, gating, gamma-only FiLM, and full FiLM on the fixed BTC CNN | Planning through 4-8 and implementation 4-I0 through 4-I12 complete; seed-42 four-ablation result favors `film_full`; 4-I13 five-seed runner ready |
 
 ### Current Status
 
@@ -187,14 +187,17 @@ Stage 4:
   - local checker passed for `concat` and `film_gamma` smoke runs;
   - compact summary is stored in
     `stage4_film_conditioning/reports/smoke_tests/stage4_smoke_summary.json`.
-- 4-I12 Kaggle runner is ready:
-  - `stage4_film_conditioning/notebooks/kaggle_stage4_four_ablation_single_seed_one_cell.md`
-    runs `I60/R20/ohlc_ma_vb`, context window `60`, seed `42`, and methods
+- 4-I12 Kaggle four-ablation seed-42 run is complete:
+  - run: `I60/R20/ohlc_ma_vb`, context window `60`, seed `42`, methods
     `concat`, `gating`, `film_gamma`, `film_full`;
-  - it backs up after context build, training, prediction/trading evaluation,
-    Grad-CAM, output check, and summary;
-  - the real Kaggle result is still pending, so 4-I12 remains open until output
-    check and metrics are returned.
+  - all four methods returned `status = ok` with 1,441 test predictions;
+  - best Stage 4 method: `film_full`, accuracy `0.584316`, ROC-AUC `0.596811`;
+  - this is promising versus the Stage 2 five-seed mean, but it is not yet
+    better than the same Stage 2 seed-42 baseline run.
+- 4-I13 Kaggle five-seed runner is ready:
+  - `stage4_film_conditioning/notebooks/kaggle_stage4_four_ablation_five_seed_one_cell.md`
+    runs the same four ablations for seeds `42, 43, 44, 45, 46`;
+  - this is the next check before claiming robust Stage 4 improvement.
 - News context is preserved as a second-phase track after source/date/leakage
   audit. Candidate source: Hugging Face `edaschau/bitcoin_news`.
 - Advisor-direction mapping is documented in the Stage 4 README/source map and
@@ -249,7 +252,7 @@ config, 코드 scaffold만 올립니다. 대용량 데이터, 논문 PDF, checkp
 | `stage1_reimage_reproduction` | public I20 stock image로 Re-image CNN pipeline 재현 | 진행 중: `I20/R60` seed-42 fast diagnostic 보존; `I20/R20` archive는 smoke-only; `I20/R5`, strict batch-128 run, five-seed reproduction은 later |
 | `stage2_btc_extension` | 확인된 pipeline을 BTC OHLCV로 확장 | single-seed 36-run 완료; `I20/R20`, `I60/R20` 선별 five-seed robustness check 완료; full 180-run five-seed grid는 later |
 | `stage3_linear_adapter` | Linear 비교 모델 추가 | Stage 2 best config 1회 테스트 완료; majority 수준으로 하락; 나머지 grid run 예정 |
-| `stage4_film_conditioning` | 고정 BTC CNN 위에서 market-context concat, gating, gamma-only FiLM, full FiLM 비교 | 4-8 계획과 4-I0부터 4-I11까지 구현 완료; 4-I12 Kaggle four-ablation runner 준비 완료; 실제 Kaggle output 대기 |
+| `stage4_film_conditioning` | 고정 BTC CNN 위에서 market-context concat, gating, gamma-only FiLM, full FiLM 비교 | 4-8 계획과 4-I0부터 4-I12까지 완료; seed-42 four-ablation 결과는 `film_full` 우세; 4-I13 five-seed runner 준비 완료 |
 
 ### 현재 상태
 
@@ -417,14 +420,17 @@ Stage 4:
   - Compact summary는
     `stage4_film_conditioning/reports/smoke_tests/stage4_smoke_summary.json`에
     저장했습니다.
-- 4-I12 Kaggle runner를 준비했습니다.
-  - `stage4_film_conditioning/notebooks/kaggle_stage4_four_ablation_single_seed_one_cell.md`
-    는 `I60/R20/ohlc_ma_vb`, context window `60`, seed `42`, methods
-    `concat`, `gating`, `film_gamma`, `film_full`을 실행합니다.
-  - context build, training, prediction/trading evaluation, Grad-CAM,
-    output check, summary 뒤 backup zip을 저장합니다.
-  - 실제 Kaggle result는 아직 pending이므로 output check와 metric이 돌아올 때까지
-    4-I12는 open 상태로 유지합니다.
+- 4-I12 Kaggle four-ablation seed-42 run을 완료했습니다.
+  - 실행: `I60/R20/ohlc_ma_vb`, context window `60`, seed `42`, methods
+    `concat`, `gating`, `film_gamma`, `film_full`.
+  - 네 방법 모두 `status = ok`이며 test prediction 1,441개를 생성했습니다.
+  - Stage 4 최고 방법: `film_full`, accuracy `0.584316`, ROC-AUC `0.596811`.
+  - Stage 2 five-seed mean과 비교하면 promising하지만, 같은 Stage 2 seed-42
+    baseline run보다 높지는 않아 robust improvement 주장은 보류합니다.
+- 4-I13 Kaggle five-seed runner를 준비했습니다.
+  - `stage4_film_conditioning/notebooks/kaggle_stage4_four_ablation_five_seed_one_cell.md`
+    는 같은 네 ablation을 seeds `42, 43, 44, 45, 46`으로 실행합니다.
+  - 이것이 Stage 4 improvement를 주장하기 전 필요한 다음 확인입니다.
 - News context는 제거하지 않고 source/date/leakage audit 이후 second-phase track으로
   유지합니다. 후보 source는 Hugging Face `edaschau/bitcoin_news`입니다.
 - 교수님 방향성 파일과 Stage 4 실험 결정의 연결은 Stage 4 README/source map과

@@ -185,15 +185,21 @@ Implementation phase:
     modulation exports, context artifacts, and manifest.
   - Local output checks passed for `concat` and `film_gamma` smoke runs.
   - Result: [4-I11 Smoke output check](checklist_results/4-I11_smoke_output_check.md)
-- [ ] 4-I12. Kaggle single-config run for the four main ablations
-  - Kaggle one-cell runner is ready:
-    `notebooks/kaggle_stage4_four_ablation_single_seed_one_cell.md`.
-  - Fixed run: `I60/R20/ohlc_ma_vb`, context window `60`, seed `42`,
-    methods `concat`, `gating`, `film_gamma`, `film_full`.
-  - The item remains unchecked until the real Kaggle output check passes and
-    metrics are reported.
-  - Result prep: [4-I12 Kaggle four-ablation runner](checklist_results/4-I12_kaggle_four_ablation_runner.md)
+- [x] 4-I12. Kaggle single-config run for the four main ablations
+  - Completed on Kaggle for `I60/R20/ohlc_ma_vb`, context window `60`,
+    seed `42`, methods `concat`, `gating`, `film_gamma`, `film_full`.
+  - Result: `film_full` was best among Stage 4 methods with accuracy
+    `0.584316` and ROC-AUC `0.596811`.
+  - Interpretation: promising versus the Stage 2 five-seed mean, but not yet
+    better than the same Stage 2 seed-42 run; five-seed robustness is required.
+  - Result: [4-I12 Kaggle four-ablation run](checklist_results/4-I12_kaggle_four_ablation_runner.md)
 - [ ] 4-I13. Kaggle selected grid/five-seed runner
+  - Runner is ready:
+    `notebooks/kaggle_stage4_four_ablation_five_seed_one_cell.md`.
+  - Fixed run: `I60/R20/ohlc_ma_vb`, context window `60`,
+    seeds `42, 43, 44, 45, 46`, methods `concat`, `gating`, `film_gamma`,
+    `film_full`.
+  - Result prep: [4-I13 Kaggle five-seed runner](checklist_results/4-I13_kaggle_five_seed_runner.md)
 - [ ] 4-I14. Stage 4 result report
 
 News-context extension:
@@ -401,15 +407,21 @@ Stage 4 main ablation:
     manifest를 확인합니다.
   - `concat`, `film_gamma` smoke run에서 local output check를 통과했습니다.
   - 결과: [4-I11 Smoke output check](checklist_results/4-I11_smoke_output_check.md)
-- [ ] 4-I12. 네 가지 main ablation의 Kaggle single-config run
-  - Kaggle one-cell runner 준비 완료:
-    `notebooks/kaggle_stage4_four_ablation_single_seed_one_cell.md`.
-  - 고정 run: `I60/R20/ohlc_ma_vb`, context window `60`, seed `42`,
-    methods `concat`, `gating`, `film_gamma`, `film_full`.
-  - 실제 Kaggle output check가 통과하고 metric이 보고되기 전까지는 미완료로
-    유지합니다.
-  - 준비 결과: [4-I12 Kaggle four-ablation runner](checklist_results/4-I12_kaggle_four_ablation_runner.md)
+- [x] 4-I12. 네 가지 main ablation의 Kaggle single-config run
+  - Kaggle에서 `I60/R20/ohlc_ma_vb`, context window `60`, seed `42`,
+    methods `concat`, `gating`, `film_gamma`, `film_full` 실행 완료.
+  - 결과: `film_full`이 Stage 4 방법 중 가장 좋았고 accuracy `0.584316`,
+    ROC-AUC `0.596811`입니다.
+  - 해석: Stage 2 five-seed mean과 비교하면 promising하지만, 같은 Stage 2 seed-42
+    run보다 높지는 않으므로 five-seed robustness 확인이 필요합니다.
+  - 결과: [4-I12 Kaggle four-ablation run](checklist_results/4-I12_kaggle_four_ablation_runner.md)
 - [ ] 4-I13. Kaggle selected grid/five-seed runner
+  - Runner 준비 완료:
+    `notebooks/kaggle_stage4_four_ablation_five_seed_one_cell.md`.
+  - 고정 run: `I60/R20/ohlc_ma_vb`, context window `60`,
+    seeds `42, 43, 44, 45, 46`, methods `concat`, `gating`, `film_gamma`,
+    `film_full`.
+  - 준비 결과: [4-I13 Kaggle five-seed runner](checklist_results/4-I13_kaggle_five_seed_runner.md)
 - [ ] 4-I14. Stage 4 결과 보고
 
 News-context 확장:

@@ -343,15 +343,21 @@
     - Checker는 파일 존재뿐 아니라 CSV parse/row count와 JSON parse도 확인한다.
     - Local smoke output check는 `concat`, `film_gamma` 모두 통과했다.
     - Compact summary는 `reports/smoke_tests/stage4_smoke_summary.json`에 저장했다.
-  - 4-I12에서 Kaggle four-ablation single-seed runner를 준비했다.
-    - `notebooks/kaggle_stage4_four_ablation_single_seed_one_cell.md`는
-      `I60/R20/ohlc_ma_vb`, context window `60`, seed `42`를 고정하고
-      `concat`, `gating`, `film_gamma`, `film_full`을 순서대로 실행한다.
-    - Cell은 Stage 4/Stage 2 code snapshot copy, Kaggle config patch,
-      BTC/F&G source audit, context feature build, method별 train/evaluation/
-      trading/Grad-CAM/output-check, backup zip, summary table까지 수행한다.
-    - 아직 실제 Kaggle full run 결과는 아니므로 output check와 metric이
-      보고될 때까지 4-I12는 open 상태로 유지한다.
+  - 4-I12에서 Kaggle four-ablation single-seed run을 완료했다.
+    - 실행 조건은 `I60/R20/ohlc_ma_vb`, context window `60`, seed `42`,
+      methods `concat`, `gating`, `film_gamma`, `film_full`이다.
+    - 네 방법 모두 `status = ok`, test predictions `1,441`개를 생성했다.
+    - 결과: `film_full`이 Stage 4 방법 중 최고였고 accuracy `0.584316`,
+      ROC-AUC `0.596811`이다.
+    - 해석: Stage 2 five-seed mean보다 약간 높아 promising하지만, 같은 Stage 2
+      seed-42 run보다 높지는 않으므로 robust improvement claim은 보류한다.
+    - Result table은
+      `stage4_film_conditioning/reports/tables/stage4_four_ablation_seed42_run_summary.csv`.
+  - 4-I13에서 Kaggle four-ablation five-seed runner를 준비했다.
+    - `notebooks/kaggle_stage4_four_ablation_five_seed_one_cell.md`는 같은 네
+      방법을 seeds `42, 43, 44, 45, 46`으로 실행한다.
+    - 총 `20` runs이며, old smoke output을 completion으로 오인하지 않도록
+      `MIN_PREDICTIONS=1000`을 output check에 적용한다.
 - Re-image CNN에 이식:
   - 기존 CNN 구조는 유지하고, block 내부에 FiLM만 삽입한다.
   - 기본 위치: `Conv -> BN -> FiLM -> LeakyReLU -> MaxPool`

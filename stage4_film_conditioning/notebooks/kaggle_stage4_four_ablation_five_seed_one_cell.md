@@ -1,6 +1,7 @@
-# Kaggle Stage 4 Four-Ablation Single-Seed One Cell
+# Kaggle Stage 4 Four-Ablation Five-Seed One Cell
 
-Copy the Python cell below into a Kaggle notebook after attaching:
+Copy the Python cell below into Kaggle after attaching the same datasets as the
+single-seed runner:
 
 - Stage 4 code snapshot:
   `/kaggle/input/datasets/moskow/stage4/stage4_film_conditioning`
@@ -11,23 +12,19 @@ Copy the Python cell below into a Kaggle notebook after attaching:
 - Fear & Greed Kaggle dataset:
   `ashishpatel8736/historical-and-fear-greed-index-datasets`
 
-This runner executes the fixed Stage 4 comparison:
+This runner executes:
 
 ```text
-I60 / R20 / ohlc_ma_vb / context_window=60 / seed=42
+I60 / R20 / ohlc_ma_vb / context_window=60
+4 methods x 5 seeds = 20 runs
 
-4-A concat
-4-B gating
-4-C film_gamma
-4-D film_full
+methods: concat, gating, film_gamma, film_full
+seeds: 42, 43, 44, 45, 46
 ```
 
-Each ablation runs:
-
-```text
-context build -> train -> prediction metrics -> trading metrics
--> Grad-CAM/context/modulation export -> output check -> backup zip
-```
+It supports resume-style execution with `SKIP_COMPLETED=True`. Completion is
+checked using `check_stage4_outputs.py` plus `MIN_PREDICTIONS=1000`, so old
+smoke outputs will not be accepted as completed full runs.
 
 ```python
 from pathlib import Path
@@ -61,7 +58,7 @@ IMAGE_SPEC = "ohlc_ma_vb"
 RETURN_HORIZON = 20
 CONTEXT_WINDOW = 60
 CONTEXT_METHODS = ["concat", "gating", "film_gamma", "film_full"]
-RUN_SEED = 42
+RUN_SEEDS = [42, 43, 44, 45, 46]
 EVAL_SPLIT = "test"
 GRADCAM_SAMPLES_PER_CLASS = 2
 MIN_PREDICTIONS = 1000
@@ -70,7 +67,7 @@ SKIP_COMPLETED = True
 CONTINUE_ON_ERROR = True
 SAVE_BACKUP_ZIPS = True
 
-# Smoke check only. For the real 4-I12 run, keep False.
+# Smoke check only. For the real 4-I13 run, keep False.
 SMOKE_TEST = False
 
 # Strict Stage 2-style comparison settings.
@@ -216,33 +213,24 @@ def patch_kaggle_config():
     print("Config patched:", config_path, flush=True)
 
 
-def expected_output_paths(context_method: str) -> dict[str, str]:
+def expected_output_paths(context_method: str, run_seed: int) -> dict[str, str]:
     exp = experiment_name(context_method)
-    seed_dir = f"seed_{RUN_SEED}"
+    seed_dir = f"seed_{run_seed}"
     outputs = PROJECT_ROOT / "outputs/stage4"
     gradcam_dir = outputs / "figures" / exp / seed_dir / "gradcam" / EVAL_SPLIT
     context_dir = outputs / "context" / context_name() / seed_dir
     return {
         "best_checkpoint": str(outputs / "checkpoints" / exp / seed_dir / "best.pt"),
-        "last_checkpoint": str(outputs / "checkpoints" / exp / seed_dir / "last.pt"),
-        "train_history": str(outputs / "metrics" / exp / seed_dir / "train_history.csv"),
-        "train_metadata": str(outputs / "metrics" / exp / seed_dir / "train_metadata.json"),
         "predictions": str(outputs / "predictions" / exp / seed_dir / f"{EVAL_SPLIT}_predictions.csv"),
         "classification_metrics": str(outputs / "metrics" / exp / seed_dir / f"{EVAL_SPLIT}_metrics.json"),
         "trading_metrics": str(outputs / "metrics" / exp / seed_dir / f"{EVAL_SPLIT}_trading_metrics.json"),
         "gradcam": str(gradcam_dir / f"btc_context_gradcam_{EVAL_SPLIT}_{GRADCAM_SAMPLES_PER_CLASS}perclass.png"),
-        "gradcam_samples": str(gradcam_dir / "samples.csv"),
-        "modulation_summary": str(gradcam_dir / "modulation_summary.csv"),
-        "modulation_values": str(gradcam_dir / "modulation_values.json"),
         "context_features": str(context_dir / "context_features.csv"),
-        "context_scaler": str(context_dir / "context_scaler.json"),
-        "context_feature_audit": str(context_dir / "context_feature_audit.json"),
-        "context_feature_summary": str(context_dir / "context_feature_summary.csv"),
         "run_manifest": str(outputs / "run_manifests" / exp / seed_dir / "run_manifest.json"),
     }
 
 
-def backup_outputs(label: str, phase: str, context_method: str | None = None):
+def backup_outputs(label: str, phase: str, context_method: str | None = None, run_seed: int | None = None):
     """Zip current Stage 4 outputs outside PROJECT_ROOT so later reruns cannot erase them."""
 
     if not SAVE_BACKUP_ZIPS:
@@ -254,7 +242,8 @@ def backup_outputs(label: str, phase: str, context_method: str | None = None):
 
     BACKUP_ROOT.mkdir(parents=True, exist_ok=True)
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    archive_base = BACKUP_ROOT / f"{label}_seed{RUN_SEED}_{phase}_{timestamp}_outputs"
+    seed_label = f"seed{run_seed}" if run_seed is not None else "allseeds"
+    archive_base = BACKUP_ROOT / f"{label}_{seed_label}_{phase}_{timestamp}_outputs"
     archive_path = Path(shutil.make_archive(str(archive_base), "zip", outputs_root))
     receipt = {
         "label": label,
@@ -263,16 +252,20 @@ def backup_outputs(label: str, phase: str, context_method: str | None = None):
         "image_spec": IMAGE_SPEC,
         "return_horizon": RETURN_HORIZON,
         "context_window": CONTEXT_WINDOW,
-        "run_seed": RUN_SEED,
+        "run_seed": run_seed,
         "phase": phase,
         "created_utc": timestamp,
         "archive_path": str(archive_path),
         "archive_size_mb": round(archive_path.stat().st_size / (1024 * 1024), 3),
         "project_root": str(PROJECT_ROOT),
         "outputs_root": str(outputs_root),
-        "expected_paths": expected_output_paths(context_method) if context_method else {},
+        "expected_paths": (
+            expected_output_paths(context_method, int(run_seed))
+            if context_method and run_seed is not None
+            else {}
+        ),
     }
-    receipt_path = BACKUP_ROOT / f"{label}_seed{RUN_SEED}_{phase}_{timestamp}_receipt.json"
+    receipt_path = BACKUP_ROOT / f"{label}_{seed_label}_{phase}_{timestamp}_receipt.json"
     receipt_path.write_text(json.dumps(receipt, indent=2), encoding="utf-8")
     print(
         f"[backup:{label}:{phase}] saved {archive_path} "
@@ -282,16 +275,16 @@ def backup_outputs(label: str, phase: str, context_method: str | None = None):
     return archive_path
 
 
-def run_step(label: str, phase: str, cmd, context_method: str | None = None):
+def run_step(label: str, phase: str, cmd, context_method: str | None = None, run_seed: int | None = None):
     """Run a stage and backup current outputs even if the stage fails."""
 
     try:
         return run(cmd)
     finally:
-        backup_outputs(label, phase, context_method=context_method)
+        backup_outputs(label, phase, context_method=context_method, run_seed=run_seed)
 
 
-def output_check_cmd(context_method: str):
+def output_check_cmd(context_method: str, run_seed: int):
     return [
         sys.executable, "-u",
         "scripts/check_stage4_outputs.py",
@@ -300,26 +293,26 @@ def output_check_cmd(context_method: str):
         "--image-spec", IMAGE_SPEC,
         "--return-horizon", str(RETURN_HORIZON),
         "--context-method", context_method,
-        "--run-seed", str(RUN_SEED),
+        "--run-seed", str(run_seed),
         "--split", EVAL_SPLIT,
         "--gradcam-samples-per-class", str(GRADCAM_SAMPLES_PER_CLASS),
         "--min-predictions", str(MIN_PREDICTIONS),
     ]
 
 
-def is_completed(context_method: str) -> bool:
-    result = run(output_check_cmd(context_method), capture=True, check=False)
+def is_completed(context_method: str, run_seed: int) -> bool:
+    result = run(output_check_cmd(context_method, run_seed), capture=True, check=False)
     return result.returncode == 0
 
 
-def read_result_row(context_method: str, status: str, error: str = "") -> dict:
+def read_result_row(context_method: str, run_seed: int, status: str, error: str = "") -> dict:
     exp = experiment_name(context_method)
-    metrics_path = PROJECT_ROOT / "outputs/stage4/metrics" / exp / f"seed_{RUN_SEED}" / f"{EVAL_SPLIT}_metrics.json"
-    trading_path = PROJECT_ROOT / "outputs/stage4/metrics" / exp / f"seed_{RUN_SEED}" / f"{EVAL_SPLIT}_trading_metrics.json"
+    metrics_path = PROJECT_ROOT / "outputs/stage4/metrics" / exp / f"seed_{run_seed}" / f"{EVAL_SPLIT}_metrics.json"
+    trading_path = PROJECT_ROOT / "outputs/stage4/metrics" / exp / f"seed_{run_seed}" / f"{EVAL_SPLIT}_trading_metrics.json"
     row = {
         "experiment_name": exp,
         "context_method": context_method,
-        "run_seed": RUN_SEED,
+        "run_seed": run_seed,
         "status": status,
         "error": error,
         "classification_available": metrics_path.exists(),
@@ -338,6 +331,36 @@ def read_result_row(context_method: str, status: str, error: str = "") -> dict:
     return row
 
 
+def summarize_seed_results(seed_rows: list[dict]) -> pd.DataFrame:
+    df = pd.DataFrame(seed_rows)
+    numeric = [
+        "num_samples",
+        "accuracy",
+        "majority_class_accuracy",
+        "roc_auc",
+        "f1",
+        "brier_score",
+        "long_flat_sharpe_net",
+        "long_short_sharpe_net",
+        "long_flat_annualized_return_net",
+        "long_short_annualized_return_net",
+    ]
+    available = [column for column in numeric if column in df.columns]
+    if df.empty:
+        return pd.DataFrame()
+    grouped = df.groupby("context_method", dropna=False)
+    rows = []
+    for method, frame in grouped:
+        row = {"context_method": method, "seed_count": int(frame["run_seed"].nunique())}
+        for column in available:
+            values = pd.to_numeric(frame[column], errors="coerce")
+            row[f"{column}_mean"] = values.mean()
+            row[f"{column}_std"] = values.std(ddof=1)
+            row[f"{column}_count"] = int(values.notna().sum())
+        rows.append(row)
+    return pd.DataFrame(rows)
+
+
 # ============================================================
 # 1. Copy code snapshots and patch config
 # ============================================================
@@ -350,7 +373,7 @@ print(f"Stage 2 dependency copied to: {STAGE2_PROJECT_ROOT}", flush=True)
 
 
 # ============================================================
-# 2. Source audit and context build
+# 2. Source audit
 # ============================================================
 run([
     sys.executable, "-u",
@@ -361,20 +384,9 @@ run([
     "--output", "reports/tables/stage4_context_source_audit.json",
 ])
 
-run_step("stage4_context", "after_context_build", [
-    sys.executable, "-u",
-    "scripts/build_stage4_context_features.py",
-    "--config", "configs/env_kaggle.yaml",
-    "--image-window", str(IMAGE_WINDOW),
-    "--image-spec", IMAGE_SPEC,
-    "--return-horizon", str(RETURN_HORIZON),
-    "--run-seed", str(RUN_SEED),
-    "--write-report-copy",
-])
-
 
 # ============================================================
-# 3. Train/evaluate/check four ablations
+# 3. Train/evaluate/check four ablations over five seeds
 # ============================================================
 smoke_train_args = []
 smoke_data_args = []
@@ -392,98 +404,130 @@ if SMOKE_TEST:
     ]
 
 summary_rows = []
-for index, context_method in enumerate(CONTEXT_METHODS, start=1):
-    exp = experiment_name(context_method)
-    print("\n" + "=" * 80, flush=True)
-    print(f"[{index}/{len(CONTEXT_METHODS)}] {exp}", flush=True)
-    print("=" * 80, flush=True)
+total_runs = len(CONTEXT_METHODS) * len(RUN_SEEDS)
+run_index = 0
+for run_seed in RUN_SEEDS:
+    print("\n" + "#" * 80, flush=True)
+    print(f"Seed {run_seed}", flush=True)
+    print("#" * 80, flush=True)
 
-    if SKIP_COMPLETED and is_completed(context_method):
-        print(f"[skip] Output check already passes for {exp}", flush=True)
-        summary_rows.append(read_result_row(context_method, status="skipped_completed"))
-        continue
+    run_step(f"stage4_context_seed{run_seed}", "after_context_build", [
+        sys.executable, "-u",
+        "scripts/build_stage4_context_features.py",
+        "--config", "configs/env_kaggle.yaml",
+        "--image-window", str(IMAGE_WINDOW),
+        "--image-spec", IMAGE_SPEC,
+        "--return-horizon", str(RETURN_HORIZON),
+        "--run-seed", str(run_seed),
+        "--write-report-copy",
+    ], run_seed=run_seed)
 
-    try:
-        run_step(exp, "after_train", [
-            sys.executable, "-u",
-            "scripts/run_stage4_context_model.py",
-            "--config", "configs/env_kaggle.yaml",
-            "--image-window", str(IMAGE_WINDOW),
-            "--image-spec", IMAGE_SPEC,
-            "--return-horizon", str(RETURN_HORIZON),
-            "--context-method", context_method,
-            "--run-seed", str(RUN_SEED),
-        ] + smoke_train_args, context_method=context_method)
+    for context_method in CONTEXT_METHODS:
+        run_index += 1
+        exp = experiment_name(context_method)
+        print("\n" + "=" * 80, flush=True)
+        print(f"[{run_index}/{total_runs}] {exp}, seed={run_seed}", flush=True)
+        print("=" * 80, flush=True)
 
-        run_step(exp, "after_prediction_eval", [
-            sys.executable, "-u",
-            "scripts/evaluate_stage4_predictions.py",
-            "--config", "configs/env_kaggle.yaml",
-            "--image-window", str(IMAGE_WINDOW),
-            "--image-spec", IMAGE_SPEC,
-            "--return-horizon", str(RETURN_HORIZON),
-            "--context-method", context_method,
-            "--run-seed", str(RUN_SEED),
-            "--split", EVAL_SPLIT,
-        ] + smoke_data_args, context_method=context_method)
+        if SKIP_COMPLETED and is_completed(context_method, run_seed):
+            print(f"[skip] Output check already passes for {exp}, seed={run_seed}", flush=True)
+            summary_rows.append(read_result_row(context_method, run_seed, status="skipped_completed"))
+            continue
 
-        run_step(exp, "after_trading_eval", [
-            sys.executable, "-u",
-            "scripts/evaluate_stage4_trading.py",
-            "--config", "configs/env_kaggle.yaml",
-            "--image-window", str(IMAGE_WINDOW),
-            "--image-spec", IMAGE_SPEC,
-            "--return-horizon", str(RETURN_HORIZON),
-            "--context-method", context_method,
-            "--run-seed", str(RUN_SEED),
-            "--split", EVAL_SPLIT,
-        ], context_method=context_method)
+        try:
+            run_step(exp, "after_train", [
+                sys.executable, "-u",
+                "scripts/run_stage4_context_model.py",
+                "--config", "configs/env_kaggle.yaml",
+                "--image-window", str(IMAGE_WINDOW),
+                "--image-spec", IMAGE_SPEC,
+                "--return-horizon", str(RETURN_HORIZON),
+                "--context-method", context_method,
+                "--run-seed", str(run_seed),
+            ] + smoke_train_args, context_method=context_method, run_seed=run_seed)
 
-        run_step(exp, "after_gradcam", [
-            sys.executable, "-u",
-            "scripts/generate_stage4_gradcam_context.py",
-            "--config", "configs/env_kaggle.yaml",
-            "--image-window", str(IMAGE_WINDOW),
-            "--image-spec", IMAGE_SPEC,
-            "--return-horizon", str(RETURN_HORIZON),
-            "--context-method", context_method,
-            "--run-seed", str(RUN_SEED),
-            "--split", EVAL_SPLIT,
-            "--samples-per-class", str(GRADCAM_SAMPLES_PER_CLASS),
-            "--write-report-copy",
-        ] + smoke_data_args, context_method=context_method)
+            run_step(exp, "after_prediction_eval", [
+                sys.executable, "-u",
+                "scripts/evaluate_stage4_predictions.py",
+                "--config", "configs/env_kaggle.yaml",
+                "--image-window", str(IMAGE_WINDOW),
+                "--image-spec", IMAGE_SPEC,
+                "--return-horizon", str(RETURN_HORIZON),
+                "--context-method", context_method,
+                "--run-seed", str(run_seed),
+                "--split", EVAL_SPLIT,
+            ] + smoke_data_args, context_method=context_method, run_seed=run_seed)
 
-        run_step(exp, "after_output_check", output_check_cmd(context_method), context_method=context_method)
-        summary_rows.append(read_result_row(context_method, status="ok"))
-    except Exception as exc:
-        print(f"[error] {exp}: {exc}", flush=True)
-        summary_rows.append(read_result_row(context_method, status="failed", error=str(exc)))
-        if not CONTINUE_ON_ERROR:
-            raise
+            run_step(exp, "after_trading_eval", [
+                sys.executable, "-u",
+                "scripts/evaluate_stage4_trading.py",
+                "--config", "configs/env_kaggle.yaml",
+                "--image-window", str(IMAGE_WINDOW),
+                "--image-spec", IMAGE_SPEC,
+                "--return-horizon", str(RETURN_HORIZON),
+                "--context-method", context_method,
+                "--run-seed", str(run_seed),
+                "--split", EVAL_SPLIT,
+            ], context_method=context_method, run_seed=run_seed)
+
+            run_step(exp, "after_gradcam", [
+                sys.executable, "-u",
+                "scripts/generate_stage4_gradcam_context.py",
+                "--config", "configs/env_kaggle.yaml",
+                "--image-window", str(IMAGE_WINDOW),
+                "--image-spec", IMAGE_SPEC,
+                "--return-horizon", str(RETURN_HORIZON),
+                "--context-method", context_method,
+                "--run-seed", str(run_seed),
+                "--split", EVAL_SPLIT,
+                "--samples-per-class", str(GRADCAM_SAMPLES_PER_CLASS),
+                "--write-report-copy",
+            ] + smoke_data_args, context_method=context_method, run_seed=run_seed)
+
+            run_step(
+                exp,
+                "after_output_check",
+                output_check_cmd(context_method, run_seed),
+                context_method=context_method,
+                run_seed=run_seed,
+            )
+            summary_rows.append(read_result_row(context_method, run_seed, status="ok"))
+        except Exception as exc:
+            print(f"[error] {exp}, seed={run_seed}: {exc}", flush=True)
+            summary_rows.append(read_result_row(context_method, run_seed, status="failed", error=str(exc)))
+            if not CONTINUE_ON_ERROR:
+                raise
 
 
 # ============================================================
-# 4. Write compact summary table and final backup
+# 4. Write seed-level and mean/std summary tables
 # ============================================================
 tables_root = PROJECT_ROOT / "reports/tables"
 tables_root.mkdir(parents=True, exist_ok=True)
-summary_df = pd.DataFrame(summary_rows)
-summary_csv = tables_root / "stage4_four_ablation_seed42_run_summary.csv"
-summary_json = tables_root / "stage4_four_ablation_seed42_run_summary.json"
-summary_df.to_csv(summary_csv, index=False)
-summary_json.write_text(json.dumps(summary_rows, indent=2), encoding="utf-8")
+seed_df = pd.DataFrame(summary_rows)
+mean_std_df = summarize_seed_results(summary_rows)
 
-backup_outputs("stage4_four_ablation", "after_summary", context_method=None)
+seed_csv = tables_root / "stage4_four_ablation_five_seed_seed_results.csv"
+mean_std_csv = tables_root / "stage4_four_ablation_five_seed_mean_std_results.csv"
+run_summary_json = tables_root / "stage4_four_ablation_five_seed_run_summary.json"
+seed_df.to_csv(seed_csv, index=False)
+mean_std_df.to_csv(mean_std_csv, index=False)
+run_summary_json.write_text(json.dumps(summary_rows, indent=2), encoding="utf-8")
 
-display(Markdown("# Stage 4 Four-Ablation Seed 42 Summary"))
-display(summary_df)
+backup_outputs("stage4_four_ablation_five_seed", "after_summary", context_method=None, run_seed=None)
 
-if not summary_df.empty and "accuracy" in summary_df.columns:
-    display(Markdown("## Sorted by Accuracy"))
-    display(summary_df.sort_values("accuracy", ascending=False))
+display(Markdown("# Stage 4 Four-Ablation Five-Seed Seed-Level Results"))
+display(seed_df.sort_values(["context_method", "run_seed"]))
+
+display(Markdown("# Stage 4 Four-Ablation Five-Seed Mean/Std Summary"))
+if not mean_std_df.empty and "accuracy_mean" in mean_std_df.columns:
+    display(mean_std_df.sort_values("accuracy_mean", ascending=False))
+else:
+    display(mean_std_df)
 
 print("\nDONE", flush=True)
 print("Outputs:", PROJECT_ROOT / "outputs/stage4", flush=True)
-print("Summary CSV:", summary_csv, flush=True)
+print("Seed CSV:", seed_csv, flush=True)
+print("Mean/std CSV:", mean_std_csv, flush=True)
 print("Backup zips:", BACKUP_ROOT, flush=True)
 ```

@@ -267,14 +267,20 @@ Implementation status:
     and run manifest.
   - Local checker passed for `concat` and `film_gamma` smoke runs.
   - Compact smoke summary: `reports/smoke_tests/stage4_smoke_summary.json`.
-- `4-I12` Kaggle runner is ready, but the real run is not complete yet.
-  - Added `notebooks/kaggle_stage4_four_ablation_single_seed_one_cell.md`.
-  - It runs `I60/R20/ohlc_ma_vb`, context window `60`, seed `42`, and the four
-    methods `concat`, `gating`, `film_gamma`, `film_full`.
-  - It backs up after context build, training, prediction evaluation, trading
-    evaluation, Grad-CAM, output check, and summary.
-  - Keep `4-I12` open until Kaggle output check passes and metrics are reported.
-- Next step: run the 4-I12 Kaggle cell and inspect the summary/output zips.
+- `4-I12` is complete for the Kaggle seed-42 four-ablation run.
+  - Run: `I60/R20/ohlc_ma_vb`, context window `60`, seed `42`, methods
+    `concat`, `gating`, `film_gamma`, `film_full`.
+  - All four methods returned `status = ok` and 1,441 test predictions.
+  - Best Stage 4 method: `film_full`, accuracy `0.584316`, ROC-AUC `0.596811`.
+  - Interpretation: promising versus the Stage 2 five-seed mean, but not yet
+    better than the same Stage 2 seed-42 run.
+  - Result table:
+    `reports/tables/stage4_four_ablation_seed42_run_summary.csv`.
+- `4-I13` Kaggle five-seed runner is ready.
+  - Added `notebooks/kaggle_stage4_four_ablation_five_seed_one_cell.md`.
+  - It runs the same four methods for seeds `42, 43, 44, 45, 46`.
+  - Next step: run this cell to test whether `film_full` remains stable across
+    seeds.
 
 Main documents:
 - [Checklist](checklist.md)
@@ -304,6 +310,7 @@ Main documents:
 - [Grad-CAM context/modulation export](checklist_results/4-I10_gradcam_context_modulation_export.md)
 - [Smoke output check](checklist_results/4-I11_smoke_output_check.md)
 - [Kaggle four-ablation runner](checklist_results/4-I12_kaggle_four_ablation_runner.md)
+- [Kaggle five-seed runner](checklist_results/4-I13_kaggle_five_seed_runner.md)
 
 ## 한국어
 
@@ -568,15 +575,20 @@ Implementation status:
     bundle을 확인합니다.
   - `concat`, `film_gamma` smoke run에서 local checker를 통과했습니다.
   - Compact smoke summary: `reports/smoke_tests/stage4_smoke_summary.json`.
-- `4-I12` Kaggle runner는 준비됐지만, 실제 run은 아직 완료가 아닙니다.
-  - `notebooks/kaggle_stage4_four_ablation_single_seed_one_cell.md`를 추가했습니다.
-  - `I60/R20/ohlc_ma_vb`, context window `60`, seed `42`, 네 method
-    `concat`, `gating`, `film_gamma`, `film_full`을 실행합니다.
-  - context build, training, prediction evaluation, trading evaluation,
-    Grad-CAM, output check, summary 이후 backup zip을 저장합니다.
-  - Kaggle output check가 통과하고 metric이 보고될 때까지 `4-I12`는 open으로
-    유지합니다.
-- 다음 단계는 4-I12 Kaggle cell 실행과 summary/output zip 확인입니다.
+- `4-I12` Kaggle seed-42 four-ablation run을 완료했습니다.
+  - 실행: `I60/R20/ohlc_ma_vb`, context window `60`, seed `42`, methods
+    `concat`, `gating`, `film_gamma`, `film_full`.
+  - 네 방법 모두 `status = ok`이고 test prediction 1,441개를 생성했습니다.
+  - Stage 4 최고 방법: `film_full`, accuracy `0.584316`, ROC-AUC `0.596811`.
+  - 해석: Stage 2 five-seed mean과 비교하면 promising하지만, 같은 Stage 2 seed-42
+    run보다 높지는 않습니다.
+  - Result table:
+    `reports/tables/stage4_four_ablation_seed42_run_summary.csv`.
+- `4-I13` Kaggle five-seed runner를 준비했습니다.
+  - `notebooks/kaggle_stage4_four_ablation_five_seed_one_cell.md`를 추가했습니다.
+  - 같은 네 방법을 seeds `42, 43, 44, 45, 46`으로 실행합니다.
+  - 다음 단계는 이 cell을 실행해 `film_full` 안정성을 seed 기준으로 확인하는
+    것입니다.
 
 주요 문서:
 - [Checklist](checklist.md)
@@ -606,3 +618,4 @@ Implementation status:
 - [Grad-CAM context/modulation export](checklist_results/4-I10_gradcam_context_modulation_export.md)
 - [Smoke output check](checklist_results/4-I11_smoke_output_check.md)
 - [Kaggle four-ablation runner](checklist_results/4-I12_kaggle_four_ablation_runner.md)
+- [Kaggle five-seed runner](checklist_results/4-I13_kaggle_five_seed_runner.md)

@@ -14,7 +14,14 @@ Current implementation audit tables:
 - `stage4_context_i60_ohlc_ma_vb_r20_c60_seed42_context_feature_summary.csv`:
   split-level raw and normalized context feature summary.
 
-Future result tables will be added after Kaggle runs.
+Current result tables:
+- `stage4_four_ablation_seed42_run_summary.csv`: Kaggle seed-42 result for
+  `concat`, `gating`, `film_gamma`, and `film_full` on
+  `I60/R20/ohlc_ma_vb`.
+
+Future result tables:
+- `stage4_four_ablation_five_seed_seed_results.csv`
+- `stage4_four_ablation_five_seed_mean_std_results.csv`
 
 ## 한국어
 
@@ -30,4 +37,10 @@ Future result tables will be added after Kaggle runs.
 - `stage4_context_i60_ohlc_ma_vb_r20_c60_seed42_context_feature_summary.csv`:
   split별 raw/normalized context feature summary입니다.
 
-Kaggle 실행 후 result table을 추가합니다.
+현재 result table:
+- `stage4_four_ablation_seed42_run_summary.csv`: `I60/R20/ohlc_ma_vb`에서
+  `concat`, `gating`, `film_gamma`, `film_full`을 비교한 Kaggle seed-42 결과입니다.
+
+추후 result table:
+- `stage4_four_ablation_five_seed_seed_results.csv`
+- `stage4_four_ablation_five_seed_mean_std_results.csv`

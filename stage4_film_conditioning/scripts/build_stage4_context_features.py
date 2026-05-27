@@ -96,6 +96,7 @@ def main() -> None:
         image_spec=image_spec,
         return_horizon=return_horizon,
         context_window=context_window,
+        context_suffix=str(context_config.get("feature_set_name", "")),
     )
     output_dir = paths.context_root / context_name / f"seed_{int(args.run_seed)}"
     output_dir.mkdir(parents=True, exist_ok=True)

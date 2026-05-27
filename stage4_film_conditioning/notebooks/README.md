@@ -42,6 +42,11 @@ Available notebooks:
   - Runs `I60/R20/ohlc` with all structured context and `film_full`.
   - Purpose: test whether F&G/BB/MFI/RV context can recover information after
     MA/VB are removed from the image.
+- `kaggle_stage4_v2_p4_ohlc_fg_only_film_full_five_seed_one_cell.md`
+  - Stage 4 v2 priority 4 diagnostic.
+  - Runs `I60/R20/ohlc` with F&G-only context and `film_full` over five seeds.
+  - Purpose: isolate external sentiment/regime context from OHLCV-derived
+    technical context.
 
 Planned notebooks:
 - `kaggle_stage4_single_ablation_one_cell.md`
@@ -91,6 +96,11 @@ Required backup root:
   - `I60/R20/ohlc`에 전체 structured context와 `film_full`을 붙여 실행합니다.
   - 목적: 이미지에서 MA/VB를 제거한 뒤 F&G/BB/MFI/RV context가 정보를 보완할
     수 있는지 확인합니다.
+- `kaggle_stage4_v2_p4_ohlc_fg_only_film_full_five_seed_one_cell.md`
+  - Stage 4 v2 우선순위 4 diagnostic입니다.
+  - `I60/R20/ohlc`에 F&G-only context와 `film_full`을 붙여 five-seed로 실행합니다.
+  - 목적: OHLCV-derived technical context와 분리해서 외부 sentiment/regime
+    context 효과만 확인합니다.
 
 예정 notebook:
 - `kaggle_stage4_single_ablation_one_cell.md`

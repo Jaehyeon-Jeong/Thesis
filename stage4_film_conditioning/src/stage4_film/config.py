@@ -162,6 +162,7 @@ def make_stage4_experiment_name(
     return_horizon: int,
     context_method: str,
     context_window: int,
+    experiment_suffix: str = "",
 ) -> str:
     """Stage 4 output folder에 사용할 실험 이름을 만든다.
 
@@ -171,10 +172,31 @@ def make_stage4_experiment_name(
     """
 
     method = validate_context_method(context_method)
-    return (
+    base_name = (
         f"stage4_{method}_i{int(image_window)}_"
         f"{image_spec}_r{int(return_horizon)}_c{int(context_window)}"
     )
+    suffix = sanitize_name_suffix(experiment_suffix)
+    return f"{base_name}_{suffix}" if suffix else base_name
+
+
+def sanitize_name_suffix(value: Any) -> str:
+    """Return a filesystem-safe optional suffix for experiment/context names."""
+
+    suffix = str(value or "").strip().lower()
+    if not suffix:
+        return ""
+    cleaned = []
+    previous_separator = False
+    for char in suffix:
+        if char.isalnum():
+            cleaned.append(char)
+            previous_separator = False
+        else:
+            if not previous_separator:
+                cleaned.append("_")
+            previous_separator = True
+    return "".join(cleaned).strip("_")
 
 
 def make_stage2_baseline_experiment_name(
@@ -201,6 +223,10 @@ def stage4_run_context_base(
     context_config = get_context_config(config)
     context_window = int(context_config.get("context_window", image_window))
     method = validate_context_method(context_method)
+    context_feature_set_name = str(context_config.get("feature_set_name", "")).strip()
+    experiment_suffix = str(
+        stage4_model.get("experiment_suffix", context_feature_set_name)
+    ).strip()
     return {
         "stage": "stage4",
         "model_family": "stock_cnn_plus_market_context",
@@ -210,6 +236,7 @@ def stage4_run_context_base(
         "return_horizon": int(return_horizon),
         "context_method": method,
         "context_window": context_window,
+        "context_feature_set_name": context_feature_set_name or "primary",
         "context_dim": int(stage4_model.get("context_dim", 8)),
         "context_embedding_dim": int(stage4_model.get("context_embedding_dim", 32)),
         "run_seed": int(run_seed),
@@ -224,6 +251,7 @@ def stage4_run_context_base(
             return_horizon,
             method,
             context_window,
+            experiment_suffix=experiment_suffix,
         ),
         "primary_context_features": get_primary_context_features(config),
     }

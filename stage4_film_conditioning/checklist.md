@@ -226,6 +226,9 @@ Stage 4 v2 diagnostic priorities:
 - [ ] 4-V3. Priority 4: `I60/R20/ohlc` + F&G-only + `film_full`
   - Purpose: isolate image-external regime/sentiment context from OHLCV-derived
     technical context.
+  - Execution wrapper:
+    `notebooks/kaggle_stage4_v2_p4_ohlc_fg_only_film_full_five_seed_one_cell.md`.
+  - Result prep: [4-V3 Stage 4 v2 OHLC F&G-only FiLM-full](checklist_results/4-V3_stage4_v2_ohlc_fg_only_film_full.md)
 - [ ] 4-V4. Priority 5: `I60/R20/ohlc` + technical-only context + `film_full`
   - Purpose: test whether BB/MFI/RV help when they are not already drawn into
     the image through MA/VB-style visual cues.
@@ -479,6 +482,9 @@ Stage 4 v2 진단 우선순위:
   - 준비 결과: [4-V2 Stage 4 v2 OHLC all-context FiLM-full](checklist_results/4-V2_stage4_v2_ohlc_all_context_film_full.md)
 - [ ] 4-V3. 우선순위 4: `I60/R20/ohlc` + F&G-only + `film_full`
   - 목적: 이미지 밖 regime/sentiment context만 따로 효과가 있는지 확인합니다.
+  - 실행 wrapper:
+    `notebooks/kaggle_stage4_v2_p4_ohlc_fg_only_film_full_five_seed_one_cell.md`.
+  - 준비 결과: [4-V3 Stage 4 v2 OHLC F&G-only FiLM-full](checklist_results/4-V3_stage4_v2_ohlc_fg_only_film_full.md)
 - [ ] 4-V4. 우선순위 5: `I60/R20/ohlc` + technical-only context + `film_full`
   - 목적: BB/MFI/RV가 MA/VB 이미지 정보와 분리됐을 때 독립적으로 도움 되는지
     확인합니다.

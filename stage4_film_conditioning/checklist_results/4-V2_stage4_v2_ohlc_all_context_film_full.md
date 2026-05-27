@@ -1,6 +1,6 @@
 # 4-V2. Stage 4 v2 OHLC + All Structured Context + Full FiLM
 
-Status: Kaggle runner ready; full result pending.
+Status: seed `42` diagnostic complete; five-seed repeat not run.
 
 ## Experiment
 
@@ -40,6 +40,17 @@ not directly against `4-V0`.
 | `4-V0` seed-42 `I60/R20/ohlc_ma_vb`, visual-only | `0.6031` | `0.6170` | strong visual upper reference |
 | Stage 2 `I60/R20/ohlc_ma_vb`, five-seed mean | `0.5793` | `0.5849` | robust selected visual baseline |
 | Stage 4 v1 `film_full` on `ohlc_ma_vb`, five-seed mean | `0.5510` | `0.5677` | previous all-context FiLM result |
+
+Completed seed-42 result:
+
+| Run | Accuracy | Majority Acc. | ROC-AUC | F1 | Predicted Up Rate |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `4-V2` `I60/R20/ohlc + all context + film_full`, seed 42 | `0.5725` | `0.5413` | `0.5573` | `0.6771` | `0.7828` |
+
+This partially recovers performance relative to the plain-OHLC `4-V1` seed-42
+control (`0.5420` accuracy, `0.5441` ROC-AUC), but it does not reach the strong
+`4-V0` `ohlc_ma_vb` seed-42 visual baseline (`0.6031` accuracy, `0.6170`
+ROC-AUC).
 
 ## Runner
 
@@ -95,7 +106,7 @@ long_short_sharpe_net
 
 # 4-V2. Stage 4 v2 OHLC + 전체 Structured Context + Full FiLM
 
-상태: Kaggle runner 준비 완료, full 결과 대기 중.
+상태: seed `42` diagnostic 완료, five-seed 반복은 아직 실행하지 않음.
 
 ## 실험
 
@@ -134,6 +145,16 @@ plain `I60/R20/ohlc`가 훨씬 약하고, test sample 대부분을 Up으로 예�
 | `4-V0` seed-42 `I60/R20/ohlc_ma_vb`, visual-only | `0.6031` | `0.6170` | 강한 visual upper reference |
 | Stage 2 `I60/R20/ohlc_ma_vb`, five-seed mean | `0.5793` | `0.5849` | robust selected visual baseline |
 | Stage 4 v1 `film_full` on `ohlc_ma_vb`, five-seed mean | `0.5510` | `0.5677` | 이전 all-context FiLM 결과 |
+
+완료된 seed-42 결과:
+
+| Run | Accuracy | Majority Acc. | ROC-AUC | F1 | Predicted Up Rate |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `4-V2` `I60/R20/ohlc + all context + film_full`, seed 42 | `0.5725` | `0.5413` | `0.5573` | `0.6771` | `0.7828` |
+
+이 결과는 plain-OHLC `4-V1` seed-42 control (`0.5420` accuracy, `0.5441`
+ROC-AUC)보다 일부 회복됐지만, 강한 `4-V0` `ohlc_ma_vb` seed-42 visual
+baseline (`0.6031` accuracy, `0.6170` ROC-AUC)에는 아직 미치지 못했습니다.
 
 ## Runner
 

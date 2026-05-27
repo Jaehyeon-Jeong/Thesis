@@ -99,6 +99,7 @@ def main() -> None:
             primary_horizon,
             method,
             context_window,
+            experiment_suffix=str(context_config.get("feature_set_name", "")),
         )
         for method in method_names
     ]

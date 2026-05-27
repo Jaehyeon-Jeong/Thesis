@@ -190,6 +190,7 @@ def prepare_stage4_context_experiment_data(
         image_spec=str(image_spec),
         return_horizon=int(return_horizon),
         context_window=context_window,
+        context_suffix=str(context_config.get("feature_set_name", "")),
     )
     context_dir = paths.context_root / context_name / f"seed_{int(run_seed)}"
     context_dir.mkdir(parents=True, exist_ok=True)

@@ -81,6 +81,7 @@ def main() -> None:
         image_spec=image_spec,
         return_horizon=return_horizon,
         context_window=context_window,
+        context_suffix=str(context_config.get("feature_set_name", "")),
     )
     context_root = paths.context_root / context_name / f"seed_{run_seed}"
     manifest_root = paths.run_manifest_root / experiment_name / f"seed_{run_seed}"

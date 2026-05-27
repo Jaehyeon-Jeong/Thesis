@@ -291,6 +291,13 @@ Implementation-source distinction:
     `CONTEXT_METHODS=["film_full"]`.
   - It is judged primarily against `4-V1`, because the image no longer contains
     MA/VB visual overlays.
+- 4-V3 runner decision:
+  - Added `notebooks/kaggle_stage4_v2_p4_ohlc_fg_only_film_full_five_seed_one_cell.md`.
+  - It patches `context.primary_features` to the four F&G features and
+    `stage4_model.context_dim` to `4`.
+  - It uses `feature_set_name=fg_only` and `experiment_suffix=fg_only` to avoid
+    overwriting all-context outputs.
+  - From this point, Stage 4 v2 diagnostic runs default to five seeds.
 
 ## 한국어
 
@@ -585,3 +592,11 @@ Implementation-source distinction:
     `CONTEXT_METHODS=["film_full"]`로 고정합니다.
   - 이미지는 더 이상 MA/VB visual overlay를 포함하지 않으므로, 주 비교 대상은
     `4-V1`입니다.
+- 4-V3 runner 결정:
+  - `notebooks/kaggle_stage4_v2_p4_ohlc_fg_only_film_full_five_seed_one_cell.md`를
+    추가했습니다.
+  - `context.primary_features`를 F&G feature 4개로, `stage4_model.context_dim`을
+    `4`로 patch합니다.
+  - all-context output을 덮어쓰지 않도록 `feature_set_name=fg_only`,
+    `experiment_suffix=fg_only`를 사용합니다.
+  - 이 시점부터 Stage 4 v2 diagnostic run은 기본 five-seed입니다.

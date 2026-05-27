@@ -8,7 +8,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from stage4_film.config import get_context_config
+from stage4_film.config import get_context_config, sanitize_name_suffix
 
 
 def make_context_output_name(
@@ -16,13 +16,16 @@ def make_context_output_name(
     image_spec: str,
     return_horizon: int,
     context_window: int,
+    context_suffix: str = "",
 ) -> str:
     """Model-method와 독립적인 context feature output 이름을 만든다."""
 
-    return (
+    base_name = (
         f"stage4_context_i{int(image_window)}_"
         f"{image_spec}_r{int(return_horizon)}_c{int(context_window)}"
     )
+    suffix = sanitize_name_suffix(context_suffix)
+    return f"{base_name}_{suffix}" if suffix else base_name
 
 
 def build_context_feature_table(

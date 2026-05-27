@@ -125,6 +125,7 @@ def _resolve_context_feature_file(
         image_spec=str(stage4_model["primary_image_spec"]),
         return_horizon=int(stage4_model["primary_return_horizon"]),
         context_window=int(context_config["context_window"]),
+        context_suffix=str(context_config.get("feature_set_name", "")),
     )
     candidate = paths.context_root / context_name / f"seed_{int(run_seed)}" / "context_features.csv"
     if candidate.exists():

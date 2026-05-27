@@ -1,6 +1,6 @@
 # 4-V5. Stage 4 v2 OHLC + All Structured Context + Full FiLM, Five Seeds
 
-Status: planned; runner not yet generated.
+Status: five-seed Kaggle runner ready; full result pending.
 
 ## Experiment
 
@@ -51,9 +51,38 @@ effect or just a favorable seed-42 result.
 - If `4-V5` still underperforms `4-V0`, then the strong `ohlc_ma_vb` visual
   encoding remains the main baseline to beat.
 
+## Output Naming
+
+This run uses an explicit feature-set suffix:
+
+```text
+context.feature_set_name = all_context
+stage4_model.experiment_suffix = all_context
+```
+
+Therefore outputs are separated from the earlier seed-42 `4-V2` diagnostic:
+
+```text
+stage4_film_full_i60_ohlc_r20_c60_all_context
+stage4_context_i60_ohlc_r20_c60_all_context
+```
+
+This forces a clean five-seed all-context run instead of silently reusing or
+overwriting the old seed-42 output.
+
+## Runner
+
+Use:
+
+```text
+notebooks/kaggle_stage4_v2_p6_ohlc_all_context_film_full_five_seed_one_cell.md
+```
+
+The runner defaults to five seeds and `SAVE_BACKUP_ZIPS=False`.
+
 # 4-V5. Stage 4 v2 OHLC + All Structured Context + Full FiLM, Five Seeds
 
-상태: 계획 확정, runner는 아직 생성 전.
+상태: five-seed Kaggle runner 준비 완료, full 결과 대기 중.
 
 ## 실험
 
@@ -103,3 +132,32 @@ ROC-AUC:  0.5573
   않았다고 해석합니다.
 - `4-V5`도 `4-V0`보다 낮으면, 강한 `ohlc_ma_vb` visual encoding이 여전히
   가장 중요한 baseline입니다.
+
+## Output Naming
+
+이 run은 명시적인 feature-set suffix를 사용합니다.
+
+```text
+context.feature_set_name = all_context
+stage4_model.experiment_suffix = all_context
+```
+
+따라서 output은 이전 seed-42 `4-V2` diagnostic과 분리됩니다.
+
+```text
+stage4_film_full_i60_ohlc_r20_c60_all_context
+stage4_context_i60_ohlc_r20_c60_all_context
+```
+
+이렇게 해야 예전 seed-42 output을 조용히 재사용하거나 덮어쓰지 않고, 깨끗한
+five-seed all-context run으로 실행됩니다.
+
+## Runner
+
+사용할 파일:
+
+```text
+notebooks/kaggle_stage4_v2_p6_ohlc_all_context_film_full_five_seed_one_cell.md
+```
+
+runner는 기본값이 five seeds이고 `SAVE_BACKUP_ZIPS=False`입니다.

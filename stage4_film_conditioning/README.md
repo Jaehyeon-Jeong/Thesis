@@ -195,6 +195,8 @@ Current v2 execution status:
   `notebooks/kaggle_stage4_v2_p4_ohlc_fg_only_film_full_five_seed_one_cell.md`.
 - `4-V4` five-seed runner is ready:
   `notebooks/kaggle_stage4_v2_p5_ohlc_technical_only_film_full_five_seed_one_cell.md`.
+- `4-V5` five-seed runner is ready:
+  `notebooks/kaggle_stage4_v2_p6_ohlc_all_context_film_full_five_seed_one_cell.md`.
 - `4-V0` full Kaggle result was checked locally from the exported CSV and
   reproduces the Stage 2 seed-42 `I60/R20/ohlc_ma_vb` result.
 - `4-V1` full Kaggle result was checked locally from the exported CSV and
@@ -562,6 +564,8 @@ Stage 4 v2 진단 우선순위:
   `notebooks/kaggle_stage4_v2_p4_ohlc_fg_only_film_full_five_seed_one_cell.md`.
 - `4-V4` five-seed runner 준비 완료:
   `notebooks/kaggle_stage4_v2_p5_ohlc_technical_only_film_full_five_seed_one_cell.md`.
+- `4-V5` five-seed runner 준비 완료:
+  `notebooks/kaggle_stage4_v2_p6_ohlc_all_context_film_full_five_seed_one_cell.md`.
 - `4-V0` full Kaggle 결과는 export CSV 기준 Stage 2 seed-42
   `I60/R20/ohlc_ma_vb` 결과를 재현했습니다.
 - `4-V1` full Kaggle 결과는 export CSV 기준 Stage 2 seed-42

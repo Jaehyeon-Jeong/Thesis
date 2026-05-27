@@ -53,6 +53,11 @@ Available notebooks:
     seeds.
   - Purpose: test whether BB/MFI/RV recover information when MA/VB are removed
     from the image.
+- `kaggle_stage4_v2_p6_ohlc_all_context_film_full_five_seed_one_cell.md`
+  - Stage 4 v2 priority 6 diagnostic.
+  - Runs `I60/R20/ohlc` with all structured context and `film_full` over five
+    seeds.
+  - Purpose: test whether the earlier seed-42 all-context recovery is robust.
 
 Planned notebooks:
 - `kaggle_stage4_single_ablation_one_cell.md`
@@ -113,6 +118,11 @@ Required backup root:
     실행합니다.
   - 목적: 이미지에서 MA/VB를 제거했을 때 BB/MFI/RV가 정보를 회복하는지
     확인합니다.
+- `kaggle_stage4_v2_p6_ohlc_all_context_film_full_five_seed_one_cell.md`
+  - Stage 4 v2 우선순위 6 diagnostic입니다.
+  - `I60/R20/ohlc`에 all structured context와 `film_full`을 붙여 five-seed로
+    실행합니다.
+  - 목적: 이전 seed-42 all-context 회복이 robust한지 확인합니다.
 
 예정 notebook:
 - `kaggle_stage4_single_ablation_one_cell.md`

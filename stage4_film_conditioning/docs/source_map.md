@@ -313,6 +313,10 @@ Implementation-source distinction:
     checks under the same FiLM-full structure.
   - `4-V5` repeats all-context as five seeds to decide whether the earlier
     seed-42 improvement was robust.
+  - Added `notebooks/kaggle_stage4_v2_p6_ohlc_all_context_film_full_five_seed_one_cell.md`.
+  - `4-V5` uses `feature_set_name=all_context` and
+    `experiment_suffix=all_context` so it does not reuse or overwrite the
+    earlier seed-42 `4-V2` output.
   - `4-V6` puts F&G-only on top of `ohlc_ma_vb` to test whether external
     sentiment/regime context adds signal to the strongest visual baseline.
   - Bounded/residual last-block FiLM is deferred to `4-V7` so context-signal
@@ -635,6 +639,10 @@ Implementation-source distinction:
     확인을 먼저 끝냅니다.
   - `4-V5`는 이전 seed-42 all-context 개선이 robust한지 확인하기 위해
     all-context를 five-seed로 반복합니다.
+  - `notebooks/kaggle_stage4_v2_p6_ohlc_all_context_film_full_five_seed_one_cell.md`를
+    추가했습니다.
+  - `4-V5`는 예전 seed-42 `4-V2` output을 재사용하거나 덮어쓰지 않도록
+    `feature_set_name=all_context`, `experiment_suffix=all_context`를 사용합니다.
   - `4-V6`는 가장 강한 `ohlc_ma_vb` visual baseline 위에 F&G-only를 얹어,
     외부 sentiment/regime context가 incremental signal을 주는지 확인합니다.
   - Bounded/residual last-block FiLM은 context signal 여부와 FiLM architecture

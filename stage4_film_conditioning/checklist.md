@@ -244,6 +244,8 @@ Stage 4 v2 diagnostic priorities:
   five seeds
   - Purpose: determine whether the earlier seed-42 all-context improvement was
     a real combination effect or a lucky seed.
+  - Execution wrapper:
+    `notebooks/kaggle_stage4_v2_p6_ohlc_all_context_film_full_five_seed_one_cell.md`.
   - Result prep: [4-V5 Stage 4 v2 OHLC all-context five-seed](checklist_results/4-V5_stage4_v2_ohlc_all_context_five_seed.md)
 - [ ] 4-V6. Priority 7: `I60/R20/ohlc_ma_vb` + F&G-only + `film_full`,
   five seeds
@@ -518,6 +520,8 @@ Stage 4 v2 진단 우선순위:
   five seeds
   - 목적: 이전 seed-42 all-context 개선이 실제 조합 효과인지, 좋은 seed였는지
     확인합니다.
+  - 실행 wrapper:
+    `notebooks/kaggle_stage4_v2_p6_ohlc_all_context_film_full_five_seed_one_cell.md`.
   - 준비 결과: [4-V5 Stage 4 v2 OHLC all-context five-seed](checklist_results/4-V5_stage4_v2_ohlc_all_context_five_seed.md)
 - [ ] 4-V6. 우선순위 7: `I60/R20/ohlc_ma_vb` + F&G-only + `film_full`,
   five seeds

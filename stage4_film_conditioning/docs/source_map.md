@@ -279,6 +279,12 @@ Implementation-source distinction:
   - It intentionally uses the Stage 2 visual-only runner because the first v2
     control has no context branch.
   - It writes result summaries under `/kaggle/working/stage4_v2_visual_only_reports`.
+- 4-V1 runner decision:
+  - Added `notebooks/kaggle_stage4_v2_p2_ohlc_visual_only_one_cell.md`.
+  - It also uses the Stage 2 visual-only runner because this is still a
+    no-context control.
+  - It removes MA/VB from the image to measure the plain-OHLC visual baseline
+    before re-adding structured context in `4-V2`.
 
 ## 한국어
 
@@ -560,3 +566,9 @@ Implementation-source distinction:
   - 첫 v2 control은 context branch가 없으므로 Stage 2 visual-only runner를
     의도적으로 사용합니다.
   - 결과 summary는 `/kaggle/working/stage4_v2_visual_only_reports`에 저장합니다.
+- 4-V1 runner 결정:
+  - `notebooks/kaggle_stage4_v2_p2_ohlc_visual_only_one_cell.md`를 추가했습니다.
+  - 이 실험도 context가 없는 control이므로 Stage 2 visual-only runner를
+    사용합니다.
+  - `4-V2`에서 structured context를 다시 넣기 전에, 이미지에서 MA/VB를 제거한
+    plain-OHLC visual baseline을 확인합니다.

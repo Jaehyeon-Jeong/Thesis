@@ -1,4 +1,4 @@
-# Kaggle Stage 4 v2 Priority 1 Visual-Only Same-Split One Cell
+# Kaggle Stage 4 v2 Priority 2 OHLC Visual-Only One Cell
 
 Copy the Python cell below into a Kaggle notebook after attaching:
 
@@ -7,16 +7,16 @@ Copy the Python cell below into a Kaggle notebook after attaching:
 - BTC OHLCV Kaggle dataset:
   `novandraanugrah/bitcoin-historical-datasets-2018-2024`
 
-This cell is Stage 4 v2 priority 1:
+This cell is Stage 4 v2 priority 2:
 
 ```text
-I60 / R20 / ohlc_ma_vb / no context / visual-only CNN
+I60 / R20 / ohlc / no context / visual-only CNN
 ```
 
 It deliberately uses the Stage 2 BTC runner because this control has no context
 branch. The goal is not to introduce a new Stage 4 model, but to confirm the
-visual-only baseline under the same selected `I60/R20/ohlc_ma_vb` setup before
-changing FiLM.
+visual-only baseline under the same `I60/R20/ohlc` setup before
+testing context without MA/VB visual overlays.
 
 ```python
 from pathlib import Path
@@ -43,7 +43,7 @@ REPORT_ROOT = Path("/kaggle/working/stage4_v2_visual_only_reports")
 SOURCE_FILE = ""
 
 IMAGE_WINDOW = 60
-IMAGE_SPEC = "ohlc_ma_vb"
+IMAGE_SPEC = "ohlc"
 RETURN_HORIZON = 20
 RUN_SEEDS = [42]
 EVAL_SPLIT = "test"
@@ -54,7 +54,7 @@ SKIP_COMPLETED = True
 CONTINUE_ON_ERROR = True
 SAVE_FINAL_OUTPUT_ZIP = True
 
-# Smoke check only. For the real priority-1 run, keep False.
+# Smoke check only. For the real priority-2 run, keep False.
 SMOKE_TEST = False
 
 # Strict Stage 2-style comparison settings.
@@ -216,7 +216,7 @@ def is_completed(run_seed: int) -> bool:
 def read_result_row(run_seed: int, status: str, error: str = "") -> dict:
     paths = output_paths(run_seed)
     row = {
-        "priority": "4-V0",
+        "priority": "4-V1",
         "experiment_name": experiment_name(),
         "image_window": IMAGE_WINDOW,
         "image_spec": IMAGE_SPEC,
@@ -273,11 +273,13 @@ def summarize(rows: list[dict]) -> pd.DataFrame:
         "long_short_annualized_return_net",
     ]
     summary = {
-        "priority": "4-V0",
+        "priority": "4-V1",
         "experiment_name": experiment_name(),
         "seed_count": int(df["run_seed"].nunique()) if not df.empty else 0,
-        "stage2_selected_baseline_accuracy_mean": 0.579320,
-        "stage2_selected_baseline_roc_auc_mean": 0.584862,
+        "stage2_ohlc_baseline_accuracy_mean": 0.558085,
+        "stage2_ohlc_baseline_roc_auc_mean": 0.560218,
+        "stage2_ohlc_ma_vb_baseline_accuracy_mean": 0.579320,
+        "stage2_ohlc_ma_vb_baseline_roc_auc_mean": 0.584862,
         "stage4_v1_film_full_accuracy_mean": 0.551006,
         "stage4_v1_film_full_roc_auc_mean": 0.567679,
     }
@@ -297,7 +299,7 @@ def save_final_output_zip():
     if not outputs_root.exists():
         return None
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    archive_base = REPORT_ROOT / f"stage4_v2_p1_visual_only_{experiment_name()}_{timestamp}_outputs"
+    archive_base = REPORT_ROOT / f"stage4_v2_p2_ohlc_visual_only_{experiment_name()}_{timestamp}_outputs"
     archive_path = Path(shutil.make_archive(str(archive_base), "zip", outputs_root))
     print(f"[backup] saved {archive_path} ({archive_path.stat().st_size / (1024 * 1024):.1f} MB)")
     return archive_path
@@ -326,7 +328,7 @@ run([
 
 
 # ============================================================
-# 3. Train/evaluate visual-only priority-1 baseline
+# 3. Train/evaluate visual-only priority-2 baseline
 # ============================================================
 smoke_train_args = []
 smoke_data_args = []
@@ -346,7 +348,7 @@ if SMOKE_TEST:
 rows = []
 for run_seed in RUN_SEEDS:
     print("\n" + "=" * 80, flush=True)
-    print(f"4-V0 visual-only same-split baseline: {experiment_name()}, seed={run_seed}", flush=True)
+    print(f"4-V1 visual-only same-split baseline: {experiment_name()}, seed={run_seed}", flush=True)
     print("=" * 80, flush=True)
 
     if SKIP_COMPLETED and is_completed(run_seed):
@@ -415,16 +417,16 @@ for run_seed in RUN_SEEDS:
 seed_df = pd.DataFrame(rows)
 summary_df = summarize(rows)
 
-seed_csv = REPORT_ROOT / "stage4_v2_p1_visual_only_seed_results.csv"
-summary_csv = REPORT_ROOT / "stage4_v2_p1_visual_only_summary.csv"
+seed_csv = REPORT_ROOT / "stage4_v2_p2_ohlc_visual_only_seed_results.csv"
+summary_csv = REPORT_ROOT / "stage4_v2_p2_ohlc_visual_only_summary.csv"
 seed_df.to_csv(seed_csv, index=False)
 summary_df.to_csv(summary_csv, index=False)
 
 archive_path = save_final_output_zip()
 
-display(Markdown("# Stage 4 v2 Priority 1: Visual-Only Same-Split Seed Results"))
+display(Markdown("# Stage 4 v2 Priority 2: Visual-Only Same-Split Seed Results"))
 display(seed_df)
-display(Markdown("# Stage 4 v2 Priority 1 Summary"))
+display(Markdown("# Stage 4 v2 Priority 2 Summary"))
 display(summary_df)
 
 print("\nDONE", flush=True)

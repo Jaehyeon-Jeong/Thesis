@@ -18,7 +18,7 @@ tracked.
 | `stage1_reimage_reproduction` | Reproduce the Re-image CNN pipeline on public I20 stock images | In progress: `I20/R60` seed-42 fast diagnostic archived; `I20/R20` archive is smoke-only; `I20/R5`, strict batch-128 run, and five-seed reproduction are later |
 | `stage2_btc_extension` | Extend the confirmed pipeline to BTC OHLCV | Single-seed 36-run complete; selected `I20/R20` and `I60/R20` five-seed robustness check complete; full 180-run five-seed grid later |
 | `stage3_linear_adapter` | Add a Linear comparison model | First test on Stage 2 best config completed; result dropped to majority level; remaining grid runs pending |
-| `stage4_film_conditioning` | Compare market-context concat, gating, gamma-only FiLM, and full FiLM on the fixed BTC CNN | v1 four-ablation five-seed run complete; `film_full` is best Stage 4 v1 method but below Stage 2 baseline on average; v2 diagnostic priority 1 visual-only control runner ready |
+| `stage4_film_conditioning` | Compare market-context concat, gating, gamma-only FiLM, and full FiLM on the fixed BTC CNN | v1 four-ablation five-seed run complete; `film_full` is best Stage 4 v1 method but below Stage 2 baseline on average; v2 diagnostic priority 1 reproduced Stage 2 seed-42, priority 2 OHLC visual-only runner ready |
 
 ### Current Status
 
@@ -208,6 +208,8 @@ Stage 4:
   `I60/R20/ohlc_ma_vb`, no context.
 - Priority 1 Kaggle runner is ready:
   `stage4_film_conditioning/notebooks/kaggle_stage4_v2_p1_visual_only_same_split_one_cell.md`.
+- Priority 2 Kaggle runner is ready:
+  `stage4_film_conditioning/notebooks/kaggle_stage4_v2_p2_ohlc_visual_only_one_cell.md`.
 - News context is preserved as a second-phase track after source/date/leakage
   audit. Candidate source: Hugging Face `edaschau/bitcoin_news`.
 - Advisor-direction mapping is documented in the Stage 4 README/source map and
@@ -262,7 +264,7 @@ config, 코드 scaffold만 올립니다. 대용량 데이터, 논문 PDF, checkp
 | `stage1_reimage_reproduction` | public I20 stock image로 Re-image CNN pipeline 재현 | 진행 중: `I20/R60` seed-42 fast diagnostic 보존; `I20/R20` archive는 smoke-only; `I20/R5`, strict batch-128 run, five-seed reproduction은 later |
 | `stage2_btc_extension` | 확인된 pipeline을 BTC OHLCV로 확장 | single-seed 36-run 완료; `I20/R20`, `I60/R20` 선별 five-seed robustness check 완료; full 180-run five-seed grid는 later |
 | `stage3_linear_adapter` | Linear 비교 모델 추가 | Stage 2 best config 1회 테스트 완료; majority 수준으로 하락; 나머지 grid run 예정 |
-| `stage4_film_conditioning` | 고정 BTC CNN 위에서 market-context concat, gating, gamma-only FiLM, full FiLM 비교 | v1 four-ablation five-seed run 완료; `film_full`이 Stage 4 v1 best지만 평균적으로 Stage 2 baseline보다 낮음; v2 진단 우선순위 1 visual-only control runner 준비 완료 |
+| `stage4_film_conditioning` | 고정 BTC CNN 위에서 market-context concat, gating, gamma-only FiLM, full FiLM 비교 | v1 four-ablation five-seed run 완료; `film_full`이 Stage 4 v1 best지만 평균적으로 Stage 2 baseline보다 낮음; v2 진단 우선순위 1은 Stage 2 seed-42 재현 완료, 우선순위 2 OHLC visual-only runner 준비 완료 |
 
 ### 현재 상태
 
@@ -450,6 +452,8 @@ Stage 4:
   visual-only same-split control입니다: `I60/R20/ohlc_ma_vb`, context 없음.
 - 우선순위 1 Kaggle runner 준비 완료:
   `stage4_film_conditioning/notebooks/kaggle_stage4_v2_p1_visual_only_same_split_one_cell.md`.
+- 우선순위 2 Kaggle runner 준비 완료:
+  `stage4_film_conditioning/notebooks/kaggle_stage4_v2_p2_ohlc_visual_only_one_cell.md`.
 - News context는 제거하지 않고 source/date/leakage audit 이후 second-phase track으로
   유지합니다. 후보 source는 Hugging Face `edaschau/bitcoin_news`입니다.
 - 교수님 방향성 파일과 Stage 4 실험 결정의 연결은 Stage 4 README/source map과

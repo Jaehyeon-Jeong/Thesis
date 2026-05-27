@@ -185,7 +185,11 @@ Stage 4 v2 diagnostic priorities:
 Current v2 execution status:
 - `4-V0` runner is ready:
   `notebooks/kaggle_stage4_v2_p1_visual_only_same_split_one_cell.md`.
-- `4-V0` full Kaggle result is pending.
+- `4-V1` runner is ready:
+  `notebooks/kaggle_stage4_v2_p2_ohlc_visual_only_one_cell.md`.
+- `4-V0` full Kaggle result was checked locally from the exported CSV and
+  reproduces the Stage 2 seed-42 `I60/R20/ohlc_ma_vb` result.
+- `4-V1` full Kaggle result is pending.
 
 Implementation readiness decision:
 - `4-I0` is complete.
@@ -527,7 +531,11 @@ Stage 4 v2 진단 우선순위:
 현재 v2 실행 상태:
 - `4-V0` runner 준비 완료:
   `notebooks/kaggle_stage4_v2_p1_visual_only_same_split_one_cell.md`.
-- `4-V0` full Kaggle 결과는 pending입니다.
+- `4-V1` runner 준비 완료:
+  `notebooks/kaggle_stage4_v2_p2_ohlc_visual_only_one_cell.md`.
+- `4-V0` full Kaggle 결과는 export CSV 기준 Stage 2 seed-42
+  `I60/R20/ohlc_ma_vb` 결과를 재현했습니다.
+- `4-V1` full Kaggle 결과는 pending입니다.
 
 Implementation readiness 결정:
 - `4-I0`은 완료됐습니다.

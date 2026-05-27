@@ -32,6 +32,11 @@ Available notebooks:
     runner.
   - Purpose: determine whether Stage 4 v1 underperformance comes from
     context/FiLM or from the selected sample/split/run conditions.
+- `kaggle_stage4_v2_p2_ohlc_visual_only_one_cell.md`
+  - Stage 4 v2 priority 2 control.
+  - Runs `I60/R20/ohlc` with no context using the Stage 2 visual-only runner.
+  - Purpose: measure the plain-OHLC visual baseline before re-adding structured
+    context through FiLM in `4-V2`.
 
 Planned notebooks:
 - `kaggle_stage4_single_ablation_one_cell.md`
@@ -71,6 +76,11 @@ Required backup root:
     실행합니다.
   - 목적: Stage 4 v1 성능 하락이 context/FiLM 때문인지, 선택된 sample/split/run
     조건 때문인지 분리합니다.
+- `kaggle_stage4_v2_p2_ohlc_visual_only_one_cell.md`
+  - Stage 4 v2 우선순위 2 control입니다.
+  - Stage 2 visual-only runner로 `I60/R20/ohlc`, context 없음 실험을 실행합니다.
+  - 목적: `4-V2`에서 structured context를 FiLM으로 다시 넣기 전에 plain-OHLC
+    visual baseline을 확인합니다.
 
 예정 notebook:
 - `kaggle_stage4_single_ablation_one_cell.md`

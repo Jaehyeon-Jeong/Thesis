@@ -2,7 +2,7 @@
 
 ## English
 
-Status: runner ready, full Kaggle result pending.
+Status: complete for seed `42`.
 
 This is Stage 4 v2 priority 1.
 
@@ -60,19 +60,25 @@ Expected comparison target:
 | Model | Accuracy mean | ROC-AUC mean | Notes |
 | --- | ---: | ---: | --- |
 | Stage 2 selected five-seed baseline, `I60/R20/ohlc_ma_vb` | `0.5793` | `0.5849` | current strongest BTC baseline |
+| Stage 2 selected seed-42 baseline, `I60/R20/ohlc_ma_vb` | `0.6031` | `0.6170` | direct comparison target |
 | Stage 4 v1 `film_full`, five-seed mean | `0.5510` | `0.5677` | best Stage 4 v1 context method, unstable |
-| 4-V0 visual-only same-split | pending | pending | priority 1 result |
+| 4-V0 visual-only same-split, seed 42 | `0.6031` | `0.6170` | reproduces Stage 2 seed-42 |
+
+The exported `4-V0` CSV passes the sanity check: under the visual-only
+`I60/R20/ohlc_ma_vb` setting, the Stage 4 v2 diagnostic runner reproduces the
+Stage 2 seed-42 result. The Stage 4 v1 drop should therefore be attributed to
+the context/fusion path first, not to a broken Stage 4 sample universe.
 
 Next decisions after the result:
 
-1. If 4-V0 is close to Stage 2, proceed to `4-V1` and `4-V2`.
-2. If 4-V0 is below Stage 2, audit run settings, seed behavior, and output
-   parity before changing FiLM.
-3. Do not claim FiLM failure until the visual-only control is complete.
+1. Proceed to `4-V1`: `I60/R20/ohlc`, no context.
+2. Use `4-V1` as the plain-OHLC baseline before testing `4-V2`.
+3. Do not compare `ohlc + context` directly to `ohlc_ma_vb` without noting the
+   image-information gap.
 
 ## 한국어
 
-상태: runner 준비 완료, full Kaggle 결과 대기 중.
+상태: seed `42` 완료.
 
 이 항목은 Stage 4 v2 우선순위 1입니다.
 
@@ -126,12 +132,18 @@ Duplicate-feature 가설:
 | Model | Accuracy mean | ROC-AUC mean | Notes |
 | --- | ---: | ---: | --- |
 | Stage 2 selected five-seed baseline, `I60/R20/ohlc_ma_vb` | `0.5793` | `0.5849` | 현재 가장 강한 BTC baseline |
+| Stage 2 selected seed-42 baseline, `I60/R20/ohlc_ma_vb` | `0.6031` | `0.6170` | 직접 비교 대상 |
 | Stage 4 v1 `film_full`, five-seed mean | `0.5510` | `0.5677` | Stage 4 v1 best context method, seed 불안정 |
-| 4-V0 visual-only same-split | pending | pending | 우선순위 1 결과 |
+| 4-V0 visual-only same-split, seed 42 | `0.6031` | `0.6170` | Stage 2 seed-42 재현 |
+
+export된 `4-V0` CSV 기준으로 sanity check는 통과했습니다. visual-only
+`I60/R20/ohlc_ma_vb` 조건에서 Stage 4 v2 diagnostic runner는 Stage 2 seed-42
+결과를 재현했습니다. 따라서 Stage 4 v1 하락은 먼저 context/fusion 경로에서
+찾는 것이 맞습니다.
 
 결과 이후 판단:
 
-1. 4-V0이 Stage 2와 비슷하면 `4-V1`, `4-V2`로 진행합니다.
-2. 4-V0도 Stage 2보다 낮으면 FiLM을 바꾸기 전에 run setting, seed behavior,
-   output parity를 먼저 확인합니다.
-3. Visual-only control 없이 FiLM 실패라고 결론 내리지 않습니다.
+1. `4-V1`: `I60/R20/ohlc`, context 없음으로 진행합니다.
+2. `4-V1`을 plain-OHLC 기준선으로 삼은 뒤 `4-V2`를 테스트합니다.
+3. `ohlc + context`를 `ohlc_ma_vb`와 직접 비교할 때는 image information gap을
+   반드시 명시합니다.

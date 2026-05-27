@@ -203,7 +203,7 @@ Implementation phase:
 - [ ] 4-I14. Stage 4 result report
 
 Stage 4 v2 diagnostic priorities:
-- [ ] 4-V0. Priority 1: Stage 4 same-split visual-only baseline,
+- [x] 4-V0. Priority 1: Stage 4 same-split visual-only baseline,
   `I60/R20/ohlc_ma_vb`, no context
   - Purpose: separate context/FiLM effects from the selected image baseline and
     confirm whether the Stage 4 sample universe itself explains the v1 drop.
@@ -214,6 +214,9 @@ Stage 4 v2 diagnostic priorities:
   `I60/R20/ohlc`, no context
   - Purpose: measure how much the strong `ohlc_ma_vb` image already encodes
     technical information.
+  - Execution wrapper:
+    `notebooks/kaggle_stage4_v2_p2_ohlc_visual_only_one_cell.md`.
+  - Result prep: [4-V1 Stage 4 v2 OHLC visual-only control](checklist_results/4-V1_stage4_v2_ohlc_visual_only.md)
 - [ ] 4-V2. Priority 3: `I60/R20/ohlc` + all structured context + `film_full`
   - Purpose: test the duplicate-feature hypothesis by removing MA/VB from the
     image while keeping F&G/BB/MFI/RV as context.
@@ -451,7 +454,7 @@ Stage 4 main ablation:
 - [ ] 4-I14. Stage 4 결과 보고
 
 Stage 4 v2 진단 우선순위:
-- [ ] 4-V0. 우선순위 1: Stage 4 same-split visual-only baseline,
+- [x] 4-V0. 우선순위 1: Stage 4 same-split visual-only baseline,
   `I60/R20/ohlc_ma_vb`, context 없음
   - 목적: v1 성능 하락이 context/FiLM 때문인지, 선택된 Stage 4 sample universe
     자체 때문인지 분리합니다.
@@ -462,6 +465,9 @@ Stage 4 v2 진단 우선순위:
   `I60/R20/ohlc`, context 없음
   - 목적: 강한 `ohlc_ma_vb` 이미지가 technical 정보를 이미 얼마나 담고 있는지
     확인합니다.
+  - 실행 wrapper:
+    `notebooks/kaggle_stage4_v2_p2_ohlc_visual_only_one_cell.md`.
+  - 준비 결과: [4-V1 Stage 4 v2 OHLC visual-only control](checklist_results/4-V1_stage4_v2_ohlc_visual_only.md)
 - [ ] 4-V2. 우선순위 3: `I60/R20/ohlc` + all structured context + `film_full`
   - 목적: 이미지에서 MA/VB를 덜어냈을 때 F&G/BB/MFI/RV context가 더 도움 되는지
     확인해 duplicate-feature 가설을 검증합니다.

@@ -214,6 +214,8 @@ Stage 4:
   `stage4_film_conditioning/notebooks/kaggle_stage4_v2_p3_ohlc_all_context_film_full_one_cell.md`.
 - Priority 4 five-seed Kaggle runner is ready:
   `stage4_film_conditioning/notebooks/kaggle_stage4_v2_p4_ohlc_fg_only_film_full_five_seed_one_cell.md`.
+- Priority 5 five-seed Kaggle runner is ready:
+  `stage4_film_conditioning/notebooks/kaggle_stage4_v2_p5_ohlc_technical_only_film_full_five_seed_one_cell.md`.
 - News context is preserved as a second-phase track after source/date/leakage
   audit. Candidate source: Hugging Face `edaschau/bitcoin_news`.
 - Advisor-direction mapping is documented in the Stage 4 README/source map and
@@ -462,6 +464,8 @@ Stage 4:
   `stage4_film_conditioning/notebooks/kaggle_stage4_v2_p3_ohlc_all_context_film_full_one_cell.md`.
 - 우선순위 4 five-seed Kaggle runner 준비 완료:
   `stage4_film_conditioning/notebooks/kaggle_stage4_v2_p4_ohlc_fg_only_film_full_five_seed_one_cell.md`.
+- 우선순위 5 five-seed Kaggle runner 준비 완료:
+  `stage4_film_conditioning/notebooks/kaggle_stage4_v2_p5_ohlc_technical_only_film_full_five_seed_one_cell.md`.
 - News context는 제거하지 않고 source/date/leakage audit 이후 second-phase track으로
   유지합니다. 후보 source는 Hugging Face `edaschau/bitcoin_news`입니다.
 - 교수님 방향성 파일과 Stage 4 실험 결정의 연결은 Stage 4 README/source map과

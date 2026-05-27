@@ -1,6 +1,6 @@
 # 4-V3. Stage 4 v2 OHLC + F&G-Only Context + Full FiLM
 
-Status: five-seed Kaggle runner ready; full result pending.
+Status: five-seed Kaggle run complete; result reviewed.
 
 ## Experiment
 
@@ -76,9 +76,40 @@ If `4-V3` improves over `4-V1`, then F&G carries useful external market-context
 signal. If `4-V2` is better than `4-V3`, then technical context likely explains
 part of the all-context gain.
 
+## Observed Result
+
+Exported result tables:
+
+```text
+stage4_v2_p4_ohlc_fg_only_film_full_five_seed_seed_results.csv
+stage4_v2_p4_ohlc_fg_only_film_full_five_seed_mean_std_results.csv
+```
+
+Five-seed summary:
+
+```text
+accuracy_mean: 0.558640
+accuracy_std:  0.018433
+roc_auc_mean:  0.552286
+roc_auc_std:   0.016494
+accuracy_mean_minus_stage2_ohlc_mean:  0.000555
+roc_auc_mean_minus_stage2_ohlc_mean:  -0.007932
+predicted_positive_rate_mean: 0.771131
+```
+
+Interpretation:
+
+- F&G-only FiLM is not useless, but it does not materially improve over the
+  plain OHLC baseline.
+- The average accuracy is nearly identical to the Stage 2 OHLC baseline mean.
+- ROC-AUC is lower than the Stage 2 OHLC baseline mean.
+- The high predicted-positive rate shows remaining Up-class bias.
+- Seed `45` was strong, but the five-seed average is not robust enough to claim
+  that F&G-only context is the useful Stage 4 signal.
+
 # 4-V3. Stage 4 v2 OHLC + F&G-only Context + Full FiLM
 
-상태: five-seed Kaggle runner 준비 완료, full 결과 대기 중.
+상태: five-seed Kaggle run 완료, 결과 검토 완료.
 
 ## 실험
 
@@ -152,3 +183,34 @@ runner는 기본값이 five seeds이고 `SAVE_BACKUP_ZIPS=False`입니다.
 `4-V3`가 `4-V1`보다 좋아지면 F&G가 외부 market-context signal을 제공한다는
 근거가 됩니다. `4-V2`가 `4-V3`보다 좋으면 all-context 개선에는 technical
 context가 일부 기여했을 가능성이 커집니다.
+
+## 관찰된 결과
+
+Export 결과표:
+
+```text
+stage4_v2_p4_ohlc_fg_only_film_full_five_seed_seed_results.csv
+stage4_v2_p4_ohlc_fg_only_film_full_five_seed_mean_std_results.csv
+```
+
+Five-seed summary:
+
+```text
+accuracy_mean: 0.558640
+accuracy_std:  0.018433
+roc_auc_mean:  0.552286
+roc_auc_std:   0.016494
+accuracy_mean_minus_stage2_ohlc_mean:  0.000555
+roc_auc_mean_minus_stage2_ohlc_mean:  -0.007932
+predicted_positive_rate_mean: 0.771131
+```
+
+해석:
+
+- F&G-only FiLM이 완전히 무의미하다고 보기는 어렵지만, plain OHLC baseline을
+  실질적으로 개선하지 못했습니다.
+- 평균 accuracy는 Stage 2 OHLC baseline mean과 거의 같습니다.
+- ROC-AUC는 Stage 2 OHLC baseline mean보다 낮습니다.
+- predicted-positive rate가 높아서 Up-class bias가 아직 남아 있습니다.
+- seed `45`는 강했지만, five-seed 평균 기준으로 F&G-only context가 Stage 4의
+  핵심 signal이라고 주장하기에는 부족합니다.

@@ -223,15 +223,20 @@ Stage 4 v2 diagnostic priorities:
   - Execution wrapper:
     `notebooks/kaggle_stage4_v2_p3_ohlc_all_context_film_full_one_cell.md`.
   - Result prep: [4-V2 Stage 4 v2 OHLC all-context FiLM-full](checklist_results/4-V2_stage4_v2_ohlc_all_context_film_full.md)
-- [ ] 4-V3. Priority 4: `I60/R20/ohlc` + F&G-only + `film_full`
+- [x] 4-V3. Priority 4: `I60/R20/ohlc` + F&G-only + `film_full`
   - Purpose: isolate image-external regime/sentiment context from OHLCV-derived
     technical context.
   - Execution wrapper:
     `notebooks/kaggle_stage4_v2_p4_ohlc_fg_only_film_full_five_seed_one_cell.md`.
+  - Result: five-seed mean accuracy `0.5586`, ROC-AUC `0.5523`; F&G-only did
+    not materially improve over the Stage 2 OHLC baseline.
   - Result prep: [4-V3 Stage 4 v2 OHLC F&G-only FiLM-full](checklist_results/4-V3_stage4_v2_ohlc_fg_only_film_full.md)
 - [ ] 4-V4. Priority 5: `I60/R20/ohlc` + technical-only context + `film_full`
   - Purpose: test whether BB/MFI/RV help when they are not already drawn into
     the image through MA/VB-style visual cues.
+  - Execution wrapper:
+    `notebooks/kaggle_stage4_v2_p5_ohlc_technical_only_film_full_five_seed_one_cell.md`.
+  - Result prep: [4-V4 Stage 4 v2 OHLC technical-only FiLM-full](checklist_results/4-V4_stage4_v2_ohlc_technical_only_film_full.md)
 - [ ] 4-V5. Priority 6: bounded/residual last-block FiLM v2
   - Purpose: preserve the Stage 2 visual evidence and reduce seed-dependent
     collapse by limiting modulation strength and applying FiLM only to the
@@ -480,14 +485,19 @@ Stage 4 v2 진단 우선순위:
   - 실행 wrapper:
     `notebooks/kaggle_stage4_v2_p3_ohlc_all_context_film_full_one_cell.md`.
   - 준비 결과: [4-V2 Stage 4 v2 OHLC all-context FiLM-full](checklist_results/4-V2_stage4_v2_ohlc_all_context_film_full.md)
-- [ ] 4-V3. 우선순위 4: `I60/R20/ohlc` + F&G-only + `film_full`
+- [x] 4-V3. 우선순위 4: `I60/R20/ohlc` + F&G-only + `film_full`
   - 목적: 이미지 밖 regime/sentiment context만 따로 효과가 있는지 확인합니다.
   - 실행 wrapper:
     `notebooks/kaggle_stage4_v2_p4_ohlc_fg_only_film_full_five_seed_one_cell.md`.
+  - 결과: five-seed mean accuracy `0.5586`, ROC-AUC `0.5523`; F&G-only는
+    Stage 2 OHLC baseline을 실질적으로 개선하지 못했습니다.
   - 준비 결과: [4-V3 Stage 4 v2 OHLC F&G-only FiLM-full](checklist_results/4-V3_stage4_v2_ohlc_fg_only_film_full.md)
 - [ ] 4-V4. 우선순위 5: `I60/R20/ohlc` + technical-only context + `film_full`
   - 목적: BB/MFI/RV가 MA/VB 이미지 정보와 분리됐을 때 독립적으로 도움 되는지
     확인합니다.
+  - 실행 wrapper:
+    `notebooks/kaggle_stage4_v2_p5_ohlc_technical_only_film_full_five_seed_one_cell.md`.
+  - 준비 결과: [4-V4 Stage 4 v2 OHLC technical-only FiLM-full](checklist_results/4-V4_stage4_v2_ohlc_technical_only_film_full.md)
 - [ ] 4-V5. 우선순위 6: bounded/residual last-block FiLM v2
   - 목적: Stage 2 visual evidence를 보존하고 modulation strength를 제한해서
     seed-dependent collapse를 줄입니다.

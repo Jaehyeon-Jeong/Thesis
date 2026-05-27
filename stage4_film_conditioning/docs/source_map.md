@@ -298,6 +298,13 @@ Implementation-source distinction:
   - It uses `feature_set_name=fg_only` and `experiment_suffix=fg_only` to avoid
     overwriting all-context outputs.
   - From this point, Stage 4 v2 diagnostic runs default to five seeds.
+- 4-V4 runner decision:
+  - Added `notebooks/kaggle_stage4_v2_p5_ohlc_technical_only_film_full_five_seed_one_cell.md`.
+  - It patches `context.primary_features` to
+    `bb_percent_b_60`, `bb_bandwidth_60`, `mfi_60`, and `rv_60`.
+  - It uses `feature_set_name=technical_only` and
+    `experiment_suffix=technical_only` to keep outputs separate from all-context
+    and F&G-only runs.
 
 ## 한국어
 
@@ -600,3 +607,11 @@ Implementation-source distinction:
   - all-context output을 덮어쓰지 않도록 `feature_set_name=fg_only`,
     `experiment_suffix=fg_only`를 사용합니다.
   - 이 시점부터 Stage 4 v2 diagnostic run은 기본 five-seed입니다.
+- 4-V4 runner 결정:
+  - `notebooks/kaggle_stage4_v2_p5_ohlc_technical_only_film_full_five_seed_one_cell.md`를
+    추가했습니다.
+  - `context.primary_features`를 `bb_percent_b_60`, `bb_bandwidth_60`,
+    `mfi_60`, `rv_60`으로 patch합니다.
+  - all-context와 F&G-only output을 덮어쓰지 않도록
+    `feature_set_name=technical_only`, `experiment_suffix=technical_only`를
+    사용합니다.

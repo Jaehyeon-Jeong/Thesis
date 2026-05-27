@@ -191,6 +191,8 @@ Current v2 execution status:
   `notebooks/kaggle_stage4_v2_p3_ohlc_all_context_film_full_one_cell.md`.
 - `4-V3` five-seed runner is ready:
   `notebooks/kaggle_stage4_v2_p4_ohlc_fg_only_film_full_five_seed_one_cell.md`.
+- `4-V4` five-seed runner is ready:
+  `notebooks/kaggle_stage4_v2_p5_ohlc_technical_only_film_full_five_seed_one_cell.md`.
 - `4-V0` full Kaggle result was checked locally from the exported CSV and
   reproduces the Stage 2 seed-42 `I60/R20/ohlc_ma_vb` result.
 - `4-V1` full Kaggle result was checked locally from the exported CSV and
@@ -199,6 +201,8 @@ Current v2 execution status:
   weaker than `ohlc_ma_vb`.
 - `4-V2` seed-42 result showed partial recovery versus `4-V1`: accuracy
   `0.5725`, ROC-AUC `0.5573`, predicted-positive rate `0.7828`.
+- `4-V3` five-seed result showed that F&G-only FiLM did not materially improve
+  over Stage 2 OHLC: accuracy mean `0.5586`, ROC-AUC mean `0.5523`.
 - From `4-V3` onward, v2 diagnostic runs default to five seeds.
 
 Implementation readiness decision:
@@ -547,6 +551,8 @@ Stage 4 v2 진단 우선순위:
   `notebooks/kaggle_stage4_v2_p3_ohlc_all_context_film_full_one_cell.md`.
 - `4-V3` five-seed runner 준비 완료:
   `notebooks/kaggle_stage4_v2_p4_ohlc_fg_only_film_full_five_seed_one_cell.md`.
+- `4-V4` five-seed runner 준비 완료:
+  `notebooks/kaggle_stage4_v2_p5_ohlc_technical_only_film_full_five_seed_one_cell.md`.
 - `4-V0` full Kaggle 결과는 export CSV 기준 Stage 2 seed-42
   `I60/R20/ohlc_ma_vb` 결과를 재현했습니다.
 - `4-V1` full Kaggle 결과는 export CSV 기준 Stage 2 seed-42
@@ -555,6 +561,9 @@ Stage 4 v2 진단 우선순위:
   확인했습니다.
 - `4-V2` seed-42 결과는 `4-V1` 대비 일부 회복을 보였습니다: accuracy
   `0.5725`, ROC-AUC `0.5573`, predicted-positive rate `0.7828`.
+- `4-V3` five-seed 결과는 F&G-only FiLM이 Stage 2 OHLC를 실질적으로
+  개선하지 못했음을 보였습니다: accuracy mean `0.5586`, ROC-AUC mean
+  `0.5523`.
 - `4-V3`부터 v2 diagnostic run은 기본 five-seed로 실행합니다.
 
 Implementation readiness 결정:

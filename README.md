@@ -15,27 +15,29 @@ tracked.
 | Stage | Purpose | Current status |
 | --- | --- | --- |
 | `stage0_data_check` | Audit data, papers, and reference implementations | Completed |
-| `stage1_reimage_reproduction` | Reproduce the Re-image CNN pipeline on public I20 stock images | In progress: `I20/R60` seed-42 fast diagnostic archived; `I20/R20` archive is smoke-only; `I20/R5`, strict batch-128 run, and five-seed reproduction are later |
-| `stage2_btc_extension` | Extend the confirmed pipeline to BTC OHLCV | Single-seed 36-run complete; selected `I20/R20` and `I60/R20` five-seed robustness check complete; full 180-run five-seed grid later |
-| `stage3_linear_adapter` | Add a Linear comparison model | First test on Stage 2 best config completed; result dropped to majority level; remaining grid runs pending |
-| `stage4_film_conditioning` | Compare market-context concat, gating, gamma-only FiLM, and full FiLM on the fixed BTC CNN | v1 complete; v2 controls and context diagnostics through `4-V6` complete; full FiLM remains seed-unstable; next is bounded/residual last-block FiLM |
+| `stage1_reimage_reproduction` | Reproduce the Re-image CNN pipeline on public I20 stock images | I20 pipeline checks completed; `I20/R60` seed-42 fast diagnostic archived; `I20/R20` smoke artifact archived; strict full reproduction/five-seed remains later |
+| `stage2_btc_extension` | Extend the confirmed pipeline to BTC OHLCV | Complete for current scope: seed-42 `36`-run screening plus selected `I20/R20`, `I60/R20` five-seed check |
+| `stage3_linear_adapter` | ~~Add a Linear comparison model~~ | ~~Failed diagnostic: Stage 2 best config dropped to majority-level accuracy~~ |
+| `stage4_film_conditioning` | Compare market-context concat, gating, gamma-only FiLM, and full FiLM on the fixed BTC CNN | v2 diagnostics through `4-V6` complete; next is bounded/residual last-block FiLM |
 
 ### Current Status
 
 Stage 1:
-- Current usable full test artifact: `I20/R60`, seed `42`, fast Kaggle
-  diagnostic.
-- `I20/R60` snapshot: accuracy `0.5312`, majority accuracy `0.5408`,
-  ROC-AUC `0.5298`, test rows `1,376,215`.
-- `I20/R20` is not ready as a full result in the local archive. The preserved
-  metrics/Grad-CAM are validation-smoke outputs only.
-- `I20/R5` is not archived locally yet.
+- I20 data loading, split/normalization, model, training-loop, evaluation, and
+  Grad-CAM smoke checks are completed.
+- Usable full diagnostic artifact: `I20/R60`, seed `42`, fast Kaggle settings:
+  accuracy `0.5312`, majority accuracy `0.5408`, ROC-AUC `0.5298`, test rows
+  `1,376,215`.
+- Preserved smoke artifact: `I20/R20` validation smoke, 4 samples, accuracy
+  `0.2500`, ROC-AUC `0.5000`. This is only a smoke check, not a reproduction
+  result.
+- Result link: [Stage 1 current status report](stage1_reimage_reproduction/reports/stage1_current_status_report.md).
 - Later: strict paper-style batch size `128`, five independent runs/seeds, and
   final `10` up + `10` down Figure-13-style Grad-CAM.
 
 Stage 2:
-- Current result package: BTC single-seed grid, `36` experiments
-  (`I5/I20/I60` x `R5/R20/R60` x four image specs), seed `42`.
+- Current result package: BTC single-seed screening grid, `36` experiments
+  (`I5/I20/I60` x `R5/R20/R60` x four image specs), seed `42`, completed.
 - Best single-seed configuration: `I60/R20/ohlc_ma_vb`.
 - `I5` was not expanded to five seeds because the seed-42 screening was weak:
   its groups were below majority baseline on average and the best `I5`
@@ -47,30 +49,38 @@ Stage 2:
   `0.5849`.
 - Interpretation: `I60/R20` survives seed variation; `I20/R20` does not beat
   the majority baseline on average.
-- Remaining Stage 2 work is the full `180`-run five-seed grid if a final global
-  Stage 2 stability claim is needed.
+- Result links:
+  [single-seed report](stage2_btc_extension/reports/stage2_single_seed_result_report.md),
+  [seed-level CSV](stage2_btc_extension/reports/tables/stage2_single_seed_seed_level_results.csv),
+  [selected five-seed report](stage2_btc_extension/reports/stage2_i20_i60_r20_five_seed_result_report.md).
+- Current Stage 2 scope is complete. Full `180`-run five-seed grid remains
+  optional later work only if a global Stage 2 stability claim is needed.
 
 Stage 3:
-- Stage 2 data/image/split/normalization/evaluation/Grad-CAM pipeline remains
-  fixed.
-- First Linear comparison uses a bias-free adapter/head with `adapter_dim=128`.
-- Naive `Linear(feature_dim, feature_dim)` is explicitly rejected because it is
-  infeasible for `I60`.
-- Implemented Kaggle runner: one full run and single-seed `36`-run grid.
-- Preliminary completed run: `I60/R20/ohlc_ma_vb`, seed `42`, adapter dim `128`.
-  This was the best Stage 2 single-seed configuration.
-- Stage 2 baseline for this configuration: accuracy `0.603053`, majority
-  accuracy `0.541291`, ROC-AUC `0.616950`.
-- Stage 3 Linear for the same configuration: accuracy `0.541291`, majority
-  accuracy `0.541291`, ROC-AUC `0.522101`.
-- Interpretation so far: Linear did not improve the best Stage 2 model in this
-  first diagnostic; it dropped to majority-class-level accuracy.
-- Remaining Stage 3 single-seed grid configurations are pending.
-- Local smoke test passed for `I5/R5/ohlc`, seed `42`, one epoch, tiny rows.
-- Later: Stage 3 result report after Kaggle outputs and five-seed stability
-  checks.
+- ~~Stage 3 Linear adapter is currently treated as a failed/negative ablation.~~
+- Tested on Stage 2 best single-seed config: `I60/R20/ohlc_ma_vb`, seed `42`,
+  adapter dim `128`.
+- Stage 2 baseline for this config: accuracy `0.603053`, ROC-AUC `0.616950`.
+- Stage 3 Linear result: accuracy `0.541291`, ROC-AUC `0.522101`.
+- Interpretation: simply adding a Linear adapter/post-flatten parameter path
+  does not improve the BTC chart CNN and drops to majority-level accuracy.
 
 Stage 4:
+- Fixed baseline: Stage 2 `I60/R20/ohlc_ma_vb`.
+- Completed context ablations through `4-V6`: concat, gating, gamma-only FiLM,
+  full FiLM, F&G-only, technical-only, and all-context diagnostics.
+- Current result: full FiLM can look promising in some seeds, but it is not
+  robust; `ohlc_ma_vb + F&G-only + full FiLM` has accuracy mean `0.5524` and
+  ROC-AUC mean `0.5465`, below the Stage 2 visual baseline.
+- Current interpretation: the chart image already captures much of the
+  OHLCV-derived technical context, while F&G is the cleanest external context
+  but needs a more stable modulation design.
+- Next: bounded/residual last-block FiLM.
+- Result link: [Stage 4 README](stage4_film_conditioning/README.md).
+
+<details>
+<summary>Detailed Stage 4 implementation log</summary>
+
 - Stage 4 is now defined as a market-context fusion/modulation comparison on
   the fixed Stage 2 BTC baseline `I60/R20/ohlc_ma_vb`.
 - Main ablations: `4-A CNN + context concat`, `4-B CNN + context gating`,
@@ -236,6 +246,8 @@ Stage 4:
 - The planned FiLM insertion point is inside each Stock_CNN block:
   `Conv2d -> BatchNorm2d -> FiLM -> LeakyReLU -> MaxPool2d`.
 
+</details>
+
 ### Key documents
 
 - [PLAN.md](PLAN.md)
@@ -281,27 +293,29 @@ config, 코드 scaffold만 올립니다. 대용량 데이터, 논문 PDF, checkp
 | 단계 | 목적 | 현재 상태 |
 | --- | --- | --- |
 | `stage0_data_check` | 데이터, 논문, reference implementation 확인 | 완료 |
-| `stage1_reimage_reproduction` | public I20 stock image로 Re-image CNN pipeline 재현 | 진행 중: `I20/R60` seed-42 fast diagnostic 보존; `I20/R20` archive는 smoke-only; `I20/R5`, strict batch-128 run, five-seed reproduction은 later |
-| `stage2_btc_extension` | 확인된 pipeline을 BTC OHLCV로 확장 | single-seed 36-run 완료; `I20/R20`, `I60/R20` 선별 five-seed robustness check 완료; full 180-run five-seed grid는 later |
-| `stage3_linear_adapter` | Linear 비교 모델 추가 | Stage 2 best config 1회 테스트 완료; majority 수준으로 하락; 나머지 grid run 예정 |
-| `stage4_film_conditioning` | 고정 BTC CNN 위에서 market-context concat, gating, gamma-only FiLM, full FiLM 비교 | v1 완료; v2 control과 context diagnostic은 `4-V6`까지 완료; full FiLM은 seed-unstable; 다음은 bounded/residual last-block FiLM |
+| `stage1_reimage_reproduction` | public I20 stock image로 Re-image CNN pipeline 재현 | I20 pipeline check 완료; `I20/R60` seed-42 fast diagnostic 보존; `I20/R20` smoke artifact 보존; strict full reproduction/five-seed는 later |
+| `stage2_btc_extension` | 확인된 pipeline을 BTC OHLCV로 확장 | 현재 범위 완료: seed-42 `36`-run screening과 선별 `I20/R20`, `I60/R20` five-seed check 완료 |
+| `stage3_linear_adapter` | ~~Linear 비교 모델 추가~~ | ~~실패 진단: Stage 2 best config가 majority-level accuracy로 하락~~ |
+| `stage4_film_conditioning` | 고정 BTC CNN 위에서 market-context concat, gating, gamma-only FiLM, full FiLM 비교 | v2 diagnostic `4-V6`까지 완료; 다음은 bounded/residual last-block FiLM |
 
 ### 현재 상태
 
 Stage 1:
-- 현재 full test artifact로 사용할 수 있는 것은 `I20/R60`, seed `42`, fast
-  Kaggle diagnostic입니다.
-- `I20/R60` snapshot: accuracy `0.5312`, majority accuracy `0.5408`,
-  ROC-AUC `0.5298`, test rows `1,376,215`.
-- `I20/R20`은 로컬 archive 기준 full 결과가 아닙니다. 현재 보존된
-  metrics/Grad-CAM은 validation-smoke output입니다.
-- `I20/R5`는 아직 로컬에 보존되어 있지 않습니다.
+- I20 data loading, split/normalization, model, training-loop, evaluation,
+  Grad-CAM smoke check는 모두 완료했습니다.
+- 사용 가능한 full diagnostic artifact: `I20/R60`, seed `42`, fast Kaggle
+  setting. Accuracy `0.5312`, majority accuracy `0.5408`, ROC-AUC `0.5298`,
+  test rows `1,376,215`.
+- 보존된 smoke artifact: `I20/R20` validation smoke, 4 samples, accuracy
+  `0.2500`, ROC-AUC `0.5000`. 이 값은 smoke check일 뿐 reproduction 결과로
+  주장하지 않습니다.
+- 결과 링크: [Stage 1 current status report](stage1_reimage_reproduction/reports/stage1_current_status_report.md).
 - Later: 논문식 strict batch size `128`, five independent runs/seeds, 최종
   `10` up + `10` down Figure-13-style Grad-CAM.
 
 Stage 2:
-- 현재 결과 패키지: BTC single-seed grid, `36`개 실험
-  (`I5/I20/I60` x `R5/R20/R60` x image spec 4개), seed `42`.
+- 현재 결과 패키지: BTC single-seed screening grid, `36`개 실험
+  (`I5/I20/I60` x `R5/R20/R60` x image spec 4개), seed `42`, 완료.
 - Single-seed best configuration: `I60/R20/ohlc_ma_vb`.
 - `I5`는 seed `42` screening에서 약했기 때문에 five-seed로 확장하지 않았습니다.
   평균적으로 majority baseline보다 낮았고, 가장 좋은 `I5` accuracy도 약
@@ -314,29 +328,37 @@ Stage 2:
   `0.5849`.
 - 해석: `I60/R20` 우위는 seed 변화 후에도 유지되지만, `I20/R20`은 평균적으로
   majority baseline을 이기지 못했습니다.
-- 남은 Stage 2 작업은 최종적인 전체 안정성 주장이 필요할 경우 full `180`-run
-  five-seed grid를 수행하는 것입니다.
+- 결과 링크:
+  [single-seed report](stage2_btc_extension/reports/stage2_single_seed_result_report.md),
+  [seed-level CSV](stage2_btc_extension/reports/tables/stage2_single_seed_seed_level_results.csv),
+  [selected five-seed report](stage2_btc_extension/reports/stage2_i20_i60_r20_five_seed_result_report.md).
+- 현재 Stage 2 범위는 완료했습니다. Full `180`-run five-seed grid는 최종적인
+  전체 안정성 주장이 필요할 때만 later work로 남깁니다.
 
 Stage 3:
-- Stage 2 data/image/split/normalization/evaluation/Grad-CAM pipeline은
-  고정합니다.
-- 첫 Linear 비교는 `adapter_dim=128`의 bias-free adapter/head를 사용합니다.
-- 단순 `Linear(feature_dim, feature_dim)`는 `I60`에서 계산상 불가능하므로
-  명시적으로 제외했습니다.
-- 구현된 Kaggle runner는 full run 1개와 single-seed `36`-run grid를 지원합니다.
-- Preliminary 완료 run: `I60/R20/ohlc_ma_vb`, seed `42`, adapter dim `128`.
-  이 조합은 Stage 2 single-seed best configuration입니다.
-- 같은 조합의 Stage 2 baseline: accuracy `0.603053`, majority accuracy
-  `0.541291`, ROC-AUC `0.616950`.
-- 같은 조합의 Stage 3 Linear: accuracy `0.541291`, majority accuracy
-  `0.541291`, ROC-AUC `0.522101`.
-- 현재 해석: 첫 diagnostic 기준 Linear는 Stage 2 best model을 개선하지 못했고,
-  majority-class-level accuracy로 하락했습니다.
-- 나머지 Stage 3 single-seed grid configuration은 실행 예정입니다.
-- Local smoke test는 `I5/R5/ohlc`, seed `42`, one epoch, tiny rows로 통과했습니다.
-- Later: Kaggle output과 five-seed 안정성 확인 후 Stage 3 result report 작성.
+- ~~Stage 3 Linear adapter는 현재 실패/negative ablation으로 정리합니다.~~
+- Stage 2 best single-seed config인 `I60/R20/ohlc_ma_vb`, seed `42`,
+  adapter dim `128`에서 테스트했습니다.
+- 같은 config의 Stage 2 baseline: accuracy `0.603053`, ROC-AUC `0.616950`.
+- Stage 3 Linear 결과: accuracy `0.541291`, ROC-AUC `0.522101`.
+- 해석: Linear adapter/post-flatten parameter path를 단순 추가하는 방식은 BTC
+  chart CNN을 개선하지 못했고 majority-level accuracy로 하락했습니다.
 
 Stage 4:
+- 고정 baseline: Stage 2 `I60/R20/ohlc_ma_vb`.
+- `4-V6`까지 context ablation을 완료했습니다: concat, gating, gamma-only
+  FiLM, full FiLM, F&G-only, technical-only, all-context diagnostic.
+- 현재 결과: full FiLM은 일부 seed에서 promising하지만 robust하지 않습니다.
+  `ohlc_ma_vb + F&G-only + full FiLM`은 accuracy mean `0.5524`, ROC-AUC mean
+  `0.5465`로 Stage 2 visual baseline보다 낮습니다.
+- 현재 해석: chart image가 이미 OHLCV-derived technical context를 많이 담고
+  있고, F&G는 가장 깨끗한 외부 context지만 더 안정적인 modulation 구조가 필요합니다.
+- 다음 단계: bounded/residual last-block FiLM.
+- 결과 링크: [Stage 4 README](stage4_film_conditioning/README.md).
+
+<details>
+<summary>상세 Stage 4 구현 로그</summary>
+
 - Stage 4는 이제 고정된 Stage 2 BTC baseline `I60/R20/ohlc_ma_vb` 위에서
   market-context fusion/modulation을 비교하는 단계로 정리했습니다.
 - Main ablation: `4-A CNN + context concat`, `4-B CNN + context gating`,
@@ -498,6 +520,8 @@ Stage 4:
   checklist result `4-1`에 문서화했습니다.
 - 계획한 FiLM 삽입 위치는 각 Stock_CNN block 내부입니다:
   `Conv2d -> BatchNorm2d -> FiLM -> LeakyReLU -> MaxPool2d`.
+
+</details>
 
 ### 주요 문서
 

@@ -197,7 +197,7 @@ Current v2 execution status:
   `notebooks/kaggle_stage4_v2_p5_ohlc_technical_only_film_full_five_seed_one_cell.md`.
 - `4-V5` five-seed runner is ready:
   `notebooks/kaggle_stage4_v2_p6_ohlc_all_context_film_full_five_seed_one_cell.md`.
-- `4-V6` five-seed runner is ready:
+- `4-V6` five-seed runner is complete:
   `notebooks/kaggle_stage4_v2_p7_ohlc_ma_vb_fg_only_film_full_five_seed_one_cell.md`.
 - `4-V0` full Kaggle result was checked locally from the exported CSV and
   reproduces the Stage 2 seed-42 `I60/R20/ohlc_ma_vb` result.
@@ -213,10 +213,15 @@ Current v2 execution status:
   accuracy mean `0.5603`, ROC-AUC mean `0.5546`.
 - `4-V5` five-seed result showed that all-context FiLM was not robust:
   accuracy mean `0.5574`, ROC-AUC mean `0.5519`.
+- `4-V6` five-seed result showed that F&G-only external context on top of
+  `ohlc_ma_vb` is still unstable under full FiLM: accuracy mean `0.5524`,
+  ROC-AUC mean `0.5465`. Seeds `42`, `45`, and `46` were close to the Stage 2
+  visual baseline, while seeds `43` and `44` collapsed toward mostly Up
+  predictions.
 - From `4-V3` onward, v2 diagnostic runs default to five seeds.
-- Next fixed order: `4-V5` all-context five-seed, then `4-V6`
-  `ohlc_ma_vb + F&G-only` five-seed, then architecture-level bounded/last-block
-  FiLM.
+- Next fixed order: architecture-level bounded/residual last-block FiLM. The
+  goal is to preserve the strong Stage 2 visual evidence while limiting
+  context-driven seed collapse.
 
 Implementation readiness decision:
 - `4-I0` is complete.
@@ -570,7 +575,7 @@ Stage 4 v2 진단 우선순위:
   `notebooks/kaggle_stage4_v2_p5_ohlc_technical_only_film_full_five_seed_one_cell.md`.
 - `4-V5` five-seed runner 준비 완료:
   `notebooks/kaggle_stage4_v2_p6_ohlc_all_context_film_full_five_seed_one_cell.md`.
-- `4-V6` five-seed runner 준비 완료:
+- `4-V6` five-seed runner 완료:
   `notebooks/kaggle_stage4_v2_p7_ohlc_ma_vb_fg_only_film_full_five_seed_one_cell.md`.
 - `4-V0` full Kaggle 결과는 export CSV 기준 Stage 2 seed-42
   `I60/R20/ohlc_ma_vb` 결과를 재현했습니다.
@@ -587,10 +592,15 @@ Stage 4 v2 진단 우선순위:
   accuracy mean `0.5603`, ROC-AUC mean `0.5546`.
 - `4-V5` five-seed 결과는 all-context FiLM도 robust하지 않음을 보였습니다:
   accuracy mean `0.5574`, ROC-AUC mean `0.5519`.
+- `4-V6` five-seed 결과는 가장 강한 `ohlc_ma_vb` image 위에 F&G-only 외부
+  context를 얹어도 현재 full FiLM 구조에서는 불안정함을 보였습니다:
+  accuracy mean `0.5524`, ROC-AUC mean `0.5465`. Seed `42`, `45`, `46`은
+  Stage 2 visual baseline에 근접했지만, seed `43`, `44`는 대부분 Up 예측으로
+  collapse했습니다.
 - `4-V3`부터 v2 diagnostic run은 기본 five-seed로 실행합니다.
-- 다음 고정 순서는 `4-V5` all-context five-seed, 그 다음 `4-V6`
-  `ohlc_ma_vb + F&G-only` five-seed, 그 다음 bounded/last-block FiLM 구조
-  실험입니다.
+- 다음 고정 순서는 architecture-level bounded/residual last-block FiLM입니다.
+  목표는 강한 Stage 2 visual evidence를 보존하면서 context-driven seed collapse를
+  줄이는 것입니다.
 
 Implementation readiness 결정:
 - `4-I0`은 완료됐습니다.

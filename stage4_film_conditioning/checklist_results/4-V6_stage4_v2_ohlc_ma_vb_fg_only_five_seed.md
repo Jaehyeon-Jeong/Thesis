@@ -1,6 +1,6 @@
 # 4-V6. Stage 4 v2 OHLC_MA_VB + F&G-Only Context + Full FiLM, Five Seeds
 
-Status: five-seed Kaggle runner ready; full result pending.
+Status: five-seed Kaggle run complete.
 
 ## Experiment
 
@@ -76,9 +76,39 @@ notebooks/kaggle_stage4_v2_p7_ohlc_ma_vb_fg_only_film_full_five_seed_one_cell.md
 
 The runner defaults to five seeds and `SAVE_BACKUP_ZIPS=False`.
 
+## Result
+
+Five-seed result for `I60/R20/ohlc_ma_vb + F&G-only + film_full`:
+
+| Metric | Mean | Std |
+|:---|---:|---:|
+| Accuracy | 0.5524 | 0.0397 |
+| ROC-AUC | 0.5465 | 0.0689 |
+| Predicted-positive rate | 0.7108 | 0.1450 |
+
+Seed-level diagnosis:
+
+| Seed | Accuracy | ROC-AUC | Predicted-positive rate | Diagnosis |
+|---:|---:|---:|---:|:---|
+| 42 | 0.5802 | 0.5943 | 0.5725 | Good seed; close to the visual baseline |
+| 43 | 0.5052 | 0.4780 | 0.8487 | Collapse toward Up predictions |
+| 44 | 0.5128 | 0.4647 | 0.8702 | Collapse toward Up predictions |
+| 45 | 0.5802 | 0.6031 | 0.5684 | Good seed; close to the visual baseline |
+| 46 | 0.5836 | 0.5925 | 0.6940 | Good seed; close to the visual baseline |
+
+Interpretation:
+- F&G is external regime/sentiment context, so this remains the cleanest
+  non-chart context source.
+- The current full-FiLM injection is not robust: three seeds are promising, but
+  two seeds collapse toward mostly Up predictions.
+- This does not beat the selected Stage 2 visual baseline mean
+  (`0.5793` accuracy, `0.5849` ROC-AUC).
+- The next step should be architecture-level stabilization: bounded/residual
+  FiLM and last-block-only FiLM.
+
 # 4-V6. Stage 4 v2 OHLC_MA_VB + F&G-only Context + Full FiLM, Five Seeds
 
-상태: five-seed Kaggle runner 준비 완료, full 결과 대기 중.
+상태: five-seed Kaggle run 완료.
 
 ## 실험
 
@@ -151,3 +181,33 @@ notebooks/kaggle_stage4_v2_p7_ohlc_ma_vb_fg_only_film_full_five_seed_one_cell.md
 ```
 
 runner는 기본값이 five seeds이고 `SAVE_BACKUP_ZIPS=False`입니다.
+
+## 결과
+
+`I60/R20/ohlc_ma_vb + F&G-only + film_full`의 five-seed 결과:
+
+| Metric | Mean | Std |
+|:---|---:|---:|
+| Accuracy | 0.5524 | 0.0397 |
+| ROC-AUC | 0.5465 | 0.0689 |
+| Predicted-positive rate | 0.7108 | 0.1450 |
+
+Seed-level 진단:
+
+| Seed | Accuracy | ROC-AUC | Predicted-positive rate | 진단 |
+|---:|---:|---:|---:|:---|
+| 42 | 0.5802 | 0.5943 | 0.5725 | 좋은 seed, visual baseline에 근접 |
+| 43 | 0.5052 | 0.4780 | 0.8487 | Up 예측 쪽으로 collapse |
+| 44 | 0.5128 | 0.4647 | 0.8702 | Up 예측 쪽으로 collapse |
+| 45 | 0.5802 | 0.6031 | 0.5684 | 좋은 seed, visual baseline에 근접 |
+| 46 | 0.5836 | 0.5925 | 0.6940 | 좋은 seed, visual baseline에 근접 |
+
+해석:
+- F&G는 chart/OHLCV에서 파생된 정보가 아니므로 가장 깨끗한 external
+  regime/sentiment context입니다.
+- 하지만 현재 full-FiLM 주입 방식은 robust하지 않습니다. 세 seed는 유망하지만,
+  두 seed는 대부분 Up으로 예측하는 방향으로 무너졌습니다.
+- 결과적으로 selected Stage 2 visual baseline 평균
+  (`0.5793` accuracy, `0.5849` ROC-AUC)을 넘지는 못했습니다.
+- 다음 단계는 더 많은 context 추가가 아니라 architecture-level 안정화입니다:
+  bounded/residual FiLM과 last-block-only FiLM.

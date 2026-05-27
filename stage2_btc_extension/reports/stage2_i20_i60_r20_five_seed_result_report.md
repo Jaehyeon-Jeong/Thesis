@@ -19,6 +19,9 @@ This report summarizes the selected Stage 2 five-seed robustness check.
 
 This is not the full Stage 2 five-seed grid. It is a targeted robustness check
 for the strongest single-seed family found earlier: `R20`, especially `I60/R20`.
+The `I5` family was not included in this five-seed expansion because the
+earlier seed-42 screening was weak: `I5` was below the majority-class baseline
+on average, and the best `I5` accuracy was only about `0.524`.
 
 ### Main Result
 
@@ -69,6 +72,9 @@ ROC-AUC by seed:
 
 - The `I60/R20` advantage survives the five-seed check. All four `I60/R20`
   image specs beat the majority-class baseline on average.
+- The `I5` family was screened out before this robustness run because the
+  single-seed grid did not show enough signal to justify the immediate
+  five-seed cost.
 - The `I20/R20` group does not survive the five-seed check. All four `I20/R20`
   image specs are below the majority-class baseline on average.
 - The earlier single-seed `I60/R20/ohlc_ma_vb` result with accuracy `0.6031`
@@ -118,6 +124,9 @@ ROC-AUC by seed:
 이 결과는 Stage 2 전체 5-seed grid가 아닙니다. 이전 single-seed에서 가장 강했던
 `R20`, 특히 `I60/R20` 계열이 seed가 바뀌어도 유지되는지 확인한 선별 robustness
 check입니다.
+`I5` 계열은 이 five-seed 확장에 포함하지 않았습니다. 이전 seed `42`
+screening에서 `I5`는 평균적으로 majority-class baseline보다 낮았고, 가장 좋은
+`I5` accuracy도 약 `0.524` 수준이었습니다.
 
 ### 핵심 결과
 
@@ -168,6 +177,8 @@ ROC-AUC by seed:
 
 - `I60/R20` 우위는 5-seed 확인에서도 유지됩니다. `I60/R20`의 네 가지 image spec은
   모두 평균적으로 majority-class baseline을 넘었습니다.
+- `I5` 계열은 single-seed grid에서 충분한 signal을 보이지 않았기 때문에 이번
+  selected five-seed robustness run에서는 우선순위에서 제외했습니다.
 - `I20/R20`은 5-seed에서 살아남지 못했습니다. 네 가지 image spec 모두 평균적으로
   majority-class baseline보다 낮습니다.
 - 이전 single-seed에서 `I60/R20/ohlc_ma_vb`가 accuracy `0.6031`로 매우 높게

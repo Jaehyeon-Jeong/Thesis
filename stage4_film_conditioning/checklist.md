@@ -249,12 +249,15 @@ Stage 4 v2 diagnostic priorities:
   - Result: five-seed mean accuracy `0.5574`, ROC-AUC `0.5519`; the seed-42
     all-context gain was not robust.
   - Result prep: [4-V5 Stage 4 v2 OHLC all-context five-seed](checklist_results/4-V5_stage4_v2_ohlc_all_context_five_seed.md)
-- [ ] 4-V6. Priority 7: `I60/R20/ohlc_ma_vb` + F&G-only + `film_full`,
+- [x] 4-V6. Priority 7: `I60/R20/ohlc_ma_vb` + F&G-only + `film_full`,
   five seeds
   - Purpose: test whether external sentiment/regime context adds incremental
     signal on top of the strongest visual baseline.
   - Execution wrapper:
     `notebooks/kaggle_stage4_v2_p7_ohlc_ma_vb_fg_only_film_full_five_seed_one_cell.md`.
+  - Result: five-seed mean accuracy `0.5524`, ROC-AUC `0.5465`; seeds
+    `42`, `45`, and `46` were close to the Stage 2 visual baseline, but seeds
+    `43` and `44` collapsed toward mostly Up predictions.
   - Result prep: [4-V6 Stage 4 v2 OHLC_MA_VB F&G-only five-seed](checklist_results/4-V6_stage4_v2_ohlc_ma_vb_fg_only_five_seed.md)
 - [ ] 4-V7. Priority 8: bounded/residual last-block FiLM v2
   - Purpose: preserve the Stage 2 visual evidence and reduce seed-dependent
@@ -529,12 +532,15 @@ Stage 4 v2 진단 우선순위:
   - 결과: five-seed mean accuracy `0.5574`, ROC-AUC `0.5519`; seed-42
     all-context 개선은 robust하지 않았습니다.
   - 준비 결과: [4-V5 Stage 4 v2 OHLC all-context five-seed](checklist_results/4-V5_stage4_v2_ohlc_all_context_five_seed.md)
-- [ ] 4-V6. 우선순위 7: `I60/R20/ohlc_ma_vb` + F&G-only + `film_full`,
+- [x] 4-V6. 우선순위 7: `I60/R20/ohlc_ma_vb` + F&G-only + `film_full`,
   five seeds
   - 목적: 가장 강한 visual baseline 위에 외부 sentiment/regime context가
     incremental signal을 주는지 확인합니다.
   - 실행 wrapper:
     `notebooks/kaggle_stage4_v2_p7_ohlc_ma_vb_fg_only_film_full_five_seed_one_cell.md`.
+  - 결과: five-seed mean accuracy `0.5524`, ROC-AUC `0.5465`; seed
+    `42`, `45`, `46`은 Stage 2 visual baseline에 근접했지만 seed `43`,
+    `44`는 대부분 Up 예측으로 무너졌습니다.
   - 준비 결과: [4-V6 Stage 4 v2 OHLC_MA_VB F&G-only five-seed](checklist_results/4-V6_stage4_v2_ohlc_ma_vb_fg_only_five_seed.md)
 - [ ] 4-V7. 우선순위 8: bounded/residual last-block FiLM v2
   - 목적: Stage 2 visual evidence를 보존하고 modulation strength를 제한해서

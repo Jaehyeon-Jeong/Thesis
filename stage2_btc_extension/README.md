@@ -41,6 +41,9 @@ Current result status:
 - Completed run: single seed `42`
 - Grid size: `36` experiments
   (`3` image windows x `3` return horizons x `4` image specs)
+- The `I5` family was not expanded to five seeds because the seed-42 screening
+  was weak: `I5` groups were below the majority-class baseline on average, and
+  the best `I5` accuracy was only about `0.524`.
 - Selected five-seed robustness check is completed:
   `I20/R20` and `I60/R20` across all four image specs and seeds
   `42, 43, 44, 45, 46` (`40/40` runs ok).
@@ -66,6 +69,8 @@ single-seed spike. The best five-seed mean configuration is:
 | 60 | `ohlc_ma` | 0.5575 | 0.0233 | +0.0162 | 0.5645 | 0.0163 |
 
 Interpretation:
+- `I5` was deprioritized after the full single-seed grid because it did not
+  show enough signal to justify immediate five-seed expansion.
 - All selected `I60/R20` variants beat the majority-class baseline on average.
 - All selected `I20/R20` variants fall below the majority-class baseline on
   average.
@@ -203,6 +208,9 @@ predicted-down examples. Generate it in Kaggle with:
 - 완료된 run: seed `42` 한 개
 - Grid size: `36`개 실험
   (`3` image window x `3` return horizon x `4` image spec)
+- `I5` 계열은 seed `42` screening에서 약했기 때문에 five-seed로 확장하지
+  않았습니다. `I5` 그룹은 평균적으로 majority-class baseline보다 낮았고,
+  가장 좋은 `I5` accuracy도 약 `0.524` 수준이었습니다.
 - 선별 5-seed robustness check를 완료했습니다:
   `I20/R20`과 `I60/R20`, image spec 4개, seed `42, 43, 44, 45, 46`
   (`40/40` runs ok).
@@ -228,6 +236,8 @@ predicted-down examples. Generate it in Kaggle with:
 | 60 | `ohlc_ma` | 0.5575 | 0.0233 | +0.0162 | 0.5645 | 0.0163 |
 
 해석:
+- `I5`는 single-seed 전체 grid에서 충분한 signal을 보이지 않았기 때문에
+  five-seed 확장 우선순위에서 제외했습니다.
 - 선별한 `I60/R20` 네 가지 image spec은 모두 평균적으로 majority-class baseline을 넘었습니다.
 - 선별한 `I20/R20` 네 가지 image spec은 모두 평균적으로 majority-class baseline보다 낮았습니다.
 - `I60/R20/ohlc_ma_vb`는 현재 Stage 4 FiLM 비교의 primary Stage 2 baseline 후보입니다.

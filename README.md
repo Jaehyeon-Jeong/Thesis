@@ -18,7 +18,7 @@ tracked.
 | `stage1_reimage_reproduction` | Reproduce the Re-image CNN pipeline on public I20 stock images | In progress: `I20/R60` seed-42 fast diagnostic archived; `I20/R20` archive is smoke-only; `I20/R5`, strict batch-128 run, and five-seed reproduction are later |
 | `stage2_btc_extension` | Extend the confirmed pipeline to BTC OHLCV | Single-seed 36-run complete; selected `I20/R20` and `I60/R20` five-seed robustness check complete; full 180-run five-seed grid later |
 | `stage3_linear_adapter` | Add a Linear comparison model | First test on Stage 2 best config completed; result dropped to majority level; remaining grid runs pending |
-| `stage4_film_conditioning` | Compare market-context concat, gating, gamma-only FiLM, and full FiLM on the fixed BTC CNN | v1 four-ablation five-seed run complete; v2 priorities 1-2 reproduced Stage 2 controls; priority 3 seed-42 showed partial recovery; priority 4 F&G-only five-seed runner ready |
+| `stage4_film_conditioning` | Compare market-context concat, gating, gamma-only FiLM, and full FiLM on the fixed BTC CNN | v1 complete; v2 controls and context diagnostics through `4-V6` complete; full FiLM remains seed-unstable; next is bounded/residual last-block FiLM |
 
 ### Current Status
 
@@ -37,6 +37,9 @@ Stage 2:
 - Current result package: BTC single-seed grid, `36` experiments
   (`I5/I20/I60` x `R5/R20/R60` x four image specs), seed `42`.
 - Best single-seed configuration: `I60/R20/ohlc_ma_vb`.
+- `I5` was not expanded to five seeds because the seed-42 screening was weak:
+  its groups were below majority baseline on average and the best `I5`
+  accuracy was only about `0.524`.
 - Selected five-seed robustness check completed for `I20/R20` and `I60/R20`
   across four image specs and seeds `42, 43, 44, 45, 46` (`40/40` runs ok).
 - Best selected five-seed configuration: `I60/R20/ohlc_ma_vb`, accuracy mean
@@ -218,10 +221,14 @@ Stage 4:
   `stage4_film_conditioning/notebooks/kaggle_stage4_v2_p5_ohlc_technical_only_film_full_five_seed_one_cell.md`.
 - Priority 6 all-context five-seed Kaggle runner is ready:
   `stage4_film_conditioning/notebooks/kaggle_stage4_v2_p6_ohlc_all_context_film_full_five_seed_one_cell.md`.
-- Priority 7 `ohlc_ma_vb + F&G-only` five-seed Kaggle runner is ready:
-  `stage4_film_conditioning/notebooks/kaggle_stage4_v2_p7_ohlc_ma_vb_fg_only_film_full_five_seed_one_cell.md`.
-- Current Stage 4 v2 order after `4-V4`: run `4-V5` all-context five-seed,
-  then `4-V6` `ohlc_ma_vb + F&G-only` five-seed, then bounded/last-block FiLM.
+- Priority 7 `ohlc_ma_vb + F&G-only` five-seed Kaggle run is complete:
+  accuracy mean `0.5524`, ROC-AUC mean `0.5465`.
+- Stage 4 v2 diagnosis: F&G is the cleanest external context source, but the
+  current full-FiLM injection is seed-unstable. Seeds `42`, `45`, and `46`
+  were close to the Stage 2 visual baseline, while seeds `43` and `44`
+  collapsed toward mostly Up predictions.
+- Current Stage 4 next step: bounded/residual last-block FiLM, to preserve the
+  strong Stage 2 visual evidence while limiting context-driven collapse.
 - News context is preserved as a second-phase track after source/date/leakage
   audit. Candidate source: Hugging Face `edaschau/bitcoin_news`.
 - Advisor-direction mapping is documented in the Stage 4 README/source map and
@@ -234,6 +241,7 @@ Stage 4:
 - [PLAN.md](PLAN.md)
 - [Overall pipeline diagram](docs/overall_pipeline_diagram.md)
 - [Execution environment diagram](docs/execution_environment_diagram.md)
+- [Professor one-page update 2026-05-27](reports/professor_one_page_update_2026-05-27.md)
 - [Professor Stage 4 decision report](reports/professor_stage4_decision_report_2026-05-21.md)
 - [Stage 0 checklist](stage0_data_check/checklist.md)
 - [Stage 1 checklist](stage1_reimage_reproduction/checklist.md)
@@ -276,7 +284,7 @@ config, 코드 scaffold만 올립니다. 대용량 데이터, 논문 PDF, checkp
 | `stage1_reimage_reproduction` | public I20 stock image로 Re-image CNN pipeline 재현 | 진행 중: `I20/R60` seed-42 fast diagnostic 보존; `I20/R20` archive는 smoke-only; `I20/R5`, strict batch-128 run, five-seed reproduction은 later |
 | `stage2_btc_extension` | 확인된 pipeline을 BTC OHLCV로 확장 | single-seed 36-run 완료; `I20/R20`, `I60/R20` 선별 five-seed robustness check 완료; full 180-run five-seed grid는 later |
 | `stage3_linear_adapter` | Linear 비교 모델 추가 | Stage 2 best config 1회 테스트 완료; majority 수준으로 하락; 나머지 grid run 예정 |
-| `stage4_film_conditioning` | 고정 BTC CNN 위에서 market-context concat, gating, gamma-only FiLM, full FiLM 비교 | v1 four-ablation five-seed run 완료; v2 우선순위 1-2는 Stage 2 control 재현 완료; 우선순위 3 seed-42는 일부 회복 확인; 우선순위 4 F&G-only five-seed runner 준비 완료 |
+| `stage4_film_conditioning` | 고정 BTC CNN 위에서 market-context concat, gating, gamma-only FiLM, full FiLM 비교 | v1 완료; v2 control과 context diagnostic은 `4-V6`까지 완료; full FiLM은 seed-unstable; 다음은 bounded/residual last-block FiLM |
 
 ### 현재 상태
 
@@ -295,6 +303,9 @@ Stage 2:
 - 현재 결과 패키지: BTC single-seed grid, `36`개 실험
   (`I5/I20/I60` x `R5/R20/R60` x image spec 4개), seed `42`.
 - Single-seed best configuration: `I60/R20/ohlc_ma_vb`.
+- `I5`는 seed `42` screening에서 약했기 때문에 five-seed로 확장하지 않았습니다.
+  평균적으로 majority baseline보다 낮았고, 가장 좋은 `I5` accuracy도 약
+  `0.524` 수준이었습니다.
 - `I20/R20`과 `I60/R20`을 대상으로 image spec 4개와 seed
   `42, 43, 44, 45, 46`을 돌린 선별 five-seed robustness check를 완료했습니다
   (`40/40` runs ok).
@@ -474,10 +485,13 @@ Stage 4:
   `stage4_film_conditioning/notebooks/kaggle_stage4_v2_p5_ohlc_technical_only_film_full_five_seed_one_cell.md`.
 - 우선순위 6 all-context five-seed Kaggle runner 준비 완료:
   `stage4_film_conditioning/notebooks/kaggle_stage4_v2_p6_ohlc_all_context_film_full_five_seed_one_cell.md`.
-- 우선순위 7 `ohlc_ma_vb + F&G-only` five-seed Kaggle runner 준비 완료:
-  `stage4_film_conditioning/notebooks/kaggle_stage4_v2_p7_ohlc_ma_vb_fg_only_film_full_five_seed_one_cell.md`.
-- `4-V4` 이후 현재 Stage 4 v2 순서: `4-V5` all-context five-seed,
-  `4-V6` `ohlc_ma_vb + F&G-only` five-seed, 그 다음 bounded/last-block FiLM.
+- 우선순위 7 `ohlc_ma_vb + F&G-only` five-seed Kaggle run 완료:
+  accuracy mean `0.5524`, ROC-AUC mean `0.5465`.
+- Stage 4 v2 진단: F&G는 가장 깨끗한 외부 context source이지만, 현재 full-FiLM
+  주입 방식은 seed-unstable합니다. Seed `42`, `45`, `46`은 Stage 2 visual
+  baseline에 근접했지만, seed `43`, `44`는 대부분 Up 예측으로 collapse했습니다.
+- 현재 Stage 4 다음 단계: bounded/residual last-block FiLM. 목표는 강한 Stage 2
+  visual evidence를 보존하면서 context-driven collapse를 줄이는 것입니다.
 - News context는 제거하지 않고 source/date/leakage audit 이후 second-phase track으로
   유지합니다. 후보 source는 Hugging Face `edaschau/bitcoin_news`입니다.
 - 교수님 방향성 파일과 Stage 4 실험 결정의 연결은 Stage 4 README/source map과
@@ -490,6 +504,7 @@ Stage 4:
 - [PLAN.md](PLAN.md)
 - [전체 파이프라인 다이어그램](docs/overall_pipeline_diagram.md)
 - [실행환경 다이어그램](docs/execution_environment_diagram.md)
+- [교수님 1페이지 진행 보고 2026-05-27](reports/professor_one_page_update_2026-05-27.md)
 - [교수님 Stage 4 방향 확정 요청 보고서](reports/professor_stage4_decision_report_2026-05-21.md)
 - [Stage 0 체크리스트](stage0_data_check/checklist.md)
 - [Stage 1 체크리스트](stage1_reimage_reproduction/checklist.md)

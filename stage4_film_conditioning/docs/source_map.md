@@ -319,6 +319,9 @@ Implementation-source distinction:
     earlier seed-42 `4-V2` output.
   - `4-V6` puts F&G-only on top of `ohlc_ma_vb` to test whether external
     sentiment/regime context adds signal to the strongest visual baseline.
+  - Added `notebooks/kaggle_stage4_v2_p7_ohlc_ma_vb_fg_only_film_full_five_seed_one_cell.md`.
+  - `4-V6` uses the same F&G-only feature suffix as `4-V3`, but the output names
+    remain separated because `image_spec=ohlc_ma_vb`.
   - Bounded/residual last-block FiLM is deferred to `4-V7` so context-signal
     validity and FiLM-architecture changes are not confounded.
 
@@ -645,5 +648,9 @@ Implementation-source distinction:
     `feature_set_name=all_context`, `experiment_suffix=all_context`를 사용합니다.
   - `4-V6`는 가장 강한 `ohlc_ma_vb` visual baseline 위에 F&G-only를 얹어,
     외부 sentiment/regime context가 incremental signal을 주는지 확인합니다.
+  - `notebooks/kaggle_stage4_v2_p7_ohlc_ma_vb_fg_only_film_full_five_seed_one_cell.md`를
+    추가했습니다.
+  - `4-V6`는 `4-V3`와 같은 F&G-only suffix를 사용하지만,
+    `image_spec=ohlc_ma_vb`가 output 이름에 포함되므로 결과는 분리됩니다.
   - Bounded/residual last-block FiLM은 context signal 여부와 FiLM architecture
     변경 효과가 섞이지 않도록 `4-V7`로 미룹니다.

@@ -240,17 +240,21 @@ Stage 4 v2 diagnostic priorities:
     context was slightly above F&G-only but did not materially improve over the
     Stage 2 OHLC baseline.
   - Result prep: [4-V4 Stage 4 v2 OHLC technical-only FiLM-full](checklist_results/4-V4_stage4_v2_ohlc_technical_only_film_full.md)
-- [ ] 4-V5. Priority 6: `I60/R20/ohlc` + all structured context + `film_full`,
+- [x] 4-V5. Priority 6: `I60/R20/ohlc` + all structured context + `film_full`,
   five seeds
   - Purpose: determine whether the earlier seed-42 all-context improvement was
     a real combination effect or a lucky seed.
   - Execution wrapper:
     `notebooks/kaggle_stage4_v2_p6_ohlc_all_context_film_full_five_seed_one_cell.md`.
+  - Result: five-seed mean accuracy `0.5574`, ROC-AUC `0.5519`; the seed-42
+    all-context gain was not robust.
   - Result prep: [4-V5 Stage 4 v2 OHLC all-context five-seed](checklist_results/4-V5_stage4_v2_ohlc_all_context_five_seed.md)
 - [ ] 4-V6. Priority 7: `I60/R20/ohlc_ma_vb` + F&G-only + `film_full`,
   five seeds
   - Purpose: test whether external sentiment/regime context adds incremental
     signal on top of the strongest visual baseline.
+  - Execution wrapper:
+    `notebooks/kaggle_stage4_v2_p7_ohlc_ma_vb_fg_only_film_full_five_seed_one_cell.md`.
   - Result prep: [4-V6 Stage 4 v2 OHLC_MA_VB F&G-only five-seed](checklist_results/4-V6_stage4_v2_ohlc_ma_vb_fg_only_five_seed.md)
 - [ ] 4-V7. Priority 8: bounded/residual last-block FiLM v2
   - Purpose: preserve the Stage 2 visual evidence and reduce seed-dependent
@@ -516,17 +520,21 @@ Stage 4 v2 진단 우선순위:
     context는 F&G-only보다 약간 높았지만 Stage 2 OHLC baseline을 실질적으로
     개선하지 못했습니다.
   - 준비 결과: [4-V4 Stage 4 v2 OHLC technical-only FiLM-full](checklist_results/4-V4_stage4_v2_ohlc_technical_only_film_full.md)
-- [ ] 4-V5. 우선순위 6: `I60/R20/ohlc` + all structured context + `film_full`,
+- [x] 4-V5. 우선순위 6: `I60/R20/ohlc` + all structured context + `film_full`,
   five seeds
   - 목적: 이전 seed-42 all-context 개선이 실제 조합 효과인지, 좋은 seed였는지
     확인합니다.
   - 실행 wrapper:
     `notebooks/kaggle_stage4_v2_p6_ohlc_all_context_film_full_five_seed_one_cell.md`.
+  - 결과: five-seed mean accuracy `0.5574`, ROC-AUC `0.5519`; seed-42
+    all-context 개선은 robust하지 않았습니다.
   - 준비 결과: [4-V5 Stage 4 v2 OHLC all-context five-seed](checklist_results/4-V5_stage4_v2_ohlc_all_context_five_seed.md)
 - [ ] 4-V6. 우선순위 7: `I60/R20/ohlc_ma_vb` + F&G-only + `film_full`,
   five seeds
   - 목적: 가장 강한 visual baseline 위에 외부 sentiment/regime context가
     incremental signal을 주는지 확인합니다.
+  - 실행 wrapper:
+    `notebooks/kaggle_stage4_v2_p7_ohlc_ma_vb_fg_only_film_full_five_seed_one_cell.md`.
   - 준비 결과: [4-V6 Stage 4 v2 OHLC_MA_VB F&G-only five-seed](checklist_results/4-V6_stage4_v2_ohlc_ma_vb_fg_only_five_seed.md)
 - [ ] 4-V7. 우선순위 8: bounded/residual last-block FiLM v2
   - 목적: Stage 2 visual evidence를 보존하고 modulation strength를 제한해서

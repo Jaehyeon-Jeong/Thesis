@@ -58,6 +58,12 @@ Available notebooks:
   - Runs `I60/R20/ohlc` with all structured context and `film_full` over five
     seeds.
   - Purpose: test whether the earlier seed-42 all-context recovery is robust.
+- `kaggle_stage4_v2_p7_ohlc_ma_vb_fg_only_film_full_five_seed_one_cell.md`
+  - Stage 4 v2 priority 7 diagnostic.
+  - Runs `I60/R20/ohlc_ma_vb` with F&G-only context and `film_full` over five
+    seeds.
+  - Purpose: test whether external F&G context improves the strongest visual
+    baseline.
 
 Planned notebooks:
 - `kaggle_stage4_single_ablation_one_cell.md`
@@ -123,6 +129,12 @@ Required backup root:
   - `I60/R20/ohlc`에 all structured context와 `film_full`을 붙여 five-seed로
     실행합니다.
   - 목적: 이전 seed-42 all-context 회복이 robust한지 확인합니다.
+- `kaggle_stage4_v2_p7_ohlc_ma_vb_fg_only_film_full_five_seed_one_cell.md`
+  - Stage 4 v2 우선순위 7 diagnostic입니다.
+  - `I60/R20/ohlc_ma_vb`에 F&G-only context와 `film_full`을 붙여 five-seed로
+    실행합니다.
+  - 목적: 외부 F&G context가 가장 강한 visual baseline을 개선하는지
+    확인합니다.
 
 예정 notebook:
 - `kaggle_stage4_single_ablation_one_cell.md`

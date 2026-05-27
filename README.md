@@ -218,6 +218,8 @@ Stage 4:
   `stage4_film_conditioning/notebooks/kaggle_stage4_v2_p5_ohlc_technical_only_film_full_five_seed_one_cell.md`.
 - Priority 6 all-context five-seed Kaggle runner is ready:
   `stage4_film_conditioning/notebooks/kaggle_stage4_v2_p6_ohlc_all_context_film_full_five_seed_one_cell.md`.
+- Priority 7 `ohlc_ma_vb + F&G-only` five-seed Kaggle runner is ready:
+  `stage4_film_conditioning/notebooks/kaggle_stage4_v2_p7_ohlc_ma_vb_fg_only_film_full_five_seed_one_cell.md`.
 - Current Stage 4 v2 order after `4-V4`: run `4-V5` all-context five-seed,
   then `4-V6` `ohlc_ma_vb + F&G-only` five-seed, then bounded/last-block FiLM.
 - News context is preserved as a second-phase track after source/date/leakage
@@ -472,6 +474,8 @@ Stage 4:
   `stage4_film_conditioning/notebooks/kaggle_stage4_v2_p5_ohlc_technical_only_film_full_five_seed_one_cell.md`.
 - 우선순위 6 all-context five-seed Kaggle runner 준비 완료:
   `stage4_film_conditioning/notebooks/kaggle_stage4_v2_p6_ohlc_all_context_film_full_five_seed_one_cell.md`.
+- 우선순위 7 `ohlc_ma_vb + F&G-only` five-seed Kaggle runner 준비 완료:
+  `stage4_film_conditioning/notebooks/kaggle_stage4_v2_p7_ohlc_ma_vb_fg_only_film_full_five_seed_one_cell.md`.
 - `4-V4` 이후 현재 Stage 4 v2 순서: `4-V5` all-context five-seed,
   `4-V6` `ohlc_ma_vb + F&G-only` five-seed, 그 다음 bounded/last-block FiLM.
 - News context는 제거하지 않고 source/date/leakage audit 이후 second-phase track으로

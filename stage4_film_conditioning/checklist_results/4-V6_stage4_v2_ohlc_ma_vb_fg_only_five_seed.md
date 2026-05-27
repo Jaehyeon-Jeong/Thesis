@@ -1,6 +1,6 @@
 # 4-V6. Stage 4 v2 OHLC_MA_VB + F&G-Only Context + Full FiLM, Five Seeds
 
-Status: planned; runner not yet generated.
+Status: five-seed Kaggle runner ready; full result pending.
 
 ## Experiment
 
@@ -47,9 +47,38 @@ then change the FiLM architecture if instability remains.
 - If `4-V6` is unstable across seeds, bounded/last-block FiLM becomes the next
   architecture-level fix.
 
+## Output Naming
+
+This run uses the F&G-only suffix with the strong visual image spec:
+
+```text
+context.feature_set_name = fg_only
+stage4_model.experiment_suffix = fg_only
+```
+
+Expected output names:
+
+```text
+stage4_film_full_i60_ohlc_ma_vb_r20_c60_fg_only
+stage4_context_i60_ohlc_ma_vb_r20_c60_fg_only
+```
+
+This is separate from the plain-OHLC F&G-only run because the image spec is part
+of the output name.
+
+## Runner
+
+Use:
+
+```text
+notebooks/kaggle_stage4_v2_p7_ohlc_ma_vb_fg_only_film_full_five_seed_one_cell.md
+```
+
+The runner defaults to five seeds and `SAVE_BACKUP_ZIPS=False`.
+
 # 4-V6. Stage 4 v2 OHLC_MA_VB + F&G-only Context + Full FiLM, Five Seeds
 
-상태: 계획 확정, runner는 아직 생성 전.
+상태: five-seed Kaggle runner 준비 완료, full 결과 대기 중.
 
 ## 실험
 
@@ -94,3 +123,31 @@ context입니다. 따라서 가장 강한 visual baseline 위에서 incremental 
   위에서도 F&G가 추가 성능을 주지 못한 것입니다.
 - `4-V6`가 seed별로 불안정하면, bounded/last-block FiLM이 다음 architecture-level
   수정입니다.
+
+## Output Naming
+
+이 run은 강한 visual image spec과 F&G-only suffix를 함께 사용합니다.
+
+```text
+context.feature_set_name = fg_only
+stage4_model.experiment_suffix = fg_only
+```
+
+예상 output 이름:
+
+```text
+stage4_film_full_i60_ohlc_ma_vb_r20_c60_fg_only
+stage4_context_i60_ohlc_ma_vb_r20_c60_fg_only
+```
+
+image spec이 output 이름에 포함되므로 plain-OHLC F&G-only run과 분리됩니다.
+
+## Runner
+
+사용할 파일:
+
+```text
+notebooks/kaggle_stage4_v2_p7_ohlc_ma_vb_fg_only_film_full_five_seed_one_cell.md
+```
+
+runner는 기본값이 five seeds이고 `SAVE_BACKUP_ZIPS=False`입니다.

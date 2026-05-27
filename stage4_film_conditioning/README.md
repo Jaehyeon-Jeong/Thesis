@@ -197,6 +197,8 @@ Current v2 execution status:
   `notebooks/kaggle_stage4_v2_p5_ohlc_technical_only_film_full_five_seed_one_cell.md`.
 - `4-V5` five-seed runner is ready:
   `notebooks/kaggle_stage4_v2_p6_ohlc_all_context_film_full_five_seed_one_cell.md`.
+- `4-V6` five-seed runner is ready:
+  `notebooks/kaggle_stage4_v2_p7_ohlc_ma_vb_fg_only_film_full_five_seed_one_cell.md`.
 - `4-V0` full Kaggle result was checked locally from the exported CSV and
   reproduces the Stage 2 seed-42 `I60/R20/ohlc_ma_vb` result.
 - `4-V1` full Kaggle result was checked locally from the exported CSV and
@@ -209,6 +211,8 @@ Current v2 execution status:
   over Stage 2 OHLC: accuracy mean `0.5586`, ROC-AUC mean `0.5523`.
 - `4-V4` five-seed result showed that technical-only FiLM was also weak:
   accuracy mean `0.5603`, ROC-AUC mean `0.5546`.
+- `4-V5` five-seed result showed that all-context FiLM was not robust:
+  accuracy mean `0.5574`, ROC-AUC mean `0.5519`.
 - From `4-V3` onward, v2 diagnostic runs default to five seeds.
 - Next fixed order: `4-V5` all-context five-seed, then `4-V6`
   `ohlc_ma_vb + F&G-only` five-seed, then architecture-level bounded/last-block
@@ -566,6 +570,8 @@ Stage 4 v2 진단 우선순위:
   `notebooks/kaggle_stage4_v2_p5_ohlc_technical_only_film_full_five_seed_one_cell.md`.
 - `4-V5` five-seed runner 준비 완료:
   `notebooks/kaggle_stage4_v2_p6_ohlc_all_context_film_full_five_seed_one_cell.md`.
+- `4-V6` five-seed runner 준비 완료:
+  `notebooks/kaggle_stage4_v2_p7_ohlc_ma_vb_fg_only_film_full_five_seed_one_cell.md`.
 - `4-V0` full Kaggle 결과는 export CSV 기준 Stage 2 seed-42
   `I60/R20/ohlc_ma_vb` 결과를 재현했습니다.
 - `4-V1` full Kaggle 결과는 export CSV 기준 Stage 2 seed-42
@@ -579,6 +585,8 @@ Stage 4 v2 진단 우선순위:
   `0.5523`.
 - `4-V4` five-seed 결과도 technical-only FiLM이 약함을 보였습니다:
   accuracy mean `0.5603`, ROC-AUC mean `0.5546`.
+- `4-V5` five-seed 결과는 all-context FiLM도 robust하지 않음을 보였습니다:
+  accuracy mean `0.5574`, ROC-AUC mean `0.5519`.
 - `4-V3`부터 v2 diagnostic run은 기본 five-seed로 실행합니다.
 - 다음 고정 순서는 `4-V5` all-context five-seed, 그 다음 `4-V6`
   `ohlc_ma_vb + F&G-only` five-seed, 그 다음 bounded/last-block FiLM 구조

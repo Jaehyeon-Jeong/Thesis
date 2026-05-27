@@ -1,6 +1,6 @@
 # 4-V5. Stage 4 v2 OHLC + All Structured Context + Full FiLM, Five Seeds
 
-Status: five-seed Kaggle runner ready; full result pending.
+Status: five-seed Kaggle run complete; result reviewed.
 
 ## Experiment
 
@@ -80,9 +80,39 @@ notebooks/kaggle_stage4_v2_p6_ohlc_all_context_film_full_five_seed_one_cell.md
 
 The runner defaults to five seeds and `SAVE_BACKUP_ZIPS=False`.
 
+## Observed Result
+
+Exported result tables:
+
+```text
+stage4_v2_p6_ohlc_all_context_film_full_five_seed_seed_results.csv
+stage4_v2_p6_ohlc_all_context_film_full_five_seed_mean_std_results.csv
+```
+
+Five-seed summary:
+
+```text
+accuracy_mean: 0.557391
+accuracy_std:  0.014749
+roc_auc_mean:  0.551940
+roc_auc_std:   0.013987
+accuracy_mean_minus_stage2_ohlc_mean: -0.000694
+roc_auc_mean_minus_stage2_ohlc_mean:  -0.008278
+predicted_positive_rate_mean: 0.790146
+```
+
+Interpretation:
+
+- The earlier seed-42 all-context recovery was not robust.
+- Five-seed all-context performance was below the Stage 2 OHLC baseline mean.
+- The high predicted-positive rate shows substantial Up-class bias.
+- All-context does not beat F&G-only or technical-only in five-seed mean
+  accuracy, so there is no clear combination effect under the current FiLM-full
+  structure.
+
 # 4-V5. Stage 4 v2 OHLC + All Structured Context + Full FiLM, Five Seeds
 
-상태: five-seed Kaggle runner 준비 완료, full 결과 대기 중.
+상태: five-seed Kaggle run 완료, 결과 검토 완료.
 
 ## 실험
 
@@ -161,3 +191,32 @@ notebooks/kaggle_stage4_v2_p6_ohlc_all_context_film_full_five_seed_one_cell.md
 ```
 
 runner는 기본값이 five seeds이고 `SAVE_BACKUP_ZIPS=False`입니다.
+
+## 관찰된 결과
+
+Export 결과표:
+
+```text
+stage4_v2_p6_ohlc_all_context_film_full_five_seed_seed_results.csv
+stage4_v2_p6_ohlc_all_context_film_full_five_seed_mean_std_results.csv
+```
+
+Five-seed summary:
+
+```text
+accuracy_mean: 0.557391
+accuracy_std:  0.014749
+roc_auc_mean:  0.551940
+roc_auc_std:   0.013987
+accuracy_mean_minus_stage2_ohlc_mean: -0.000694
+roc_auc_mean_minus_stage2_ohlc_mean:  -0.008278
+predicted_positive_rate_mean: 0.790146
+```
+
+해석:
+
+- 이전 seed-42 all-context 회복은 robust하지 않았습니다.
+- Five-seed all-context 성능은 Stage 2 OHLC baseline mean보다 낮았습니다.
+- predicted-positive rate가 높아서 Up-class bias가 크게 남아 있습니다.
+- Five-seed mean accuracy 기준으로 F&G-only나 technical-only보다 좋지 않으므로,
+  현재 FiLM-full 구조에서는 명확한 조합 효과가 확인되지 않았습니다.

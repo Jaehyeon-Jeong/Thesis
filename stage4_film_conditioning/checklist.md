@@ -210,7 +210,7 @@ Stage 4 v2 diagnostic priorities:
   - Execution wrapper:
     `notebooks/kaggle_stage4_v2_p1_visual_only_same_split_one_cell.md`.
   - Result prep: [4-V0 Stage 4 v2 visual-only same-split plan](checklist_results/4-V0_stage4_v2_visual_only_same_split.md)
-- [ ] 4-V1. Priority 2: Stage 4 same-split visual-only baseline,
+- [x] 4-V1. Priority 2: Stage 4 same-split visual-only baseline,
   `I60/R20/ohlc`, no context
   - Purpose: measure how much the strong `ohlc_ma_vb` image already encodes
     technical information.
@@ -220,6 +220,9 @@ Stage 4 v2 diagnostic priorities:
 - [ ] 4-V2. Priority 3: `I60/R20/ohlc` + all structured context + `film_full`
   - Purpose: test the duplicate-feature hypothesis by removing MA/VB from the
     image while keeping F&G/BB/MFI/RV as context.
+  - Execution wrapper:
+    `notebooks/kaggle_stage4_v2_p3_ohlc_all_context_film_full_one_cell.md`.
+  - Result prep: [4-V2 Stage 4 v2 OHLC all-context FiLM-full](checklist_results/4-V2_stage4_v2_ohlc_all_context_film_full.md)
 - [ ] 4-V3. Priority 4: `I60/R20/ohlc` + F&G-only + `film_full`
   - Purpose: isolate image-external regime/sentiment context from OHLCV-derived
     technical context.
@@ -461,7 +464,7 @@ Stage 4 v2 진단 우선순위:
   - 실행 wrapper:
     `notebooks/kaggle_stage4_v2_p1_visual_only_same_split_one_cell.md`.
   - 준비 결과: [4-V0 Stage 4 v2 visual-only same-split plan](checklist_results/4-V0_stage4_v2_visual_only_same_split.md)
-- [ ] 4-V1. 우선순위 2: Stage 4 same-split visual-only baseline,
+- [x] 4-V1. 우선순위 2: Stage 4 same-split visual-only baseline,
   `I60/R20/ohlc`, context 없음
   - 목적: 강한 `ohlc_ma_vb` 이미지가 technical 정보를 이미 얼마나 담고 있는지
     확인합니다.
@@ -471,6 +474,9 @@ Stage 4 v2 진단 우선순위:
 - [ ] 4-V2. 우선순위 3: `I60/R20/ohlc` + all structured context + `film_full`
   - 목적: 이미지에서 MA/VB를 덜어냈을 때 F&G/BB/MFI/RV context가 더 도움 되는지
     확인해 duplicate-feature 가설을 검증합니다.
+  - 실행 wrapper:
+    `notebooks/kaggle_stage4_v2_p3_ohlc_all_context_film_full_one_cell.md`.
+  - 준비 결과: [4-V2 Stage 4 v2 OHLC all-context FiLM-full](checklist_results/4-V2_stage4_v2_ohlc_all_context_film_full.md)
 - [ ] 4-V3. 우선순위 4: `I60/R20/ohlc` + F&G-only + `film_full`
   - 목적: 이미지 밖 regime/sentiment context만 따로 효과가 있는지 확인합니다.
 - [ ] 4-V4. 우선순위 5: `I60/R20/ohlc` + technical-only context + `film_full`

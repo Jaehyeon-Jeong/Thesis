@@ -1,6 +1,6 @@
 # 4-V1. Stage 4 v2 OHLC Visual-Only Control
 
-Status: Kaggle runner ready; full result pending.
+Status: complete for seed `42`.
 
 ## Experiment
 
@@ -38,6 +38,17 @@ From the Stage 2 selected `I20/I60, R20, four image specs, five seeds` table:
 | `I60/R20/ohlc` | `0.5581` | `0.5602` | 4-V1 reference |
 | `I60/R20/ohlc_ma_vb` | `0.5793` | `0.5849` | selected visual baseline |
 | Stage 4 v1 `film_full` | `0.5510` | `0.5677` | context FiLM v1 |
+
+Completed `4-V1` seed-42 result:
+
+| Run | Accuracy | Majority Acc. | ROC-AUC | F1 | Predicted Up Rate |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `4-V1` `I60/R20/ohlc`, visual-only, seed 42 | `0.5420` | `0.5413` | `0.5441` | `0.6956` | `0.9632` |
+
+The model is almost at majority-class accuracy and predicts Up for most test
+samples. This confirms that plain OHLC alone is much weaker than
+`ohlc_ma_vb`, and that MA/VB visual overlays carried useful signal in the Stage
+2 selected baseline.
 
 ## Runner
 
@@ -101,6 +112,16 @@ Stage 2 selected `I20/I60, R20, four image specs, five seeds` table 기준:
 | `I60/R20/ohlc` | `0.5581` | `0.5602` | 4-V1 기준 |
 | `I60/R20/ohlc_ma_vb` | `0.5793` | `0.5849` | selected visual baseline |
 | Stage 4 v1 `film_full` | `0.5510` | `0.5677` | context FiLM v1 |
+
+완료된 `4-V1` seed-42 결과:
+
+| Run | Accuracy | Majority Acc. | ROC-AUC | F1 | Predicted Up Rate |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `4-V1` `I60/R20/ohlc`, visual-only, seed 42 | `0.5420` | `0.5413` | `0.5441` | `0.6956` | `0.9632` |
+
+모델은 거의 majority-class accuracy 수준이고 test sample 대부분을 Up으로
+예측했습니다. 따라서 plain OHLC만으로는 약하고, Stage 2 selected baseline에서
+MA/VB visual overlay가 유용한 signal을 제공했다는 해석이 가능합니다.
 
 ## Runner
 

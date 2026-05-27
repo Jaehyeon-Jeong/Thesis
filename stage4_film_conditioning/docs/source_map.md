@@ -285,6 +285,12 @@ Implementation-source distinction:
     no-context control.
   - It removes MA/VB from the image to measure the plain-OHLC visual baseline
     before re-adding structured context in `4-V2`.
+- 4-V2 runner decision:
+  - Added `notebooks/kaggle_stage4_v2_p3_ohlc_all_context_film_full_one_cell.md`.
+  - It uses the Stage 4 context runner with `IMAGE_SPEC=ohlc` and
+    `CONTEXT_METHODS=["film_full"]`.
+  - It is judged primarily against `4-V1`, because the image no longer contains
+    MA/VB visual overlays.
 
 ## 한국어
 
@@ -572,3 +578,10 @@ Implementation-source distinction:
     사용합니다.
   - `4-V2`에서 structured context를 다시 넣기 전에, 이미지에서 MA/VB를 제거한
     plain-OHLC visual baseline을 확인합니다.
+- 4-V2 runner 결정:
+  - `notebooks/kaggle_stage4_v2_p3_ohlc_all_context_film_full_one_cell.md`를
+    추가했습니다.
+  - Stage 4 context runner를 사용하며 `IMAGE_SPEC=ohlc`,
+    `CONTEXT_METHODS=["film_full"]`로 고정합니다.
+  - 이미지는 더 이상 MA/VB visual overlay를 포함하지 않으므로, 주 비교 대상은
+    `4-V1`입니다.

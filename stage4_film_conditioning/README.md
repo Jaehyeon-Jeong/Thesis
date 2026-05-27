@@ -180,7 +180,9 @@ Stage 4 v2 diagnostic priorities:
 | `4-V2` | `I60/R20/ohlc` + all context + `film_full` | Test the duplicate-feature hypothesis |
 | `4-V3` | `I60/R20/ohlc` + F&G-only + `film_full` | Isolate image-external regime/sentiment context |
 | `4-V4` | `I60/R20/ohlc` + technical-only context + `film_full` | Test BB/MFI/RV without MA/VB image overlap |
-| `4-V5` | bounded/residual last-block FiLM | Preserve visual evidence and reduce seed collapse |
+| `4-V5` | `I60/R20/ohlc` + all context + `film_full`, five seeds | Check whether seed-42 all-context gain is robust |
+| `4-V6` | `I60/R20/ohlc_ma_vb` + F&G-only + `film_full`, five seeds | Test external context on top of the strongest visual baseline |
+| `4-V7` | bounded/residual last-block FiLM | Preserve visual evidence and reduce seed collapse |
 
 Current v2 execution status:
 - `4-V0` runner is ready:
@@ -203,7 +205,12 @@ Current v2 execution status:
   `0.5725`, ROC-AUC `0.5573`, predicted-positive rate `0.7828`.
 - `4-V3` five-seed result showed that F&G-only FiLM did not materially improve
   over Stage 2 OHLC: accuracy mean `0.5586`, ROC-AUC mean `0.5523`.
+- `4-V4` five-seed result showed that technical-only FiLM was also weak:
+  accuracy mean `0.5603`, ROC-AUC mean `0.5546`.
 - From `4-V3` onward, v2 diagnostic runs default to five seeds.
+- Next fixed order: `4-V5` all-context five-seed, then `4-V6`
+  `ohlc_ma_vb + F&G-only` five-seed, then architecture-level bounded/last-block
+  FiLM.
 
 Implementation readiness decision:
 - `4-I0` is complete.
@@ -540,7 +547,9 @@ Stage 4 v2 진단 우선순위:
 | `4-V2` | `I60/R20/ohlc` + all context + `film_full` | duplicate-feature 가설 검증 |
 | `4-V3` | `I60/R20/ohlc` + F&G-only + `film_full` | image-external regime/sentiment context 분리 |
 | `4-V4` | `I60/R20/ohlc` + technical-only context + `film_full` | MA/VB image overlap 없이 BB/MFI/RV 효과 확인 |
-| `4-V5` | bounded/residual last-block FiLM | visual evidence 보존과 seed collapse 감소 |
+| `4-V5` | `I60/R20/ohlc` + all context + `film_full`, five seeds | seed-42 all-context 개선의 robustness 확인 |
+| `4-V6` | `I60/R20/ohlc_ma_vb` + F&G-only + `film_full`, five seeds | 가장 강한 visual baseline 위 외부 context 효과 확인 |
+| `4-V7` | bounded/residual last-block FiLM | visual evidence 보존과 seed collapse 감소 |
 
 현재 v2 실행 상태:
 - `4-V0` runner 준비 완료:
@@ -564,7 +573,12 @@ Stage 4 v2 진단 우선순위:
 - `4-V3` five-seed 결과는 F&G-only FiLM이 Stage 2 OHLC를 실질적으로
   개선하지 못했음을 보였습니다: accuracy mean `0.5586`, ROC-AUC mean
   `0.5523`.
+- `4-V4` five-seed 결과도 technical-only FiLM이 약함을 보였습니다:
+  accuracy mean `0.5603`, ROC-AUC mean `0.5546`.
 - `4-V3`부터 v2 diagnostic run은 기본 five-seed로 실행합니다.
+- 다음 고정 순서는 `4-V5` all-context five-seed, 그 다음 `4-V6`
+  `ohlc_ma_vb + F&G-only` five-seed, 그 다음 bounded/last-block FiLM 구조
+  실험입니다.
 
 Implementation readiness 결정:
 - `4-I0`은 완료됐습니다.

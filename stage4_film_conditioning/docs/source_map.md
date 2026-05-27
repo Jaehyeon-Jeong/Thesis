@@ -273,7 +273,10 @@ Implementation-source distinction:
   - `4-V2`: `I60/R20/ohlc` + all structured context + `film_full`.
   - `4-V3`: `I60/R20/ohlc` + F&G-only + `film_full`.
   - `4-V4`: `I60/R20/ohlc` + technical-only context + `film_full`.
-  - `4-V5`: bounded/residual last-block FiLM.
+  - `4-V5`: `I60/R20/ohlc` + all structured context + `film_full`, five
+    seeds.
+  - `4-V6`: `I60/R20/ohlc_ma_vb` + F&G-only + `film_full`, five seeds.
+  - `4-V7`: bounded/residual last-block FiLM.
 - 4-V0 runner decision:
   - Added `notebooks/kaggle_stage4_v2_p1_visual_only_same_split_one_cell.md`.
   - It intentionally uses the Stage 2 visual-only runner because the first v2
@@ -305,6 +308,15 @@ Implementation-source distinction:
   - It uses `feature_set_name=technical_only` and
     `experiment_suffix=technical_only` to keep outputs separate from all-context
     and F&G-only runs.
+- 4-V5/4-V6 sequencing decision:
+  - Before changing FiLM architecture, finish two remaining context-signal
+    checks under the same FiLM-full structure.
+  - `4-V5` repeats all-context as five seeds to decide whether the earlier
+    seed-42 improvement was robust.
+  - `4-V6` puts F&G-only on top of `ohlc_ma_vb` to test whether external
+    sentiment/regime context adds signal to the strongest visual baseline.
+  - Bounded/residual last-block FiLM is deferred to `4-V7` so context-signal
+    validity and FiLM-architecture changes are not confounded.
 
 ## 한국어
 
@@ -579,7 +591,10 @@ Implementation-source distinction:
   - `4-V2`: `I60/R20/ohlc` + all structured context + `film_full`.
   - `4-V3`: `I60/R20/ohlc` + F&G-only + `film_full`.
   - `4-V4`: `I60/R20/ohlc` + technical-only context + `film_full`.
-  - `4-V5`: bounded/residual last-block FiLM.
+  - `4-V5`: `I60/R20/ohlc` + all structured context + `film_full`, five
+    seeds.
+  - `4-V6`: `I60/R20/ohlc_ma_vb` + F&G-only + `film_full`, five seeds.
+  - `4-V7`: bounded/residual last-block FiLM.
 - 4-V0 runner 결정:
   - `notebooks/kaggle_stage4_v2_p1_visual_only_same_split_one_cell.md`를
     추가했습니다.
@@ -615,3 +630,12 @@ Implementation-source distinction:
   - all-context와 F&G-only output을 덮어쓰지 않도록
     `feature_set_name=technical_only`, `experiment_suffix=technical_only`를
     사용합니다.
+- 4-V5/4-V6 순서 결정:
+  - FiLM architecture를 바꾸기 전에, 같은 FiLM-full 구조에서 남은 context-signal
+    확인을 먼저 끝냅니다.
+  - `4-V5`는 이전 seed-42 all-context 개선이 robust한지 확인하기 위해
+    all-context를 five-seed로 반복합니다.
+  - `4-V6`는 가장 강한 `ohlc_ma_vb` visual baseline 위에 F&G-only를 얹어,
+    외부 sentiment/regime context가 incremental signal을 주는지 확인합니다.
+  - Bounded/residual last-block FiLM은 context signal 여부와 FiLM architecture
+    변경 효과가 섞이지 않도록 `4-V7`로 미룹니다.

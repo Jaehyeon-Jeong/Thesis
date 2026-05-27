@@ -1,6 +1,6 @@
 # 4-V4. Stage 4 v2 OHLC + Technical-Only Context + Full FiLM
 
-Status: five-seed Kaggle runner ready; full result pending.
+Status: five-seed Kaggle run complete; result reviewed.
 
 ## Experiment
 
@@ -82,9 +82,41 @@ outside the plain OHLC image. If `4-V4` approaches `4-V0`, then FiLM can recover
 some of the information that MA/VB images provide. If it remains below `4-V0`,
 then the chart overlay is still the stronger encoding.
 
+## Observed Result
+
+Exported result tables:
+
+```text
+stage4_v2_p5_ohlc_technical_only_film_full_five_seed_seed_results.csv
+stage4_v2_p5_ohlc_technical_only_film_full_five_seed_mean_std_results.csv
+```
+
+Five-seed summary:
+
+```text
+accuracy_mean: 0.560305
+accuracy_std:  0.019348
+roc_auc_mean:  0.554583
+roc_auc_std:   0.016767
+accuracy_mean_minus_stage2_ohlc_mean:  0.002220
+roc_auc_mean_minus_stage2_ohlc_mean:  -0.005635
+predicted_positive_rate_mean: 0.765857
+```
+
+Interpretation:
+
+- Technical-only context was slightly better than F&G-only context, but the
+  improvement over the Stage 2 OHLC baseline was negligible.
+- ROC-AUC remained below the Stage 2 OHLC baseline mean.
+- Seed `45` was strong, but the five-seed average still does not support a
+  robust technical-context improvement.
+- The result strengthens the duplicate-feature interpretation: current
+  BB/MFI/RV FiLM features do not recover the strong `ohlc_ma_vb` visual
+  baseline.
+
 # 4-V4. Stage 4 v2 OHLC + technical-only Context + Full FiLM
 
-상태: five-seed Kaggle runner 준비 완료, full 결과 대기 중.
+상태: five-seed Kaggle run 완료, 결과 검토 완료.
 
 ## 실험
 
@@ -164,3 +196,34 @@ runner는 기본값이 five seeds이고 `SAVE_BACKUP_ZIPS=False`입니다.
 signal을 가진다는 근거가 됩니다. `4-V4`가 `4-V0`에 가까워지면 FiLM이 MA/VB
 이미지에 들어 있던 일부 정보를 회복한다고 볼 수 있습니다. 그래도 `4-V0`보다
 낮으면 chart overlay가 아직 더 강한 encoding이라는 해석이 맞습니다.
+
+## 관찰된 결과
+
+Export 결과표:
+
+```text
+stage4_v2_p5_ohlc_technical_only_film_full_five_seed_seed_results.csv
+stage4_v2_p5_ohlc_technical_only_film_full_five_seed_mean_std_results.csv
+```
+
+Five-seed summary:
+
+```text
+accuracy_mean: 0.560305
+accuracy_std:  0.019348
+roc_auc_mean:  0.554583
+roc_auc_std:   0.016767
+accuracy_mean_minus_stage2_ohlc_mean:  0.002220
+roc_auc_mean_minus_stage2_ohlc_mean:  -0.005635
+predicted_positive_rate_mean: 0.765857
+```
+
+해석:
+
+- Technical-only context는 F&G-only보다 약간 높았지만, Stage 2 OHLC baseline
+  대비 개선폭은 매우 작았습니다.
+- ROC-AUC는 Stage 2 OHLC baseline mean보다 낮았습니다.
+- seed `45`는 강했지만 five-seed 평균 기준 robust한 technical-context 개선이라고
+  보기 어렵습니다.
+- 이 결과는 duplicate-feature 해석을 강화합니다. 현재 BB/MFI/RV FiLM feature는
+  강한 `ohlc_ma_vb` visual baseline을 회복하지 못했습니다.

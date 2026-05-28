@@ -1,333 +1,104 @@
 # Stage 2: BTC Asset-Class Extension
 
-## English
+Stage 2는 Stage 1에서 확인한 Re-image/Stock_CNN-style chart-image CNN 파이프라인을 BTC 단일 자산으로 옮기는 단계입니다. 핵심은 모델 실험을 새로 복잡하게 만드는 것이 아니라, 자산군을 BTC로 바꿨을 때 어떤 image window, return horizon, image specification이 유효한지 선별하는 것입니다.
 
-This folder is reserved for Stage 2 of the thesis pipeline.
+## Goal
 
-Stage 2 objective:
-- Keep the confirmed Re-image/Stock_CNN-style image CNN pipeline from Stage 1.
-- Change the asset universe from public stock image shards to BTC OHLCV.
-- Generate BTC chart images directly from raw OHLCV.
-- Evaluate the BTC single-asset setting with both classification metrics and
-  time-series trading metrics.
-- Produce BTC Grad-CAM figures for every baseline run.
+- Stage 1의 chart-image CNN pipeline을 유지합니다.
+- Stock image shard 대신 BTC OHLCV에서 chart image를 직접 생성합니다.
+- `I5/I20/I60 x R5/R20/R60 x 4 image specs`를 seed 1개로 1차 screening합니다.
+- 효과가 있던 후보를 seed 5개로 재검증합니다.
+- Stage 4의 primary visual baseline을 결정합니다.
 
-Current boundary:
-- Stage 2 can start while Stage 1 Kaggle full runs are still running.
-- Stage 2 final comparison and report must wait until Stage 1 full outputs are
-  available.
-- Stage 2 should use the paper batch size `128` by default because BTC has many
-  fewer samples than the public stock shard.
+## Workflow
 
-Primary data:
-- BTC OHLCV: `kaggle.com/datasets/novandraanugrah/bitcoin-historical-datasets-2018-2024`
+```mermaid
+flowchart LR
+    A[BTC OHLCV audit] --> B[Chart image generation]
+    B --> C[Label/split/normalization]
+    C --> D[I5/I20/I60 StockCNN variants]
+    D --> E[One-seed grid screening]
+    E --> F[Selected five-seed robustness check]
+    F --> G[Classification + trading metrics]
+    G --> H[Grad-CAM + result report]
+    H --> I[Stage 4 baseline selection]
+```
 
-Main documents:
-- [Checklist](checklist.md)
-- [Workflow diagram](workflow_diagram.md)
-- [Stage 2 pipeline](docs/stage2_pipeline.md)
-- [BTC image generation plan](docs/stage2_image_generation_plan.md)
-- [BTC label/split/normalization plan](docs/stage2_label_split_normalization_plan.md)
-- [BTC baseline CNN adaptation plan](docs/stage2_baseline_cnn_adaptation_plan.md)
-- [BTC evaluation and trading metric plan](docs/stage2_evaluation_trading_metric_plan.md)
-- [BTC Grad-CAM plan](docs/stage2_gradcam_plan.md)
-- [Kaggle runner and output plan](docs/stage2_kaggle_runner_output_plan.md)
-- [Implementation readiness review](docs/stage2_implementation_readiness_review.md)
-- [Source map](docs/source_map.md)
+## Checklist And Review Links
 
-### Results
+| Step group | Purpose | Link |
+| --- | --- | --- |
+| Planning checklist | Goal-to-task workflow | [checklist.md](checklist.md) |
+| Pipeline detail | BTC data/image/model/eval flow | [docs/stage2_pipeline.md](docs/stage2_pipeline.md) |
+| Data audit | BTC OHLCV source quality check | [reports/data_audit/btc_ohlcv_audit.md](reports/data_audit/btc_ohlcv_audit.md) |
+| Grid runner review | Single-seed/five-seed runner setup | [checklist_results/2-I11_stage2_grid_runners_and_viewer.md](checklist_results/2-I11_stage2_grid_runners_and_viewer.md) |
+| Single-seed result report | Full 36-run screening result | [reports/stage2_single_seed_result_report.md](reports/stage2_single_seed_result_report.md) |
+| Selected five-seed report | Robustness check result | [reports/stage2_i20_i60_r20_five_seed_result_report.md](reports/stage2_i20_i60_r20_five_seed_result_report.md) |
 
-Current result status:
-- Completed run: single seed `42`
-- Grid size: `36` experiments
-  (`3` image windows x `3` return horizons x `4` image specs)
-- The `I5` family was not expanded to five seeds because the seed-42 screening
-  was weak: `I5` groups were below the majority-class baseline on average, and
-  the best `I5` accuracy was only about `0.524`.
-- Selected five-seed robustness check is completed:
-  `I20/R20` and `I60/R20` across all four image specs and seeds
-  `42, 43, 44, 45, 46` (`40/40` runs ok).
-- Full five-seed stability check over the entire `180`-run grid remains later
-  work before making final global Stage 2 stability claims.
+## Experiment Matrix
 
-Result reports:
-- [Stage 2 single-seed result report](reports/stage2_single_seed_result_report.md)
-- [Stage 2 selected five-seed robustness result report](reports/stage2_i20_i60_r20_five_seed_result_report.md)
+| Axis | Values |
+| --- | --- |
+| Image window/model | `I5`, `I20`, `I60` |
+| Return horizon | `R5`, `R20`, `R60` |
+| Image spec | `ohlc`, `ohlc_vb`, `ohlc_ma`, `ohlc_ma_vb` |
+| First pass | 36 runs, seed `42` |
+| Robustness pass | selected `I20/R20` and `I60/R20` candidates, seeds `42-46` |
 
-#### Selected Five-Seed Robustness Check
+## Current Results
 
-The selected robustness check confirms that the `I60/R20` family is not just a
-single-seed spike. The best five-seed mean configuration is:
+Primary Stage 2 baseline selected for Stage 4:
 
 `I60 / R20 / ohlc_ma_vb`
 
-| Image window | Image spec | Accuracy mean | Accuracy std | Accuracy - majority | ROC-AUC mean | ROC-AUC std |
-|---:|:---|---:|---:|---:|---:|---:|
-| 60 | `ohlc_ma_vb` | 0.5793 | 0.0182 | +0.0380 | 0.5849 | 0.0233 |
-| 60 | `ohlc_vb` | 0.5674 | 0.0173 | +0.0261 | 0.5612 | 0.0186 |
-| 60 | `ohlc` | 0.5581 | 0.0152 | +0.0168 | 0.5602 | 0.0156 |
-| 60 | `ohlc_ma` | 0.5575 | 0.0233 | +0.0162 | 0.5645 | 0.0163 |
+| Image window | Return horizon | Image spec | Accuracy mean | Accuracy std | ROC-AUC mean | ROC-AUC std |
+| ---: | ---: | --- | ---: | ---: | ---: | ---: |
+| 60 | 20 | `ohlc_ma_vb` | 0.5793 | 0.0182 | 0.5849 | 0.0233 |
 
-Interpretation:
-- `I5` was deprioritized after the full single-seed grid because it did not
-  show enough signal to justify immediate five-seed expansion.
-- All selected `I60/R20` variants beat the majority-class baseline on average.
-- All selected `I20/R20` variants fall below the majority-class baseline on
-  average.
-- `I60/R20/ohlc_ma_vb` is the current primary Stage 2 baseline candidate for
-  Stage 4 FiLM comparisons.
-- `I60/R20/ohlc_vb` remains a useful simpler ablation candidate.
+Key interpretation:
+- `I60/R20` is the strongest and most stable family in the current selected checks.
+- `ohlc_ma_vb` is the current main visual baseline because it combines the best window/horizon with MA and volume information.
+- `I5` was not expanded to five seeds because the single-seed screening was weak.
+- Full 180-run five-seed expansion remains unnecessary for the current Stage 4 direction unless a broader Stage 2 stability claim is needed later.
 
-#### Experiment Design
+Main result tables:
+- [Single-seed seed-level results](reports/tables/stage2_single_seed_seed_level_results.csv)
+- [Single-seed summary sorted by accuracy](reports/tables/stage2_single_seed_summary_sorted_by_accuracy.csv)
+- [Selected five-seed seed results](reports/tables/stage2_i20_i60_r20_five_seed_seed_results.csv)
+- [Selected five-seed mean/std results](reports/tables/stage2_i20_i60_r20_five_seed_mean_std_results.csv)
 
-Stage 2 keeps the Stage 1 image-CNN pipeline and changes the asset universe to
-BTC. Each sample uses one BTC chart image ending at date `t`; the label is
-whether the future `R`-day return is positive.
+Grad-CAM:
+- [Stage 2 best Grad-CAM 10-sample Kaggle cell](notebooks/kaggle_stage2_best_gradcam_10_one_cell.md)
+- Preview figure: ![Stage 2 best Grad-CAM preview](reports/figures/gradcam/stage2_single_seed_best_i60_ohlc_ma_vb_r20_gradcam.png)
 
-Image specifications:
+## Code Map
 
-| Image spec | Contents | BTC sample image |
-|:---|:---|:---|
-| `ohlc` | OHLC chart only | ![ohlc](reports/figures/sample_images/btc_i20_ohlc_sample_2021-01-01.png) |
-| `ohlc_vb` | OHLC + volume bars | ![ohlc_vb](reports/figures/sample_images/btc_i20_ohlc_vb_sample_2021-01-01.png) |
-| `ohlc_ma` | OHLC + moving average | ![ohlc_ma](reports/figures/sample_images/btc_i20_ohlc_ma_sample_2021-01-01.png) |
-| `ohlc_ma_vb` | OHLC + moving average + volume bars | ![ohlc_ma_vb](reports/figures/sample_images/btc_i20_ohlc_ma_vb_sample_2021-01-01.png) |
+| Area | Location | Role |
+| --- | --- | --- |
+| Config | [configs/](configs/) | Local/Kaggle path and runtime settings |
+| BTC data | [src/stage2_btc/data/](src/stage2_btc/data/) | OHLCV loading, sample construction, labels/splits |
+| Imaging | [src/stage2_btc/imaging/](src/stage2_btc/imaging/) | BTC chart image rendering |
+| Models | [src/stage2_btc/models/](src/stage2_btc/models/) | I5/I20/I60 Stock_CNN variants |
+| Training | [src/stage2_btc/training/](src/stage2_btc/training/) | Training loop and checkpointing |
+| Evaluation | [src/stage2_btc/evaluation/](src/stage2_btc/evaluation/) | Classification and trading metrics |
+| Interpretability | [src/stage2_btc/interpretability/](src/stage2_btc/interpretability/) | BTC Grad-CAM |
+| Runners | [scripts/](scripts/) | Audit, train, evaluate, grid, summarize |
+| Kaggle cells | [notebooks/](notebooks/) | One-cell execution notebooks |
 
-Comparison axes:
+## Folder Structure
 
-| Axis | Compared values | Purpose |
-|:---|:---|:---|
-| Image window/model | `I5`, `I20`, `I60` | Compare short, medium, and longer chart history |
-| Return horizon | `R5`, `R20`, `R60` | Compare three future prediction intervals |
-| Image specification | `ohlc`, `ohlc_vb`, `ohlc_ma`, `ohlc_ma_vb` | Test whether MA and volume add information |
+```text
+stage2_btc_extension/
+├── checklist.md
+├── checklist_results/
+├── configs/
+├── docs/
+├── notebooks/
+├── reports/
+├── scripts/
+└── src/stage2_btc/
+```
 
-#### Comparison Summary
+## Stage 4 Dependency
 
-Average by image window:
-
-| Image window | Accuracy | AUC | Accuracy - majority | Interpretation |
-|---:|---:|---:|---:|:---|
-| 5 | 0.5140 | 0.5075 | -0.0229 | Weakest on average |
-| 20 | 0.5173 | 0.5120 | -0.0196 | Slightly better than I5, still weak |
-| 60 | 0.5439 | 0.5323 | +0.0071 | Best average window |
-
-Average by return horizon:
-
-| Return horizon | Accuracy | AUC | Accuracy - majority | Interpretation |
-|---:|---:|---:|---:|:---|
-| 5 | 0.5157 | 0.5094 | -0.0104 | Short horizon is noisy |
-| 20 | 0.5427 | 0.5277 | +0.0014 | Best average prediction horizon |
-| 60 | 0.5167 | 0.5147 | -0.0265 | Classification signal is weaker |
-
-Average by image specification:
-
-| Image spec | Accuracy | AUC | Accuracy - majority | Interpretation |
-|:---|---:|---:|---:|:---|
-| `ohlc` | 0.5183 | 0.5010 | -0.0186 | Chart-only signal is weak |
-| `ohlc_vb` | 0.5303 | 0.5201 | -0.0066 | Best average accuracy |
-| `ohlc_ma` | 0.5253 | 0.5167 | -0.0116 | MA helps somewhat |
-| `ohlc_ma_vb` | 0.5263 | 0.5312 | -0.0105 | Best average AUC and best individual run |
-
-Top accuracy configurations:
-
-| Tier | Image window | Return horizon | Image spec | Accuracy | AUC | Accuracy - majority | Interpretation |
-|:---|---:|---:|:---|---:|---:|---:|:---|
-| Best | 60 | 20 | `ohlc_ma_vb` | 0.6031 | 0.6169 | +0.0618 | Strongest single-seed result |
-| Promising | 60 | 20 | `ohlc_vb` | 0.5947 | 0.5828 | +0.0534 | Strong alternative without MA |
-| Promising | 60 | 20 | `ohlc_ma` | 0.5711 | 0.5608 | +0.0298 | MA helps, but volume adds more |
-| Caution | 20 | 20 | `ohlc_vb` | 0.5455 | 0.5309 | +0.0042 | Slightly above majority only |
-| Caution | 60 | 60 | `ohlc` | 0.5432 | 0.4891 | +0.0000 | Trading metric is high, but AUC is weak |
-
-Main interpretation:
-- The clearest signal is concentrated in the `I60/R20` group.
-- The best single run is `I60/R20/ohlc_ma_vb`.
-- `ohlc_ma_vb` gives the best individual result and best average AUC.
-- Only `5` of `36` configurations beat the majority-class baseline, so this is
-  not yet a broad stability claim.
-
-Risk interpretation:
-- Severe train-validation overfitting is not visible in the best run at the best
-  epoch.
-- The result still has small-sample and model-selection risk because the best
-  configuration was selected from `36` single-seed experiments.
-- Five-seed reruns are required before making final stability claims.
-
-Result tables:
-- [Seed-level results](reports/tables/stage2_single_seed_seed_level_results.csv)
-- [Mean/std summary sorted by accuracy](reports/tables/stage2_single_seed_summary_sorted_by_accuracy.csv)
-- [Top 20 accuracy](reports/tables/stage2_single_seed_top20_accuracy.csv)
-- [Top 20 ROC-AUC](reports/tables/stage2_single_seed_top20_roc_auc.csv)
-- [Top 20 long/flat Sharpe net](reports/tables/stage2_single_seed_top20_long_flat_sharpe_net.csv)
-
-Grad-CAM preview for the best single-seed configuration:
-
-![Stage 2 best Grad-CAM preview](reports/figures/gradcam/stage2_single_seed_best_i60_ohlc_ma_vb_r20_gradcam.png)
-
-This preview contains `2` predicted-up and `2` predicted-down examples. The final
-Re-Imagining Figure-13-style output must contain `10` predicted-up and `10`
-predicted-down examples. Generate it in Kaggle with:
-[kaggle_stage2_best_gradcam_10_one_cell.md](notebooks/kaggle_stage2_best_gradcam_10_one_cell.md)
-
-## 한국어
-
-이 폴더는 논문 파이프라인의 2단계 작업 공간입니다.
-
-2단계 목표:
-- 1단계에서 확정한 Re-image/Stock_CNN식 image CNN 파이프라인을 유지합니다.
-- 자산군만 public stock image shard에서 BTC OHLCV로 바꿉니다.
-- BTC raw OHLCV에서 chart image를 직접 생성합니다.
-- BTC 단일 자산 setting에서는 classification metric과 time-series trading
-  metric을 함께 봅니다.
-- 모든 BTC baseline run에서 Grad-CAM 그림을 생성합니다.
-
-현재 경계:
-- Stage 1 Kaggle full run이 도는 동안 Stage 2 준비 작업은 시작할 수 있습니다.
-- Stage 2의 최종 비교와 보고서는 Stage 1 full output이 나온 뒤 확정합니다.
-- BTC dataset은 stock shard보다 훨씬 작으므로 Stage 2 기본 batch size는 논문값
-  `128`을 유지합니다.
-
-주요 데이터:
-- BTC OHLCV: `kaggle.com/datasets/novandraanugrah/bitcoin-historical-datasets-2018-2024`
-
-주요 문서:
-- [Checklist](checklist.md)
-- [Workflow diagram](workflow_diagram.md)
-- [Stage 2 pipeline](docs/stage2_pipeline.md)
-- [BTC image generation plan](docs/stage2_image_generation_plan.md)
-- [BTC label/split/normalization plan](docs/stage2_label_split_normalization_plan.md)
-- [BTC baseline CNN adaptation plan](docs/stage2_baseline_cnn_adaptation_plan.md)
-- [BTC evaluation and trading metric plan](docs/stage2_evaluation_trading_metric_plan.md)
-- [BTC Grad-CAM plan](docs/stage2_gradcam_plan.md)
-- [Kaggle runner and output plan](docs/stage2_kaggle_runner_output_plan.md)
-- [Implementation readiness review](docs/stage2_implementation_readiness_review.md)
-- [Source map](docs/source_map.md)
-
-### 결과
-
-현재 결과 상태:
-- 완료된 run: seed `42` 한 개
-- Grid size: `36`개 실험
-  (`3` image window x `3` return horizon x `4` image spec)
-- `I5` 계열은 seed `42` screening에서 약했기 때문에 five-seed로 확장하지
-  않았습니다. `I5` 그룹은 평균적으로 majority-class baseline보다 낮았고,
-  가장 좋은 `I5` accuracy도 약 `0.524` 수준이었습니다.
-- 선별 5-seed robustness check를 완료했습니다:
-  `I20/R20`과 `I60/R20`, image spec 4개, seed `42, 43, 44, 45, 46`
-  (`40/40` runs ok).
-- 전체 `180`개 grid에 대한 full five-seed stability check는 최종 Stage 2 안정성
-  결론을 내기 전 later work로 남겨둡니다.
-
-결과 보고:
-- [Stage 2 single-seed result report](reports/stage2_single_seed_result_report.md)
-- [Stage 2 selected five-seed robustness result report](reports/stage2_i20_i60_r20_five_seed_result_report.md)
-
-#### 선별 5-seed robustness check
-
-선별 robustness check 결과, `I60/R20` 계열은 seed `42` 한 번의 spike만은 아닌 것으로
-확인되었습니다. 5-seed 평균 기준 가장 좋은 조합은 다음입니다.
-
-`I60 / R20 / ohlc_ma_vb`
-
-| Image window | Image spec | Accuracy mean | Accuracy std | Accuracy - majority | ROC-AUC mean | ROC-AUC std |
-|---:|:---|---:|---:|---:|---:|---:|
-| 60 | `ohlc_ma_vb` | 0.5793 | 0.0182 | +0.0380 | 0.5849 | 0.0233 |
-| 60 | `ohlc_vb` | 0.5674 | 0.0173 | +0.0261 | 0.5612 | 0.0186 |
-| 60 | `ohlc` | 0.5581 | 0.0152 | +0.0168 | 0.5602 | 0.0156 |
-| 60 | `ohlc_ma` | 0.5575 | 0.0233 | +0.0162 | 0.5645 | 0.0163 |
-
-해석:
-- `I5`는 single-seed 전체 grid에서 충분한 signal을 보이지 않았기 때문에
-  five-seed 확장 우선순위에서 제외했습니다.
-- 선별한 `I60/R20` 네 가지 image spec은 모두 평균적으로 majority-class baseline을 넘었습니다.
-- 선별한 `I20/R20` 네 가지 image spec은 모두 평균적으로 majority-class baseline보다 낮았습니다.
-- `I60/R20/ohlc_ma_vb`는 현재 Stage 4 FiLM 비교의 primary Stage 2 baseline 후보입니다.
-- `I60/R20/ohlc_vb`는 MA를 제외한 더 단순한 ablation 후보로 유지할 수 있습니다.
-
-#### 실험 구조
-
-Stage 2에서는 Stage 1의 image-CNN pipeline을 유지하고, 자산군만 BTC로 바꿉니다.
-각 sample은 `t` 시점까지의 BTC chart image 하나를 사용하고, label은 이후 `R`일
-수익률이 양수인지 여부입니다.
-
-Image specification:
-
-| Image spec | 구성 | BTC sample image |
-|:---|:---|:---|
-| `ohlc` | OHLC chart only | ![ohlc](reports/figures/sample_images/btc_i20_ohlc_sample_2021-01-01.png) |
-| `ohlc_vb` | OHLC + volume bars | ![ohlc_vb](reports/figures/sample_images/btc_i20_ohlc_vb_sample_2021-01-01.png) |
-| `ohlc_ma` | OHLC + moving average | ![ohlc_ma](reports/figures/sample_images/btc_i20_ohlc_ma_sample_2021-01-01.png) |
-| `ohlc_ma_vb` | OHLC + moving average + volume bars | ![ohlc_ma_vb](reports/figures/sample_images/btc_i20_ohlc_ma_vb_sample_2021-01-01.png) |
-
-비교 축:
-
-| 비교 축 | 비교값 | 목적 |
-|:---|:---|:---|
-| Image window/model | `I5`, `I20`, `I60` | 짧은/중간/긴 chart history 비교 |
-| Return horizon | `R5`, `R20`, `R60` | 세 가지 미래 예측 구간 비교 |
-| Image specification | `ohlc`, `ohlc_vb`, `ohlc_ma`, `ohlc_ma_vb` | MA와 volume이 정보를 추가하는지 확인 |
-
-#### 비교 요약
-
-Image window별 평균:
-
-| Image window | Accuracy | AUC | Accuracy - majority | 해석 |
-|---:|---:|---:|---:|:---|
-| 5 | 0.5140 | 0.5075 | -0.0229 | 평균적으로 가장 약함 |
-| 20 | 0.5173 | 0.5120 | -0.0196 | I5보다 조금 낫지만 아직 약함 |
-| 60 | 0.5439 | 0.5323 | +0.0071 | 평균적으로 가장 좋은 window |
-
-Return horizon별 평균:
-
-| Return horizon | Accuracy | AUC | Accuracy - majority | 해석 |
-|---:|---:|---:|---:|:---|
-| 5 | 0.5157 | 0.5094 | -0.0104 | 짧은 horizon은 noise가 큼 |
-| 20 | 0.5427 | 0.5277 | +0.0014 | 평균적으로 가장 좋은 예측 구간 |
-| 60 | 0.5167 | 0.5147 | -0.0265 | 분류 signal은 약함 |
-
-Image specification별 평균:
-
-| Image spec | Accuracy | AUC | Accuracy - majority | 해석 |
-|:---|---:|---:|---:|:---|
-| `ohlc` | 0.5183 | 0.5010 | -0.0186 | chart-only signal은 약함 |
-| `ohlc_vb` | 0.5303 | 0.5201 | -0.0066 | 평균 accuracy가 가장 좋음 |
-| `ohlc_ma` | 0.5253 | 0.5167 | -0.0116 | MA가 어느 정도 도움 |
-| `ohlc_ma_vb` | 0.5263 | 0.5312 | -0.0105 | 평균 AUC와 개별 최고 run에서 가장 좋음 |
-
-Accuracy 상위 조합:
-
-| 구분 | Image window | Return horizon | Image spec | Accuracy | AUC | Accuracy - majority | 해석 |
-|:---|---:|---:|:---|---:|---:|---:|:---|
-| Best | 60 | 20 | `ohlc_ma_vb` | 0.6031 | 0.6169 | +0.0618 | single-seed 기준 최강 조합 |
-| Promising | 60 | 20 | `ohlc_vb` | 0.5947 | 0.5828 | +0.0534 | MA 없이도 강한 대안 |
-| Promising | 60 | 20 | `ohlc_ma` | 0.5711 | 0.5608 | +0.0298 | MA 효과는 있으나 volume 추가가 더 강함 |
-| Caution | 20 | 20 | `ohlc_vb` | 0.5455 | 0.5309 | +0.0042 | majority보다 조금 높지만 차이가 작음 |
-| Caution | 60 | 60 | `ohlc` | 0.5432 | 0.4891 | +0.0000 | trading metric은 높지만 AUC가 약함 |
-
-핵심 해석:
-- 가장 뚜렷한 signal은 `I60/R20` 그룹에 집중되어 있습니다.
-- single run 기준 best는 `I60/R20/ohlc_ma_vb`입니다.
-- `ohlc_ma_vb`는 개별 최고 성능과 평균 AUC에서 가장 좋습니다.
-- 36개 조합 중 majority-class baseline을 이긴 조합은 5개뿐이므로, 아직 넓은
-  안정성 결론으로 보면 안 됩니다.
-
-위험 해석:
-- best run의 best epoch 기준으로 심한 train-validation overfitting은 보이지 않습니다.
-- 다만 `36`개 single-seed 실험 중 가장 좋은 configuration을 고른 것이므로
-  small-sample risk와 model-selection risk는 남아 있습니다.
-- 최종 안정성 주장은 5-seed rerun 이후에만 해야 합니다.
-
-결과표:
-- [Seed-level results](reports/tables/stage2_single_seed_seed_level_results.csv)
-- [Mean/std summary sorted by accuracy](reports/tables/stage2_single_seed_summary_sorted_by_accuracy.csv)
-- [Top 20 accuracy](reports/tables/stage2_single_seed_top20_accuracy.csv)
-- [Top 20 ROC-AUC](reports/tables/stage2_single_seed_top20_roc_auc.csv)
-- [Top 20 long/flat Sharpe net](reports/tables/stage2_single_seed_top20_long_flat_sharpe_net.csv)
-
-Best single-seed configuration의 Grad-CAM preview:
-
-![Stage 2 best Grad-CAM preview](reports/figures/gradcam/stage2_single_seed_best_i60_ohlc_ma_vb_r20_gradcam.png)
-
-이 preview는 predicted-up 2개와 predicted-down 2개만 포함합니다. 최종
-Re-Imagining Figure 13 스타일 산출물은 predicted-up 10개와 predicted-down 10개를
-포함해야 합니다. Kaggle에서 아래 cell로 생성합니다:
-[kaggle_stage2_best_gradcam_10_one_cell.md](notebooks/kaggle_stage2_best_gradcam_10_one_cell.md)
+Stage 4 uses `I60/R20/ohlc_ma_vb` as the main visual baseline. The Stage 4 question is therefore not “does the chart CNN work?”, but “can market context improve or explain this already strong BTC chart-image baseline?”

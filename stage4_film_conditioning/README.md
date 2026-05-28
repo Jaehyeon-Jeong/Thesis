@@ -1,765 +1,140 @@
-# Stage 4: Market Context Fusion + FiLM Conditioning
+# Stage 4: Market Context Conditioning
 
-## English
+Stage 4는 Stage 2에서 가장 안정적이었던 BTC chart-image CNN baseline에 market context를 붙이는 단계입니다. 핵심 질문은 “이미 강한 chart CNN에 시장 맥락을 어떻게 붙이면 성능과 해석력이 좋아지는가?”입니다.
 
-This folder is the Stage 4 workspace for testing whether structured market
-context can improve the BTC chart-image CNN through conditional feature
-modulation.
+## Goal
 
-Stage 4 objective:
-- Keep the Stage 2 BTC image-generation, label, split, normalization,
-  evaluation, trading metric, and Grad-CAM pipeline fixed.
-- Use the selected five-seed Stage 2 baseline as the primary image model:
-  `I60/R20/ohlc_ma_vb`.
-- Build a structured market context vector from information available at or
-  before the image end date `t`.
-- Compare simple context fusion against FiLM-style conditional modulation.
-- Use the comparison to answer why FiLM is needed rather than only adding more
-  parameters or appending side information.
+- Stage 2의 BTC image/label/split/evaluation pipeline을 유지합니다.
+- Primary visual baseline은 `I60/R20/ohlc_ma_vb`입니다.
+- Market context를 이미지에 직접 그리지 않고 별도 numeric context vector로 입력합니다.
+- `concat`, `gating`, `FiLM gamma-only`, `FiLM full`을 비교합니다.
+- 단순 context 추가가 아니라 FiLM의 conditional modulation과 해석 가능성을 검증합니다.
 
-Primary Stage 4 image input:
-- `I60/R20/ohlc_ma_vb`
-- This is selected because the Stage 2 selected five-seed check found it to be
-  the strongest candidate:
-  - accuracy mean `0.5793`
-  - accuracy std `0.0182`
-  - ROC-AUC mean `0.5849`
-- The seed-42 Stage 2 run is useful for metadata and Grad-CAM inspection, but
-  the Stage 4 baseline claim should use the five-seed mean.
+## Workflow
 
-Stage 3 dependency position:
-- Stage 3 Linear is not a Stage 4 architecture dependency.
-- It is kept as a negative/simple-parameter ablation.
-- The preliminary matching seed-42 test dropped from Stage 2 accuracy
-  `0.603053` and ROC-AUC `0.616950` to Stage 3 Linear accuracy `0.541291` and
-  ROC-AUC `0.522101`.
+```mermaid
+flowchart LR
+    A[Stage 2 selected baseline] --> B[Context source audit]
+    B --> C[Context feature builder]
+    C --> D[Train-only normalization]
+    D --> E[Context encoder MLP]
+    E --> F{Fusion method}
+    F --> F1[Concat]
+    F --> F2[Gating]
+    F --> F3[FiLM gamma-only]
+    F --> F4[FiLM full]
+    F1 --> G[Metrics + trading]
+    F2 --> G
+    F3 --> G
+    F4 --> G
+    G --> H[Grad-CAM + modulation export]
+    H --> I[v1/v2 diagnosis]
+    I --> J[Next: bounded/residual last-block FiLM]
+```
 
-Structured market context candidates:
-- Fear & Greed score.
-- Bollinger %B.
-- Bollinger bandwidth.
-- Money Flow Index.
-- Realized volatility.
+## Checklist And Review Links
 
-Important modeling rule:
-- These context values are not drawn into the chart image in the main Stage 4
-  experiment.
-- The chart image remains the Stage 2 `ohlc_ma_vb` image.
-- The context values are fed as a separate numeric vector.
-- The numeric context vector is normalized with train-only statistics, encoded
-  by an MLP, and then used by the fusion/modulation model.
-
-Context encoder and normalization decision:
-- Primary model input uses 8 matched-window features:
-  `fg_value`, `fg_mean_60`, `fg_delta_60`, `fg_std_60`,
-  `bb_percent_b_60`, `bb_bandwidth_60`, `mfi_60`, and `rv_60`.
-- F&G and MFI-style 0-100 values are scaled by `100`; positive skewed
-  volatility/range values use `log1p`.
-- All splits use train-only median imputation, train-only 1/99% clipping, and
-  train-only z-score normalization.
-- The shared context encoder is intentionally small:
-  `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`.
-- Primary sample timing note:
-  - `I60/R20/ohlc_ma_vb` requires both a 60-day image and a valid 60-day MA
-    line inside that image.
-  - With BTC OHLCV starting on `2018-01-01`, the first valid primary sample end
-    date is `2018-04-29`.
-  - The offset is `118` days because the MA60 and image windows are both
-    inclusive: `(60 - 1) + (60 - 1) = 118`.
-  - F&G starts on `2018-02-01`, so the F&G start date does not remove any valid
-    primary samples.
-  - Only one raw F&G missing date directly overlaps a primary sample end date:
-    `2024-10-26`; it is handled with the previous available F&G value.
-
-Main Stage 4 ablation models:
-
-| Track | Model | What changes | Interpretation |
-|:---|:---|:---|:---|
-| `4-A` | CNN + context concat | Append context embedding to CNN feature before classifier | Tests whether simple side-information fusion is enough |
-| `4-B` | CNN + context gating | Use context to multiply CNN channels/features by learned gates | Tests a simpler modulation alternative |
-| `4-C` | CNN + context FiLM gamma-only | Use context to generate block-wise `gamma`; apply `F' = gamma * F` | Tests FiLM scaling without additive shift |
-| `4-D` | CNN + context FiLM full | Use context to generate block-wise `gamma` and `beta`; apply `F' = gamma * F + beta` | Main FiLM model and interpretability target |
-
-Insertion decision:
-- `4-A` concatenates the context embedding after the I60 CNN flatten feature:
-  `(B, 184320) + (B, 32) -> (B, 184352)`.
-- `4-B` gates the final I60 feature map only:
-  `(B, 512, 2, 180)` with `gate = 2 * sigmoid(raw_gate)`.
-- `4-C` and `4-D` insert FiLM after BatchNorm and before LeakyReLU in every
-  I60 convolution block.
-- Gate, gamma, and beta heads are zero-initialized so gating starts at `1`,
-  gamma starts at `1`, and beta starts at `0`.
-
-Explanation/export decision:
-- Grad-CAM target is the predicted-class pre-softmax logit.
-- Final Stage 4 figures use `10` Predicted Up and `10` Predicted Down test
-  samples; smoke runs may use `2` per predicted class.
-- 4-A exports Grad-CAM plus context values.
-- 4-B exports Grad-CAM plus context and final-layer gate values.
-- 4-C exports Grad-CAM on post-gamma feature maps plus context and gamma values.
-- 4-D exports Grad-CAM on post-gamma/beta feature maps plus context, gamma, and
-  beta values.
-
-Kaggle runner and backup decision:
-- The first implementation runner should execute the numeric-context four-way
-  ablation only: `concat`, `gating`, `film_gamma`, and `film_full`.
-- The runner needs access to the Stage 2 `src` package because Stage 4 reuses
-  the fixed BTC data/image/split/evaluation pipeline instead of rewriting it.
-- First full sanity run: all four ablations with seed `42`.
-- Later robustness run: the same four ablations with seeds
-  `42, 43, 44, 45, 46`.
-- Backup root is fixed to `/kaggle/working/stage4_saved_outputs`.
-- The runner must backup after context build, training, prediction evaluation,
-  trading evaluation, Grad-CAM/export, output check, and summary.
-- An experiment is complete only when the output checker confirms checkpoint,
-  predictions, metrics, trading metrics, Grad-CAM, context exports, modulation
-  exports where applicable, and manifests. Checkpoint existence alone is not a
-  completed Stage 4 result.
-
-Why this matches the advisor's direction:
-- The chart-image CNN baseline is already strong.
-- The research question is not simply whether chart images work.
-- The research question is whether market context can make the visual feature
-  extractor more adaptive to regime/state.
-- FiLM is useful because the path from context to feature modulation is explicit:
-  the model produces gates/gamma/beta values that can be analyzed by date,
-  market regime, layer, channel, confidence, and correctness.
-
-Advisor direction file mapping:
-- Source: `/Users/jaehyeonjeong/Desktop/film_chart_research_summary.md`.
-- It frames FiLM as conditional modulation for chart-image features, not as a
-  full visual-question-answering task.
-- It states that the prediction query is effectively fixed, so an RNN question
-  encoder is not essential.
-- It recommends compact structured metadata and an MLP/embedding-based condition
-  encoder.
-- It recommends comparing CNN-only, naive condition concatenation, FiLM, and an
-  optional attention-based fusion alternative.
-- This is why Stage 4 uses structured numeric context first and compares
-  concat, gating, gamma-only FiLM, and full FiLM.
-
-News-context position:
-- News is not removed from the thesis.
-- Candidate source: Hugging Face `edaschau/bitcoin_news`.
-- Public metadata checked on 2026-05-25 shows `210,832` rows, date range
-  2011-2025, and columns such as `date_time`, `title`, `source`, `url`, and
-  `article_text`.
-- News requires source audit, publication-time alignment, daily aggregation, and
-  encoder/cache rules before model training.
-- Therefore it is kept as a second-phase context track after the structured
-  numeric-context ablation is stable.
-- 4-3 decision: first news version should be headline-only, strict `t-1`, and
-  encoded with train-fit non-LLM text features.
-
-Stage 4 v1 five-seed interpretation:
-- The four-ablation five-seed run is complete for
-  `I60/R20/ohlc_ma_vb`, context window `60`, seeds `42, 43, 44, 45, 46`.
-- Best Stage 4 v1 method: `film_full`.
-- `film_full` five-seed summary:
-  - accuracy mean `0.5510`, accuracy std `0.0520`;
-  - ROC-AUC mean `0.5677`;
-  - F1 mean `0.5393`.
-- The selected Stage 2 visual baseline remains stronger:
-  - accuracy mean `0.5793`;
-  - ROC-AUC mean `0.5849`.
-- Seed-level diagnosis:
-  - seed `42` was promising: accuracy `0.5843`, ROC-AUC `0.5968`;
-  - seed `45` collapsed to all-Down prediction: predicted-positive rate `0.0`,
-    F1 `0.0`.
-- Current interpretation: v1 shows that context-conditioned FiLM is possible,
-  but not yet robust. The next step is not to make context more complex; it is
-  to isolate whether the drop comes from context redundancy, sample/run
-  conditions, or FiLM instability.
-
-Stage 4 v2 diagnostic priorities:
-
-| Priority | Experiment | Purpose |
+| Step group | Purpose | Link |
 | --- | --- | --- |
-| `4-V0` | `I60/R20/ohlc_ma_vb`, visual-only, no context | Same selected visual baseline control before changing FiLM |
-| `4-V1` | `I60/R20/ohlc`, visual-only, no context | Measure how much MA/VB images already encode technical context |
-| `4-V2` | `I60/R20/ohlc` + all context + `film_full` | Test the duplicate-feature hypothesis |
-| `4-V3` | `I60/R20/ohlc` + F&G-only + `film_full` | Isolate image-external regime/sentiment context |
-| `4-V4` | `I60/R20/ohlc` + technical-only context + `film_full` | Test BB/MFI/RV without MA/VB image overlap |
-| `4-V5` | `I60/R20/ohlc` + all context + `film_full`, five seeds | Check whether seed-42 all-context gain is robust |
-| `4-V6` | `I60/R20/ohlc_ma_vb` + F&G-only + `film_full`, five seeds | Test external context on top of the strongest visual baseline |
-| `4-V7` | bounded/residual last-block FiLM | Preserve visual evidence and reduce seed collapse |
+| Planning checklist | Goal-to-task workflow | [checklist.md](checklist.md) |
+| Pipeline detail | Stage 4 flow | [docs/stage4_pipeline.md](docs/stage4_pipeline.md) |
+| Professor direction brief | Why context + FiLM is the direction | [docs/professor_meeting_stage4_direction_brief.md](docs/professor_meeting_stage4_direction_brief.md) |
+| FiLM insertion design | Where concat/gating/FiLM are attached | [docs/film_insertion_design.md](docs/film_insertion_design.md) |
+| Context/news plan | Structured context and future news track | [docs/condition_track_plan.md](docs/condition_track_plan.md), [docs/news_context_plan.md](docs/news_context_plan.md) |
+| v1 interpretation report | Five-seed v1 interpretation | [reports/stage4_v1_interpretation/stage4_v1_interpretation_report.md](reports/stage4_v1_interpretation/stage4_v1_interpretation_report.md) |
 
-Current v2 execution status:
-- `4-V0` runner is ready:
-  `notebooks/kaggle_stage4_v2_p1_visual_only_same_split_one_cell.md`.
-- `4-V1` runner is ready:
-  `notebooks/kaggle_stage4_v2_p2_ohlc_visual_only_one_cell.md`.
-- `4-V2` runner is ready:
-  `notebooks/kaggle_stage4_v2_p3_ohlc_all_context_film_full_one_cell.md`.
-- `4-V3` five-seed runner is ready:
-  `notebooks/kaggle_stage4_v2_p4_ohlc_fg_only_film_full_five_seed_one_cell.md`.
-- `4-V4` five-seed runner is ready:
-  `notebooks/kaggle_stage4_v2_p5_ohlc_technical_only_film_full_five_seed_one_cell.md`.
-- `4-V5` five-seed runner is ready:
-  `notebooks/kaggle_stage4_v2_p6_ohlc_all_context_film_full_five_seed_one_cell.md`.
-- `4-V6` five-seed runner is complete:
-  `notebooks/kaggle_stage4_v2_p7_ohlc_ma_vb_fg_only_film_full_five_seed_one_cell.md`.
-- `4-V0` full Kaggle result was checked locally from the exported CSV and
-  reproduces the Stage 2 seed-42 `I60/R20/ohlc_ma_vb` result.
-- `4-V1` full Kaggle result was checked locally from the exported CSV and
-  reproduces the Stage 2 seed-42 `I60/R20/ohlc` result. Accuracy was `0.5420`
-  with predicted-positive rate `0.9632`, confirming that plain OHLC is much
-  weaker than `ohlc_ma_vb`.
-- `4-V2` seed-42 result showed partial recovery versus `4-V1`: accuracy
-  `0.5725`, ROC-AUC `0.5573`, predicted-positive rate `0.7828`.
-- `4-V3` five-seed result showed that F&G-only FiLM did not materially improve
-  over Stage 2 OHLC: accuracy mean `0.5586`, ROC-AUC mean `0.5523`.
-- `4-V4` five-seed result showed that technical-only FiLM was also weak:
-  accuracy mean `0.5603`, ROC-AUC mean `0.5546`.
-- `4-V5` five-seed result showed that all-context FiLM was not robust:
-  accuracy mean `0.5574`, ROC-AUC mean `0.5519`.
-- `4-V6` five-seed result showed that F&G-only external context on top of
-  `ohlc_ma_vb` is still unstable under full FiLM: accuracy mean `0.5524`,
-  ROC-AUC mean `0.5465`. Seeds `42`, `45`, and `46` were close to the Stage 2
-  visual baseline, while seeds `43` and `44` collapsed toward mostly Up
-  predictions.
-- From `4-V3` onward, v2 diagnostic runs default to five seeds.
-- Next fixed order: architecture-level bounded/residual last-block FiLM. The
-  goal is to preserve the strong Stage 2 visual evidence while limiting
-  context-driven seed collapse.
+## Context Features
 
-Implementation readiness decision:
-- `4-I0` is complete.
-- Stage 4 code should add a `stage2_dependency` config section and import Stage
-  2 helpers for BTC loading, sample generation, image generation, split,
-  normalization, evaluation, and trading metrics.
-- Local BTC OHLCV data exists.
-- Local F&G data is now available at
-  `stage4_film_conditioning/FG_data/fear_greed_index.csv`.
-  The raw CSV is not tracked in GitHub; only the data availability note and
-  audit summary are tracked.
-- The first full execution target remains Kaggle, but local context feature
-  development can now use the supplied F&G CSV.
-- The detailed task map is stored in
-  `reports/tables/stage4_implementation_task_map.csv`.
+Primary structured context vector:
 
-Implementation status:
-- `4-I1` is complete.
-- Added local/Kaggle configs, Stage 4 config/path/runtime/seed helpers, script
-  path utilities, and `check_stage4_scaffold.py`.
-- Local scaffold check passed and confirmed BTC, F&G, and Stage 2 `src`
-  availability.
-- `4-I2` is complete.
-- Added F&G source audit, OHLCV-derived context features, and train-only context
-  preprocessing.
-- Local I60/R20/ohlc_ma_vb context build produced `2,399` rows:
-  train `671`, validation `287`, test `1,441`.
-- Primary context feature missing-rate warnings: none.
-- `4-I3` is complete.
-- Added the shared context MLP encoder:
-  `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`.
-- Local check passed on dummy context tensors and real normalized rows from the
-  `4-I2` context table.
-- `4-I4` is complete.
-- Added the `CNN + context concat` model:
-  - Stage 2 I60 Stock_CNN convolution blocks are reused unchanged.
-  - The Stage 2 final classifier is replaced with
-    `Dropout(0.5) -> Linear(184352, 2)`.
-  - Tensor path:
-    `(B, 1, 96, 180) -> CNN -> (B, 512, 2, 180) -> flatten (B, 184320)`;
-    context `(B, 8) -> MLP -> (B, 32)`;
-    concat `(B, 184352) -> logits (B, 2)`.
-  - Parameter count check passed: `2,954,370`, which is `+1,408` vs the Stage
-    2 I60 baseline.
-- `4-I5` is complete.
-- Added the `CNN + context gating` model:
-  - Stage 2 I60 Stock_CNN convolution blocks are reused unchanged.
-  - Context embedding `(B, 32)` generates a channel gate `(B, 512)`.
-  - Gate formula: `gate = 2 * sigmoid(raw_gate)`.
-  - The gate is applied to the final feature map `(B, 512, 2, 180)`.
-  - The classifier input remains `(B, 184320)`.
-  - Gate head is zero-initialized, so the model starts from identity
-    modulation with gate min/max `1.0 / 1.0`.
-  - Parameter count check passed: `2,971,202`, which is `+18,240` vs the Stage
-    2 I60 baseline.
-- `4-I6` is complete.
-- Added the reusable FiLM building blocks:
-  - `FeatureWiseAffineModulation` applies channel-wise `F' = gamma * F` or
-    `F' = gamma * F + beta` to a CNN feature map.
-  - `FilmParameterGenerator` maps the 32-dim context embedding to block-wise
-    gamma/beta tensors for I60 channels `[64, 128, 256, 512]`.
-  - Gamma-only generator parameter count: `31,680`.
-  - Full gamma/beta generator parameter count: `63,360`.
-  - Heads are zero-initialized so gamma starts at `1.0` and beta starts at
-    `0.0`, preserving the Stage 2 CNN feature path at initialization.
-  - Local FiLM layer/generator check passed on dummy feature maps and real
-    normalized context rows.
-- `4-I7` is complete.
-- Added the gamma-only and full FiLM Stock_CNN models:
-  - `FilmContextStockCNN` reuses the Stage 2 Stock_CNN convolution blocks.
-  - FiLM is inserted in every I60 block as
-    `Conv2d -> BatchNorm2d -> FiLM -> LeakyReLU -> MaxPool2d`.
-  - `film_gamma`: `F' = gamma * F`; parameter count `2,985,986`, which is
-    `+33,024` vs the Stage 2 I60 baseline.
-  - `film_full`: `F' = gamma * F + beta`; parameter count `3,017,666`, which is
-    `+64,704` vs the Stage 2 I60 baseline.
-  - Local model shape checks passed for both models, including dummy tensors,
-    real normalized context rows, and all-block identity initialization.
-- `4-I8` is complete.
-- Added the Stage 4 context runner:
-  - `scripts/run_stage4_context_model.py` runs one context-conditioned training
-    job.
-  - `src/stage4_film/runners/context_experiment.py` reuses Stage 2 BTC
-    data/image/split/pixel-normalization and attaches normalized context
-    tensors.
-  - `src/stage4_film/training/loop.py` trains with `model(image, context)`.
-  - Gate/FiLM heads are reset to identity after generic weight initialization.
-  - Local smoke training passed for `concat` and `film_gamma`.
-- `4-I9` is complete.
-- Added Stage 4 prediction and trading exports:
-  - `scripts/evaluate_stage4_predictions.py` reloads a Stage 4 checkpoint and
-    writes prediction CSV plus classification metrics.
-  - `scripts/evaluate_stage4_trading.py` reads the prediction CSV and writes
-    BTC long/flat and long/short trading metrics.
-  - Classification/trading metric formulas reuse Stage 2; model inference uses
-    `model(image, context)`.
-  - Local export checks passed for `concat` and `film_gamma` smoke checkpoints.
-- `4-I10` is complete.
-- Added Stage 4 Grad-CAM plus context/modulation export:
-  - `scripts/generate_stage4_gradcam_context.py` reloads a Stage 4 checkpoint
-    and prediction CSV, then computes predicted-class Grad-CAM through
-    `model(image, context)`.
-  - The figure is saved with `samples.csv`, `modulation_summary.csv`, and
-    `modulation_values.json`.
-  - `concat` exports context values and context embedding summaries.
-  - `gating` additionally exports raw gate and final gate values.
-  - `film_gamma`/`film_full` export block-wise gamma and beta values.
-  - Local Grad-CAM export checks passed for `concat` and `film_gamma` smoke
-    checkpoints.
-- `4-I11` is complete.
-- Added local smoke output checking:
-  - `scripts/check_stage4_outputs.py` verifies the full Stage 4 artifact bundle:
-    checkpoint, train history/metadata, predictions, classification metrics,
-    trading metrics, Grad-CAM, samples, modulation exports, context artifacts,
-    and run manifest.
-  - Local checker passed for `concat` and `film_gamma` smoke runs.
-  - Compact smoke summary: `reports/smoke_tests/stage4_smoke_summary.json`.
-- `4-I12` is complete for the Kaggle seed-42 four-ablation run.
-  - Run: `I60/R20/ohlc_ma_vb`, context window `60`, seed `42`, methods
-    `concat`, `gating`, `film_gamma`, `film_full`.
-  - All four methods returned `status = ok` and 1,441 test predictions.
-  - Best Stage 4 method: `film_full`, accuracy `0.584316`, ROC-AUC `0.596811`.
-  - Interpretation: promising versus the Stage 2 five-seed mean, but not yet
-    better than the same Stage 2 seed-42 run.
-  - Result table:
-    `reports/tables/stage4_four_ablation_seed42_run_summary.csv`.
-- `4-I13` Kaggle five-seed runner is ready.
-  - Added `notebooks/kaggle_stage4_four_ablation_five_seed_one_cell.md`.
-  - It runs the same four methods for seeds `42, 43, 44, 45, 46`.
-  - Next step: run this cell to test whether `film_full` remains stable across
-    seeds.
+| Group | Features |
+| --- | --- |
+| Fear and Greed | `fg_value`, `fg_mean_60`, `fg_delta_60`, `fg_std_60` |
+| Technical context | `bb_percent_b_60`, `bb_bandwidth_60`, `mfi_60`, `rv_60` |
 
-Main documents:
-- [Checklist](checklist.md)
-- [Workflow diagram](workflow_diagram.md)
-- [Stage 4 pipeline](docs/stage4_pipeline.md)
-- [Context fusion ablation plan](docs/condition_track_plan.md)
-- [Professor meeting direction brief](docs/professor_meeting_stage4_direction_brief.md)
-- [FiLM insertion design](docs/film_insertion_design.md)
-- [Source map](docs/source_map.md)
-- [Planning report](checklist_results/4-1_context_fusion_and_news_plan.md)
-- [News dataset audit](checklist_results/4-3_news_dataset_audit_and_feasibility.md)
-- [Stage 2/Stage 3 dependency review](checklist_results/4-4_stage2_stage3_dependency_and_baseline_output_review.md)
-- [Context encoder and normalization plan](checklist_results/4-5_context_encoder_and_normalization_plan.md)
-- [Concat/gating/FiLM insertion design](checklist_results/4-6_concat_gating_film_insertion_design.md)
-- [Grad-CAM plus context/gate/gamma/beta export plan](checklist_results/4-7_gradcam_context_modulation_export_plan.md)
-- [Kaggle runner and output backup plan](checklist_results/4-8_kaggle_runner_and_output_backup_plan.md)
-- [Implementation readiness review](checklist_results/4-I0_implementation_readiness_review.md)
-- [Shared config/code scaffold](checklist_results/4-I1_shared_code_config_scaffold.md)
-- [Structured context feature builder](checklist_results/4-I2_structured_context_feature_builder.md)
-- [Context MLP encoder](checklist_results/4-I3_context_mlp_encoder.md)
-- [Context concat model](checklist_results/4-I4_context_concat_model.md)
-- [Context gating model](checklist_results/4-I5_context_gating_model.md)
-- [FiLM layer and generator](checklist_results/4-I6_film_layer_generator.md)
-- [FiLM context models](checklist_results/4-I7_film_context_models.md)
-- [Stage 4 context runner](checklist_results/4-I8_stage4_context_runner.md)
-- [Prediction and trading exports](checklist_results/4-I9_prediction_trading_exports.md)
-- [Grad-CAM context/modulation export](checklist_results/4-I10_gradcam_context_modulation_export.md)
-- [Smoke output check](checklist_results/4-I11_smoke_output_check.md)
-- [Kaggle four-ablation runner](checklist_results/4-I12_kaggle_four_ablation_runner.md)
-- [Kaggle five-seed runner](checklist_results/4-I13_kaggle_five_seed_runner.md)
+Rules:
+- Context is available only at or before image end date `t`.
+- Context is normalized with train-only imputation, clipping, and z-score statistics.
+- Main Stage 4 experiments use numeric context first.
+- News context remains a second-phase track after the structured context model is stable.
 
-## 한국어
+## Model Variants
 
-이 폴더는 structured market context가 BTC chart-image CNN을 개선할 수 있는지
-확인하는 Stage 4 작업 공간입니다. 핵심은 단순히 이미지를 더 복잡하게 그리는 것이
-아니라, 시장 맥락이 CNN feature를 조건부로 조절하게 만드는 것입니다.
+| Track | Model | Insertion point | Purpose |
+| --- | --- | --- | --- |
+| `4-A` | CNN + context concat | After CNN flatten feature | Tests simple side-information fusion |
+| `4-B` | CNN + context gating | Final CNN feature map | Tests multiplicative modulation |
+| `4-C` | CNN + FiLM gamma-only | After BatchNorm, before LeakyReLU | Tests context-based scaling |
+| `4-D` | CNN + FiLM full | After BatchNorm, before LeakyReLU | Main FiLM model: scaling + shift |
 
-Stage 4 목표:
-- Stage 2의 BTC image generation, label, split, normalization, evaluation,
-  trading metric, Grad-CAM 파이프라인은 고정합니다.
-- primary image model은 Stage 2 selected five-seed best인
-  `I60/R20/ohlc_ma_vb`로 둡니다.
-- image end date `t`까지 이용 가능한 정보만 사용해서 structured market context
-  vector를 만듭니다.
-- 단순 context fusion과 FiLM-style conditional modulation을 비교합니다.
-- FiLM이 단순 parameter 증가나 side information 추가보다 왜 필요한지 실험적으로
-  방어합니다.
+## Current Results
 
-Stage 4 primary image input:
-- `I60/R20/ohlc_ma_vb`
-- Stage 2 selected five-seed check에서 가장 강한 후보였기 때문에 사용합니다:
-  - accuracy mean `0.5793`
-  - accuracy std `0.0182`
-  - ROC-AUC mean `0.5849`
-- seed 42 Stage 2 run은 metadata와 Grad-CAM 확인에 유용하지만, Stage 4 baseline
-  claim은 five-seed mean을 기준으로 둡니다.
+Reference Stage 2 baseline:
 
-Stage 3 dependency 위치:
-- Stage 3 Linear는 Stage 4 architecture dependency가 아닙니다.
-- negative/simple-parameter ablation으로만 둡니다.
-- 같은 조합의 seed 42 preliminary test에서 Stage 2 accuracy `0.603053`,
-  ROC-AUC `0.616950`이 Stage 3 Linear accuracy `0.541291`, ROC-AUC `0.522101`로
-  하락했습니다.
+| Model | Setting | Accuracy mean | ROC-AUC mean | Status |
+| --- | --- | ---: | ---: | --- |
+| Stage 2 visual baseline | `I60/R20/ohlc_ma_vb`, selected five-seed | 0.5793 | 0.5849 | current strongest visual baseline |
 
-Structured market context 후보:
-- Fear & Greed score.
-- Bollinger %B.
-- Bollinger bandwidth.
-- Money Flow Index.
-- Realized volatility.
+Stage 4 v1:
 
-중요한 모델링 규칙:
-- 이 context 값들을 main Stage 4 실험에서 chart image 위에 추가로 그리지 않습니다.
-- chart image는 Stage 2의 `ohlc_ma_vb` 이미지를 그대로 사용합니다.
-- context 값은 별도 numeric vector로 모델에 들어갑니다.
-- numeric context vector는 train split 통계로만 normalize하고, MLP로 encoding한 뒤
-  fusion/modulation model에서 사용합니다.
+| Method | Setting | Accuracy mean | ROC-AUC mean | Interpretation |
+| --- | --- | ---: | ---: | --- |
+| `film_full` | `I60/R20/ohlc_ma_vb` + all context, five seeds | 0.5510 | 0.5677 | Best v1 method, but below Stage 2 and unstable |
 
-Context encoder와 normalization 결정:
-- Primary model input은 matched-window 8개 feature를 사용합니다:
-  `fg_value`, `fg_mean_60`, `fg_delta_60`, `fg_std_60`,
-  `bb_percent_b_60`, `bb_bandwidth_60`, `mfi_60`, `rv_60`.
-- F&G와 MFI처럼 0-100 scale인 값은 `100`으로 나누고, 양수 skew가 큰 volatility/range
-  값은 `log1p`를 적용합니다.
-- 모든 split에는 train-only median imputation, train-only 1/99% clipping,
-  train-only z-score normalization을 적용합니다.
-- Shared context encoder는 작게 고정합니다:
-  `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`.
-- Primary sample timing note:
-  - `I60/R20/ohlc_ma_vb`는 60일 image와 이미지 내부의 유효한 60일 MA line이
-    모두 필요합니다.
-  - BTC OHLCV가 `2018-01-01`부터 시작하므로 첫 primary sample end date는
-    `2018-04-29`입니다.
-  - Offset은 `118`일입니다. MA60과 image window가 모두 inclusive라서
-    `(60 - 1) + (60 - 1) = 118`입니다.
-  - F&G는 `2018-02-01`부터 시작하므로 F&G 시작일 때문에 valid primary sample이
-    제거되지는 않습니다.
-  - Primary sample end date와 직접 겹치는 F&G 원본 missing date는
-    `2024-10-26` 하루뿐이며, 직전 이용 가능 F&G 값으로 처리합니다.
+Stage 4 v2 diagnostic summary:
 
-Stage 4 주요 ablation model:
+| ID | Experiment | Key result | Review link |
+| --- | --- | --- | --- |
+| `4-V0` | `ohlc_ma_vb`, visual-only same split | Reproduces the Stage 2 seed-42 baseline | [review](checklist_results/4-V0_stage4_v2_visual_only_same_split.md) |
+| `4-V1` | `ohlc`, visual-only | Accuracy `0.5420`; confirms OHLC-only is much weaker than `ohlc_ma_vb` | [review](checklist_results/4-V1_stage4_v2_ohlc_visual_only.md) |
+| `4-V2` | `ohlc` + all context + `film_full`, seed 42 | Accuracy `0.5725`; partial recovery over OHLC-only | [review](checklist_results/4-V2_stage4_v2_ohlc_all_context_film_full.md) |
+| `4-V3` | `ohlc` + F&G-only + `film_full`, five seeds | Accuracy mean `0.5586`; F&G alone is not enough | [review](checklist_results/4-V3_stage4_v2_ohlc_fg_only_film_full.md) |
+| `4-V4` | `ohlc` + technical-only + `film_full`, five seeds | Accuracy mean `0.5603`; technical context is also weak alone | [review](checklist_results/4-V4_stage4_v2_ohlc_technical_only_film_full.md) |
+| `4-V5` | `ohlc` + all context + `film_full`, five seeds | Accuracy mean `0.5574`; seed-42 gain is not robust | [review](checklist_results/4-V5_stage4_v2_ohlc_all_context_five_seed.md) |
+| `4-V6` | `ohlc_ma_vb` + F&G-only + `film_full`, five seeds | Accuracy mean `0.5524`; full FiLM still unstable on strong visual baseline | [review](checklist_results/4-V6_stage4_v2_ohlc_ma_vb_fg_only_five_seed.md) |
 
-| Track | Model | 바뀌는 부분 | 해석 |
-|:---|:---|:---|:---|
-| `4-A` | CNN + context concat | classifier 직전에 CNN feature와 context embedding을 붙임 | 단순 side information 추가만으로 충분한지 확인 |
-| `4-B` | CNN + context gating | context가 CNN channel/feature gate를 만들어 곱함 | 더 단순한 modulation 대안 |
-| `4-C` | CNN + context FiLM gamma-only | context가 block별 `gamma`를 만들고 `F' = gamma * F` 적용 | additive shift 없는 FiLM scaling |
-| `4-D` | CNN + context FiLM full | context가 block별 `gamma`, `beta`를 만들고 `F' = gamma * F + beta` 적용 | main FiLM model과 해석력 대상 |
+Current interpretation:
+- `ohlc_ma_vb` already contains strong visual/technical information.
+- Re-injecting overlapping technical context through full FiLM often adds noise.
+- F&G is image-external context, but full FiLM still causes seed instability.
+- Next architecture work should preserve the strong visual path more explicitly.
 
-삽입 위치 결정:
-- `4-A`는 I60 CNN flatten feature 뒤에 context embedding을 붙입니다:
-  `(B, 184320) + (B, 32) -> (B, 184352)`.
-- `4-B`는 final I60 feature map 하나만 gate합니다:
-  `(B, 512, 2, 180)`, `gate = 2 * sigmoid(raw_gate)`.
-- `4-C`와 `4-D`는 모든 I60 convolution block에서 BatchNorm 뒤, LeakyReLU 전에
-  FiLM을 삽입합니다.
-- Gate/gamma/beta head는 zero-initialize해서 gate는 `1`, gamma는 `1`, beta는
-  `0`에서 시작하게 합니다.
+Next direction:
+- bounded/residual FiLM;
+- last-block-only FiLM;
+- stronger collapse monitoring with predicted-positive rate, F1, and ROC-AUC;
+- feature sensitivity exports for interpretability.
 
-Explanation/export 결정:
-- Grad-CAM target은 predicted-class pre-softmax logit입니다.
-- 최종 Stage 4 figure는 test sample에서 Predicted Up 10개, Predicted Down 10개를
-  사용합니다. Smoke run에서는 predicted class별 2개를 허용합니다.
-- 4-A는 Grad-CAM과 context 값을 export합니다.
-- 4-B는 Grad-CAM, context, final-layer gate 값을 export합니다.
-- 4-C는 post-gamma feature map 기준 Grad-CAM과 context/gamma 값을 export합니다.
-- 4-D는 post-gamma/beta feature map 기준 Grad-CAM과 context/gamma/beta 값을
-  export합니다.
+## Code Map
 
-Kaggle runner와 backup 결정:
-- 첫 구현 runner는 numeric-context 네 가지 ablation만 실행합니다:
-  `concat`, `gating`, `film_gamma`, `film_full`.
-- Stage 4는 고정된 BTC data/image/split/evaluation pipeline을 재작성하지 않고
-  Stage 2 `src` package를 재사용하므로 runner는 Stage 2 `src`에도 접근해야 합니다.
-- 첫 full sanity run은 네 ablation을 seed `42`로 실행합니다.
-- 이후 robustness run은 같은 네 ablation을 seed `42, 43, 44, 45, 46`으로
-  실행합니다.
-- Backup root는 `/kaggle/working/stage4_saved_outputs`로 고정합니다.
-- Runner는 context build, training, prediction evaluation, trading evaluation,
-  Grad-CAM/export, output check, summary 뒤에 backup을 만들어야 합니다.
-- Experiment는 output checker가 checkpoint, predictions, metrics, trading
-  metrics, Grad-CAM, context exports, 해당 model의 modulation exports, manifest를
-  확인해야 완료입니다. Checkpoint만 존재하는 것은 Stage 4 완료 결과가 아닙니다.
-
-교수님 방향성과 맞는 이유:
-- chart-image CNN baseline은 이미 강합니다.
-- 핵심 질문은 chart image 자체가 예측력이 있는지가 아닙니다.
-- 핵심 질문은 market context가 visual feature extractor를 regime/state에 따라
-  더 적응적으로 만들 수 있는지입니다.
-- FiLM은 context에서 feature modulation으로 가는 경로가 명시적입니다. 따라서
-  gate/gamma/beta 값을 date, regime, layer, channel, confidence, correctness별로
-  분석할 수 있습니다.
-
-교수님 방향성 파일과의 연결:
-- Source: `/Users/jaehyeonjeong/Desktop/film_chart_research_summary.md`.
-- 해당 note는 FiLM을 full VQA가 아니라 chart-image feature의 conditional
-  modulation으로 재정의합니다.
-- 금융 예측 질문은 사실상 고정되어 있으므로 RNN question encoder가 필수는 아니라고
-  정리합니다.
-- compact structured metadata와 MLP/embedding-based condition encoder를 권장합니다.
-- CNN-only, naive condition concatenation, FiLM, optional attention-based fusion
-  비교를 권장합니다.
-- 그래서 Stage 4는 structured numeric context를 먼저 사용하고 concat, gating,
-  gamma-only FiLM, full FiLM을 비교합니다.
-
-뉴스 context 위치:
-- 뉴스는 논문에서 제거하지 않습니다.
-- 후보 source: Hugging Face `edaschau/bitcoin_news`.
-- 2026-05-25 기준 공개 metadata 확인 결과 `210,832` rows, 2011-2025 date range,
-  `date_time`, `title`, `source`, `url`, `article_text` columns를 포함합니다.
-- 뉴스는 source audit, publication-time alignment, daily aggregation,
-  encoder/cache rule이 필요합니다.
-- 따라서 structured numeric-context ablation이 안정화된 뒤 second-phase context
-  track으로 유지합니다.
-- 4-3 결정: 첫 news version은 headline-only, strict `t-1`, train-fit non-LLM
-  text feature encoder로 시작합니다.
-
-Stage 4 v1 five-seed 해석:
-- `I60/R20/ohlc_ma_vb`, context window `60`, seeds `42, 43, 44, 45, 46`에서
-  네 ablation run이 완료됐습니다.
-- Stage 4 v1 best method는 `film_full`입니다.
-- `film_full` five-seed summary:
-  - accuracy mean `0.5510`, accuracy std `0.0520`;
-  - ROC-AUC mean `0.5677`;
-  - F1 mean `0.5393`.
-- 선택된 Stage 2 visual baseline이 여전히 더 강합니다:
-  - accuracy mean `0.5793`;
-  - ROC-AUC mean `0.5849`.
-- Seed-level 진단:
-  - seed `42`는 promising합니다: accuracy `0.5843`, ROC-AUC `0.5968`;
-  - seed `45`는 all-Down prediction으로 collapse했습니다:
-    predicted-positive rate `0.0`, F1 `0.0`.
-- 현재 해석: v1은 context-conditioned FiLM 가능성은 보여줬지만 robust하지 않습니다.
-  다음 단계는 context를 더 복잡하게 만드는 것이 아니라, 성능 하락 원인이 context
-  redundancy인지, sample/run 조건인지, FiLM instability인지 분리하는 것입니다.
-
-Stage 4 v2 진단 우선순위:
-
-| Priority | Experiment | Purpose |
+| Area | Location | Role |
 | --- | --- | --- |
-| `4-V0` | `I60/R20/ohlc_ma_vb`, visual-only, context 없음 | FiLM을 바꾸기 전 같은 selected visual baseline control |
-| `4-V1` | `I60/R20/ohlc`, visual-only, context 없음 | MA/VB image가 technical context를 얼마나 담는지 확인 |
-| `4-V2` | `I60/R20/ohlc` + all context + `film_full` | duplicate-feature 가설 검증 |
-| `4-V3` | `I60/R20/ohlc` + F&G-only + `film_full` | image-external regime/sentiment context 분리 |
-| `4-V4` | `I60/R20/ohlc` + technical-only context + `film_full` | MA/VB image overlap 없이 BB/MFI/RV 효과 확인 |
-| `4-V5` | `I60/R20/ohlc` + all context + `film_full`, five seeds | seed-42 all-context 개선의 robustness 확인 |
-| `4-V6` | `I60/R20/ohlc_ma_vb` + F&G-only + `film_full`, five seeds | 가장 강한 visual baseline 위 외부 context 효과 확인 |
-| `4-V7` | bounded/residual last-block FiLM | visual evidence 보존과 seed collapse 감소 |
+| Config | [configs/](configs/) | Local/Kaggle path and runtime settings |
+| Context features | [src/stage4_film/context/](src/stage4_film/context/) | F&G/OHLCV-derived feature construction |
+| Context encoder | [src/stage4_film/conditions/](src/stage4_film/conditions/) | MLP condition embedding |
+| FiLM layers | [src/stage4_film/layers/](src/stage4_film/layers/) | FiLM affine modulation and generator |
+| Models | [src/stage4_film/models/](src/stage4_film/models/) | concat/gating/FiLM context Stock_CNN variants |
+| Training | [src/stage4_film/training/](src/stage4_film/training/) | Context model training loop |
+| Evaluation | [src/stage4_film/evaluation/](src/stage4_film/evaluation/) | Prediction/trading metric helpers |
+| Interpretability | [src/stage4_film/interpretability/](src/stage4_film/interpretability/) | Grad-CAM and modulation export |
+| Runners | [scripts/](scripts/) | Audit, build context, train, evaluate, export |
+| Kaggle cells | [notebooks/](notebooks/) | v1/v2 experiment runners |
 
-현재 v2 실행 상태:
-- `4-V0` runner 준비 완료:
-  `notebooks/kaggle_stage4_v2_p1_visual_only_same_split_one_cell.md`.
-- `4-V1` runner 준비 완료:
-  `notebooks/kaggle_stage4_v2_p2_ohlc_visual_only_one_cell.md`.
-- `4-V2` runner 준비 완료:
-  `notebooks/kaggle_stage4_v2_p3_ohlc_all_context_film_full_one_cell.md`.
-- `4-V3` five-seed runner 준비 완료:
-  `notebooks/kaggle_stage4_v2_p4_ohlc_fg_only_film_full_five_seed_one_cell.md`.
-- `4-V4` five-seed runner 준비 완료:
-  `notebooks/kaggle_stage4_v2_p5_ohlc_technical_only_film_full_five_seed_one_cell.md`.
-- `4-V5` five-seed runner 준비 완료:
-  `notebooks/kaggle_stage4_v2_p6_ohlc_all_context_film_full_five_seed_one_cell.md`.
-- `4-V6` five-seed runner 완료:
-  `notebooks/kaggle_stage4_v2_p7_ohlc_ma_vb_fg_only_film_full_five_seed_one_cell.md`.
-- `4-V0` full Kaggle 결과는 export CSV 기준 Stage 2 seed-42
-  `I60/R20/ohlc_ma_vb` 결과를 재현했습니다.
-- `4-V1` full Kaggle 결과는 export CSV 기준 Stage 2 seed-42
-  `I60/R20/ohlc` 결과를 재현했습니다. Accuracy는 `0.5420`, predicted-positive
-  rate는 `0.9632`로, plain OHLC가 `ohlc_ma_vb`보다 훨씬 약하다는 점을
-  확인했습니다.
-- `4-V2` seed-42 결과는 `4-V1` 대비 일부 회복을 보였습니다: accuracy
-  `0.5725`, ROC-AUC `0.5573`, predicted-positive rate `0.7828`.
-- `4-V3` five-seed 결과는 F&G-only FiLM이 Stage 2 OHLC를 실질적으로
-  개선하지 못했음을 보였습니다: accuracy mean `0.5586`, ROC-AUC mean
-  `0.5523`.
-- `4-V4` five-seed 결과도 technical-only FiLM이 약함을 보였습니다:
-  accuracy mean `0.5603`, ROC-AUC mean `0.5546`.
-- `4-V5` five-seed 결과는 all-context FiLM도 robust하지 않음을 보였습니다:
-  accuracy mean `0.5574`, ROC-AUC mean `0.5519`.
-- `4-V6` five-seed 결과는 가장 강한 `ohlc_ma_vb` image 위에 F&G-only 외부
-  context를 얹어도 현재 full FiLM 구조에서는 불안정함을 보였습니다:
-  accuracy mean `0.5524`, ROC-AUC mean `0.5465`. Seed `42`, `45`, `46`은
-  Stage 2 visual baseline에 근접했지만, seed `43`, `44`는 대부분 Up 예측으로
-  collapse했습니다.
-- `4-V3`부터 v2 diagnostic run은 기본 five-seed로 실행합니다.
-- 다음 고정 순서는 architecture-level bounded/residual last-block FiLM입니다.
-  목표는 강한 Stage 2 visual evidence를 보존하면서 context-driven seed collapse를
-  줄이는 것입니다.
+## Folder Structure
 
-Implementation readiness 결정:
-- `4-I0`은 완료됐습니다.
-- Stage 4 code는 `stage2_dependency` config section을 추가하고, BTC loading,
-  sample generation, image generation, split, normalization, evaluation,
-  trading metric은 Stage 2 helper를 import해서 사용해야 합니다.
-- 로컬 BTC OHLCV data가 있습니다.
-- 로컬 F&G data도
-  `stage4_film_conditioning/FG_data/fear_greed_index.csv`에 추가됐습니다.
-  Raw CSV는 GitHub에 올리지 않고, data availability note와 audit summary만
-  추적합니다.
-- 첫 full 실행 target은 여전히 Kaggle이지만, local context feature 개발은 이제
-  제공된 F&G CSV로 진행할 수 있습니다.
-- 상세 task map은 `reports/tables/stage4_implementation_task_map.csv`에 저장했습니다.
+```text
+stage4_film_conditioning/
+├── FG_data/                  # local raw F&G data, not tracked
+├── checklist.md
+├── checklist_results/
+├── configs/
+├── docs/
+├── notebooks/
+├── reports/
+├── scripts/
+└── src/stage4_film/
+```
 
-Implementation status:
-- `4-I1`을 완료했습니다.
-- Local/Kaggle config, Stage 4 config/path/runtime/seed helper, script path
-  utility, `check_stage4_scaffold.py`를 추가했습니다.
-- Local scaffold check를 통과했고 BTC, F&G, Stage 2 `src` 사용 가능성을
-  확인했습니다.
-- `4-I2`를 완료했습니다.
-- F&G source audit, OHLCV-derived context feature, train-only context
-  preprocessing을 추가했습니다.
-- Local I60/R20/ohlc_ma_vb context build에서 `2,399` row가 생성됐습니다:
-  train `671`, validation `287`, test `1,441`.
-- Primary context feature missing-rate warning은 없습니다.
-- `4-I3`을 완료했습니다.
-- Shared context MLP encoder를 추가했습니다:
-  `Linear(8, 32) -> ReLU -> Dropout(0.10) -> Linear(32, 32) -> ReLU`.
-- Dummy context tensor와 `4-I2` context table의 실제 normalized row 모두에서
-  local check를 통과했습니다.
-- `4-I4`를 완료했습니다.
-- `CNN + context concat` model을 추가했습니다:
-  - Stage 2 I60 Stock_CNN convolution block은 그대로 재사용합니다.
-  - Stage 2 final classifier를 `Dropout(0.5) -> Linear(184352, 2)`로
-    교체합니다.
-  - Tensor path:
-    `(B, 1, 96, 180) -> CNN -> (B, 512, 2, 180) -> flatten (B, 184320)`;
-    context `(B, 8) -> MLP -> (B, 32)`;
-    concat `(B, 184352) -> logits (B, 2)`.
-  - Parameter count check 통과: `2,954,370`, Stage 2 I60 baseline 대비
-    `+1,408`.
-- `4-I5`를 완료했습니다.
-- `CNN + context gating` model을 추가했습니다:
-  - Stage 2 I60 Stock_CNN convolution block은 그대로 재사용합니다.
-  - Context embedding `(B, 32)`이 channel gate `(B, 512)`를 만듭니다.
-  - Gate formula: `gate = 2 * sigmoid(raw_gate)`.
-  - Gate는 마지막 feature map `(B, 512, 2, 180)`에 적용됩니다.
-  - Classifier input은 `(B, 184320)` 그대로 유지됩니다.
-  - Gate head는 zero-initialized라서 gate min/max `1.0 / 1.0`의 identity
-    modulation에서 시작합니다.
-  - Parameter count check 통과: `2,971,202`, Stage 2 I60 baseline 대비
-    `+18,240`.
-- `4-I6`을 완료했습니다.
-- 재사용 가능한 FiLM building block을 추가했습니다:
-  - `FeatureWiseAffineModulation`은 CNN feature map에 channel-wise
-    `F' = gamma * F` 또는 `F' = gamma * F + beta`를 적용합니다.
-  - `FilmParameterGenerator`는 32차원 context embedding에서 I60 channel
-    `[64, 128, 256, 512]`에 맞는 block별 gamma/beta tensor를 만듭니다.
-  - Gamma-only generator parameter count: `31,680`.
-  - Full gamma/beta generator parameter count: `63,360`.
-  - Head는 zero-initialized라서 gamma는 `1.0`, beta는 `0.0`에서 시작하고,
-    initialization 시 Stage 2 CNN feature path를 보존합니다.
-  - Local FiLM layer/generator check가 dummy feature map과 실제 normalized
-    context row 모두에서 통과했습니다.
-- `4-I7`을 완료했습니다.
-- Gamma-only/full FiLM Stock_CNN model을 추가했습니다:
-  - `FilmContextStockCNN`은 Stage 2 Stock_CNN convolution block을 재사용합니다.
-  - 모든 I60 block에
-    `Conv2d -> BatchNorm2d -> FiLM -> LeakyReLU -> MaxPool2d` 순서로 FiLM을
-    삽입합니다.
-  - `film_gamma`: `F' = gamma * F`; parameter count `2,985,986`, Stage 2 I60
-    baseline 대비 `+33,024`.
-  - `film_full`: `F' = gamma * F + beta`; parameter count `3,017,666`, Stage 2
-    I60 baseline 대비 `+64,704`.
-  - 두 model 모두 dummy tensor, 실제 normalized context row, all-block identity
-    initialization을 포함한 local model shape check를 통과했습니다.
-- `4-I8`을 완료했습니다.
-- Stage 4 context runner를 추가했습니다:
-  - `scripts/run_stage4_context_model.py`는 context-conditioned training job
-    하나를 실행합니다.
-  - `src/stage4_film/runners/context_experiment.py`는 Stage 2 BTC
-    data/image/split/pixel-normalization을 재사용하고 normalized context tensor를
-    붙입니다.
-  - `src/stage4_film/training/loop.py`는 `model(image, context)` 형태로
-    학습합니다.
-  - 일반 weight initialization 뒤 gate/FiLM head를 identity로 다시 reset합니다.
-  - `concat`, `film_gamma` local smoke training을 통과했습니다.
-- `4-I9`를 완료했습니다.
-- Stage 4 prediction/trading export를 추가했습니다:
-  - `scripts/evaluate_stage4_predictions.py`는 Stage 4 checkpoint를 다시 로드하고
-    prediction CSV와 classification metrics를 저장합니다.
-  - `scripts/evaluate_stage4_trading.py`는 prediction CSV를 읽고 BTC long/flat,
-    long/short trading metrics를 저장합니다.
-  - Classification/trading metric 공식은 Stage 2를 재사용하고, inference만
-    `model(image, context)`를 사용합니다.
-  - `concat`, `film_gamma` smoke checkpoint에서 local export check를 통과했습니다.
-- `4-I10`을 완료했습니다.
-- Stage 4 Grad-CAM plus context/modulation export를 추가했습니다:
-  - `scripts/generate_stage4_gradcam_context.py`는 Stage 4 checkpoint와
-    prediction CSV를 다시 로드하고 `model(image, context)` 경로로
-    predicted-class Grad-CAM을 계산합니다.
-  - Figure와 함께 `samples.csv`, `modulation_summary.csv`,
-    `modulation_values.json`를 저장합니다.
-  - `concat`은 context 값과 context embedding summary를 export합니다.
-  - `gating`은 raw gate와 최종 gate 값까지 export합니다.
-  - `film_gamma`/`film_full`은 block별 gamma/beta 값을 export합니다.
-  - `concat`, `film_gamma` smoke checkpoint에서 local Grad-CAM export check를
-    통과했습니다.
-- `4-I11`을 완료했습니다.
-- Local smoke output checking을 추가했습니다:
-  - `scripts/check_stage4_outputs.py`는 checkpoint, train history/metadata,
-    prediction, classification metric, trading metric, Grad-CAM, samples,
-    modulation export, context artifact, run manifest까지 전체 Stage 4 artifact
-    bundle을 확인합니다.
-  - `concat`, `film_gamma` smoke run에서 local checker를 통과했습니다.
-  - Compact smoke summary: `reports/smoke_tests/stage4_smoke_summary.json`.
-- `4-I12` Kaggle seed-42 four-ablation run을 완료했습니다.
-  - 실행: `I60/R20/ohlc_ma_vb`, context window `60`, seed `42`, methods
-    `concat`, `gating`, `film_gamma`, `film_full`.
-  - 네 방법 모두 `status = ok`이고 test prediction 1,441개를 생성했습니다.
-  - Stage 4 최고 방법: `film_full`, accuracy `0.584316`, ROC-AUC `0.596811`.
-  - 해석: Stage 2 five-seed mean과 비교하면 promising하지만, 같은 Stage 2 seed-42
-    run보다 높지는 않습니다.
-  - Result table:
-    `reports/tables/stage4_four_ablation_seed42_run_summary.csv`.
-- `4-I13` Kaggle five-seed runner를 준비했습니다.
-  - `notebooks/kaggle_stage4_four_ablation_five_seed_one_cell.md`를 추가했습니다.
-  - 같은 네 방법을 seeds `42, 43, 44, 45, 46`으로 실행합니다.
-  - 다음 단계는 이 cell을 실행해 `film_full` 안정성을 seed 기준으로 확인하는
-    것입니다.
+## Thesis Position
 
-주요 문서:
-- [Checklist](checklist.md)
-- [Workflow diagram](workflow_diagram.md)
-- [Stage 4 pipeline](docs/stage4_pipeline.md)
-- [Context fusion ablation plan](docs/condition_track_plan.md)
-- [Professor meeting direction brief](docs/professor_meeting_stage4_direction_brief.md)
-- [FiLM insertion design](docs/film_insertion_design.md)
-- [Source map](docs/source_map.md)
-- [Planning report](checklist_results/4-1_context_fusion_and_news_plan.md)
-- [News dataset audit](checklist_results/4-3_news_dataset_audit_and_feasibility.md)
-- [Stage 2/Stage 3 dependency review](checklist_results/4-4_stage2_stage3_dependency_and_baseline_output_review.md)
-- [Context encoder and normalization plan](checklist_results/4-5_context_encoder_and_normalization_plan.md)
-- [Concat/gating/FiLM insertion design](checklist_results/4-6_concat_gating_film_insertion_design.md)
-- [Grad-CAM plus context/gate/gamma/beta export plan](checklist_results/4-7_gradcam_context_modulation_export_plan.md)
-- [Kaggle runner and output backup plan](checklist_results/4-8_kaggle_runner_and_output_backup_plan.md)
-- [Implementation readiness review](checklist_results/4-I0_implementation_readiness_review.md)
-- [Shared config/code scaffold](checklist_results/4-I1_shared_code_config_scaffold.md)
-- [Structured context feature builder](checklist_results/4-I2_structured_context_feature_builder.md)
-- [Context MLP encoder](checklist_results/4-I3_context_mlp_encoder.md)
-- [Context concat model](checklist_results/4-I4_context_concat_model.md)
-- [Context gating model](checklist_results/4-I5_context_gating_model.md)
-- [FiLM layer and generator](checklist_results/4-I6_film_layer_generator.md)
-- [FiLM context models](checklist_results/4-I7_film_context_models.md)
-- [Stage 4 context runner](checklist_results/4-I8_stage4_context_runner.md)
-- [Prediction and trading exports](checklist_results/4-I9_prediction_trading_exports.md)
-- [Grad-CAM context/modulation export](checklist_results/4-I10_gradcam_context_modulation_export.md)
-- [Smoke output check](checklist_results/4-I11_smoke_output_check.md)
-- [Kaggle four-ablation runner](checklist_results/4-I12_kaggle_four_ablation_runner.md)
-- [Kaggle five-seed runner](checklist_results/4-I13_kaggle_five_seed_runner.md)
+Stage 4 should be presented as an interpretability and conditional-modulation experiment, not as a simple feature-adding experiment. The strongest current conclusion is that market context is plausible, but full FiLM v1/v2 is too unstable unless the visual baseline is protected by a more conservative architecture.

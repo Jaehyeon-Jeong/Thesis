@@ -1,124 +1,83 @@
-# Stage 3: Linear Adapter Comparison
+# Stage 3: Linear Adapter Ablation
 
-## English
+Stage 3는 Stage 2 BTC visual baseline에 단순 Linear adapter를 붙여보는 negative/simple-parameter ablation입니다. 목적은 Stage 4 FiLM으로 가기 전에 “그냥 feature를 한 번 더 선형 변환하면 좋아지는가?”를 확인하는 것입니다.
 
-This folder is reserved for Stage 3 of the thesis pipeline.
+## Goal
 
-Stage 3 objective:
-- Keep the Stage 2 BTC image-generation, label, split, normalization,
-  evaluation, trading metric, and Grad-CAM pipeline fixed.
-- Add a simple Linear adapter after the CNN feature extractor.
-- Compare the BTC CNN baseline against `BTC CNN + Linear(bias=False)`.
-- Use this as an intermediate comparison before Stage 4 FiLM conditioning.
+- Stage 2의 BTC data/image/label/split/evaluation pipeline은 고정합니다.
+- Stage 2 Stock_CNN feature extractor 뒤에 Linear adapter를 추가합니다.
+- Stage 2 baseline과 `CNN + Linear adapter`를 같은 설정에서 비교합니다.
+- 단순 parameter 추가가 FiLM의 대체 설명이 되는지 확인합니다.
 
-Key modeling rule:
-- Do not change the Stage 1/2 CNN core.
-- Insert the Linear adapter after CNN feature extraction and before the final
-  classification logits.
-- Use `torch.nn.Linear(..., bias=False)` for the first Stage 3 comparison.
-- `bias=False` removes additive shift from the adapter, but this is not the same
-  as channel-wise Gamma-only FiLM.
+## Workflow
 
-Current status:
-- Planning steps `3-1` through `3-5` are complete.
-- Implementation steps `3-I0` through `3-I7` are complete.
-- Stage 3 is now Kaggle-runnable for one full Linear run and the single-seed
-  36-run grid.
-- Preliminary Kaggle result is available for the Stage 2 best single-seed
-  configuration only: `I60/R20/ohlc_ma_vb`, seed `42`, adapter dim `128`.
-- In that first test, Stage 3 Linear dropped to majority-class-level accuracy:
-  accuracy `0.541291`, majority accuracy `0.541291`, ROC-AUC `0.522101`.
-- The matching Stage 2 baseline result was stronger: accuracy `0.603053`,
-  majority accuracy `0.541291`, ROC-AUC `0.616950`.
-- Remaining Stage 3 Linear configurations are still pending: the other
-  single-seed grid runs should be executed before writing a Stage 3 result
-  conclusion.
-- Stage 2 five-seed reruns are still pending, so Stage 3 final claims should be
-  treated as provisional until Stage 2 stability is checked.
+```mermaid
+flowchart LR
+    A[Stage 2 BTC baseline] --> B[Freeze pipeline rules]
+    B --> C[Add post-CNN Linear adapter]
+    C --> D[Train/evaluate same config]
+    D --> E[Compare vs Stage 2]
+    E --> F[Grad-CAM check]
+    F --> G[Negative ablation report]
+```
 
-Main documents:
-- [Checklist](checklist.md)
-- [Workflow diagram](workflow_diagram.md)
-- [Stage 3 pipeline](docs/stage3_pipeline.md)
-- [Source map](docs/source_map.md)
-- [Stage 2 dependency review](docs/stage2_dependency_baseline_review.md)
-- [Linear adapter design](docs/linear_adapter_design.md)
-- [Training/evaluation comparison plan](docs/training_evaluation_comparison_plan.md)
-- [Grad-CAM comparison plan](docs/gradcam_comparison_plan.md)
-- [Kaggle runner and output plan](docs/kaggle_runner_output_plan.md)
-- [Kaggle single config cell](notebooks/kaggle_stage3_linear_single_config_one_cell.md)
-- [Kaggle single-seed grid cell](notebooks/kaggle_stage3_linear_grid_single_seed_one_cell.md)
-- [Kaggle results viewer cell](notebooks/kaggle_stage3_results_viewer_one_cell.md)
+## Checklist And Review Links
 
-Implementation status:
-- First planned Linear run: `I60/R20/ohlc_ma_vb`, seed `42`, adapter dim `128`.
-- Single-seed grid: `36` runs.
-- Completed preliminary Linear run: `I60/R20/ohlc_ma_vb`, seed `42`.
-  This was the best Stage 2 single-seed configuration.
-- Preliminary interpretation: adding the post-flatten Linear adapter did not
-  improve this best Stage 2 configuration; it reduced the result from the
-  Stage 2 baseline's `0.603053` accuracy to `0.541291`.
-- Remaining Linear grid configurations are planned next.
-- Five-seed stability checks are deferred.
-- Local smoke test passed with `I5/R5/ohlc`, seed `42`, one epoch, tiny rows.
+| Step group | Purpose | Link |
+| --- | --- | --- |
+| Planning checklist | Goal-to-task workflow | [checklist.md](checklist.md) |
+| Pipeline detail | Stage 3 flow | [docs/stage3_pipeline.md](docs/stage3_pipeline.md) |
+| Stage 2 dependency review | What remains fixed from Stage 2 | [docs/stage2_dependency_baseline_review.md](docs/stage2_dependency_baseline_review.md) |
+| Linear adapter design | Where the adapter is inserted | [docs/linear_adapter_design.md](docs/linear_adapter_design.md) |
+| Training/evaluation plan | Comparison rule | [docs/training_evaluation_comparison_plan.md](docs/training_evaluation_comparison_plan.md) |
+| Kaggle runner plan | Execution/output rule | [docs/kaggle_runner_output_plan.md](docs/kaggle_runner_output_plan.md) |
 
-## 한국어
+## Current Result
 
-이 폴더는 논문 파이프라인의 3단계 작업 공간입니다.
+The first Stage 3 test used the Stage 2 best single-seed configuration:
 
-3단계 목표:
-- Stage 2의 BTC image generation, label, split, normalization, evaluation,
-  trading metric, Grad-CAM 파이프라인은 고정합니다.
-- CNN feature extractor 뒤에 단순 Linear adapter를 추가합니다.
-- BTC CNN baseline과 `BTC CNN + Linear(bias=False)`를 비교합니다.
-- 이 단계는 Stage 4 FiLM conditioning 전에 두는 중간 비교축입니다.
+`I60 / R20 / ohlc_ma_vb`, seed `42`, adapter dim `128`
 
-핵심 모델링 규칙:
-- Stage 1/2에서 확정한 CNN core는 바꾸지 않습니다.
-- Linear adapter는 CNN feature extraction 뒤, final classification logits 전에
-  삽입합니다.
-- 첫 Stage 3 비교에서는 `torch.nn.Linear(..., bias=False)`를 사용합니다.
-- `bias=False`는 additive shift를 제거하지만, 이것이 channel-wise Gamma-only
-  FiLM과 같다는 뜻은 아닙니다.
+| Model | Accuracy | Majority | ROC-AUC | Interpretation |
+| --- | ---: | ---: | ---: | --- |
+| Stage 2 visual baseline | 0.6031 | 0.5413 | 0.6170 | Strong single-seed baseline |
+| Stage 3 Linear adapter | 0.5413 | 0.5413 | 0.5221 | Dropped to majority-class level |
 
-현재 상태:
-- Planning step `3-1`부터 `3-5`까지 완료했습니다.
-- Implementation step `3-I0`부터 `3-I7`까지 완료했습니다.
-- 이제 Stage 3는 Kaggle에서 단일 Linear full run과 single-seed 36-run grid를
-  실행할 수 있습니다.
-- 현재 preliminary Kaggle 결과는 Stage 2 single-seed best configuration 하나에
-  대해서만 있습니다: `I60/R20/ohlc_ma_vb`, seed `42`, adapter dim `128`.
-- 이 첫 테스트에서 Stage 3 Linear는 majority-class 수준으로 하락했습니다:
-  accuracy `0.541291`, majority accuracy `0.541291`, ROC-AUC `0.522101`.
-- 같은 조합의 Stage 2 baseline은 더 강했습니다: accuracy `0.603053`,
-  majority accuracy `0.541291`, ROC-AUC `0.616950`.
-- 나머지 Stage 3 Linear configuration은 아직 실행 예정입니다. Stage 3 결과 결론은
-  나머지 single-seed grid run 이후 작성합니다.
-- Stage 2의 5-seed rerun은 아직 예정이므로, Stage 3 최종 결론도 Stage 2 안정성
-  확인 전까지는 provisional result로 봅니다.
+Conclusion:
+- The simple Linear adapter did not improve the Stage 2 visual baseline.
+- This supports treating Stage 3 as a failed/negative ablation.
+- Stage 4 should not be justified as “more parameters”; it needs a conditional modulation argument.
 
-주요 문서:
-- [Checklist](checklist.md)
-- [Workflow diagram](workflow_diagram.md)
-- [Stage 3 pipeline](docs/stage3_pipeline.md)
-- [Source map](docs/source_map.md)
-- [Stage 2 dependency review](docs/stage2_dependency_baseline_review.md)
-- [Linear adapter design](docs/linear_adapter_design.md)
-- [Training/evaluation comparison plan](docs/training_evaluation_comparison_plan.md)
-- [Grad-CAM comparison plan](docs/gradcam_comparison_plan.md)
-- [Kaggle runner and output plan](docs/kaggle_runner_output_plan.md)
-- [Kaggle single config cell](notebooks/kaggle_stage3_linear_single_config_one_cell.md)
-- [Kaggle single-seed grid cell](notebooks/kaggle_stage3_linear_grid_single_seed_one_cell.md)
-- [Kaggle results viewer cell](notebooks/kaggle_stage3_results_viewer_one_cell.md)
+Available result tables:
+- [Stage 3 smoke summary](reports/tables/stage3_smoke_summary_mean_std_results.csv)
+- [Stage 3 smoke vs Stage 2](reports/tables/stage3_smoke_vs_stage2.csv)
+- [Stage 3 grid dry-run summary](reports/tables/stage3_grid_dry_run_run_summary.csv)
 
-구현 상태:
-- 첫 Linear 실행: `I60/R20/ohlc_ma_vb`, seed `42`, adapter dim `128`.
-- Single-seed grid: `36`개 run.
-- Preliminary Linear run 완료: `I60/R20/ohlc_ma_vb`, seed `42`.
-  이 조합은 Stage 2 single-seed best configuration입니다.
-- Preliminary 해석: post-flatten Linear adapter는 이 Stage 2 best 조합을 개선하지
-  못했고, Stage 2 baseline accuracy `0.603053`에서 Stage 3 Linear accuracy
-  `0.541291`로 하락했습니다.
-- 나머지 Linear grid configuration은 다음 실행 예정입니다.
-- Five-seed 안정성 확인은 later입니다.
-- Local smoke test는 `I5/R5/ohlc`, seed `42`, one epoch, tiny rows로 통과했습니다.
+## Code Map
+
+| Area | Location | Role |
+| --- | --- | --- |
+| Config | [configs/](configs/) | Local/Kaggle path and runtime settings |
+| Models | [src/stage3_linear/models/](src/stage3_linear/models/) | Linear adapter model |
+| Interpretability | [src/stage3_linear/interpretability/](src/stage3_linear/interpretability/) | Stage 3 Grad-CAM helpers |
+| Scripts | [scripts/](scripts/) | Train, evaluate, compare, summarize |
+| Kaggle cells | [notebooks/](notebooks/) | Single config, grid, result viewer |
+| Reports | [reports/](reports/) | Tables and smoke summaries |
+
+## Folder Structure
+
+```text
+stage3_linear_adapter/
+├── checklist.md
+├── checklist_results/
+├── configs/
+├── docs/
+├── notebooks/
+├── reports/
+├── scripts/
+└── src/stage3_linear/
+```
+
+## Stage 4 Dependency
+
+Stage 3 is not a required architecture dependency for Stage 4. It is kept as a comparison point showing that the thesis should focus on context-conditioned modulation rather than simple post-CNN Linear expansion.

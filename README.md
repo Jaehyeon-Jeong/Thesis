@@ -15,7 +15,7 @@ tracked.
 | Stage | Purpose | Current status |
 | --- | --- | --- |
 | `stage0_data_check` | Audit data, papers, and reference implementations | Completed |
-| `stage1_reimage_reproduction` | Reproduce the Re-image CNN pipeline on public I20 stock images | I20 pipeline checks completed; `I20/R5` split/normalization artifact archived; `I20/R20` validation smoke artifact archived; `I20/R60` seed-42 fast diagnostic archived; strict full reproduction/five-seed remains later |
+| `stage1_reimage_reproduction` | Reproduce the Re-image CNN pipeline on public I20 stock images | I20 pipeline implemented and seed-42 full-data fast diagnostics completed for `I20/R5`, `I20/R20`, and `I20/R60`; strict paper-style batch/five-seed remains later |
 | `stage2_btc_extension` | Extend the confirmed pipeline to BTC OHLCV | Complete for current scope: seed-42 `36`-run screening plus selected `I20/R20`, `I60/R20` five-seed check |
 | `stage3_linear_adapter` | ~~Add a Linear comparison model~~ | ~~Failed diagnostic: Stage 2 best config dropped to majority-level accuracy~~ |
 | `stage4_film_conditioning` | Compare market-context concat, gating, gamma-only FiLM, and full FiLM on the fixed BTC CNN | v2 diagnostics through `4-V6` complete; next is bounded/residual last-block FiLM |
@@ -25,15 +25,16 @@ tracked.
 Stage 1:
 - I20 data loading, split/normalization, model, training-loop, evaluation, and
   Grad-CAM smoke checks are completed.
-- Preserved setup artifact: `I20/R5` split and normalization were built, but no
-  checkpoint or evaluation metric is available, so it is not reported as a
-  performance result.
-- Usable full diagnostic artifact: `I20/R60`, seed `42`, fast Kaggle settings:
-  accuracy `0.5312`, majority accuracy `0.5408`, ROC-AUC `0.5298`, test rows
-  `1,376,215`.
-- Preserved smoke artifact: `I20/R20` validation smoke, 4 samples, accuracy
-  `0.2500`, ROC-AUC `0.5000`. This is only a smoke check, not a reproduction
-  result.
+- The original Stage 1 I20 pipeline has now been run on all three public
+  horizons as full-data seed-42 fast diagnostics using the same Kaggle setting:
+  batch size `1024`, mixed precision, DataParallel, and fast cuDNN.
+- Current seed-42 test results:
+  `I20/R5` accuracy `0.5273`, majority `0.5078`, ROC-AUC `0.5373`;
+  `I20/R20` accuracy `0.5285`, majority `0.5222`, ROC-AUC `0.5339`;
+  `I20/R60` accuracy `0.5312`, majority `0.5408`, ROC-AUC `0.5298`.
+- Kaggle output checks passed for `I20/R5` and `I20/R20` with checkpoints,
+  test predictions, metrics, correlation metrics, and 2019 Grad-CAM previews.
+  The `I20/R60` diagnostic was already archived earlier.
 - Result link: [Stage 1 current status report](stage1_reimage_reproduction/reports/stage1_current_status_report.md).
 - Later: strict paper-style batch size `128`, five independent runs/seeds, and
   final `10` up + `10` down Figure-13-style Grad-CAM.
@@ -296,7 +297,7 @@ config, 코드 scaffold만 올립니다. 대용량 데이터, 논문 PDF, checkp
 | 단계 | 목적 | 현재 상태 |
 | --- | --- | --- |
 | `stage0_data_check` | 데이터, 논문, reference implementation 확인 | 완료 |
-| `stage1_reimage_reproduction` | public I20 stock image로 Re-image CNN pipeline 재현 | I20 pipeline check 완료; `I20/R5` split/normalization artifact 보존; `I20/R20` validation smoke artifact 보존; `I20/R60` seed-42 fast diagnostic 보존; strict full reproduction/five-seed는 later |
+| `stage1_reimage_reproduction` | public I20 stock image로 Re-image CNN pipeline 재현 | I20 pipeline 구현 완료; `I20/R5`, `I20/R20`, `I20/R60` seed-42 full-data fast diagnostic 완료; strict paper-style batch/five-seed는 later |
 | `stage2_btc_extension` | 확인된 pipeline을 BTC OHLCV로 확장 | 현재 범위 완료: seed-42 `36`-run screening과 선별 `I20/R20`, `I60/R20` five-seed check 완료 |
 | `stage3_linear_adapter` | ~~Linear 비교 모델 추가~~ | ~~실패 진단: Stage 2 best config가 majority-level accuracy로 하락~~ |
 | `stage4_film_conditioning` | 고정 BTC CNN 위에서 market-context concat, gating, gamma-only FiLM, full FiLM 비교 | v2 diagnostic `4-V6`까지 완료; 다음은 bounded/residual last-block FiLM |
@@ -306,14 +307,16 @@ config, 코드 scaffold만 올립니다. 대용량 데이터, 논문 PDF, checkp
 Stage 1:
 - I20 data loading, split/normalization, model, training-loop, evaluation,
   Grad-CAM smoke check는 모두 완료했습니다.
-- 보존된 setup artifact: `I20/R5` split/normalization은 생성됐지만 checkpoint나
-  evaluation metric은 남아 있지 않아서 성능 결과로 보고하지 않습니다.
-- 사용 가능한 full diagnostic artifact: `I20/R60`, seed `42`, fast Kaggle
-  setting. Accuracy `0.5312`, majority accuracy `0.5408`, ROC-AUC `0.5298`,
-  test rows `1,376,215`.
-- 보존된 smoke artifact: `I20/R20` validation smoke, 4 samples, accuracy
-  `0.2500`, ROC-AUC `0.5000`. 이 값은 smoke check일 뿐 reproduction 결과로
-  주장하지 않습니다.
+- 기존 Stage 1 I20 파이프라인을 public horizon 3개 전체에 대해 full-data
+  seed-42 fast diagnostic으로 실행했습니다. 설정은 동일합니다: batch size
+  `1024`, mixed precision, DataParallel, fast cuDNN.
+- 현재 seed-42 test 결과:
+  `I20/R5` accuracy `0.5273`, majority `0.5078`, ROC-AUC `0.5373`;
+  `I20/R20` accuracy `0.5285`, majority `0.5222`, ROC-AUC `0.5339`;
+  `I20/R60` accuracy `0.5312`, majority `0.5408`, ROC-AUC `0.5298`.
+- `I20/R5`와 `I20/R20`은 checkpoint, test prediction, metric, correlation
+  metric, 2019 Grad-CAM preview까지 output check가 통과했습니다. `I20/R60`
+  diagnostic은 이전에 보존된 결과입니다.
 - 결과 링크: [Stage 1 current status report](stage1_reimage_reproduction/reports/stage1_current_status_report.md).
 - Later: 논문식 strict batch size `128`, five independent runs/seeds, 최종
   `10` up + `10` down Figure-13-style Grad-CAM.

@@ -37,16 +37,21 @@ Current status:
 - Local smoke test through Grad-CAM is completed.
 - Kaggle execution is standardized on the one-cell single-horizon runner:
   `notebooks/kaggle_stage1_single_horizon_one_cell.md`.
-- Current archived Kaggle/local output status:
-  - `I20/R60`: seed `42` full test artifact is archived as a fast Kaggle
-    diagnostic. Accuracy `0.5312`, majority accuracy `0.5408`, ROC-AUC
-    `0.5298`, test rows `1,376,215`.
-  - `I20/R20`: the current local folder preserves only validation-smoke outputs
-    for metrics/Grad-CAM. It is not a full reproduction result.
-  - `I20/R5`: full output is still pending locally.
+- Current archived Kaggle output status:
+  - `I20/R5`: seed `42` full-data fast diagnostic completed. Accuracy
+    `0.5273`, majority accuracy `0.5078`, ROC-AUC `0.5373`, test rows
+    `1,399,933`.
+  - `I20/R20`: seed `42` full-data fast diagnostic completed. Accuracy
+    `0.5285`, majority accuracy `0.5222`, ROC-AUC `0.5339`, test rows
+    `1,393,845`.
+  - `I20/R60`: seed `42` full-data fast diagnostic completed. Accuracy
+    `0.5312`, majority accuracy `0.5408`, ROC-AUC `0.5298`, test rows
+    `1,376,215`.
+- All three runs use the same fast Kaggle setting: batch size `1024`, mixed
+  precision, DataParallel, and fast cuDNN. This confirms the implemented
+  pipeline end-to-end, but strict paper-style reproduction remains later work.
 - Detailed status report: [Stage 1 current status report](reports/stage1_current_status_report.md)
 - Later work:
-  - rerun/download missing `I20/R5` and full `I20/R20` outputs;
   - run strict paper-style setting with batch size `128`;
   - run five independent seeds/runs;
   - generate final Figure-13-style Grad-CAM with `10` predicted-up and `10`
@@ -56,8 +61,8 @@ Current result snapshot:
 
 | Experiment | Status | Split | Samples | Accuracy | Majority | ROC-AUC | Note |
 |:---|:---|:---|---:|---:|---:|---:|:---|
-| `I20/R5` | Pending | - | - | - | - | - | Not archived locally yet |
-| `I20/R20` | Smoke only | validation | 4 | 0.2500 | 0.5000 | 0.5000 | Not a reproduction result |
+| `I20/R5` | Full seed-42 fast diagnostic | test | 1,399,933 | 0.5273 | 0.5078 | 0.5373 | Strict paper batch and five-seed runs later |
+| `I20/R20` | Full seed-42 fast diagnostic | test | 1,393,845 | 0.5285 | 0.5222 | 0.5339 | Strict paper batch and five-seed runs later |
 | `I20/R60` | Full seed-42 fast diagnostic | test | 1,376,215 | 0.5312 | 0.5408 | 0.5298 | Strict paper batch and five-seed runs later |
 
 `I20/R60` Grad-CAM preview:
@@ -113,16 +118,18 @@ Primary limitation:
 - Grad-CAM까지 포함한 local smoke test를 완료했습니다.
 - Kaggle 실행은 one-cell single-horizon runner로 통일했습니다:
   `notebooks/kaggle_stage1_single_horizon_one_cell.md`.
-- 현재 보존된 Kaggle/local output 상태:
-  - `I20/R60`: seed `42` full test artifact가 fast Kaggle diagnostic으로
-    보존되어 있습니다. Accuracy `0.5312`, majority accuracy `0.5408`,
-    ROC-AUC `0.5298`, test rows `1,376,215`.
-  - `I20/R20`: 현재 로컬 폴더에는 metrics/Grad-CAM 기준 validation smoke
-    output만 남아 있습니다. full reproduction 결과가 아닙니다.
-  - `I20/R5`: full output은 아직 로컬에 보존되어 있지 않습니다.
+- 현재 보존된 Kaggle output 상태:
+  - `I20/R5`: seed `42` full-data fast diagnostic 완료. Accuracy `0.5273`,
+    majority accuracy `0.5078`, ROC-AUC `0.5373`, test rows `1,399,933`.
+  - `I20/R20`: seed `42` full-data fast diagnostic 완료. Accuracy `0.5285`,
+    majority accuracy `0.5222`, ROC-AUC `0.5339`, test rows `1,393,845`.
+  - `I20/R60`: seed `42` full-data fast diagnostic 완료. Accuracy `0.5312`,
+    majority accuracy `0.5408`, ROC-AUC `0.5298`, test rows `1,376,215`.
+- 세 run 모두 동일한 fast Kaggle setting을 사용했습니다: batch size `1024`,
+  mixed precision, DataParallel, fast cuDNN. 이 결과는 구현된 파이프라인의
+  end-to-end 동작을 확인하는 결과이며, strict paper-style reproduction은 later입니다.
 - 상세 상태 보고: [Stage 1 current status report](reports/stage1_current_status_report.md)
 - 나중에 할 작업:
-  - 빠진 `I20/R5`와 full `I20/R20` output 재실행/재다운로드;
   - 논문식 strict setting인 batch size `128`로 재실행;
   - five independent seeds/runs 실행;
   - 최종 Figure 13 스타일 Grad-CAM을 predicted-up 10개와 predicted-down 10개로 생성.
@@ -131,8 +138,8 @@ Primary limitation:
 
 | 실험 | 상태 | Split | Sample 수 | Accuracy | Majority | ROC-AUC | 비고 |
 |:---|:---|:---|---:|---:|---:|---:|:---|
-| `I20/R5` | 대기 | - | - | - | - | - | 아직 로컬에 보존되지 않음 |
-| `I20/R20` | Smoke only | validation | 4 | 0.2500 | 0.5000 | 0.5000 | 재현 결과 아님 |
+| `I20/R5` | Full seed-42 fast diagnostic | test | 1,399,933 | 0.5273 | 0.5078 | 0.5373 | strict paper batch와 five-seed run은 later |
+| `I20/R20` | Full seed-42 fast diagnostic | test | 1,393,845 | 0.5285 | 0.5222 | 0.5339 | strict paper batch와 five-seed run은 later |
 | `I20/R60` | Full seed-42 fast diagnostic | test | 1,376,215 | 0.5312 | 0.5408 | 0.5298 | strict paper batch와 five-seed run은 later |
 
 `I20/R60` Grad-CAM preview:

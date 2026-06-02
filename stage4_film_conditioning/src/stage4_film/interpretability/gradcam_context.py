@@ -247,7 +247,11 @@ def _target_layers_for_method(
 ) -> tuple[dict[str, nn.Module], str]:
     """Select Grad-CAM hook layers for the Stage 4 method."""
 
-    if context_method in {"film_gamma", "film_full"} and hasattr(model, "film_target_layers"):
+    if context_method in {
+        "film_gamma",
+        "film_full",
+        "film_full_bounded_last_block",
+    } and hasattr(model, "film_target_layers"):
         return dict(model.film_target_layers()), "post_film"
     return dict(model.gradcam_target_layers()), "conv"
 
@@ -299,7 +303,11 @@ def _extract_context_and_modulation(
             }
             return {"summary": summary, "values": values}
 
-        if context_method in {"film_gamma", "film_full"} and hasattr(
+        if context_method in {
+            "film_gamma",
+            "film_full",
+            "film_full_bounded_last_block",
+        } and hasattr(
             model,
             "forward_with_modulation_values",
         ):
@@ -333,6 +341,16 @@ def _extract_context_and_modulation(
                     block_record["beta"] = _tensor_to_list(beta)
                     block_record["beta_top_channels"] = _top_channels(beta)
                     block_record["beta_bottom_channels"] = _bottom_channels(beta)
+                raw_gamma = block.get("raw_gamma")
+                raw_beta = block.get("raw_beta")
+                if raw_gamma is not None:
+                    summary.update(_tensor_stats(f"block{block_id}_raw_gamma", raw_gamma))
+                    block_record["raw_gamma"] = _tensor_to_list(raw_gamma)
+                if raw_beta is not None:
+                    summary.update(_tensor_stats(f"block{block_id}_raw_beta", raw_beta))
+                    block_record["raw_beta"] = _tensor_to_list(raw_beta)
+                if "modulation_scale" in block:
+                    block_record["modulation_scale"] = float(block["modulation_scale"])
                 block_values.append(block_record)
             values = {
                 "context": _named_context_values(context, context_feature_names),

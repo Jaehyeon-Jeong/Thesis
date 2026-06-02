@@ -19,6 +19,7 @@ add_stage4_and_stage2_src_from_argv(sys.argv)
 from stage2_btc.models.stock_cnn import VARIANT_SPECS, count_parameters
 from stage4_film import build_stage4_paths, load_config
 from stage4_film.config import (
+    CONTEXT_METHODS,
     get_context_config,
     get_stage4_model_config,
     make_stage4_experiment_name,
@@ -27,9 +28,11 @@ from stage4_film.config import (
 from stage4_film.context.features import make_context_output_name
 from stage4_film.context.normalization import normalized_feature_columns
 from stage4_film.models import (
+    build_bounded_last_block_film_context_stock_cnn_for_window,
     build_concat_context_stock_cnn_for_window,
     build_film_context_stock_cnn_for_window,
     build_gated_context_stock_cnn_for_window,
+    expected_bounded_last_block_film_context_parameter_count,
     expected_concat_context_parameter_count,
     expected_film_context_parameter_count,
     expected_gated_context_parameter_count,
@@ -45,7 +48,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--model",
         default="concat",
-        choices=["concat", "gating", "film_gamma", "film_full"],
+        choices=list(CONTEXT_METHODS),
     )
     parser.add_argument("--image-window", type=int, default=0)
     parser.add_argument("--image-spec", default="")
@@ -99,6 +102,15 @@ def main() -> None:
             image_window,
             method,
         )
+    elif method == "film_full_bounded_last_block":
+        model = build_bounded_last_block_film_context_stock_cnn_for_window(
+            config,
+            image_window=image_window,
+        )
+        expected_params = expected_bounded_last_block_film_context_parameter_count(
+            config,
+            image_window,
+        )
     else:
         raise ValueError(f"Unsupported model checker method: {method}")
     model.eval()
@@ -143,6 +155,34 @@ def main() -> None:
                 shapes[f"layer{block_index}_film"],
                 shapes[f"layer{block_index}_bn"],
             )
+    elif method == "film_full_bounded_last_block":
+        block_index = len(spec.channels)
+        channels = int(spec.channels[-1])
+        _assert_shape(
+            f"raw_gamma{block_index}",
+            shapes[f"raw_gamma{block_index}"],
+            (batch_size, channels),
+        )
+        _assert_shape(
+            f"raw_beta{block_index}",
+            shapes[f"raw_beta{block_index}"],
+            (batch_size, channels),
+        )
+        _assert_shape(
+            f"gamma{block_index}",
+            shapes[f"gamma{block_index}"],
+            (batch_size, channels),
+        )
+        _assert_shape(
+            f"beta{block_index}",
+            shapes[f"beta{block_index}"],
+            (batch_size, channels),
+        )
+        _assert_shape(
+            f"layer{block_index}_film",
+            shapes[f"layer{block_index}_film"],
+            shapes[f"layer{block_index}_bn"],
+        )
     if not torch.isfinite(logits).all():
         raise RuntimeError(f"{method} context model produced non-finite dummy logits.")
 
@@ -162,6 +202,7 @@ def main() -> None:
         return_horizon=return_horizon,
         context_window=context_window,
         run_seed=int(args.run_seed),
+        context_suffix=str(context_config.get("feature_set_name", "")),
     )
     real_context_check = _check_real_context_rows(
         context_file,
@@ -187,7 +228,7 @@ def main() -> None:
                 torch.allclose(gate, torch.ones_like(gate))
             ),
         }
-    if method in {"film_gamma", "film_full"}:
+    if method in {"film_gamma", "film_full", "film_full_bounded_last_block"}:
         with torch.no_grad():
             details = model.forward_with_modulation_values(
                 dummy_image,
@@ -196,12 +237,13 @@ def main() -> None:
             )
         blocks = []
         for index, block in enumerate(details["film_parameters"], start=1):
+            block_id = int(block.get("block", index))
             gamma = block["gamma"]
             beta = block["beta"]
             pre_film = details["pre_film_feature_maps"][index - 1]
             post_film = details["post_film_feature_maps"][index - 1]
             block_summary = {
-                "block": index,
+                "block": block_id,
                 "gamma_shape": list(gamma.shape),
                 "gamma_min": float(gamma.min().item()),
                 "gamma_max": float(gamma.max().item()),
@@ -214,6 +256,26 @@ def main() -> None:
                     torch.allclose(post_film, pre_film)
                 ),
             }
+            if "raw_gamma" in block:
+                raw_gamma = block["raw_gamma"]
+                block_summary.update(
+                    {
+                        "raw_gamma_shape": list(raw_gamma.shape),
+                        "raw_gamma_min": float(raw_gamma.min().item()),
+                        "raw_gamma_max": float(raw_gamma.max().item()),
+                    }
+                )
+            if "raw_beta" in block:
+                raw_beta = block["raw_beta"]
+                block_summary.update(
+                    {
+                        "raw_beta_shape": list(raw_beta.shape),
+                        "raw_beta_min": float(raw_beta.min().item()),
+                        "raw_beta_max": float(raw_beta.max().item()),
+                    }
+                )
+            if "modulation_scale" in block:
+                block_summary["modulation_scale"] = float(block["modulation_scale"])
             if beta is not None:
                 block_summary.update(
                     {
@@ -296,6 +358,7 @@ def _resolve_context_feature_file(
     return_horizon: int,
     context_window: int,
     run_seed: int,
+    context_suffix: str,
 ) -> Path | None:
     """Find a context_features.csv file if available."""
 
@@ -306,7 +369,7 @@ def _resolve_context_feature_file(
         image_spec=image_spec,
         return_horizon=return_horizon,
         context_window=context_window,
-        context_suffix=str(get_context_config(config).get("feature_set_name", "")),
+        context_suffix=context_suffix,
     )
     candidate = paths.context_root / context_name / f"seed_{int(run_seed)}" / "context_features.csv"
     if candidate.exists():
@@ -362,7 +425,7 @@ def _check_real_context_rows(
                     torch.allclose(gate, torch.ones_like(gate))
                 ),
             }
-        if method in {"film_gamma", "film_full"}:
+        if method in {"film_gamma", "film_full", "film_full_bounded_last_block"}:
             details = model.forward_with_modulation_values(
                 image,
                 context,
@@ -381,6 +444,24 @@ def _check_real_context_rows(
                     "delta_gamma_max": float(block["delta_gamma"].max().item()),
                     "identity_at_initialization": bool(block["identity_at_initialization"]),
                 }
+                if "raw_gamma" in block:
+                    raw_gamma = block["raw_gamma"]
+                    block_summary.update(
+                        {
+                            "raw_gamma_min": float(raw_gamma.min().item()),
+                            "raw_gamma_max": float(raw_gamma.max().item()),
+                        }
+                    )
+                if "raw_beta" in block:
+                    raw_beta = block["raw_beta"]
+                    block_summary.update(
+                        {
+                            "raw_beta_min": float(raw_beta.min().item()),
+                            "raw_beta_max": float(raw_beta.max().item()),
+                        }
+                    )
+                if "modulation_scale" in block:
+                    block_summary["modulation_scale"] = float(block["modulation_scale"])
                 if beta is not None:
                     block_summary.update(
                         {
@@ -413,7 +494,7 @@ def _check_real_context_rows(
     if method == "gating":
         result["gated_feature_map_shape"] = list(shapes["gated_feature_map"])
         result["gate"] = gate_summary
-    if method in {"film_gamma", "film_full"}:
+    if method in {"film_gamma", "film_full", "film_full_bounded_last_block"}:
         result["film"] = film_summary
     return result
 

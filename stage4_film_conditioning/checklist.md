@@ -263,6 +263,11 @@ Stage 4 v2 diagnostic priorities:
   - Purpose: preserve the Stage 2 visual evidence and reduce seed-dependent
     collapse by limiting modulation strength and applying FiLM only to the
     high-level final block first.
+  - Execution wrapper:
+    `notebooks/kaggle_stage4_v2_p8_ohlc_ma_vb_fg_only_bounded_last_block_film_five_seed_one_cell.md`.
+  - Fixed run: `I60/R20/ohlc_ma_vb`, F&G-only context,
+    `film_full_bounded_last_block`, seeds `42, 43, 44, 45, 46`.
+  - Result prep: [4-V7 Stage 4 v2 bounded/residual last-block FiLM](checklist_results/4-V7_stage4_v2_bounded_residual_last_block_film.md)
 
 News-context extension:
 - [ ] 4-N1. `edaschau/bitcoin_news` source audit
@@ -545,6 +550,11 @@ Stage 4 v2 진단 우선순위:
 - [ ] 4-V7. 우선순위 8: bounded/residual last-block FiLM v2
   - 목적: Stage 2 visual evidence를 보존하고 modulation strength를 제한해서
     seed-dependent collapse를 줄입니다.
+  - 실행 wrapper:
+    `notebooks/kaggle_stage4_v2_p8_ohlc_ma_vb_fg_only_bounded_last_block_film_five_seed_one_cell.md`.
+  - 고정 run: `I60/R20/ohlc_ma_vb`, F&G-only context,
+    `film_full_bounded_last_block`, seeds `42, 43, 44, 45, 46`.
+  - 준비 결과: [4-V7 Stage 4 v2 bounded/residual last-block FiLM](checklist_results/4-V7_stage4_v2_bounded_residual_last_block_film.md)
 
 News-context 확장:
 - [ ] 4-N1. `edaschau/bitcoin_news` source audit

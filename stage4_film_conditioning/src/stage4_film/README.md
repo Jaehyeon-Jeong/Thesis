@@ -34,6 +34,13 @@ Added in `4-I7`:
   `film_full`, with FiLM inserted after BatchNorm and before LeakyReLU in every
   Stock_CNN block.
 
+Updated in `4-V7`:
+- `models/film_stock_cnn.py`: `BoundedLastBlockFilmContextStockCNN` for
+  `film_full_bounded_last_block`, with residual/bounded FiLM applied only to
+  the final Stock_CNN block.
+- `runners/context_experiment.py`: routes the new V7 method through the same
+  fixed Stage 2 BTC data pipeline.
+
 Added in `4-I8`:
 - `training/loop.py`: context-aware training loop that calls
   `model(image, context)` and preserves identity initialization for gate/FiLM
@@ -88,6 +95,13 @@ Stage 4 FiLM/context-conditioning 구현 package입니다.
 - `models/film_stock_cnn.py`: `film_gamma`, `film_full`용
   `FilmContextStockCNN`입니다. 모든 Stock_CNN block에서 BatchNorm 뒤,
   LeakyReLU 전에 FiLM을 삽입합니다.
+
+`4-V7`에서 수정한 module:
+- `models/film_stock_cnn.py`: `film_full_bounded_last_block`용
+  `BoundedLastBlockFilmContextStockCNN`을 추가했습니다. FiLM은 마지막
+  Stock_CNN block에만 residual/bounded 방식으로 적용됩니다.
+- `runners/context_experiment.py`: 새 V7 method도 같은 Stage 2 BTC data
+  pipeline을 통해 실행되도록 연결했습니다.
 
 `4-I8`에서 추가한 module:
 - `training/loop.py`: `model(image, context)`를 호출하는 context-aware training

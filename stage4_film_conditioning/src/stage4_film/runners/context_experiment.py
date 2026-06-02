@@ -41,6 +41,7 @@ from stage4_film.context import (
 from stage4_film.context.features import build_context_feature_audit, build_context_feature_table
 from stage4_film.context.normalization import normalized_feature_columns
 from stage4_film.models import (
+    build_bounded_last_block_film_context_stock_cnn_for_window,
     build_concat_context_stock_cnn_for_window,
     build_film_context_stock_cnn_for_window,
     build_gated_context_stock_cnn_for_window,
@@ -262,6 +263,11 @@ def build_stage4_context_model(
             config,
             image_window=image_window,
             mode=method,
+        )
+    if method == "film_full_bounded_last_block":
+        return build_bounded_last_block_film_context_stock_cnn_for_window(
+            config,
+            image_window=image_window,
         )
     raise ValueError(f"Unsupported Stage 4 context method: {method}")
 

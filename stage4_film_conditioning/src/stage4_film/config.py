@@ -23,6 +23,7 @@ CONTEXT_METHODS: tuple[str, ...] = (
     "gating",
     "film_gamma",
     "film_full",
+    "film_full_bounded_last_block",
 )
 
 REQUIRED_TOP_LEVEL_KEYS: tuple[str, ...] = (

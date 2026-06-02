@@ -18,6 +18,7 @@ add_stage4_and_stage2_src_from_argv(sys.argv)
 
 from stage4_film import build_stage4_paths, ensure_stage4_output_dirs, load_config
 from stage4_film.config import (
+    CONTEXT_METHODS,
     get_context_config,
     get_stage4_model_config,
     stage4_run_context_base,
@@ -38,7 +39,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--context-method",
         default="concat",
-        choices=["concat", "gating", "film_gamma", "film_full"],
+        choices=list(CONTEXT_METHODS),
     )
     parser.add_argument("--run-seed", type=int, default=42)
     parser.add_argument("--split", default="test", choices=["train", "validation", "test"])

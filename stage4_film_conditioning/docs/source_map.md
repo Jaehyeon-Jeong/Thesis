@@ -322,8 +322,10 @@ Implementation-source distinction:
   - Added `notebooks/kaggle_stage4_v2_p7_ohlc_ma_vb_fg_only_film_full_five_seed_one_cell.md`.
   - `4-V6` uses the same F&G-only feature suffix as `4-V3`, but the output names
     remain separated because `image_spec=ohlc_ma_vb`.
-  - Bounded/residual last-block FiLM is deferred to `4-V7` so context-signal
-    validity and FiLM-architecture changes are not confounded.
+  - `4-V7` is now prepared as the bounded/residual last-block FiLM test:
+    `notebooks/kaggle_stage4_v2_p8_ohlc_ma_vb_fg_only_bounded_last_block_film_five_seed_one_cell.md`.
+  - It keeps `I60/R20/ohlc_ma_vb` and F&G-only context fixed, then changes only
+    the FiLM architecture to `film_full_bounded_last_block`.
 
 ## 한국어
 
@@ -652,5 +654,7 @@ Implementation-source distinction:
     추가했습니다.
   - `4-V6`는 `4-V3`와 같은 F&G-only suffix를 사용하지만,
     `image_spec=ohlc_ma_vb`가 output 이름에 포함되므로 결과는 분리됩니다.
-  - Bounded/residual last-block FiLM은 context signal 여부와 FiLM architecture
-    변경 효과가 섞이지 않도록 `4-V7`로 미룹니다.
+  - `4-V7`은 bounded/residual last-block FiLM 실험으로 준비했습니다:
+    `notebooks/kaggle_stage4_v2_p8_ohlc_ma_vb_fg_only_bounded_last_block_film_five_seed_one_cell.md`.
+  - `I60/R20/ohlc_ma_vb`와 F&G-only context는 고정하고, FiLM architecture만
+    `film_full_bounded_last_block`으로 바꿉니다.

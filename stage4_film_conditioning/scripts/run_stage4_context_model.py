@@ -2,9 +2,7 @@
 
 This is the 4-I8 runner: it reuses Stage 2 BTC data/image/split/normalization,
 builds Stage 4 context features, attaches context tensors to each batch, and
-trains one of:
-
-    concat, gating, film_gamma, film_full
+trains one of the configured Stage 4 context methods.
 """
 
 from __future__ import annotations
@@ -22,7 +20,12 @@ from _stage4_script_utils import add_stage4_and_stage2_src_from_argv
 add_stage4_and_stage2_src_from_argv(sys.argv)
 
 from stage4_film import build_stage4_paths, ensure_stage4_output_dirs, load_config
-from stage4_film.config import get_context_config, get_stage4_model_config, validate_context_method
+from stage4_film.config import (
+    CONTEXT_METHODS,
+    get_context_config,
+    get_stage4_model_config,
+    validate_context_method,
+)
 from stage4_film.runners import run_stage4_context_training
 from stage4_film.runtime import select_device
 from stage4_film.seed import set_global_seed
@@ -39,7 +42,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--context-method",
         default="concat",
-        choices=["concat", "gating", "film_gamma", "film_full"],
+        choices=list(CONTEXT_METHODS),
     )
     parser.add_argument("--run-seed", type=int, default=42)
     parser.add_argument("--max-epochs", type=int, default=0)

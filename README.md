@@ -14,7 +14,7 @@ Large source data, checkpoints, paper PDFs, and large prediction files are not t
 | `stage1_reimage_reproduction` | Original Re-image I20 stock-chart pipeline | Completed for current seed-42 full-data fast diagnostics on `I20/R5`, `I20/R20`, `I20/R60` | [README](stage1_reimage_reproduction/README.md), [status report](stage1_reimage_reproduction/reports/stage1_current_status_report.md), [CSV](stage1_reimage_reproduction/reports/tables/stage1_seed42_current_status.csv) |
 | `stage2_btc_extension` | Asset change from stock charts to BTC OHLCV | Completed for current scope: first screened all `I5/I20/I60 x R5/R20/R60 x 4 image specs` with one seed, then reran selected effective candidates with five seeds; best stable baseline is `I60/R20/ohlc_ma_vb` | [README](stage2_btc_extension/README.md), [single-seed screening report](stage2_btc_extension/reports/stage2_single_seed_result_report.md), [selected five-seed report](stage2_btc_extension/reports/stage2_i20_i60_r20_five_seed_result_report.md) |
 | `stage3_linear_adapter` | Linear adapter ablation | Negative result; adapter underperformed the Stage 2 visual baseline | [README](stage3_linear_adapter/README.md), [checklist](stage3_linear_adapter/checklist.md) |
-| `stage4_film_conditioning` | Market-context concat/gating/FiLM | In progress; v1/v2 diagnostics show simple context injection is not yet robust; next direction is bounded/residual last-block FiLM | [README](stage4_film_conditioning/README.md), [checklist](stage4_film_conditioning/checklist.md) |
+| `stage4_film_conditioning` | Market-context concat/gating/FiLM | In progress; v1/v2 diagnostics show simple context injection is not yet robust; V7 bounded/residual last-block FiLM is prepared for Kaggle | [README](stage4_film_conditioning/README.md), [checklist](stage4_film_conditioning/checklist.md) |
 
 ### Short Result Summary
 
@@ -61,7 +61,7 @@ Not tracked:
 | `stage1_reimage_reproduction` | 원 논문 I20 stock-chart pipeline 재현 | 현재 범위 완료: `I20/R5`, `I20/R20`, `I20/R60` seed-42 full-data fast diagnostic 완료 | [README](stage1_reimage_reproduction/README.md), [status report](stage1_reimage_reproduction/reports/stage1_current_status_report.md), [CSV](stage1_reimage_reproduction/reports/tables/stage1_seed42_current_status.csv) |
 | `stage2_btc_extension` | 자산군을 BTC OHLCV로 교체 | 현재 범위 완료: `I5/I20/I60 x R5/R20/R60 x 4 image specs`를 seed 1개로 1차 선별한 뒤, 효과가 있던 후보만 seed 5개로 재검증; 가장 안정적인 baseline은 `I60/R20/ohlc_ma_vb` | [README](stage2_btc_extension/README.md), [single-seed screening report](stage2_btc_extension/reports/stage2_single_seed_result_report.md), [selected five-seed report](stage2_btc_extension/reports/stage2_i20_i60_r20_five_seed_result_report.md) |
 | `stage3_linear_adapter` | Linear adapter ablation | 실패/negative result; Stage 2 visual baseline보다 낮음 | [README](stage3_linear_adapter/README.md), [checklist](stage3_linear_adapter/checklist.md) |
-| `stage4_film_conditioning` | Market-context concat/gating/FiLM | 진행 중; 단순 context injection은 아직 robust하지 않음; 다음 방향은 bounded/residual last-block FiLM | [README](stage4_film_conditioning/README.md), [checklist](stage4_film_conditioning/checklist.md) |
+| `stage4_film_conditioning` | Market-context concat/gating/FiLM | 진행 중; 단순 context injection은 아직 robust하지 않음; V7 bounded/residual last-block FiLM Kaggle 실행 준비 완료 | [README](stage4_film_conditioning/README.md), [checklist](stage4_film_conditioning/checklist.md) |
 
 ### 짧은 결과 요약
 

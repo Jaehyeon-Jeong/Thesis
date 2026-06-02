@@ -92,6 +92,7 @@ Stage 4 v2 diagnostic summary:
 | `4-V4` | `ohlc` + technical-only + `film_full`, five seeds | Accuracy mean `0.5603`; technical context is also weak alone | [review](checklist_results/4-V4_stage4_v2_ohlc_technical_only_film_full.md) |
 | `4-V5` | `ohlc` + all context + `film_full`, five seeds | Accuracy mean `0.5574`; seed-42 gain is not robust | [review](checklist_results/4-V5_stage4_v2_ohlc_all_context_five_seed.md) |
 | `4-V6` | `ohlc_ma_vb` + F&G-only + `film_full`, five seeds | Accuracy mean `0.5524`; full FiLM still unstable on strong visual baseline | [review](checklist_results/4-V6_stage4_v2_ohlc_ma_vb_fg_only_five_seed.md) |
+| `4-V7` | `ohlc_ma_vb` + F&G-only + bounded last-block FiLM, five seeds | Prepared; tests whether conservative FiLM reduces seed collapse | [plan](checklist_results/4-V7_stage4_v2_bounded_residual_last_block_film.md) |
 
 Current interpretation:
 - `ohlc_ma_vb` already contains strong visual/technical information.
@@ -100,8 +101,7 @@ Current interpretation:
 - Next architecture work should preserve the strong visual path more explicitly.
 
 Next direction:
-- bounded/residual FiLM;
-- last-block-only FiLM;
+- run `4-V7` bounded/residual last-block FiLM;
 - stronger collapse monitoring with predicted-positive rate, F1, and ROC-AUC;
 - feature sensitivity exports for interpretability.
 

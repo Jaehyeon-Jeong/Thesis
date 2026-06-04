@@ -97,6 +97,15 @@ Available notebooks:
     information before adding news-conditioned FiLM.
   - Writes one compact download bundle:
     `/kaggle/working/stage4_news_context_n6_result_bundle.zip`.
+- `kaggle_stage4_news_context_n6_svd_dim_grid_one_cell.md`
+  - Stage 4 news-context priority 6.1 diagnostic.
+  - Rebuilds train-only TF-IDF/SVD vectors with SVD dims `16` and `8`,
+    builds matching prebuilt news context artifacts, then runs
+    `CNN + news concat` over five seeds.
+  - Purpose: check whether smaller headline vectors reduce seed collapse before
+    moving to N7 news-conditioned bounded FiLM.
+  - Writes one compact download bundle:
+    `/kaggle/working/stage4_news_context_n6_svd_dim_grid_result_bundle.zip`.
 
 Planned notebooks:
 - `kaggle_stage4_single_ablation_one_cell.md`
@@ -200,6 +209,15 @@ Required backup root:
     side information으로 유용한지 먼저 확인합니다.
   - 결과 download bundle:
     `/kaggle/working/stage4_news_context_n6_result_bundle.zip`.
+- `kaggle_stage4_news_context_n6_svd_dim_grid_one_cell.md`
+  - Stage 4 news-context 우선순위 6.1 diagnostic입니다.
+  - train-only TF-IDF/SVD vector를 SVD dim `16`, `8`로 다시 만들고,
+    matching prebuilt news context를 만든 뒤 `CNN + news concat` five-seed를
+    실행합니다.
+  - 목적: N7 news-conditioned bounded FiLM으로 넘어가기 전에 낮은 차원의
+    headline vector가 seed collapse를 줄이는지 확인하는 것입니다.
+  - 결과 download bundle:
+    `/kaggle/working/stage4_news_context_n6_svd_dim_grid_result_bundle.zip`.
 
 예정 notebook:
 - `kaggle_stage4_single_ablation_one_cell.md`

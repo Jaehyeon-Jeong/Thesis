@@ -1,6 +1,6 @@
 # 4-N6 News-Context Baseline Controls
 
-Status: prepared for Kaggle execution; five-seed result pending
+Status: completed; five-seed Kaggle result available
 
 ## Goal
 
@@ -64,12 +64,40 @@ stage4_concat_i60_ohlc_ma_vb_r20_c60_news_tfidf_svd_w7_20_60_smoke
 The smoke confirmed that the Stage 4 runner can load the `102`-dimensional
 prebuilt news context table and align it to BTC samples through `sample_index`.
 
-## Result Pending
+## Five-Seed Result
 
-N6 should be marked complete only after the Kaggle five-seed CSVs are available:
+Kaggle five-seed result files:
 
 - `stage4_news_context_n6_concat_five_seed_seed_results.csv`
 - `stage4_news_context_n6_concat_five_seed_mean_std_results.csv`
+
+Summary:
+
+| Metric | Mean | Std |
+| --- | ---: | ---: |
+| Accuracy | `0.5478` | `0.0527` |
+| ROC-AUC | `0.5644` | `0.0418` |
+| F1 | `0.5283` | `0.2964` |
+| Predicted positive rate | `0.5885` | `0.3627` |
+| Long/flat Sharpe net | `2.7438` | `1.5455` |
+
+Seed behavior:
+
+| Seed | Accuracy | ROC-AUC | Predicted positive rate | Note |
+| ---: | ---: | ---: | ---: | --- |
+| `42` | `0.5822` | `0.5971` | `0.6565` | useful signal |
+| `43` | `0.5420` | `0.5145` | `0.9993` | near all-Up collapse |
+| `44` | `0.5697` | `0.5835` | `0.6607` | useful signal |
+| `45` | `0.4587` | `0.5244` | `0.0000` | all-Down collapse |
+| `46` | `0.5864` | `0.6027` | `0.6260` | useful signal |
+
+Interpretation:
+
+- Headline-only news context has useful signal in some seeds.
+- The `102`-dimensional context is too unstable to move directly into FiLM as
+  the main model.
+- Before 4-N7, test smaller SVD dimensions (`16`, `8`) with the same concat
+  control. This separates “news vector instability” from “FiLM instability.”
 
 ## Decision Rule
 
@@ -77,3 +105,8 @@ N6 should be marked complete only after the Kaggle five-seed CSVs are available:
   proceed to `4-N7` bounded last-block FiLM with news context.
 - If `CNN + news concat` is clearly worse, inspect seed collapse and news
   coverage before adding FiLM.
+
+Decision:
+
+- Proceed to 4-N6.1 SVD-dimension stability grid first.
+- Then run 4-N7 bounded last-block FiLM using the most stable news vector size.

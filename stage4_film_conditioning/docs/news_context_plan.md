@@ -96,9 +96,7 @@ The sample-level news context builder now writes a model-ready context artifact:
   z-score scaling.
 - Missing warnings: none.
 
-## 4-N6 Prepared Baseline Control
-
-The next Kaggle runner is prepared:
+## 4-N6 Baseline Control Result
 
 - Notebook:
   [kaggle_stage4_news_context_n6_baseline_controls_one_cell.md](../notebooks/kaggle_stage4_news_context_n6_baseline_controls_one_cell.md)
@@ -106,15 +104,34 @@ The next Kaggle runner is prepared:
 - Seeds: `42, 43, 44, 45, 46`
 - Result bundle:
   `/kaggle/working/stage4_news_context_n6_result_bundle.zip`
+- Accuracy mean: `0.5478`
+- ROC-AUC mean: `0.5644`
+- Diagnosis: seeds `43` and `45` collapsed to near one-sided predictions
+  (`predicted_positive_rate` near `1.0` and `0.0` respectively).
 
 The Stage 4 model runner now supports `context.source=prebuilt_news`, so it can
 load the N5 `context_features.csv` and `context_scaler.json` directly. Local
 small-sample smoke passed for training, prediction evaluation, trading
 evaluation, Grad-CAM/context export, and output checking.
 
-Completion condition:
-- N6 is not complete until the Kaggle five-seed seed-level and mean/std CSV
-  files are available.
+## 4-N6.1 SVD-Dim Stability Grid
+
+Because the first `102`-dimensional news vector is unstable, the next diagnostic
+is an SVD dimension grid before N7:
+
+- Notebook:
+  [kaggle_stage4_news_context_n6_svd_dim_grid_one_cell.md](../notebooks/kaggle_stage4_news_context_n6_svd_dim_grid_one_cell.md)
+- Model: `CNN + news concat`
+- SVD dims: `16`, `8`
+- Final context dims: `54`, `30`
+- Seeds: `42, 43, 44, 45, 46`
+- Result bundle:
+  `/kaggle/working/stage4_news_context_n6_svd_dim_grid_result_bundle.zip`
+
+Decision rule:
+- choose the smallest vector that keeps accuracy/ROC-AUC near the useful N6
+  seeds while reducing one-sided prediction collapse;
+- then run N7 news-conditioned bounded last-block FiLM with that vector size.
 
 Planning decision after V9:
 - Use this dataset as the next Stage 4 context source.
@@ -126,6 +143,7 @@ Planning decision after V9:
 - First vector family: `news_svd_7d + news_svd_20d + news_svd_60d` plus
   `news_count_7d/20d/60d`.
 - Compare `CNN + news concat` before claiming that FiLM modulation helps.
+- Use the N6.1 SVD-dim stability grid to choose the news vector size.
 - Then run `CNN + news bounded last-block FiLM`.
 - Defer article summaries, sentence-transformer embeddings, LLM summaries, and
   LLM embeddings until the no-leakage headline track is stable.
@@ -310,9 +328,7 @@ Sample-level news context builder가 모델 입력용 context artifact를 생성
   z-score scaling입니다.
 - Missing warning은 없습니다.
 
-## 4-N6 준비된 Baseline Control
-
-다음 Kaggle runner를 준비했습니다.
+## 4-N6 Baseline Control 결과
 
 - Notebook:
   [kaggle_stage4_news_context_n6_baseline_controls_one_cell.md](../notebooks/kaggle_stage4_news_context_n6_baseline_controls_one_cell.md)
@@ -320,14 +336,33 @@ Sample-level news context builder가 모델 입력용 context artifact를 생성
 - Seeds: `42, 43, 44, 45, 46`
 - Result bundle:
   `/kaggle/working/stage4_news_context_n6_result_bundle.zip`
+- Accuracy mean: `0.5478`
+- ROC-AUC mean: `0.5644`
+- 진단: seed `43`은 거의 all-Up, seed `45`는 all-Down으로 collapse했습니다.
 
 Stage 4 model runner는 이제 `context.source=prebuilt_news` 설정에서 N5의
 `context_features.csv`와 `context_scaler.json`을 직접 읽습니다. Local
 small-sample smoke에서 training, prediction evaluation, trading evaluation,
 Grad-CAM/context export, output check가 통과했습니다.
 
-완료 조건:
-- Kaggle five-seed seed-level/mean-std CSV가 나온 뒤에 N6를 완료 처리합니다.
+## 4-N6.1 SVD-Dim Stability Grid
+
+첫 `102`차원 news vector가 불안정했기 때문에, N7 전에 SVD 차원 grid를
+실행합니다.
+
+- Notebook:
+  [kaggle_stage4_news_context_n6_svd_dim_grid_one_cell.md](../notebooks/kaggle_stage4_news_context_n6_svd_dim_grid_one_cell.md)
+- Model: `CNN + news concat`
+- SVD dims: `16`, `8`
+- 최종 context dims: `54`, `30`
+- Seeds: `42, 43, 44, 45, 46`
+- Result bundle:
+  `/kaggle/working/stage4_news_context_n6_svd_dim_grid_result_bundle.zip`
+
+결정 규칙:
+- N6의 useful seed 수준에 가까운 accuracy/ROC-AUC를 유지하면서 one-sided
+  prediction collapse를 줄이는 가장 작은 vector를 선택합니다.
+- 그 vector size로 N7 news-conditioned bounded last-block FiLM을 실행합니다.
 
 V9 이후 계획 결정:
 - 이 dataset은 다음 Stage 4 context source로 사용합니다.
@@ -339,6 +374,7 @@ V9 이후 계획 결정:
 - 첫 vector family는 `news_svd_7d + news_svd_20d + news_svd_60d`와
   `news_count_7d/20d/60d`입니다.
 - FiLM modulation을 주장하기 전에 `CNN + news concat`을 먼저 비교합니다.
+- N6.1 SVD-dim stability grid로 news vector size를 고릅니다.
 - 그 다음 `CNN + news bounded last-block FiLM`을 실행합니다.
 - Article summary, sentence-transformer embedding, LLM summary, LLM embedding은
   no-leakage headline track이 안정화된 뒤로 미룹니다.

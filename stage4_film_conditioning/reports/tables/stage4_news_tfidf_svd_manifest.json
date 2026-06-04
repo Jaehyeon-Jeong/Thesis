@@ -1,0 +1,98 @@
+{
+  "status": "ok",
+  "stage": "4-N4",
+  "input": {
+    "sample_headline_windows": "/Users/jaehyeonjeong/Desktop/\ub17c\ubb38/stage4_film_conditioning/outputs/stage4/news/stage4_news_headline_windows_i60_r20/sample_headline_windows.parquet",
+    "sha256": "a6f5ee2e90c0f3c9421e665384e1826aad5fdfb0b56eb5ebad87016a13fda5b8",
+    "num_rows": 2399
+  },
+  "stage4_samples": {
+    "image_window": 60,
+    "return_horizon": 20,
+    "num_samples": 2399,
+    "split_counts": {
+      "train": 671,
+      "validation": 287,
+      "test": 1441
+    },
+    "sample_date_min": "2018-04-29",
+    "sample_date_max": "2024-12-11"
+  },
+  "alignment_policy": {
+    "name": "strict_t_minus_1_calendar_date",
+    "same_day_news": "excluded",
+    "window_days": [
+      7,
+      20,
+      60
+    ]
+  },
+  "fit_policy": {
+    "text_preprocessing": "fit TF-IDF vocabulary/IDF and SVD on train split only",
+    "fit_split": "train",
+    "fit_documents": 2013,
+    "fit_samples": 671,
+    "fit_windows": [
+      7,
+      20,
+      60
+    ],
+    "fit_sample_date_min": "2018-04-29",
+    "fit_sample_date_max": "2020-12-10"
+  },
+  "vectorizer": {
+    "class": "sklearn.feature_extraction.text.TfidfVectorizer",
+    "lowercase": true,
+    "strip_accents": "unicode",
+    "stop_words": "english",
+    "ngram_range": [
+      1,
+      2
+    ],
+    "min_df": 2,
+    "max_df": 0.95,
+    "max_features": 10000,
+    "sublinear_tf": true,
+    "norm": "l2",
+    "token_pattern": "(?u)\\b[a-zA-Z][a-zA-Z0-9_]{1,}\\b",
+    "vocabulary_size": 10000,
+    "vocabulary_hash": "10c55dd9506dfc279ac9f372eac676047ba03924e166afc0fa5f04bacbace629",
+    "tfidf_fit_shape": [
+      2013,
+      10000
+    ]
+  },
+  "svd": {
+    "class": "sklearn.decomposition.TruncatedSVD",
+    "requested_components": 32,
+    "actual_components": 32,
+    "random_state": 42,
+    "explained_variance_ratio_sum": 0.5856078200049003
+  },
+  "outputs": {
+    "news_tfidf_svd_features": "/Users/jaehyeonjeong/Desktop/\ub17c\ubb38/stage4_film_conditioning/outputs/stage4/news/stage4_news_tfidf_svd_i60_r20/news_tfidf_svd_features.parquet",
+    "tfidf_vectorizer": "/Users/jaehyeonjeong/Desktop/\ub17c\ubb38/stage4_film_conditioning/outputs/stage4/news/stage4_news_tfidf_svd_i60_r20/artifacts/tfidf_vectorizer.joblib",
+    "truncated_svd": "/Users/jaehyeonjeong/Desktop/\ub17c\ubb38/stage4_film_conditioning/outputs/stage4/news/stage4_news_tfidf_svd_i60_r20/artifacts/truncated_svd.joblib"
+  },
+  "output_columns": {
+    "vector_prefixes": [
+      "news_svd_7d",
+      "news_svd_20d",
+      "news_svd_60d"
+    ],
+    "count_features": [
+      "news_count_7d",
+      "news_count_20d",
+      "news_count_60d",
+      "unique_source_count_7d",
+      "unique_source_count_20d",
+      "unique_source_count_60d",
+      "news_count_log1p_7d",
+      "news_count_log1p_20d",
+      "news_count_log1p_60d",
+      "unique_source_count_log1p_7d",
+      "unique_source_count_log1p_20d",
+      "unique_source_count_log1p_60d"
+    ]
+  }
+}

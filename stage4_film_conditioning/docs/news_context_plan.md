@@ -65,6 +65,20 @@ test period used in Stage 2 (`2021-01-01` to `2024-12-31`).
 - Full output:
   `outputs/stage4/news/stage4_news_headline_windows_i60_r20/sample_headline_windows.parquet`.
 
+4-N4 train-only TF-IDF/SVD vectorizer on 2026-06-04:
+- TF-IDF vocabulary, IDF weights, and SVD were fit only on train split headline
+  windows.
+- Fit documents: `2,013` = `671` train samples x `3` windows.
+- Vectorizer: 1-2 grams, English stop words, `min_df=2`, `max_df=0.95`,
+  `max_features=10,000`.
+- SVD: requested `32` components, actual `32` components.
+- Explained variance ratio sum: `0.5856`.
+- Full output:
+  `outputs/stage4/news/stage4_news_tfidf_svd_i60_r20/news_tfidf_svd_features.parquet`.
+- First output vector family:
+  `news_svd_7d/20d/60d`, `news_count_7d/20d/60d`,
+  `unique_source_count_7d/20d/60d`, and log-count variants.
+
 Planning decision after V9:
 - Use this dataset as the next Stage 4 context source.
 - First news experiment should be headline-only.
@@ -229,6 +243,19 @@ BTC news context 후보로 사용할 수 있습니다.
 - Train/validation/test에서 세 window 모두 coverage `100.00%`입니다.
 - Full output:
   `outputs/stage4/news/stage4_news_headline_windows_i60_r20/sample_headline_windows.parquet`.
+
+2026-06-04 4-N4 train-only TF-IDF/SVD vectorizer 결과:
+- TF-IDF vocabulary, IDF weight, SVD는 train split headline window에만 fit했습니다.
+- Fit document 수: `2,013` = train sample `671`개 x window `3`개.
+- Vectorizer: 1-2 gram, English stop words, `min_df=2`, `max_df=0.95`,
+  `max_features=10,000`.
+- SVD: requested `32` components, actual `32` components.
+- Explained variance ratio sum: `0.5856`.
+- Full output:
+  `outputs/stage4/news/stage4_news_tfidf_svd_i60_r20/news_tfidf_svd_features.parquet`.
+- 첫 output vector family:
+  `news_svd_7d/20d/60d`, `news_count_7d/20d/60d`,
+  `unique_source_count_7d/20d/60d`, log-count variants입니다.
 
 V9 이후 계획 결정:
 - 이 dataset은 다음 Stage 4 context source로 사용합니다.

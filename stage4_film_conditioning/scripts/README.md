@@ -87,6 +87,17 @@ Added in `4-V8`:
 `run_stage4_context_model.py`, `evaluate_stage4_predictions.py`, and
 `evaluate_stage4_trading.py` with a scale-specific `experiment_suffix`.
 
+Added in `4-N1` to `4-N4`:
+- `audit_stage4_news_source.py`: audits the selected BTC headline dataset,
+  date coverage, source distribution, duplicates, and Stage 4 sample overlap.
+- `audit_stage4_news_alignment.py`: locks strict `t-1` publication-time policy
+  and audits 7/20/60-day headline-window coverage without future leakage.
+- `build_stage4_news_headline_windows.py`: builds sample-level 7/20/60-day
+  headline-window documents, counts, source counts, and hashes.
+- `build_stage4_news_tfidf_svd.py`: fits TF-IDF/SVD on train headline-window
+  documents only, transforms all splits, and writes fixed-size
+  `news_svd_7d/20d/60d` vectors plus count features.
+
 Planned next scripts:
 - `summarize_stage4_results.py`
 
@@ -178,6 +189,17 @@ Stage 4 script는 구현 단계에서 순차적으로 추가합니다.
 `4-V9`는 새 script를 추가하지 않습니다. Scale-specific `experiment_suffix`를
 사용해 `build_stage4_context_features.py`, `run_stage4_context_model.py`,
 `evaluate_stage4_predictions.py`, `evaluate_stage4_trading.py`를 재사용합니다.
+
+`4-N1`부터 `4-N4`에서 추가한 script:
+- `audit_stage4_news_source.py`: 선택한 BTC headline dataset, date coverage,
+  source distribution, duplicate, Stage 4 sample overlap을 감사합니다.
+- `audit_stage4_news_alignment.py`: strict `t-1` publication-time policy를
+  고정하고 future leakage 없이 7/20/60-day headline-window coverage를 감사합니다.
+- `build_stage4_news_headline_windows.py`: sample-level 7/20/60-day
+  headline-window document, count, source count, hash를 만듭니다.
+- `build_stage4_news_tfidf_svd.py`: train headline-window document에만
+  TF-IDF/SVD를 fit하고, 모든 split을 transform해서 고정 길이
+  `news_svd_7d/20d/60d` vector와 count feature를 저장합니다.
 
 다음 예정 script:
 - `summarize_stage4_results.py`

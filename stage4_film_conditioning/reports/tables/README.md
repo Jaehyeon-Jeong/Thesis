@@ -18,6 +18,19 @@ Current result tables:
 - `stage4_four_ablation_seed42_run_summary.csv`: Kaggle seed-42 result for
   `concat`, `gating`, `film_gamma`, and `film_full` on
   `I60/R20/ohlc_ma_vb`.
+- `stage4_v2_v8_p7_p8_seed_collapse_*.csv`: P7/P8 seed-collapse diagnostic
+  and validation-threshold calibration tables.
+- `stage4_v2_v9_bounded_last_block_film_scale_grid_*.csv`: bounded
+  last-block FiLM scale-grid result tables.
+
+Current news-context tables:
+- `stage4_news_source_audit.json`: selected BTC news source audit.
+- `stage4_news_alignment_*.csv/json`: strict `t-1` publication-time alignment
+  and 7/20/60-day coverage audit.
+- `stage4_news_headline_windows_*.csv/json`: 7/20/60-day headline-window
+  aggregation reports.
+- `stage4_news_tfidf_svd_*.csv/json`: train-only TF-IDF/SVD vectorizer
+  manifest, split summary, component summaries, top terms, and examples.
 
 Future result tables:
 - `stage4_four_ablation_five_seed_seed_results.csv`
@@ -40,6 +53,19 @@ Future result tables:
 현재 result table:
 - `stage4_four_ablation_seed42_run_summary.csv`: `I60/R20/ohlc_ma_vb`에서
   `concat`, `gating`, `film_gamma`, `film_full`을 비교한 Kaggle seed-42 결과입니다.
+- `stage4_v2_v8_p7_p8_seed_collapse_*.csv`: P7/P8 seed-collapse 진단과
+  validation-threshold calibration table입니다.
+- `stage4_v2_v9_bounded_last_block_film_scale_grid_*.csv`: bounded last-block
+  FiLM scale-grid 결과 table입니다.
+
+현재 news-context table:
+- `stage4_news_source_audit.json`: 선택한 BTC news source audit입니다.
+- `stage4_news_alignment_*.csv/json`: strict `t-1` publication-time alignment와
+  7/20/60-day coverage audit입니다.
+- `stage4_news_headline_windows_*.csv/json`: 7/20/60-day headline-window
+  aggregation report입니다.
+- `stage4_news_tfidf_svd_*.csv/json`: train-only TF-IDF/SVD vectorizer
+  manifest, split summary, component summary, top term, example table입니다.
 
 추후 result table:
 - `stage4_four_ablation_five_seed_seed_results.csv`

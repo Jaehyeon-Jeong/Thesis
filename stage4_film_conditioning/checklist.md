@@ -18,13 +18,13 @@ Active work view:
 - Current conclusion: structured numeric context, including F&G-only FiLM, has
   useful ranking signal in some seeds but does not robustly beat the Stage 2
   visual baseline.
-- Current next track: `4-N0` to `4-N10`, news context with strict `t-1`
-  alignment.
+- Current next track: `4-N5`, final sample-level news context feature builder.
 - First news version: headline-only, non-LLM, train-only TF-IDF/SVD over
   7/20/60-day trailing news windows.
-- Main order now: source audit -> leakage-safe news alignment -> news vector
-  builder -> visual-only same sample -> `CNN + news concat` -> bounded
-  last-block FiLM -> interpretability report.
+- Main order now: source audit -> leakage-safe news alignment -> headline
+  windows -> train-only TF-IDF/SVD -> final sample-level news context builder
+  -> visual-only same sample -> `CNN + news concat` -> bounded last-block FiLM
+  -> interpretability report.
 
 Main Stage 4 ablation:
 - [x] 4-A. `CNN + context concat`
@@ -390,7 +390,7 @@ News-context extension:
     [summary](reports/tables/stage4_news_headline_windows_summary.csv),
     [examples](reports/tables/stage4_news_headline_windows_examples.csv),
     [manifest](reports/tables/stage4_news_headline_windows_manifest.json)
-- [ ] 4-N4. Train-only TF-IDF/SVD news vectorizer
+- [x] 4-N4. Train-only TF-IDF/SVD news vectorizer
   - Fit text preprocessing, TF-IDF vocabulary, IDF weights, and SVD only on
     train-period news.
   - First vector size: `news_svd_32` per window, producing `news_svd_7d`,
@@ -398,6 +398,16 @@ News-context extension:
   - No-news days use a zero news vector plus explicit count features.
   - Save vectorizer metadata, vocabulary hash, SVD dimension, and train-period
     fit range.
+  - Result: TF-IDF/SVD fit on `2,013` train documents (`671` samples x
+    `7/20/60` windows), vocabulary size `10,000`, SVD dim `32`, explained
+    variance ratio sum `0.5856`.
+  - Full vector artifact:
+    `outputs/stage4/news/stage4_news_tfidf_svd_i60_r20/news_tfidf_svd_features.parquet`.
+  - Result: [4-N4 Train-only TF-IDF/SVD news vectorizer](checklist_results/4-N4_news_tfidf_svd_vectorizer.md)
+  - Tables:
+    [manifest](reports/tables/stage4_news_tfidf_svd_manifest.json),
+    [summary](reports/tables/stage4_news_tfidf_svd_summary.csv),
+    [top terms](reports/tables/stage4_news_tfidf_svd_top_terms.csv)
 - [ ] 4-N5. BTC sample-level news context feature builder
   - Merge daily news vectors into each BTC image sample using strict `t-1`.
   - Candidate first context vector:
@@ -453,13 +463,13 @@ Stage 4는 이제 **market context를 고정된 BTC chart-image CNN에 어떻게
   `4-V9`까지.
 - 현재 결론: F&G-only FiLM을 포함한 structured numeric context는 일부 seed에서
   ranking signal은 있지만, Stage 2 visual baseline을 안정적으로 넘지 못했습니다.
-- 현재 다음 track: strict `t-1` alignment를 쓰는 news context `4-N0`부터
-  `4-N10`까지.
+- 현재 다음 track: 최종 sample-level news context feature builder인 `4-N5`.
 - 첫 news version: headline-only, non-LLM, train-only TF-IDF/SVD를 7/20/60-day
   trailing news window에 적용합니다.
-- 현재 순서: source audit -> leakage-safe news alignment -> news vector builder
-  -> 같은 sample의 visual-only control -> `CNN + news concat` -> bounded
-  last-block FiLM -> interpretability report.
+- 현재 순서: source audit -> leakage-safe news alignment -> headline window
+  -> train-only TF-IDF/SVD -> final sample-level news context builder -> 같은
+  sample의 visual-only control -> `CNN + news concat` -> bounded last-block
+  FiLM -> interpretability report.
 
 Stage 4 main ablation:
 - [x] 4-A. `CNN + context concat`
@@ -819,7 +829,7 @@ News-context 확장:
     [summary](reports/tables/stage4_news_headline_windows_summary.csv),
     [examples](reports/tables/stage4_news_headline_windows_examples.csv),
     [manifest](reports/tables/stage4_news_headline_windows_manifest.json)
-- [ ] 4-N4. Train-only TF-IDF/SVD news vectorizer
+- [x] 4-N4. Train-only TF-IDF/SVD news vectorizer
   - Text preprocessing, TF-IDF vocabulary, IDF weight, SVD는 train-period
     news에만 fit합니다.
   - 첫 vector size는 window별 `news_svd_32`입니다:
@@ -827,6 +837,16 @@ News-context 확장:
   - 뉴스가 없는 날은 zero news vector와 명시적인 count feature를 사용합니다.
   - Vectorizer metadata, vocabulary hash, SVD dimension, train-period fit
     range를 저장합니다.
+  - 결과: train document `2,013`개(`671` samples x `7/20/60` windows)에만
+    TF-IDF/SVD를 fit했고, vocabulary size `10,000`, SVD dim `32`, explained
+    variance ratio sum `0.5856`입니다.
+  - Full vector artifact:
+    `outputs/stage4/news/stage4_news_tfidf_svd_i60_r20/news_tfidf_svd_features.parquet`.
+  - 결과: [4-N4 Train-only TF-IDF/SVD news vectorizer](checklist_results/4-N4_news_tfidf_svd_vectorizer.md)
+  - Table:
+    [manifest](reports/tables/stage4_news_tfidf_svd_manifest.json),
+    [summary](reports/tables/stage4_news_tfidf_svd_summary.csv),
+    [top terms](reports/tables/stage4_news_tfidf_svd_top_terms.csv)
 - [ ] 4-N5. BTC sample-level news context feature builder
   - Strict `t-1`로 daily news vector를 각 BTC image sample에 merge합니다.
   - 첫 context vector 후보:

@@ -70,6 +70,22 @@ Available notebooks:
     `film_full_bounded_last_block` over five seeds.
   - Purpose: preserve the strongest visual baseline by applying bounded FiLM
     only to the final/high-level CNN block.
+- `kaggle_stage4_v2_v8_p7_p8_seed_collapse_diagnostic_one_cell.md`
+  - Stage 4 v2 priority 9 diagnostic.
+  - Does not train new models.
+  - Reads P7/P8 checkpoints and prediction CSVs, exports missing validation/test
+    predictions, then runs seed-collapse and validation-threshold calibration
+    analysis.
+  - Purpose: explain why P7 seeds `43`/`44` collapse mostly Up while P8 seeds
+    `43`/`44` collapse mostly Down before another FiLM scale grid.
+- `kaggle_stage4_v2_v9_bounded_last_block_film_scale_grid_one_cell.md`
+  - Stage 4 v2 priority 10 diagnostic.
+  - Runs `I60/R20/ohlc_ma_vb` with F&G-only context and
+    `film_full_bounded_last_block`.
+  - Grid: scales `0.02`, `0.05`, `0.10` x seeds
+    `42, 43, 44, 45, 46`.
+  - Purpose: keep the architecture fixed and test whether bounded FiLM scale
+    can reduce seed collapse before moving to news context.
 
 Planned notebooks:
 - `kaggle_stage4_single_ablation_one_cell.md`
@@ -147,6 +163,21 @@ Required backup root:
     `film_full_bounded_last_block`을 붙여 five-seed로 실행합니다.
   - 목적: 가장 강한 visual baseline을 보존하기 위해 마지막/high-level CNN
     block에만 bounded FiLM을 적용합니다.
+- `kaggle_stage4_v2_v8_p7_p8_seed_collapse_diagnostic_one_cell.md`
+  - Stage 4 v2 우선순위 9 diagnostic입니다.
+  - 새 model을 학습하지 않습니다.
+  - P7/P8 checkpoint와 prediction CSV를 읽고, 필요한 validation/test prediction을
+    export한 뒤 seed-collapse와 validation-threshold calibration 분석을 실행합니다.
+  - 목적: 또 다른 FiLM scale grid 전에 P7 seed `43`/`44`는 대부분 Up으로,
+    P8 seed `43`/`44`는 대부분 Down으로 무너지는 이유를 설명합니다.
+- `kaggle_stage4_v2_v9_bounded_last_block_film_scale_grid_one_cell.md`
+  - Stage 4 v2 우선순위 10 diagnostic입니다.
+  - `I60/R20/ohlc_ma_vb`에 F&G-only context와
+    `film_full_bounded_last_block`을 붙입니다.
+  - Grid: scales `0.02`, `0.05`, `0.10` x seeds
+    `42, 43, 44, 45, 46`.
+  - 목적: architecture를 고정하고 bounded FiLM scale만 바꿔 seed collapse가
+    줄어드는지 확인한 뒤, 안 되면 news context로 넘어갑니다.
 
 예정 notebook:
 - `kaggle_stage4_single_ablation_one_cell.md`

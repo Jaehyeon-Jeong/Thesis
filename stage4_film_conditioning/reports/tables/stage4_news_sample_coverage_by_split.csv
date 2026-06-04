@@ -1,0 +1,5 @@
+split,num_samples,sample_date_min,sample_date_max,strict_t_minus_1_missing_samples,strict_t_minus_1_coverage_rate,strict_t_minus_1_mean_news_count,strict_t_minus_1_median_news_count,trailing_7d_missing_samples,trailing_7d_coverage_rate,trailing_7d_mean_news_count,trailing_7d_median_news_count
+train,671,2018-04-29,2020-12-10,23,0.9657228017883756,7.402384500745156,6.0,0,1.0,51.788375558867365,44.0
+validation,287,2018-04-30,2020-12-11,8,0.9721254355400697,7.808362369337979,7.0,0,1.0,54.397212543554005,45.0
+test,1441,2021-01-01,2024-12-11,64,0.9555863983344899,12.167244968771687,12.0,0,1.0,85.01734906315059,81.0
+all,2399,2018-04-29,2024-12-11,95,0.96040016673614,10.313047102959567,9.0,0,1.0,72.06002501042101,67.0

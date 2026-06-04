@@ -2,10 +2,11 @@
 
 ## English
 
-News context is useful for the thesis, but it should be added after the numeric
-context fusion comparison is stable. This prevents the Stage 4 question from
-mixing two hard problems at once: context-source quality and fusion-method
-quality.
+News context is now the next Stage 4 track after the V9 numeric-context result.
+V9 showed that F&G-only structured numeric FiLM did not robustly improve the
+strong `I60/R20/ohlc_ma_vb` visual baseline. The next defensible context source
+is richer external news information, but it must be added through a strict
+no-leakage daily-vector pipeline.
 
 ## Candidate Dataset
 
@@ -33,11 +34,48 @@ Current public metadata checked on 2026-05-25:
 The dataset appears usable for BTC news context because it overlaps the BTC
 test period used in Stage 2 (`2021-01-01` to `2024-12-31`).
 
-Planning decision from 4-3:
-- Use this dataset as a second-phase news-context source.
+4-N1 local source audit on 2026-06-04:
+- First selected file: `BTC_match_title.csv`
+- Rows: `30,626`
+- Date range: `2011-06-22` to `2025-06-03`
+- Selected Stage 4 sample range: `2018-04-29` to `2024-12-11`
+- Strict `t-1` sample coverage: `96.04%`
+- Trailing 7-day news coverage: `100.00%`
+- Note: `BTC_yahoo.csv` was checked but ends on `2024-01-24`, so it is not the
+  first news source for the full Stage 4 sample period.
+
+4-N2 publication-time alignment audit on 2026-06-04:
+- Locked policy: for a chart image ending at calendar date `t`, use only news
+  with calendar date `<= t-1`.
+- Same-calendar-day news is excluded until BTC close cutoff and news timestamp
+  cutoff are explicitly defended.
+- Strict `t-1` coverage: train `96.57%`, validation `97.21%`, test `95.56%`.
+- Trailing 7/20/60-day coverage: `100.00%` for train, validation, and test.
+- Text vectorizer fit rule: fit only on the train strict-`t-1` 7/20/60-day
+  headline-window documents (`671` samples x `3` windows); validation/test
+  documents are transform-only.
+
+4-N3 headline-window aggregation on 2026-06-04:
+- Raw headline rows: `30,626`.
+- Deduped headline rows: `29,208`.
+- Removed duplicate normalized-title rows: `1,418`.
+- Built sample-level headline windows for `7d`, `20d`, and `60d`.
+- Coverage is `100.00%` for all three windows across train, validation, and
+  test.
+- Full output:
+  `outputs/stage4/news/stage4_news_headline_windows_i60_r20/sample_headline_windows.parquet`.
+
+Planning decision after V9:
+- Use this dataset as the next Stage 4 context source.
 - First news experiment should be headline-only.
 - Use strict `t-1` alignment by default.
 - Fit text preprocessing, TF-IDF, and SVD on train-period news only.
+- First news windows: 7-day short shock, 20-day forecast-horizon context, and
+  60-day I60 chart-regime context.
+- First vector family: `news_svd_7d + news_svd_20d + news_svd_60d` plus
+  `news_count_7d/20d/60d`.
+- Compare `CNN + news concat` before claiming that FiLM modulation helps.
+- Then run `CNN + news bounded last-block FiLM`.
 - Defer article summaries, sentence-transformer embeddings, LLM summaries, and
   LLM embeddings until the no-leakage headline track is stable.
 
@@ -51,14 +89,13 @@ News can help, but it has extra risks:
 - many rows may mention crypto broadly rather than BTC-specific information;
 - LLM summarization/embedding requires cache and version control.
 
-For this reason, the first Stage 4 main experiment should use numeric context.
-News can then be tested with the same four fusion methods:
+For this reason, news should start with the simplest leakage-safe text vector,
+then use the same fusion logic:
 
 ```text
 news context concat
-news context gating
-news context gamma-only FiLM
-news context full FiLM
+news bounded last-block FiLM
+news + F&G combined context, only if news-only is useful
 ```
 
 ## Recommended News Pipeline
@@ -97,7 +134,7 @@ Start simple:
 2. concatenated headlines with fixed top-k or max-character limit;
 3. daily bag-of-words/TF-IDF;
 4. TF-IDF + SVD daily vector fit on train-period news only;
-5. add trailing 7-day and 60-day news-count/embedding summaries as ablations;
+5. build trailing 7-day, 20-day, and 60-day news-count/embedding summaries;
 6. article summaries only after caching rules are stable.
 
 ### 4. Encoder Options
@@ -114,26 +151,28 @@ LLM later:
 
 ### 5. Fusion Experiments
 
-Once a daily news vector exists, use the same four heads:
+Once a daily news vector exists, use this order:
 
 | Track | News version |
 |:---|:---|
-| 4-N-A | CNN + news-context concat |
-| 4-N-B | CNN + news-context gating |
-| 4-N-C | CNN + news-context FiLM gamma-only |
-| 4-N-D | CNN + news-context FiLM full |
+| 4-N-A | visual-only same news-aligned sample control |
+| 4-N-B | CNN + news-context concat |
+| 4-N-C | CNN + news bounded last-block FiLM |
+| 4-N-D | news + F&G combined context, only if news-only is useful |
 
 ## Recommendation
 
-Do not remove news from Stage 4. Treat it as the second context source after the
-structured numeric context. This keeps the immediate experiment feasible while
-preserving the advisor-facing News/LLM direction.
+Do not continue arbitrary gamma/beta scale tuning after V9. Treat F&G-only
+numeric FiLM as a negative/unstable result for the main claim, then test whether
+headline-level news gives richer external market-regime signal.
 
 ## 한국어
 
-뉴스 context는 논문에 유용할 수 있지만, numeric context fusion 비교가 안정화된 뒤에
-넣는 것이 좋습니다. 그래야 Stage 4가 context-source quality와 fusion-method quality를
-동시에 섞어서 어려워지는 것을 막을 수 있습니다.
+뉴스 context는 V9 numeric-context 결과 이후 Stage 4의 다음 track입니다. V9에서
+F&G-only structured numeric FiLM이 강한 `I60/R20/ohlc_ma_vb` visual baseline을
+robust하게 개선하지 못했기 때문입니다. 다음으로 방어 가능한 context source는 더
+풍부한 외부 뉴스 정보이지만, strict no-leakage daily-vector pipeline으로 넣어야
+합니다.
 
 ## 후보 데이터셋
 
@@ -161,11 +200,47 @@ preserving the advisor-facing News/LLM direction.
 이 dataset은 Stage 2 BTC test period인 `2021-01-01` to `2024-12-31`과 겹치므로
 BTC news context 후보로 사용할 수 있습니다.
 
-4-3 계획 결정:
-- 이 dataset은 second-phase news-context source로 사용합니다.
+2026-06-04 4-N1 local source audit 결과:
+- 첫 선택 파일: `BTC_match_title.csv`
+- Rows: `30,626`
+- Date range: `2011-06-22` to `2025-06-03`
+- Selected Stage 4 sample range: `2018-04-29` to `2024-12-11`
+- Strict `t-1` sample coverage: `96.04%`
+- Trailing 7-day news coverage: `100.00%`
+- 참고: `BTC_yahoo.csv`도 확인했지만 `2024-01-24`에서 끝나므로 full Stage 4
+  sample period의 첫 news source로 쓰지 않습니다.
+
+2026-06-04 4-N2 publication-time alignment audit 결과:
+- 고정 policy: chart image end date가 calendar date `t`이면 calendar date
+  `<= t-1`인 뉴스만 사용합니다.
+- Same-calendar-day news는 BTC close cutoff와 news timestamp cutoff를 명확히
+  방어하기 전까지 제외합니다.
+- Strict `t-1` coverage: train `96.57%`, validation `97.21%`, test `95.56%`.
+- Trailing 7/20/60-day coverage: train/validation/test 모두 `100.00%`.
+- Text vectorizer fit rule: train strict-`t-1` 7/20/60-day headline-window
+  document에만 fit합니다 (`671` samples x `3` windows). Validation/test
+  document는 transform-only입니다.
+
+2026-06-04 4-N3 headline-window aggregation 결과:
+- Raw headline rows: `30,626`.
+- Deduped headline rows: `29,208`.
+- 제거한 duplicate normalized-title rows: `1,418`.
+- Sample-level `7d`, `20d`, `60d` headline window를 만들었습니다.
+- Train/validation/test에서 세 window 모두 coverage `100.00%`입니다.
+- Full output:
+  `outputs/stage4/news/stage4_news_headline_windows_i60_r20/sample_headline_windows.parquet`.
+
+V9 이후 계획 결정:
+- 이 dataset은 다음 Stage 4 context source로 사용합니다.
 - 첫 news experiment는 headline-only로 시작합니다.
 - 기본 alignment는 strict `t-1`입니다.
 - Text preprocessing, TF-IDF, SVD는 train-period news에만 fit합니다.
+- 첫 news window는 7-day 단기 충격, 20-day 예측 horizon context, 60-day I60
+  chart-regime context로 나눕니다.
+- 첫 vector family는 `news_svd_7d + news_svd_20d + news_svd_60d`와
+  `news_count_7d/20d/60d`입니다.
+- FiLM modulation을 주장하기 전에 `CNN + news concat`을 먼저 비교합니다.
+- 그 다음 `CNN + news bounded last-block FiLM`을 실행합니다.
 - Article summary, sentence-transformer embedding, LLM summary, LLM embedding은
   no-leakage headline track이 안정화된 뒤로 미룹니다.
 
@@ -178,14 +253,13 @@ BTC news context 후보로 사용할 수 있습니다.
 - crypto 전체 뉴스가 BTC-specific signal이 아닐 수 있습니다.
 - LLM summary/embedding은 cache와 version control이 필요합니다.
 
-그래서 첫 Stage 4 main experiment는 numeric context로 진행하고, 뉴스는 같은 네 가지
-fusion 방식으로 나중에 테스트합니다.
+그래서 뉴스는 가장 단순한 leakage-safe text vector에서 시작하고, 같은 fusion logic으로
+테스트합니다.
 
 ```text
 news context concat
-news context gating
-news context gamma-only FiLM
-news context full FiLM
+news bounded last-block FiLM
+news-only가 유용할 때 news + F&G combined context
 ```
 
 ## 추천 뉴스 파이프라인
@@ -224,7 +298,7 @@ news_time <= t close cutoff
 2. fixed top-k 또는 max-character limit 안에서 headline concat;
 3. daily bag-of-words/TF-IDF;
 4. train-period news에만 fit한 TF-IDF + SVD daily vector;
-5. trailing 7-day와 60-day news-count/embedding summary를 ablation으로 추가;
+5. trailing 7-day, 20-day, 60-day news-count/embedding summary를 만듭니다;
 6. cache rule이 안정화된 뒤 article summaries.
 
 ### 4. Encoder 선택지
@@ -241,17 +315,17 @@ LLM later:
 
 ### 5. Fusion experiments
 
-일별 news vector가 만들어지면 같은 네 가지 head를 사용합니다.
+일별 news vector가 만들어지면 아래 순서로 사용합니다.
 
 | Track | News version |
 |:---|:---|
-| 4-N-A | CNN + news-context concat |
-| 4-N-B | CNN + news-context gating |
-| 4-N-C | CNN + news-context FiLM gamma-only |
-| 4-N-D | CNN + news-context FiLM full |
+| 4-N-A | 같은 news-aligned sample의 visual-only control |
+| 4-N-B | CNN + news-context concat |
+| 4-N-C | CNN + news bounded last-block FiLM |
+| 4-N-D | news-only가 유용할 때 news + F&G combined context |
 
 ## 추천
 
-뉴스를 Stage 4에서 제거하지 않습니다. 다만 structured numeric context 이후의 두 번째
-context source로 둡니다. 이렇게 하면 당장 실행 가능한 실험을 유지하면서도, 교수님이
-말한 News/LLM 방향성을 보존할 수 있습니다.
+V9 이후 임의적인 gamma/beta scale tuning은 계속하지 않습니다. F&G-only numeric
+FiLM은 main claim 기준 negative/unstable result로 정리하고, headline-level news가 더
+풍부한 external market-regime signal을 주는지 테스트합니다.

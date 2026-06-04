@@ -1,0 +1,165 @@
+{
+  "dataset": {
+    "dataset_name": "edaschau/bitcoin_news",
+    "split": "train",
+    "source_file": "/Users/jaehyeonjeong/.cache/huggingface/hub/datasets--edaschau--bitcoin_news/snapshots/b436ba3f8af941a3bc125b8cb1d7c5297fd01e13/BTC_match_title.csv",
+    "loader": "pandas_c_engine",
+    "max_rows": null,
+    "num_rows": 30626,
+    "columns": [
+      "time_unix",
+      "date_time",
+      "text_matches",
+      "title_matches",
+      "title",
+      "url",
+      "source",
+      "source_url",
+      "article_text",
+      "news_time",
+      "news_date",
+      "title_text",
+      "article_text_string",
+      "url_text",
+      "source_text",
+      "normalized_title",
+      "article_length_chars",
+      "title_length_chars",
+      "has_title",
+      "has_article_text"
+    ],
+    "date_min": "2011-06-22",
+    "date_max": "2025-06-03",
+    "has_2018_coverage": true,
+    "overlaps_stage4_sample_range": true
+  },
+  "stage4_samples": {
+    "btc_source": "/Users/jaehyeonjeong/Desktop/\ub17c\ubb38/\ub370\uc774\ud130\uc14b/BTC _OHLCV/btc_1d_data_2018_to_2025.csv",
+    "image_window": 60,
+    "return_horizon": 20,
+    "num_samples": 2399,
+    "date_min": "2018-04-29",
+    "date_max": "2024-12-11",
+    "split_counts": {
+      "train": 671,
+      "validation": 287,
+      "test": 1441
+    }
+  },
+  "source_content": {
+    "title_coverage_rate": 1.0,
+    "article_text_coverage_rate": 1.0,
+    "title_length_mean": 70.40263175079997,
+    "article_length_mean": 3508.5385946581337,
+    "num_sources": 219,
+    "top_sources": [
+      {
+        "source": "CoinDesk",
+        "row_count": 9388
+      },
+      {
+        "source": "FX Empire",
+        "row_count": 2041
+      },
+      {
+        "source": "CCN",
+        "row_count": 1906
+      },
+      {
+        "source": "Reuters",
+        "row_count": 1268
+      },
+      {
+        "source": "Benzinga",
+        "row_count": 1211
+      },
+      {
+        "source": "Forkast News",
+        "row_count": 928
+      },
+      {
+        "source": "GlobeNewswire",
+        "row_count": 901
+      },
+      {
+        "source": "Motley Fool",
+        "row_count": 831
+      },
+      {
+        "source": "Fortune",
+        "row_count": 799
+      },
+      {
+        "source": "Coin Rivet",
+        "row_count": 753
+      },
+      {
+        "source": "CoinMarketCap",
+        "row_count": 739
+      },
+      {
+        "source": "TheStreet",
+        "row_count": 733
+      },
+      {
+        "source": "BeInCrypto",
+        "row_count": 660
+      },
+      {
+        "source": "Business Insider",
+        "row_count": 598
+      },
+      {
+        "source": "Decrypt Media",
+        "row_count": 577
+      },
+      {
+        "source": "Investing.com",
+        "row_count": 504
+      },
+      {
+        "source": "ACCESSWIRE",
+        "row_count": 494
+      },
+      {
+        "source": "Cointelegraph",
+        "row_count": 420
+      },
+      {
+        "source": "Zacks",
+        "row_count": 386
+      },
+      {
+        "source": "Yahoo Finance UK",
+        "row_count": 329
+      }
+    ]
+  },
+  "daily_coverage": {
+    "num_days_inside_news_range": 5096,
+    "missing_days_inside_news_range": 1714,
+    "stage4_range_days": 2419,
+    "stage4_range_missing_days": 95,
+    "stage4_range_mean_news_per_day": 10.319966928482843,
+    "stage4_range_median_news_per_day": 9.0
+  },
+  "sample_news_coverage": {
+    "split": "all",
+    "num_samples": 2399,
+    "sample_date_min": "2018-04-29",
+    "sample_date_max": "2024-12-11",
+    "strict_t_minus_1_missing_samples": 95,
+    "strict_t_minus_1_coverage_rate": 0.96040016673614,
+    "strict_t_minus_1_mean_news_count": 10.313047102959567,
+    "strict_t_minus_1_median_news_count": 9.0,
+    "trailing_7d_missing_samples": 0,
+    "trailing_7d_coverage_rate": 1.0,
+    "trailing_7d_mean_news_count": 72.06002501042101,
+    "trailing_7d_median_news_count": 67.0
+  },
+  "leakage_policy": {
+    "first_policy": "strict_t_minus_1",
+    "allowed_news_for_image_end_t": "calendar date <= t - 1",
+    "same_day_news": "excluded until BTC close cutoff and news timestamp cutoff are defended"
+  }
+}

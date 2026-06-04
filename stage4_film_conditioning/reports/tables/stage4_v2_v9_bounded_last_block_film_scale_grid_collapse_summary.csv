@@ -1,0 +1,4 @@
+bounded_film_scale,seed_count,validation_mostly_down_count,validation_mostly_up_count,validation_not_collapsed_count,test_mostly_down_count,test_mostly_up_count,test_not_collapsed_count
+0.02,5,1,0,4,1,0,4
+0.05,5,1,0,4,1,0,4
+0.1,5,2,0,3,2,0,3

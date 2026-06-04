@@ -1,0 +1,50 @@
+{
+  "status": "ok",
+  "stage": "4-N3",
+  "dataset": {
+    "dataset_name": "edaschau/bitcoin_news",
+    "dataset_filename": "BTC_match_title.csv",
+    "split": "train",
+    "source_file": "/Users/jaehyeonjeong/.cache/huggingface/hub/datasets--edaschau--bitcoin_news/snapshots/b436ba3f8af941a3bc125b8cb1d7c5297fd01e13/BTC_match_title.csv",
+    "raw_rows": 30626,
+    "deduped_rows": 29208,
+    "date_min": "2011-06-22",
+    "date_max": "2025-06-03"
+  },
+  "stage4_samples": {
+    "btc_source": "/Users/jaehyeonjeong/Desktop/\ub17c\ubb38/\ub370\uc774\ud130\uc14b/BTC _OHLCV/btc_1d_data_2018_to_2025.csv",
+    "image_window": 60,
+    "return_horizon": 20,
+    "split_method": "random_within_train_val_pool",
+    "num_samples": 2399,
+    "sample_date_min": "2018-04-29",
+    "sample_date_max": "2024-12-11"
+  },
+  "alignment_policy": {
+    "name": "strict_t_minus_1_calendar_date",
+    "window_days": [
+      7,
+      20,
+      60
+    ],
+    "window_rule": "for window W, use news dates from t-W through t-1 inclusive",
+    "same_day_news": "excluded"
+  },
+  "dedupe_audit": {
+    "raw_rows": 30626,
+    "rows_after_empty_title_filter": 30626,
+    "dropped_empty_title_rows": 0,
+    "dropped_duplicate_url_rows": 0,
+    "dropped_duplicate_normalized_title_rows": 1418,
+    "deduped_rows": 29208,
+    "dedupe_policy": "drop empty titles, then duplicate non-empty URL, then duplicate normalized title"
+  },
+  "headline_cap": {
+    "max_headlines_per_window": 0,
+    "policy": "0 means no cap; otherwise keep newest headlines within each window"
+  },
+  "outputs": {
+    "daily_headlines": "/Users/jaehyeonjeong/Desktop/\ub17c\ubb38/stage4_film_conditioning/outputs/stage4/news/stage4_news_headline_windows_i60_r20/daily_headlines.parquet",
+    "sample_headline_windows": "/Users/jaehyeonjeong/Desktop/\ub17c\ubb38/stage4_film_conditioning/outputs/stage4/news/stage4_news_headline_windows_i60_r20/sample_headline_windows.parquet"
+  }
+}

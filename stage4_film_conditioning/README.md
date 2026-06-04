@@ -29,7 +29,8 @@ flowchart LR
     F4 --> G
     G --> H[Grad-CAM + modulation export]
     H --> I[v1/v2 diagnosis]
-    I --> J[Next: bounded/residual last-block FiLM]
+    I --> J[V9: bounded FiLM scale grid]
+    J --> K[Next if needed: news context]
 ```
 
 ## Checklist And Review Links
@@ -42,6 +43,19 @@ flowchart LR
 | FiLM insertion design | Where concat/gating/FiLM are attached | [docs/film_insertion_design.md](docs/film_insertion_design.md) |
 | Context/news plan | Structured context and future news track | [docs/condition_track_plan.md](docs/condition_track_plan.md), [docs/news_context_plan.md](docs/news_context_plan.md) |
 | v1 interpretation report | Five-seed v1 interpretation | [reports/stage4_v1_interpretation/stage4_v1_interpretation_report.md](reports/stage4_v1_interpretation/stage4_v1_interpretation_report.md) |
+
+## How To Read This Folder
+
+- Start with [checklist.md](checklist.md). The top `Active work view` shows the
+  current conclusion and the next task; the lower sections preserve the full
+  Stage 4 history.
+- Use [checklist_results/](checklist_results/) for short per-step decisions and
+  result notes.
+- Use [notebooks/](notebooks/) only for Kaggle execution cells.
+- Use [scripts/](scripts/) and [src/stage4_film/](src/stage4_film/) for active
+  implementation.
+- Local raw data, Kaggle outputs, and downloaded result bundles are kept outside
+  the active code path and should not be treated as source code.
 
 ## Context Features
 
@@ -92,7 +106,9 @@ Stage 4 v2 diagnostic summary:
 | `4-V4` | `ohlc` + technical-only + `film_full`, five seeds | Accuracy mean `0.5603`; technical context is also weak alone | [review](checklist_results/4-V4_stage4_v2_ohlc_technical_only_film_full.md) |
 | `4-V5` | `ohlc` + all context + `film_full`, five seeds | Accuracy mean `0.5574`; seed-42 gain is not robust | [review](checklist_results/4-V5_stage4_v2_ohlc_all_context_five_seed.md) |
 | `4-V6` | `ohlc_ma_vb` + F&G-only + `film_full`, five seeds | Accuracy mean `0.5524`; full FiLM still unstable on strong visual baseline | [review](checklist_results/4-V6_stage4_v2_ohlc_ma_vb_fg_only_five_seed.md) |
-| `4-V7` | `ohlc_ma_vb` + F&G-only + bounded last-block FiLM, five seeds | Prepared; tests whether conservative FiLM reduces seed collapse | [plan](checklist_results/4-V7_stage4_v2_bounded_residual_last_block_film.md) |
+| `4-V7` | `ohlc_ma_vb` + F&G-only + bounded last-block FiLM, five seeds | Accuracy mean `0.5425`; ROC-AUC mean `0.5763`; ranking improved but seeds `43`/`44` collapsed mostly Down | [review](checklist_results/4-V7_stage4_v2_bounded_residual_last_block_film.md) |
+| `4-V8` | P7/P8 seed-collapse diagnostic | Validation-threshold calibration alone did not solve collapse; P8 FiLM scale needs controlled testing | [review](checklist_results/4-V8_stage4_v2_p7_p8_seed_collapse_diagnostic.md) |
+| `4-V9` | bounded last-block FiLM scale grid | Accuracy stayed below Stage 2 for all scales; lower scale reduced some collapse, but seed `44` collapsed for every scale | [review](checklist_results/4-V9_stage4_v2_bounded_last_block_film_scale_grid.md) |
 
 Current interpretation:
 - `ohlc_ma_vb` already contains strong visual/technical information.
@@ -101,9 +117,12 @@ Current interpretation:
 - Next architecture work should preserve the strong visual path more explicitly.
 
 Next direction:
-- run `4-V7` bounded/residual last-block FiLM;
-- stronger collapse monitoring with predicted-positive rate, F1, and ROC-AUC;
-- feature sensitivity exports for interpretability.
+- close the structured F&G-only track as a negative/unstable result for the
+  main claim;
+- start the news-context track with headline-only, strict `t-1`, train-only
+  TF-IDF/SVD vectors;
+- compare `CNN + news concat` and `CNN + news bounded last-block FiLM` before
+  adding F&G or LLM summaries.
 
 ## Code Map
 
@@ -130,11 +149,13 @@ stage4_film_conditioning/
 ├── configs/
 ├── docs/
 ├── notebooks/
+├── outputs/                  # local/Kaggle outputs, not source code
 ├── reports/
 ├── scripts/
+├── stage4_p7_p8_result_bundle/ # downloaded analysis bundle, local result data
 └── src/stage4_film/
 ```
 
 ## Thesis Position
 
-Stage 4 should be presented as an interpretability and conditional-modulation experiment, not as a simple feature-adding experiment. The strongest current conclusion is that market context is plausible, but full FiLM v1/v2 is too unstable unless the visual baseline is protected by a more conservative architecture.
+Stage 4 should be presented as an interpretability and conditional-modulation experiment, not as a simple feature-adding experiment. The strongest current conclusion is that structured F&G-only numeric context is not robust enough, so the next defensible step is richer external news context with strict no-leakage alignment.

@@ -2,7 +2,7 @@
 
 ## English
 
-Status: ready for Kaggle execution
+Status: Kaggle five-seed run completed
 
 Purpose:
 - Test whether FiLM can be stabilized by preserving the strong Stage 2 visual
@@ -63,9 +63,27 @@ Expected comparison:
   - whether seed collapse is reduced;
   - Grad-CAM plus bounded gamma/beta export.
 
+Observed result:
+- Accuracy mean: `0.5425`, std `0.0590`.
+- ROC-AUC mean: `0.5763`, std `0.0222`.
+- Average precision mean: `0.6033`.
+- Compared with `4-V6` film_full:
+  - Accuracy decreased from `0.5524` to `0.5425`.
+  - ROC-AUC increased from `0.5465` to `0.5763`.
+  - Average precision increased from `0.5739` to `0.6033`.
+- Seed behavior:
+  - Seeds `42`, `45`, and `46` were usable and close to or above the Stage 2
+    visual baseline.
+  - Seeds `43` and `44` collapsed toward mostly Down predictions.
+- Interpretation:
+  - Bounded last-block FiLM appears to preserve/improve ranking signal, but the
+    default `prob_up >= 0.5` decision threshold is unstable for some seeds.
+  - The next step is seed-collapse diagnosis and validation-threshold
+    calibration before another FiLM scale grid.
+
 ## 한국어
 
-상태: Kaggle 실행 준비 완료
+상태: Kaggle five-seed 실행 완료
 
 목적:
 - 강한 Stage 2 visual path를 더 명시적으로 보존했을 때 FiLM이 안정화되는지
@@ -122,3 +140,21 @@ Kaggle runner:
   - predicted positive rate 안정성;
   - seed collapse 감소 여부;
   - Grad-CAM plus bounded gamma/beta export.
+
+관찰 결과:
+- Accuracy mean: `0.5425`, std `0.0590`.
+- ROC-AUC mean: `0.5763`, std `0.0222`.
+- Average precision mean: `0.6033`.
+- `4-V6` film_full과 비교:
+  - Accuracy는 `0.5524`에서 `0.5425`로 감소했습니다.
+  - ROC-AUC는 `0.5465`에서 `0.5763`으로 증가했습니다.
+  - Average precision은 `0.5739`에서 `0.6033`으로 증가했습니다.
+- Seed behavior:
+  - seed `42`, `45`, `46`은 사용 가능했고 Stage 2 visual baseline 근처 또는
+    그 이상이었습니다.
+  - seed `43`, `44`는 대부분 Down 예측으로 무너졌습니다.
+- 해석:
+  - bounded last-block FiLM은 ranking signal을 보존/개선하는 듯하지만,
+    일부 seed에서 기본 `prob_up >= 0.5` decision threshold가 불안정합니다.
+  - 따라서 다음 단계는 또 다른 FiLM scale grid가 아니라 seed-collapse 진단과
+    validation-threshold calibration입니다.

@@ -78,6 +78,15 @@ Added in `4-I11`:
   classification metrics, trading metrics, Grad-CAM, samples, modulation
   summary/value exports, context artifacts, and run manifest.
 
+Added in `4-V8`:
+- `analyze_stage4_seed_collapse.py`: reads existing P7/P8 prediction CSVs,
+  computes default-threshold metrics, calibrates a validation threshold, applies
+  it to test predictions, and writes seed-collapse/pairwise comparison tables.
+
+`4-V9` does not add a new script. It reuses `build_stage4_context_features.py`,
+`run_stage4_context_model.py`, `evaluate_stage4_predictions.py`, and
+`evaluate_stage4_trading.py` with a scale-specific `experiment_suffix`.
+
 Planned next scripts:
 - `summarize_stage4_results.py`
 
@@ -160,6 +169,15 @@ Stage 4 script는 구현 단계에서 순차적으로 추가합니다.
   확인합니다. Checkpoint, training metadata, prediction, classification metric,
   trading metric, Grad-CAM, samples, modulation summary/value export, context
   artifact, run manifest를 검사합니다.
+
+`4-V8`에서 추가한 script:
+- `analyze_stage4_seed_collapse.py`: 기존 P7/P8 prediction CSV를 읽고,
+  default-threshold metric, validation threshold calibration, test 적용 결과,
+  seed-collapse/pairwise comparison table을 저장합니다.
+
+`4-V9`는 새 script를 추가하지 않습니다. Scale-specific `experiment_suffix`를
+사용해 `build_stage4_context_features.py`, `run_stage4_context_model.py`,
+`evaluate_stage4_predictions.py`, `evaluate_stage4_trading.py`를 재사용합니다.
 
 다음 예정 script:
 - `summarize_stage4_results.py`

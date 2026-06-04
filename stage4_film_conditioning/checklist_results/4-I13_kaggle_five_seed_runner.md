@@ -2,7 +2,7 @@
 
 ## English
 
-Status: ready for Kaggle execution, not yet complete.
+Status: complete.
 
 Added file:
 - `notebooks/kaggle_stage4_four_ablation_five_seed_one_cell.md`
@@ -45,9 +45,17 @@ Disk-space policy:
   `/kaggle/working/stage4_film_conditioning` outputs, remove old backup zips,
   skip completed method/seed runs, and continue.
 
-Completion rule:
-- This item is complete only after the Kaggle five-seed cell runs and the
-  output checker passes for the required 20 method/seed combinations.
+Completed result:
+- The five-seed four-ablation run was executed on Kaggle.
+- The best v1 method was `film_full`, but its five-seed accuracy mean
+  `0.5510` and ROC-AUC mean `0.5677` remained below the Stage 2
+  `I60/R20/ohlc_ma_vb` visual baseline.
+- This result motivated the v2 diagnostic track and later the move from
+  structured numeric context to news context.
+
+Completion rule used:
+- The Kaggle five-seed cell runs and the output checker passes for the required
+  method/seed combinations.
 - `SKIP_COMPLETED=True` is enabled, so interrupted runs can be resumed.
 - The output checker uses `MIN_PREDICTIONS=1000`, so old smoke-test artifacts
   cannot be mistaken for completed full runs.
@@ -59,7 +67,7 @@ Validation:
 
 ## 한국어
 
-상태: Kaggle 실행 준비 완료, 아직 완료는 아님.
+상태: 완료.
 
 추가 파일:
 - `notebooks/kaggle_stage4_four_ablation_five_seed_one_cell.md`
@@ -101,8 +109,16 @@ Disk-space policy:
   `/kaggle/working/stage4_film_conditioning` output은 유지하고, 오래된 backup
   zip은 삭제하며, 완료된 method/seed run은 skip하고 이어서 실행합니다.
 
-완료 기준:
-- Kaggle five-seed cell이 끝나고 20개 method/seed 조합의 output checker가
+완료 결과:
+- Kaggle에서 five-seed four-ablation run을 실행했습니다.
+- v1에서는 `film_full`이 가장 나았지만 five-seed accuracy mean `0.5510`,
+  ROC-AUC mean `0.5677`로 Stage 2 `I60/R20/ohlc_ma_vb` visual baseline보다
+  낮았습니다.
+- 이 결과 때문에 v2 diagnostic track을 진행했고, 이후 structured numeric
+  context에서 news context로 넘어가는 결정을 했습니다.
+
+사용한 완료 기준:
+- Kaggle five-seed cell이 끝나고 필요한 method/seed 조합의 output checker가
   통과해야 완료입니다.
 - `SKIP_COMPLETED=True`라서 중간에 끊겨도 이어서 실행할 수 있습니다.
 - output checker는 `MIN_PREDICTIONS=1000`을 사용하므로 과거 smoke-test output을

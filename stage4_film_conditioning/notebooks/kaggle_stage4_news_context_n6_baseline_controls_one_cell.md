@@ -8,7 +8,8 @@ Copy the Python cell below into Kaggle after attaching:
   `/kaggle/input/datasets/moskow/stage2/stage2_btc_extension`
 - BTC OHLCV Kaggle dataset:
   `novandraanugrah/bitcoin-historical-datasets-2018-2024`
-- Optional local news CSV if Kaggle internet/Hugging Face download is disabled.
+- Local news CSV in the uploaded Stage 4 snapshot:
+  `stage4_film_conditioning/news_data/BTC_match_title.csv`
 
 This runner executes Stage 4 news-context baseline controls:
 
@@ -52,10 +53,10 @@ PROJECT_ROOT = Path("/kaggle/working/stage4_film_conditioning")
 STAGE2_PROJECT_ROOT = Path("/kaggle/working/stage2_btc_extension")
 DATA_ROOT = Path("/kaggle/input")
 
-# Leave empty to auto-detect. If Hugging Face download is disabled, set NEWS_CSV
-# to a copied local CSV path from the Stage 4 dataset.
+# BTC source can stay empty to auto-detect. NEWS_CSV points to the local news
+# file bundled in the Stage 4 upload zip, so Kaggle internet is not required.
 SOURCE_FILE = ""
-NEWS_CSV = ""
+NEWS_CSV = PROJECT_ROOT / "news_data/BTC_match_title.csv"
 
 IMAGE_WINDOW = 60
 IMAGE_SPEC = "ohlc_ma_vb"
@@ -277,7 +278,9 @@ def ensure_news_vector_artifacts():
     if not REBUILD_NEWS_FEATURES_IF_MISSING:
         raise FileNotFoundError(f"News TF-IDF/SVD vectors missing: {news_vector_path}")
 
-    news_csv_args = ["--news-csv", NEWS_CSV] if NEWS_CSV else []
+    news_csv_args = ["--news-csv", str(NEWS_CSV)] if NEWS_CSV and Path(NEWS_CSV).exists() else []
+    if NEWS_CSV and not Path(NEWS_CSV).exists():
+        print(f"[warning] local NEWS_CSV not found, trying Hugging Face download: {NEWS_CSV}", flush=True)
     run([
         sys.executable, "-u",
         "scripts/audit_stage4_news_source.py",

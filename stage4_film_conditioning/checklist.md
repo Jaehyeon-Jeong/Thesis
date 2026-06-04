@@ -18,7 +18,8 @@ Active work view:
 - Current conclusion: structured numeric context, including F&G-only FiLM, has
   useful ranking signal in some seeds but does not robustly beat the Stage 2
   visual baseline.
-- Current next track: `4-N5`, final sample-level news context feature builder.
+- Current next track: `4-N6`, news-context baseline controls on the same
+  news-aligned sample universe.
 - First news version: headline-only, non-LLM, train-only TF-IDF/SVD over
   7/20/60-day trailing news windows.
 - Main order now: source audit -> leakage-safe news alignment -> headline
@@ -408,12 +409,20 @@ News-context extension:
     [manifest](reports/tables/stage4_news_tfidf_svd_manifest.json),
     [summary](reports/tables/stage4_news_tfidf_svd_summary.csv),
     [top terms](reports/tables/stage4_news_tfidf_svd_top_terms.csv)
-- [ ] 4-N5. BTC sample-level news context feature builder
+- [x] 4-N5. BTC sample-level news context feature builder
   - Merge daily news vectors into each BTC image sample using strict `t-1`.
-  - Candidate first context vector:
-    `news_svd_7d + news_svd_20d + news_svd_60d + news_count_7d/20d/60d`.
-  - Normalize non-text count features with train-only statistics.
+  - First context vector:
+    `news_svd_7d + news_svd_20d + news_svd_60d` plus log-count features.
+  - Result: `102` normalized features = `96` SVD features plus `6` log-count
+    features.
+  - Normalization uses train-only median imputation, train quantile clipping,
+    and train z-score scaling.
   - Keep the chart image unchanged: `I60/R20/ohlc_ma_vb`.
+  - Result: [4-N5 News context feature builder](checklist_results/4-N5_news_context_feature_builder.md)
+  - Tables:
+    [audit](reports/tables/stage4_news_context_i60_ohlc_ma_vb_r20_tfidf_svd_w7_20_60_seed42_news_context_feature_audit.json),
+    [summary](reports/tables/stage4_news_context_i60_ohlc_ma_vb_r20_tfidf_svd_w7_20_60_seed42_news_context_feature_summary.csv),
+    [manifest](reports/tables/stage4_news_context_i60_ohlc_ma_vb_r20_tfidf_svd_w7_20_60_seed42_news_context_manifest.json)
 - [ ] 4-N6. News-context baseline controls
   - Confirm Stage 2 visual-only baseline on the same news-aligned sample set.
   - Run `CNN + news concat` five-seed first.
@@ -463,7 +472,8 @@ Stage 4는 이제 **market context를 고정된 BTC chart-image CNN에 어떻게
   `4-V9`까지.
 - 현재 결론: F&G-only FiLM을 포함한 structured numeric context는 일부 seed에서
   ranking signal은 있지만, Stage 2 visual baseline을 안정적으로 넘지 못했습니다.
-- 현재 다음 track: 최종 sample-level news context feature builder인 `4-N5`.
+- 현재 다음 track: 같은 news-aligned sample universe에서 news-context baseline
+  control을 확인하는 `4-N6`입니다.
 - 첫 news version: headline-only, non-LLM, train-only TF-IDF/SVD를 7/20/60-day
   trailing news window에 적용합니다.
 - 현재 순서: source audit -> leakage-safe news alignment -> headline window
@@ -847,12 +857,20 @@ News-context 확장:
     [manifest](reports/tables/stage4_news_tfidf_svd_manifest.json),
     [summary](reports/tables/stage4_news_tfidf_svd_summary.csv),
     [top terms](reports/tables/stage4_news_tfidf_svd_top_terms.csv)
-- [ ] 4-N5. BTC sample-level news context feature builder
+- [x] 4-N5. BTC sample-level news context feature builder
   - Strict `t-1`로 daily news vector를 각 BTC image sample에 merge합니다.
-  - 첫 context vector 후보:
-    `news_svd_7d + news_svd_20d + news_svd_60d + news_count_7d/20d/60d`.
-  - Text 외 count feature는 train-only statistics로 normalize합니다.
+  - 첫 context vector:
+    `news_svd_7d + news_svd_20d + news_svd_60d`와 log-count feature입니다.
+  - 결과: `102`개 normalized feature = `96`개 SVD feature + `6`개 log-count
+    feature입니다.
+  - Normalization은 train-only median imputation, train quantile clipping,
+    train z-score scaling입니다.
   - Chart image는 `I60/R20/ohlc_ma_vb` 그대로 유지합니다.
+  - 결과: [4-N5 News context feature builder](checklist_results/4-N5_news_context_feature_builder.md)
+  - Table:
+    [audit](reports/tables/stage4_news_context_i60_ohlc_ma_vb_r20_tfidf_svd_w7_20_60_seed42_news_context_feature_audit.json),
+    [summary](reports/tables/stage4_news_context_i60_ohlc_ma_vb_r20_tfidf_svd_w7_20_60_seed42_news_context_feature_summary.csv),
+    [manifest](reports/tables/stage4_news_context_i60_ohlc_ma_vb_r20_tfidf_svd_w7_20_60_seed42_news_context_manifest.json)
 - [ ] 4-N6. News-context baseline controls
   - 같은 news-aligned sample set에서 Stage 2 visual-only baseline을 확인합니다.
   - 먼저 `CNN + news concat` five-seed를 실행합니다.

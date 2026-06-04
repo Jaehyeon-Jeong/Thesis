@@ -30,8 +30,8 @@ flowchart LR
     G --> H[Grad-CAM + modulation export]
     H --> I[v1/v2 diagnosis]
     I --> J[V9: bounded FiLM scale grid]
-    J --> K[N0-N4: news audit + TF-IDF/SVD]
-    K --> L[Next N5: sample-level news context builder]
+    J --> K[N0-N5: news audit + TF-IDF/SVD + context table]
+    K --> L[Next N6: visual-only/news concat controls]
 ```
 
 ## Checklist And Review Links
@@ -70,8 +70,8 @@ Primary structured context vector:
 Rules:
 - Context is available only at or before image end date `t`.
 - Context is normalized with train-only imputation, clipping, and z-score statistics.
-- Main Stage 4 experiments use numeric context first.
-- News context remains a second-phase track after the structured context model is stable.
+- Structured numeric context was tested first.
+- News context is now the active second-phase track after V9.
 
 ## Model Variants
 
@@ -120,9 +120,9 @@ Current interpretation:
 Next direction:
 - close the structured F&G-only track as a negative/unstable result for the
   main claim;
-- continue the news-context track after N4, using headline-only, strict `t-1`,
-  train-only TF-IDF/SVD vectors;
-- build the final sample-level news context vector in N5;
+- continue the news-context track after N5, using headline-only, strict `t-1`,
+  train-only TF-IDF/SVD vectors and a `102`-dimensional normalized news context
+  table;
 - compare `CNN + news concat` and `CNN + news bounded last-block FiLM` before
   adding F&G or LLM summaries.
 

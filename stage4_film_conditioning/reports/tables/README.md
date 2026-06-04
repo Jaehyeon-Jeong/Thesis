@@ -31,6 +31,9 @@ Current news-context tables:
   aggregation reports.
 - `stage4_news_tfidf_svd_*.csv/json`: train-only TF-IDF/SVD vectorizer
   manifest, split summary, component summaries, top terms, and examples.
+- `stage4_news_context_i60_ohlc_ma_vb_r20_tfidf_svd_w7_20_60_seed42_*`:
+  final 4-N5 news context audit, feature summary, and manifest for the
+  `102`-dimensional normalized news context vector.
 
 Future result tables:
 - `stage4_four_ablation_five_seed_seed_results.csv`
@@ -66,6 +69,9 @@ Future result tables:
   aggregation report입니다.
 - `stage4_news_tfidf_svd_*.csv/json`: train-only TF-IDF/SVD vectorizer
   manifest, split summary, component summary, top term, example table입니다.
+- `stage4_news_context_i60_ohlc_ma_vb_r20_tfidf_svd_w7_20_60_seed42_*`:
+  `102`차원 normalized news context vector의 최종 4-N5 audit, feature
+  summary, manifest입니다.
 
 추후 result table:
 - `stage4_four_ablation_five_seed_seed_results.csv`

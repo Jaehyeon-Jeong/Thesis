@@ -97,6 +97,10 @@ Added in `4-N1` to `4-N4`:
 - `build_stage4_news_tfidf_svd.py`: fits TF-IDF/SVD on train headline-window
   documents only, transforms all splits, and writes fixed-size
   `news_svd_7d/20d/60d` vectors plus count features.
+- `build_stage4_news_context_features.py`: converts the 4-N4 TF-IDF/SVD table
+  into model-ready `context_features.csv`, `context_scaler.json`, and
+  report tables. The first news context vector has `102` normalized features:
+  `96` SVD features plus `6` log-count features.
 
 Planned next scripts:
 - `summarize_stage4_results.py`
@@ -200,6 +204,10 @@ Stage 4 script는 구현 단계에서 순차적으로 추가합니다.
 - `build_stage4_news_tfidf_svd.py`: train headline-window document에만
   TF-IDF/SVD를 fit하고, 모든 split을 transform해서 고정 길이
   `news_svd_7d/20d/60d` vector와 count feature를 저장합니다.
+- `build_stage4_news_context_features.py`: 4-N4 TF-IDF/SVD table을
+  model-ready `context_features.csv`, `context_scaler.json`, report table로
+  변환합니다. 첫 news context vector는 `96`개 SVD feature와 `6`개 log-count
+  feature로 된 `102`개 normalized feature입니다.
 
 다음 예정 script:
 - `summarize_stage4_results.py`

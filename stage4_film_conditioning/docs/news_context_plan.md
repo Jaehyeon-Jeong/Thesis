@@ -79,6 +79,23 @@ test period used in Stage 2 (`2021-01-01` to `2024-12-31`).
   `news_svd_7d/20d/60d`, `news_count_7d/20d/60d`,
   `unique_source_count_7d/20d/60d`, and log-count variants.
 
+## 4-N5 Final News Context Table
+
+The sample-level news context builder now writes a model-ready context artifact:
+
+- Script: `scripts/build_stage4_news_context_features.py`
+- Context artifact:
+  `outputs/stage4/context/stage4_news_context_i60_ohlc_ma_vb_r20_tfidf_svd_w7_20_60/seed_42/`
+- Rows: `2,399`
+- Split counts: train `671`, validation `287`, test `1,441`
+- Context dimension: `102`
+  - `96` SVD features = `32` components x `7/20/60` windows
+  - `6` log-count features = news-count and unique-source-count for each
+    window
+- Normalization: train median imputation, train quantile clipping, train
+  z-score scaling.
+- Missing warnings: none.
+
 Planning decision after V9:
 - Use this dataset as the next Stage 4 context source.
 - First news experiment should be headline-only.
@@ -256,6 +273,22 @@ BTC news context 후보로 사용할 수 있습니다.
 - 첫 output vector family:
   `news_svd_7d/20d/60d`, `news_count_7d/20d/60d`,
   `unique_source_count_7d/20d/60d`, log-count variants입니다.
+
+## 4-N5 최종 News Context Table
+
+Sample-level news context builder가 모델 입력용 context artifact를 생성했습니다.
+
+- Script: `scripts/build_stage4_news_context_features.py`
+- Context artifact:
+  `outputs/stage4/context/stage4_news_context_i60_ohlc_ma_vb_r20_tfidf_svd_w7_20_60/seed_42/`
+- Row 수: `2,399`
+- Split counts: train `671`, validation `287`, test `1,441`
+- Context dimension: `102`
+  - `96`개 SVD feature = `32` components x `7/20/60` windows
+  - `6`개 log-count feature = 각 window의 news-count와 unique-source-count
+- Normalization: train median imputation, train quantile clipping, train
+  z-score scaling입니다.
+- Missing warning은 없습니다.
 
 V9 이후 계획 결정:
 - 이 dataset은 다음 Stage 4 context source로 사용합니다.

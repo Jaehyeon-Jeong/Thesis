@@ -96,6 +96,26 @@ The sample-level news context builder now writes a model-ready context artifact:
   z-score scaling.
 - Missing warnings: none.
 
+## 4-N6 Prepared Baseline Control
+
+The next Kaggle runner is prepared:
+
+- Notebook:
+  [kaggle_stage4_news_context_n6_baseline_controls_one_cell.md](../notebooks/kaggle_stage4_news_context_n6_baseline_controls_one_cell.md)
+- Model: `CNN + news concat`
+- Seeds: `42, 43, 44, 45, 46`
+- Result bundle:
+  `/kaggle/working/stage4_news_context_n6_result_bundle.zip`
+
+The Stage 4 model runner now supports `context.source=prebuilt_news`, so it can
+load the N5 `context_features.csv` and `context_scaler.json` directly. Local
+small-sample smoke passed for training, prediction evaluation, trading
+evaluation, Grad-CAM/context export, and output checking.
+
+Completion condition:
+- N6 is not complete until the Kaggle five-seed seed-level and mean/std CSV
+  files are available.
+
 Planning decision after V9:
 - Use this dataset as the next Stage 4 context source.
 - First news experiment should be headline-only.
@@ -289,6 +309,25 @@ Sample-level news context builder가 모델 입력용 context artifact를 생성
 - Normalization: train median imputation, train quantile clipping, train
   z-score scaling입니다.
 - Missing warning은 없습니다.
+
+## 4-N6 준비된 Baseline Control
+
+다음 Kaggle runner를 준비했습니다.
+
+- Notebook:
+  [kaggle_stage4_news_context_n6_baseline_controls_one_cell.md](../notebooks/kaggle_stage4_news_context_n6_baseline_controls_one_cell.md)
+- Model: `CNN + news concat`
+- Seeds: `42, 43, 44, 45, 46`
+- Result bundle:
+  `/kaggle/working/stage4_news_context_n6_result_bundle.zip`
+
+Stage 4 model runner는 이제 `context.source=prebuilt_news` 설정에서 N5의
+`context_features.csv`와 `context_scaler.json`을 직접 읽습니다. Local
+small-sample smoke에서 training, prediction evaluation, trading evaluation,
+Grad-CAM/context export, output check가 통과했습니다.
+
+완료 조건:
+- Kaggle five-seed seed-level/mean-std CSV가 나온 뒤에 N6를 완료 처리합니다.
 
 V9 이후 계획 결정:
 - 이 dataset은 다음 Stage 4 context source로 사용합니다.

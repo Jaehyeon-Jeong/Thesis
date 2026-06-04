@@ -102,6 +102,14 @@ Added in `4-N1` to `4-N4`:
   report tables. The first news context vector has `102` normalized features:
   `96` SVD features plus `6` log-count features.
 
+Added in `4-N6`:
+- `run_stage4_context_model.py`, `evaluate_stage4_predictions.py`,
+  `evaluate_stage4_trading.py`, `generate_stage4_gradcam_context.py`, and
+  `check_stage4_outputs.py` can consume a prebuilt news context artifact when
+  `context.source` is set to `prebuilt_news`.
+- The prebuilt context loader reads `context_scaler.json` for feature order and
+  aligns `context_features.csv` to BTC samples through `sample_index`.
+
 Planned next scripts:
 - `summarize_stage4_results.py`
 
@@ -208,6 +216,14 @@ Stage 4 script는 구현 단계에서 순차적으로 추가합니다.
   model-ready `context_features.csv`, `context_scaler.json`, report table로
   변환합니다. 첫 news context vector는 `96`개 SVD feature와 `6`개 log-count
   feature로 된 `102`개 normalized feature입니다.
+
+`4-N6`에서 보강한 실행 흐름:
+- `context.source=prebuilt_news`일 때 `run_stage4_context_model.py`,
+  `evaluate_stage4_predictions.py`, `evaluate_stage4_trading.py`,
+  `generate_stage4_gradcam_context.py`, `check_stage4_outputs.py`가 N5에서 만든
+  prebuilt news context artifact를 읽을 수 있습니다.
+- prebuilt context loader는 `context_scaler.json`에서 feature order를 읽고,
+  `sample_index`로 `context_features.csv`와 BTC sample을 정렬합니다.
 
 다음 예정 script:
 - `summarize_stage4_results.py`

@@ -77,12 +77,12 @@ def main() -> None:
     )
     experiment_name = str(run_context["stage4_experiment_name"])
     output_roots = experiment_output_roots(paths, experiment_name, run_seed)
-    context_name = make_context_output_name(
+    context_name = _resolve_context_name(
+        context_config=context_config,
         image_window=image_window,
         image_spec=image_spec,
         return_horizon=return_horizon,
         context_window=context_window,
-        context_suffix=str(context_config.get("feature_set_name", "")),
     )
     context_root = paths.context_root / context_name / f"seed_{run_seed}"
     manifest_root = paths.run_manifest_root / experiment_name / f"seed_{run_seed}"
@@ -205,6 +205,35 @@ def _json_list_check(path: Path, min_items: int = 0) -> dict[str, Any]:
         }
     )
     return base
+
+
+def _resolve_context_name(
+    *,
+    context_config: dict[str, Any],
+    image_window: int,
+    image_spec: str,
+    return_horizon: int,
+    context_window: int,
+) -> str:
+    """Resolve structured or prebuilt context artifact name."""
+
+    source = str(context_config.get("source", "structured")).strip().lower()
+    if source in {"prebuilt", "prebuilt_news", "news_prebuilt"}:
+        explicit = str(
+            context_config.get("prebuilt_context_name")
+            or context_config.get("context_name")
+            or ""
+        ).strip()
+        if not explicit:
+            raise ValueError("Prebuilt context source requires context.prebuilt_context_name.")
+        return explicit
+    return make_context_output_name(
+        image_window=image_window,
+        image_spec=image_spec,
+        return_horizon=return_horizon,
+        context_window=context_window,
+        context_suffix=str(context_config.get("feature_set_name", "")),
+    )
 
 
 if __name__ == "__main__":

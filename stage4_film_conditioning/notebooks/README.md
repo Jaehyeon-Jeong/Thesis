@@ -86,6 +86,17 @@ Available notebooks:
     `42, 43, 44, 45, 46`.
   - Purpose: keep the architecture fixed and test whether bounded FiLM scale
     can reduce seed collapse before moving to news context.
+- `kaggle_stage4_news_context_n6_baseline_controls_one_cell.md`
+  - Stage 4 news-context priority 6 control.
+  - Ensures headline-window TF-IDF/SVD artifacts exist, builds the N5
+    `102`-dimensional prebuilt news context for five seeds, then runs
+    `CNN + news concat`.
+  - Runs `I60/R20/ohlc_ma_vb`, headline windows `7/20/60`, seeds
+    `42, 43, 44, 45, 46`.
+  - Purpose: test whether headline-only news context is useful as side
+    information before adding news-conditioned FiLM.
+  - Writes one compact download bundle:
+    `/kaggle/working/stage4_news_context_n6_result_bundle.zip`.
 
 Planned notebooks:
 - `kaggle_stage4_single_ablation_one_cell.md`
@@ -178,6 +189,17 @@ Required backup root:
     `42, 43, 44, 45, 46`.
   - 목적: architecture를 고정하고 bounded FiLM scale만 바꿔 seed collapse가
     줄어드는지 확인한 뒤, 안 되면 news context로 넘어갑니다.
+- `kaggle_stage4_news_context_n6_baseline_controls_one_cell.md`
+  - Stage 4 news-context 우선순위 6 control입니다.
+  - headline-window TF-IDF/SVD artifact가 없으면 다시 만들고, N5의
+    `102`차원 prebuilt news context를 five-seed용으로 만든 뒤
+    `CNN + news concat`을 실행합니다.
+  - `I60/R20/ohlc_ma_vb`, headline window `7/20/60`, seeds
+    `42, 43, 44, 45, 46`입니다.
+  - 목적: news-conditioned FiLM으로 넘어가기 전에 headline-only news context가
+    side information으로 유용한지 먼저 확인합니다.
+  - 결과 download bundle:
+    `/kaggle/working/stage4_news_context_n6_result_bundle.zip`.
 
 예정 notebook:
 - `kaggle_stage4_single_ablation_one_cell.md`

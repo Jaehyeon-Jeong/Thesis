@@ -18,14 +18,14 @@ Active work view:
 - Current conclusion: structured numeric context, including F&G-only FiLM, has
   useful ranking signal in some seeds but does not robustly beat the Stage 2
   visual baseline.
-- Current next track: `4-N6`, news-context baseline controls on the same
-  news-aligned sample universe.
+- Current next track: `4-N6`, Kaggle five-seed `CNN + news concat` execution
+  on the same news-aligned sample universe.
 - First news version: headline-only, non-LLM, train-only TF-IDF/SVD over
   7/20/60-day trailing news windows.
 - Main order now: source audit -> leakage-safe news alignment -> headline
   windows -> train-only TF-IDF/SVD -> final sample-level news context builder
-  -> visual-only same sample -> `CNN + news concat` -> bounded last-block FiLM
-  -> interpretability report.
+  -> `CNN + news concat` control -> bounded last-block FiLM -> interpretability
+  report.
 
 Main Stage 4 ablation:
 - [x] 4-A. `CNN + context concat`
@@ -424,10 +424,20 @@ News-context extension:
     [summary](reports/tables/stage4_news_context_i60_ohlc_ma_vb_r20_tfidf_svd_w7_20_60_seed42_news_context_feature_summary.csv),
     [manifest](reports/tables/stage4_news_context_i60_ohlc_ma_vb_r20_tfidf_svd_w7_20_60_seed42_news_context_manifest.json)
 - [ ] 4-N6. News-context baseline controls
-  - Confirm Stage 2 visual-only baseline on the same news-aligned sample set.
+  - Reference visual-only baseline: Stage 2 selected five-seed
+    `I60/R20/ohlc_ma_vb`.
+  - N5 showed the news-aligned context table keeps the same sample universe:
+    train `671`, validation `287`, test `1,441`.
   - Run `CNN + news concat` five-seed first.
   - Purpose: test whether the news vector is useful as side information before
     claiming FiLM modulation is useful.
+  - Prepared notebook:
+    [kaggle_stage4_news_context_n6_baseline_controls_one_cell.md](notebooks/kaggle_stage4_news_context_n6_baseline_controls_one_cell.md)
+  - Prepared result note:
+    [4-N6 News-context baseline controls](checklist_results/4-N6_news_context_baseline_controls.md)
+  - Local smoke: prebuilt `102`-dim news context loaded by Stage 4 runner;
+    train/eval/trading/Grad-CAM/output-check passed on a small sample.
+  - Status: Kaggle five-seed result pending.
 - [ ] 4-N7. News-context bounded FiLM main test
   - Run `CNN + news bounded last-block FiLM` five-seed.
   - Start from the conservative V9 lesson: protect the visual path first.
@@ -872,10 +882,20 @@ News-context 확장:
     [summary](reports/tables/stage4_news_context_i60_ohlc_ma_vb_r20_tfidf_svd_w7_20_60_seed42_news_context_feature_summary.csv),
     [manifest](reports/tables/stage4_news_context_i60_ohlc_ma_vb_r20_tfidf_svd_w7_20_60_seed42_news_context_manifest.json)
 - [ ] 4-N6. News-context baseline controls
-  - 같은 news-aligned sample set에서 Stage 2 visual-only baseline을 확인합니다.
+  - Visual-only reference baseline은 Stage 2 selected five-seed
+    `I60/R20/ohlc_ma_vb`입니다.
+  - N5에서 news-aligned context table이 같은 sample universe를 유지하는 것을
+    확인했습니다: train `671`, validation `287`, test `1,441`.
   - 먼저 `CNN + news concat` five-seed를 실행합니다.
   - 목적: FiLM modulation을 주장하기 전에 news vector가 side information으로
     유용한지 확인합니다.
+  - 준비된 notebook:
+    [kaggle_stage4_news_context_n6_baseline_controls_one_cell.md](notebooks/kaggle_stage4_news_context_n6_baseline_controls_one_cell.md)
+  - 준비 결과:
+    [4-N6 News-context baseline controls](checklist_results/4-N6_news_context_baseline_controls.md)
+  - Local smoke: prebuilt `102`차원 news context를 Stage 4 runner가 읽고,
+    train/eval/trading/Grad-CAM/output-check까지 작은 sample에서 통과했습니다.
+  - 상태: Kaggle five-seed 결과 대기.
 - [ ] 4-N7. News-context bounded FiLM main test
   - `CNN + news bounded last-block FiLM` five-seed를 실행합니다.
   - V9 교훈대로 visual path를 먼저 보호합니다.

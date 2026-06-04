@@ -31,7 +31,8 @@ flowchart LR
     H --> I[v1/v2 diagnosis]
     I --> J[V9: bounded FiLM scale grid]
     J --> K[N0-N5: news audit + TF-IDF/SVD + context table]
-    K --> L[Next N6: visual-only/news concat controls]
+    K --> L[N6: news concat control]
+    L --> M[Next N7: news bounded FiLM]
 ```
 
 ## Checklist And Review Links
@@ -117,14 +118,21 @@ Current interpretation:
 - F&G is image-external context, but full FiLM still causes seed instability.
 - Next architecture work should preserve the strong visual path more explicitly.
 
+News-context track:
+
+| ID | Experiment | Status | Review link |
+| --- | --- | --- | --- |
+| `4-N1`-`4-N5` | headline-only BTC news audit, strict `t-1` alignment, 7/20/60 headline windows, train-only TF-IDF/SVD, sample-level `102`-dim context table | Completed | [N5 review](checklist_results/4-N5_news_context_feature_builder.md) |
+| `4-N6` | `I60/R20/ohlc_ma_vb` + `CNN + news concat`, five seeds | Kaggle runner prepared; result pending | [N6 review](checklist_results/4-N6_news_context_baseline_controls.md) |
+
 Next direction:
 - close the structured F&G-only track as a negative/unstable result for the
   main claim;
 - continue the news-context track after N5, using headline-only, strict `t-1`,
   train-only TF-IDF/SVD vectors and a `102`-dimensional normalized news context
   table;
-- compare `CNN + news concat` and `CNN + news bounded last-block FiLM` before
-  adding F&G or LLM summaries.
+- run `CNN + news concat` first, then compare against `CNN + news bounded
+  last-block FiLM` before adding F&G or LLM summaries.
 
 ## Code Map
 

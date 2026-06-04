@@ -68,6 +68,19 @@ class PreparedStage4ContextData:
     datasets: dict[str, "ContextBtcImageDataset"]
 
 
+@dataclass(frozen=True)
+class LoadedContextScaler:
+    """Prebuilt context scaler loaded from a JSON artifact."""
+
+    feature_order: list[str]
+    payload: Mapping[str, Any]
+
+    def as_dict(self) -> dict[str, Any]:
+        """Return the original scaler payload as a JSON-ready dictionary."""
+
+        return dict(self.payload)
+
+
 class ContextBtcImageDataset(Dataset):
     """Stage 2 BTC image dataset에 normalized context vector를 붙이는 wrapper."""
 
@@ -164,6 +177,18 @@ def prepare_stage4_context_experiment_data(
     )
 
     context_config = get_context_config(config)
+    context_source = str(context_config.get("source", "structured")).strip().lower()
+    if context_source in {"prebuilt", "prebuilt_news", "news_prebuilt"}:
+        return _prepare_prebuilt_context_experiment_data(
+            config=config,
+            paths=paths,
+            btc_data=btc_data,
+            image_window=int(image_window),
+            image_spec=str(image_spec),
+            return_horizon=int(return_horizon),
+            run_seed=int(run_seed),
+        )
+
     context_window = int(context_config["context_window"])
     primary_features = [str(feature) for feature in context_config["primary_features"]]
     feature_columns = normalized_feature_columns(primary_features)
@@ -235,6 +260,90 @@ def prepare_stage4_context_experiment_data(
     )
 
 
+def _prepare_prebuilt_context_experiment_data(
+    *,
+    config: Mapping[str, Any],
+    paths: Stage4Paths,
+    btc_data: PreparedBtcData,
+    image_window: int,
+    image_spec: str,
+    return_horizon: int,
+    run_seed: int,
+) -> PreparedStage4ContextData:
+    """Load an already-built context table instead of rebuilding F&G/OHLCV features."""
+
+    context_config = get_context_config(config)
+    context_name = _resolve_prebuilt_context_name(
+        context_config=context_config,
+        image_window=int(image_window),
+        image_spec=str(image_spec),
+        return_horizon=int(return_horizon),
+    )
+    context_dir = paths.context_root / context_name / f"seed_{int(run_seed)}"
+    context_features_path = _resolve_context_table_path(context_dir)
+    context_scaler_path = context_dir / "context_scaler.json"
+    context_feature_audit_path = context_dir / "context_feature_audit.json"
+    context_feature_summary_path = context_dir / "context_feature_summary.csv"
+
+    if not context_scaler_path.exists():
+        raise FileNotFoundError(f"Prebuilt context scaler missing: {context_scaler_path}")
+
+    context_table = _read_context_table(context_features_path)
+    scaler_payload = json.loads(context_scaler_path.read_text(encoding="utf-8"))
+    feature_order = [str(feature) for feature in scaler_payload.get("feature_order", [])]
+    if not feature_order:
+        raise ValueError(f"Prebuilt context scaler has empty feature_order: {context_scaler_path}")
+    normalized_columns = scaler_payload.get("normalized_feature_columns")
+    if not normalized_columns:
+        normalized_columns = normalized_feature_columns(feature_order)
+    normalized_columns = [str(column) for column in normalized_columns]
+    _validate_prebuilt_context_table(
+        context_table=context_table,
+        feature_order=feature_order,
+        normalized_columns=normalized_columns,
+        btc_data=btc_data,
+    )
+
+    context_audit = _load_or_build_prebuilt_context_audit(
+        context_feature_audit_path,
+        context_table=context_table,
+        context_name=context_name,
+        feature_order=feature_order,
+        normalized_columns=normalized_columns,
+    )
+    context_scaler = LoadedContextScaler(
+        feature_order=feature_order,
+        payload={
+            **scaler_payload,
+            "feature_order": feature_order,
+            "normalized_feature_columns": normalized_columns,
+        },
+    )
+    datasets = {
+        split_name: ContextBtcImageDataset(
+            base_dataset=base_dataset,
+            context_table=context_table.loc[context_table["split"].astype(str).eq(split_name)],
+            feature_columns=normalized_columns,
+        )
+        for split_name, base_dataset in btc_data.datasets.items()
+    }
+
+    return PreparedStage4ContextData(
+        source_file=btc_data.source_file,
+        fear_greed_source_file="",
+        btc_data=btc_data,
+        context_name=context_name,
+        context_features_path=str(context_features_path),
+        context_scaler_path=str(context_scaler_path),
+        context_feature_audit_path=str(context_feature_audit_path),
+        context_feature_summary_path=str(context_feature_summary_path),
+        context_table=context_table,
+        context_scaler=context_scaler,
+        context_audit=context_audit,
+        datasets=datasets,
+    )
+
+
 def build_stage4_context_dataloaders(
     datasets: Mapping[str, ContextBtcImageDataset],
     config: Mapping[str, Any],
@@ -243,6 +352,130 @@ def build_stage4_context_dataloaders(
     """Stage 4 context Dataset용 train/validation/test DataLoader를 만든다."""
 
     return build_dataloaders(datasets, config, shuffle_train=shuffle_train)
+
+
+def _resolve_prebuilt_context_name(
+    *,
+    context_config: Mapping[str, Any],
+    image_window: int,
+    image_spec: str,
+    return_horizon: int,
+) -> str:
+    """Resolve the configured prebuilt context artifact name."""
+
+    explicit = str(
+        context_config.get("prebuilt_context_name")
+        or context_config.get("context_name")
+        or ""
+    ).strip()
+    if explicit:
+        return explicit
+
+    context_window = int(context_config.get("context_window", image_window))
+    return make_context_output_name(
+        image_window=int(image_window),
+        image_spec=str(image_spec),
+        return_horizon=int(return_horizon),
+        context_window=context_window,
+        context_suffix=str(context_config.get("feature_set_name", "")),
+    )
+
+
+def _resolve_context_table_path(context_dir: Path) -> Path:
+    """Find a prebuilt context table in CSV or parquet form."""
+
+    candidates = [
+        context_dir / "context_features.csv",
+        context_dir / "context_features.parquet",
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    raise FileNotFoundError(
+        "Prebuilt context table missing. Checked: "
+        + ", ".join(str(path) for path in candidates)
+    )
+
+
+def _read_context_table(path: Path) -> pd.DataFrame:
+    """Read a prebuilt context table."""
+
+    if path.suffix == ".parquet":
+        return pd.read_parquet(path)
+    if path.suffix == ".csv":
+        return pd.read_csv(path)
+    raise ValueError(f"Unsupported context table format: {path}")
+
+
+def _validate_prebuilt_context_table(
+    *,
+    context_table: pd.DataFrame,
+    feature_order: list[str],
+    normalized_columns: list[str],
+    btc_data: PreparedBtcData,
+) -> None:
+    """Validate prebuilt context columns and sample-index coverage."""
+
+    required = {"split", "sample_index", *feature_order, *normalized_columns}
+    missing_columns = sorted(required.difference(context_table.columns))
+    if missing_columns:
+        raise KeyError(
+            "Prebuilt context table missing column(s): "
+            + ", ".join(missing_columns)
+        )
+    if context_table["sample_index"].duplicated().any():
+        examples = context_table.loc[
+            context_table["sample_index"].duplicated(),
+            "sample_index",
+        ].head()
+        raise ValueError(
+            "Prebuilt context table contains duplicate sample_index values: "
+            f"{examples.tolist()}"
+        )
+
+    available = set(pd.to_numeric(context_table["sample_index"], errors="raise").astype(int))
+    missing_samples: list[int] = []
+    for split_frame in btc_data.splits.values():
+        sample_indices = pd.to_numeric(split_frame["sample_index"], errors="raise").astype(int)
+        for sample_index in sample_indices:
+            if int(sample_index) not in available:
+                missing_samples.append(int(sample_index))
+                if len(missing_samples) >= 5:
+                    break
+        if len(missing_samples) >= 5:
+            break
+    if missing_samples:
+        raise KeyError(
+            "Prebuilt context table is missing BTC sample_index values: "
+            f"{missing_samples}"
+        )
+
+
+def _load_or_build_prebuilt_context_audit(
+    audit_path: Path,
+    *,
+    context_table: pd.DataFrame,
+    context_name: str,
+    feature_order: list[str],
+    normalized_columns: list[str],
+) -> dict[str, Any]:
+    """Load context audit JSON if available, otherwise build a compact audit."""
+
+    if audit_path.exists():
+        return json.loads(audit_path.read_text(encoding="utf-8"))
+    return {
+        "status": "ok",
+        "context_name": context_name,
+        "source": "prebuilt",
+        "context_dim": int(len(feature_order)),
+        "feature_order": feature_order,
+        "normalized_feature_columns": normalized_columns,
+        "split_counts": {
+            str(split): int(count)
+            for split, count in context_table["split"].value_counts(sort=False).items()
+        },
+        "warnings": [],
+    }
 
 
 def build_stage4_context_model(

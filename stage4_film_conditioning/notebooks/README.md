@@ -106,6 +106,14 @@ Available notebooks:
     moving to N7 news-conditioned bounded FiLM.
   - Writes one compact download bundle:
     `/kaggle/working/stage4_news_context_n6_svd_dim_grid_result_bundle.zip`.
+- `kaggle_stage4_news_context_n7_bounded_film_svd8_one_cell.md`
+  - Stage 4 news-context priority 7 main FiLM test.
+  - Uses the selected SVD8 headline-news vector, context dim `30`, and runs
+    `film_full_bounded_last_block` over five seeds.
+  - FiLM scale: `0.05`.
+  - Grad-CAM/context modulation export is enabled.
+  - Writes one compact download bundle:
+    `/kaggle/working/stage4_news_context_n7_bounded_film_svd8_result_bundle.zip`.
 
 Planned notebooks:
 - `kaggle_stage4_single_ablation_one_cell.md`
@@ -218,6 +226,14 @@ Required backup root:
     headline vector가 seed collapse를 줄이는지 확인하는 것입니다.
   - 결과 download bundle:
     `/kaggle/working/stage4_news_context_n6_svd_dim_grid_result_bundle.zip`.
+- `kaggle_stage4_news_context_n7_bounded_film_svd8_one_cell.md`
+  - Stage 4 news-context 우선순위 7 main FiLM test입니다.
+  - 선택된 SVD8 headline-news vector, context dim `30`을 사용하고
+    `film_full_bounded_last_block` five-seed를 실행합니다.
+  - FiLM scale은 `0.05`입니다.
+  - Grad-CAM/context modulation export가 켜져 있습니다.
+  - 결과 download bundle:
+    `/kaggle/working/stage4_news_context_n7_bounded_film_svd8_result_bundle.zip`.
 
 예정 notebook:
 - `kaggle_stage4_single_ablation_one_cell.md`

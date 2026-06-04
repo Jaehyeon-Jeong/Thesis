@@ -18,13 +18,13 @@ Active work view:
 - Current conclusion: structured numeric context, including F&G-only FiLM, has
   useful ranking signal in some seeds but does not robustly beat the Stage 2
   visual baseline.
-- Current next track: `4-N6.1`, SVD dimension grid for `CNN + news concat`
+- Current next track: `4-N7`, SVD8 news-conditioned bounded last-block FiLM
   on the same news-aligned sample universe.
 - First news version: headline-only, non-LLM, train-only TF-IDF/SVD over
   7/20/60-day trailing news windows.
 - Main order now: source audit -> leakage-safe news alignment -> headline
   windows -> train-only TF-IDF/SVD -> final sample-level news context builder
-  -> `CNN + news concat` control -> SVD-dim stability check -> bounded
+  -> `CNN + news concat` control -> SVD-dim stability check -> SVD8 bounded
   last-block FiLM -> interpretability report.
 
 Main Stage 4 ablation:
@@ -438,7 +438,7 @@ News-context extension:
   - Kaggle result: accuracy mean `0.5478`, ROC-AUC mean `0.5644`.
   - Diagnosis: seeds `43` and `45` collapsed to near one-sided predictions, so
     the `102`-dimensional news context is not stable enough for direct N7.
-- [ ] 4-N6.1. News SVD-dimension stability grid
+- [x] 4-N6.1. News SVD-dimension stability grid
   - Test smaller train-only TF-IDF/SVD dimensions before adding FiLM.
   - Grid: SVD dim `16` and `8`, which produce context dims `54` and `30`.
   - Fixed model: `I60/R20/ohlc_ma_vb` + `CNN + news concat`.
@@ -449,11 +449,21 @@ News-context extension:
     [kaggle_stage4_news_context_n6_svd_dim_grid_one_cell.md](notebooks/kaggle_stage4_news_context_n6_svd_dim_grid_one_cell.md)
   - Prepared result note:
     [4-N6.1 News SVD-dim grid](checklist_results/4-N6.1_news_svd_dim_grid.md)
+  - Kaggle result: SVD8 accuracy mean `0.5407`, ROC-AUC mean `0.5817`;
+    SVD16 accuracy mean `0.5348`, ROC-AUC mean `0.5608`.
+  - Decision: use SVD8 for N7 because it preserves the strongest news ranking
+    signal and keeps the FiLM input small.
 - [ ] 4-N7. News-context bounded FiLM main test
-  - Run `CNN + news bounded last-block FiLM` five-seed.
+  - Run `CNN + news bounded last-block FiLM` five-seed with SVD8 news context.
   - Start from the conservative V9 lesson: protect the visual path first.
-  - Use the most stable N6/N6.1 news vector dimension.
+  - Use `modulation_scale=0.05`:
+    `gamma = 1 + 0.05 * tanh(raw_gamma)`,
+    `beta = 0.05 * tanh(raw_beta)`.
   - Compare against Stage 2 visual baseline and `CNN + news concat`.
+  - Prepared notebook:
+    [kaggle_stage4_news_context_n7_bounded_film_svd8_one_cell.md](notebooks/kaggle_stage4_news_context_n7_bounded_film_svd8_one_cell.md)
+  - Prepared result note:
+    [4-N7 News bounded FiLM SVD8](checklist_results/4-N7_news_bounded_film_svd8.md)
 - [ ] 4-N8. News + F&G combined-context ablation
   - Run only after news-only shows useful signal.
   - Candidate vector: `news_svd_7d/20d/60d + news_count_7d/20d/60d + F&G-only`.
@@ -494,14 +504,14 @@ Stage 4는 이제 **market context를 고정된 BTC chart-image CNN에 어떻게
   `4-V9`까지.
 - 현재 결론: F&G-only FiLM을 포함한 structured numeric context는 일부 seed에서
   ranking signal은 있지만, Stage 2 visual baseline을 안정적으로 넘지 못했습니다.
-- 현재 다음 track: 같은 news-aligned sample universe에서 `CNN + news concat`
-  SVD 차원 안정성을 확인하는 `4-N6.1`입니다.
+- 현재 다음 track: 같은 news-aligned sample universe에서 SVD8
+  news-conditioned bounded last-block FiLM을 확인하는 `4-N7`입니다.
 - 첫 news version: headline-only, non-LLM, train-only TF-IDF/SVD를 7/20/60-day
   trailing news window에 적용합니다.
 - 현재 순서: source audit -> leakage-safe news alignment -> headline window
   -> train-only TF-IDF/SVD -> final sample-level news context builder -> 같은
   sample의 visual-only control -> `CNN + news concat` -> SVD-dim stability
-  check -> bounded last-block FiLM -> interpretability report.
+  check -> SVD8 bounded last-block FiLM -> interpretability report.
 
 Stage 4 main ablation:
 - [x] 4-A. `CNN + context concat`
@@ -909,7 +919,7 @@ News-context 확장:
   - 진단: seed `43`, `45`가 거의 한쪽 class로 collapse했습니다. 따라서
     `102`차원 news context를 그대로 N7 FiLM에 넣기 전에 차원 안정성 확인이
     필요합니다.
-- [ ] 4-N6.1. News SVD-dimension stability grid
+- [x] 4-N6.1. News SVD-dimension stability grid
   - FiLM을 추가하기 전에 train-only TF-IDF/SVD 차원을 줄여 봅니다.
   - Grid: SVD dim `16`, `8`; 최종 context dim은 각각 `54`, `30`입니다.
   - 고정 모델: `I60/R20/ohlc_ma_vb` + `CNN + news concat`.
@@ -920,11 +930,22 @@ News-context 확장:
     [kaggle_stage4_news_context_n6_svd_dim_grid_one_cell.md](notebooks/kaggle_stage4_news_context_n6_svd_dim_grid_one_cell.md)
   - 준비 결과:
     [4-N6.1 News SVD-dim grid](checklist_results/4-N6.1_news_svd_dim_grid.md)
+  - Kaggle 결과: SVD8 accuracy mean `0.5407`, ROC-AUC mean `0.5817`;
+    SVD16 accuracy mean `0.5348`, ROC-AUC mean `0.5608`.
+  - 결정: SVD8은 가장 강한 news ranking signal을 유지하고 FiLM input을 작게
+    만들기 때문에 N7에 사용합니다.
 - [ ] 4-N7. News-context bounded FiLM main test
-  - `CNN + news bounded last-block FiLM` five-seed를 실행합니다.
+  - SVD8 news context로 `CNN + news bounded last-block FiLM` five-seed를
+    실행합니다.
   - V9 교훈대로 visual path를 먼저 보호합니다.
-  - N6/N6.1 중 가장 안정적인 news vector 차원을 사용합니다.
+  - `modulation_scale=0.05`를 사용합니다:
+    `gamma = 1 + 0.05 * tanh(raw_gamma)`,
+    `beta = 0.05 * tanh(raw_beta)`.
   - Stage 2 visual baseline, `CNN + news concat`과 비교합니다.
+  - 준비된 notebook:
+    [kaggle_stage4_news_context_n7_bounded_film_svd8_one_cell.md](notebooks/kaggle_stage4_news_context_n7_bounded_film_svd8_one_cell.md)
+  - 준비 결과:
+    [4-N7 News bounded FiLM SVD8](checklist_results/4-N7_news_bounded_film_svd8.md)
 - [ ] 4-N8. News + F&G combined-context ablation
   - News-only가 유용한 signal을 보일 때만 실행합니다.
   - 후보 vector: `news_svd_7d/20d/60d + news_count_7d/20d/60d + F&G-only`.

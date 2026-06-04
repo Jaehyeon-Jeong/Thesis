@@ -33,7 +33,7 @@ flowchart LR
     J --> K[N0-N5: news audit + TF-IDF/SVD + context table]
     K --> L[N6: news concat control]
     L --> M[N6.1: news SVD-dim grid]
-    M --> N[Next N7: news bounded FiLM]
+    M --> N[N7: SVD8 news bounded FiLM]
 ```
 
 ## Checklist And Review Links
@@ -125,7 +125,8 @@ News-context track:
 | --- | --- | --- | --- |
 | `4-N1`-`4-N5` | headline-only BTC news audit, strict `t-1` alignment, 7/20/60 headline windows, train-only TF-IDF/SVD, sample-level `102`-dim context table | Completed | [N5 review](checklist_results/4-N5_news_context_feature_builder.md) |
 | `4-N6` | `I60/R20/ohlc_ma_vb` + `CNN + news concat`, SVD dim `32`, five seeds | Accuracy mean `0.5478`, ROC-AUC mean `0.5644`; seeds `43`/`45` collapsed | [N6 review](checklist_results/4-N6_news_context_baseline_controls.md) |
-| `4-N6.1` | Same `CNN + news concat`, SVD dim grid `16`, `8` | Prepared for Kaggle; checks whether lower-dimensional news vectors reduce collapse before FiLM | [N6.1 review](checklist_results/4-N6.1_news_svd_dim_grid.md) |
+| `4-N6.1` | Same `CNN + news concat`, SVD dim grid `16`, `8` | SVD8 selected: accuracy mean `0.5407`, ROC-AUC mean `0.5817`; ranking signal strongest but seeds `45`/`46` collapsed Down | [N6.1 review](checklist_results/4-N6.1_news_svd_dim_grid.md) |
+| `4-N7` | SVD8 news vector + bounded last-block FiLM, scale `0.05` | Prepared for Kaggle; tests whether FiLM can stabilize/use the SVD8 news signal | [N7 review](checklist_results/4-N7_news_bounded_film_svd8.md) |
 
 Next direction:
 - close the structured F&G-only track as a negative/unstable result for the
@@ -134,8 +135,8 @@ Next direction:
   train-only TF-IDF/SVD vectors; the first `102`-dimensional N6 vector was
   unstable, so N6.1 tests smaller dimensions;
 - reduce the news SVD dimension if the first concat control collapses;
-- run `CNN + news bounded last-block FiLM` only after choosing the most stable
-  news vector size, then consider F&G or LLM summaries.
+- run SVD8 `CNN + news bounded last-block FiLM` with conservative scale `0.05`,
+  then consider F&G or LLM summaries only if the news-only path is useful.
 
 ## Code Map
 

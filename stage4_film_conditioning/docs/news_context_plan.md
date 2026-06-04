@@ -114,10 +114,10 @@ load the N5 `context_features.csv` and `context_scaler.json` directly. Local
 small-sample smoke passed for training, prediction evaluation, trading
 evaluation, Grad-CAM/context export, and output checking.
 
-## 4-N6.1 SVD-Dim Stability Grid
+## 4-N6.1 SVD-Dim Stability Grid Result
 
 Because the first `102`-dimensional news vector is unstable, the next diagnostic
-is an SVD dimension grid before N7:
+was an SVD dimension grid before N7:
 
 - Notebook:
   [kaggle_stage4_news_context_n6_svd_dim_grid_one_cell.md](../notebooks/kaggle_stage4_news_context_n6_svd_dim_grid_one_cell.md)
@@ -128,10 +128,36 @@ is an SVD dimension grid before N7:
 - Result bundle:
   `/kaggle/working/stage4_news_context_n6_svd_dim_grid_result_bundle.zip`
 
-Decision rule:
-- choose the smallest vector that keeps accuracy/ROC-AUC near the useful N6
-  seeds while reducing one-sided prediction collapse;
-- then run N7 news-conditioned bounded last-block FiLM with that vector size.
+Result:
+
+| SVD dim | Context dim | Accuracy mean | ROC-AUC mean | Note |
+| ---: | ---: | ---: | ---: | --- |
+| `16` | `54` | `0.5348` | `0.5608` | weaker than SVD8 |
+| `8` | `30` | `0.5407` | `0.5817` | best news-vector ROC-AUC; seeds `45`/`46` collapsed Down |
+
+Decision:
+- use SVD8 for N7 because it preserves the strongest news ranking signal and
+  keeps the FiLM generator input compact;
+- run N7 news-conditioned bounded last-block FiLM with conservative
+  `modulation_scale=0.05`.
+
+## 4-N7 Prepared News-Conditioned Bounded FiLM
+
+- Notebook:
+  [kaggle_stage4_news_context_n7_bounded_film_svd8_one_cell.md](../notebooks/kaggle_stage4_news_context_n7_bounded_film_svd8_one_cell.md)
+- Model: `film_full_bounded_last_block`
+- News vector: SVD8 headline vector, context dim `30`
+- FiLM formula:
+
+```text
+gamma = 1 + 0.05 * tanh(raw_gamma)
+beta  =     0.05 * tanh(raw_beta)
+```
+
+- Seeds: `42, 43, 44, 45, 46`
+- Grad-CAM/context modulation export: enabled
+- Result bundle:
+  `/kaggle/working/stage4_news_context_n7_bounded_film_svd8_result_bundle.zip`
 
 Planning decision after V9:
 - Use this dataset as the next Stage 4 context source.
@@ -144,7 +170,7 @@ Planning decision after V9:
   `news_count_7d/20d/60d`.
 - Compare `CNN + news concat` before claiming that FiLM modulation helps.
 - Use the N6.1 SVD-dim stability grid to choose the news vector size.
-- Then run `CNN + news bounded last-block FiLM`.
+- Then run SVD8 `CNN + news bounded last-block FiLM`.
 - Defer article summaries, sentence-transformer embeddings, LLM summaries, and
   LLM embeddings until the no-leakage headline track is stable.
 
@@ -345,10 +371,10 @@ Stage 4 model runner는 이제 `context.source=prebuilt_news` 설정에서 N5의
 small-sample smoke에서 training, prediction evaluation, trading evaluation,
 Grad-CAM/context export, output check가 통과했습니다.
 
-## 4-N6.1 SVD-Dim Stability Grid
+## 4-N6.1 SVD-Dim Stability Grid 결과
 
 첫 `102`차원 news vector가 불안정했기 때문에, N7 전에 SVD 차원 grid를
-실행합니다.
+실행했습니다.
 
 - Notebook:
   [kaggle_stage4_news_context_n6_svd_dim_grid_one_cell.md](../notebooks/kaggle_stage4_news_context_n6_svd_dim_grid_one_cell.md)
@@ -359,10 +385,36 @@ Grad-CAM/context export, output check가 통과했습니다.
 - Result bundle:
   `/kaggle/working/stage4_news_context_n6_svd_dim_grid_result_bundle.zip`
 
-결정 규칙:
-- N6의 useful seed 수준에 가까운 accuracy/ROC-AUC를 유지하면서 one-sided
-  prediction collapse를 줄이는 가장 작은 vector를 선택합니다.
-- 그 vector size로 N7 news-conditioned bounded last-block FiLM을 실행합니다.
+결과:
+
+| SVD dim | Context dim | Accuracy mean | ROC-AUC mean | Note |
+| ---: | ---: | ---: | ---: | --- |
+| `16` | `54` | `0.5348` | `0.5608` | SVD8보다 약함 |
+| `8` | `30` | `0.5407` | `0.5817` | news-vector ROC-AUC가 가장 좋음; seed `45`/`46`은 Down collapse |
+
+결정:
+- SVD8은 가장 강한 news ranking signal을 보존하고 FiLM generator input도
+  작게 유지하므로 N7에 사용합니다.
+- N7은 보수적인 `modulation_scale=0.05`로 news-conditioned bounded
+  last-block FiLM을 실행합니다.
+
+## 4-N7 준비된 News-Conditioned Bounded FiLM
+
+- Notebook:
+  [kaggle_stage4_news_context_n7_bounded_film_svd8_one_cell.md](../notebooks/kaggle_stage4_news_context_n7_bounded_film_svd8_one_cell.md)
+- Model: `film_full_bounded_last_block`
+- News vector: SVD8 headline vector, context dim `30`
+- FiLM formula:
+
+```text
+gamma = 1 + 0.05 * tanh(raw_gamma)
+beta  =     0.05 * tanh(raw_beta)
+```
+
+- Seeds: `42, 43, 44, 45, 46`
+- Grad-CAM/context modulation export: enabled
+- Result bundle:
+  `/kaggle/working/stage4_news_context_n7_bounded_film_svd8_result_bundle.zip`
 
 V9 이후 계획 결정:
 - 이 dataset은 다음 Stage 4 context source로 사용합니다.
@@ -375,7 +427,7 @@ V9 이후 계획 결정:
   `news_count_7d/20d/60d`입니다.
 - FiLM modulation을 주장하기 전에 `CNN + news concat`을 먼저 비교합니다.
 - N6.1 SVD-dim stability grid로 news vector size를 고릅니다.
-- 그 다음 `CNN + news bounded last-block FiLM`을 실행합니다.
+- 그 다음 SVD8 `CNN + news bounded last-block FiLM`을 실행합니다.
 - Article summary, sentence-transformer embedding, LLM summary, LLM embedding은
   no-leakage headline track이 안정화된 뒤로 미룹니다.
 

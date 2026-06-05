@@ -617,7 +617,7 @@ News-context extension:
   - Default grid: news SVD32, scales `0.02` and `0.05`, five seeds.
   - Local shape check passed; result note:
     [4-N12-B confidence-gated news FiLM](checklist_results/4-N12-B_confidence_gated_news_film.md)
-- [x] 4-N12-C. Stage 2 frozen + technical-only bounded FiLM runner preparation
+- [x] 4-N12-C. Stage 2 frozen + technical-only bounded FiLM
   - Purpose: separate image-derived technical context from external/news context
     under the same baseline-preserving Stage 2 frozen protocol.
   - Candidate features: `bb_percent_b_60`, `bb_bandwidth_60`, `mfi_60`,
@@ -628,9 +628,10 @@ News-context extension:
     N12-A/B gated news.
   - Kaggle runner:
     [kaggle_stage4_n12c_technical_only_pretrained_frozen_bounded_film_one_cell.md](notebooks/kaggle_stage4_n12c_technical_only_pretrained_frozen_bounded_film_one_cell.md)
-  - Local shape check passed with four technical features; result is pending
-    after Kaggle run.
-  - Prep note:
+  - Result: scale `0.02` accuracy mean `0.579736`, ROC-AUC mean `0.584778`.
+    This is effectively tied with the Stage 2 frozen baseline rather than a
+    meaningful improvement.
+  - Result note:
     [4-N12-C technical-only pretrained frozen bounded FiLM](checklist_results/4-N12-C_technical_only_pretrained_frozen_bounded_film.md)
 - [ ] 4-N12-D. Context-source comparison under the frozen Stage 2 protocol
   - Purpose: decide which context source is thesis-defensible rather than
@@ -1285,7 +1286,7 @@ News-context 확장:
   - 기본 grid: news SVD32, scale `0.02`, `0.05`, five seeds.
   - Local shape check 통과; 결과 노트:
     [4-N12-B confidence-gated news FiLM](checklist_results/4-N12-B_confidence_gated_news_film.md)
-- [x] 4-N12-C. Stage 2 frozen + technical-only bounded FiLM runner 준비
+- [x] 4-N12-C. Stage 2 frozen + technical-only bounded FiLM
   - 목적: image에서 파생되는 technical context와 외부/news context를 같은 Stage 2
     frozen protocol 안에서 분리해서 확인합니다.
   - 후보 feature: `bb_percent_b_60`, `bb_bandwidth_60`, `mfi_60`, `rv_60`.
@@ -1295,9 +1296,9 @@ News-context 확장:
     gated news.
   - Kaggle runner:
     [kaggle_stage4_n12c_technical_only_pretrained_frozen_bounded_film_one_cell.md](notebooks/kaggle_stage4_n12c_technical_only_pretrained_frozen_bounded_film_one_cell.md)
-  - four technical feature 기준 local shape check 통과. 결과는 Kaggle 실행 후
-    기록합니다.
-  - 준비 노트:
+  - 결과: scale `0.02` accuracy mean `0.579736`, ROC-AUC mean `0.584778`.
+    Stage 2 frozen baseline과 사실상 동률이며 의미 있는 개선은 아닙니다.
+  - 결과 노트:
     [4-N12-C technical-only pretrained frozen bounded FiLM](checklist_results/4-N12-C_technical_only_pretrained_frozen_bounded_film.md)
 - [ ] 4-N12-D. Frozen Stage 2 protocol 안에서 context-source comparison
   - 목적: one-off variant를 계속 늘리지 않고, 어떤 context source가 thesis에서

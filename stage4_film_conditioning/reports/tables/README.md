@@ -22,6 +22,14 @@ Current result tables:
   and validation-threshold calibration tables.
 - `stage4_v2_v9_bounded_last_block_film_scale_grid_*.csv`: bounded
   last-block FiLM scale-grid result tables.
+- `stage4_n8_stage2_checkpoint_reload_*`: frozen Stage 2 checkpoint reload
+  baseline verification tables used by the N8/N12 protocol.
+- `stage4_n8b_fg_only_pretrained_frozen_bounded_film_*`: F&G-only frozen
+  Stage 2 bounded-FiLM results.
+- `stage4_n12c_technical_only_pretrained_frozen_bounded_film_*`: N12-C
+  technical-only frozen Stage 2 bounded-FiLM results.
+- `stage4_n12c_context_source_audit.json`: N12-C BTC/F&G source audit and
+  primary technical feature list.
 
 Current news-context tables:
 - `stage4_news_source_audit.json`: selected BTC news source audit.
@@ -60,6 +68,14 @@ Future result tables:
   validation-threshold calibration table입니다.
 - `stage4_v2_v9_bounded_last_block_film_scale_grid_*.csv`: bounded last-block
   FiLM scale-grid 결과 table입니다.
+- `stage4_n8_stage2_checkpoint_reload_*`: N8/N12 protocol에서 사용하는 frozen
+  Stage 2 checkpoint reload baseline 검증 table입니다.
+- `stage4_n8b_fg_only_pretrained_frozen_bounded_film_*`: F&G-only frozen
+  Stage 2 bounded-FiLM 결과입니다.
+- `stage4_n12c_technical_only_pretrained_frozen_bounded_film_*`: N12-C
+  technical-only frozen Stage 2 bounded-FiLM 결과입니다.
+- `stage4_n12c_context_source_audit.json`: N12-C BTC/F&G source audit와 primary
+  technical feature list입니다.
 
 현재 news-context table:
 - `stage4_news_source_audit.json`: 선택한 BTC news source audit입니다.

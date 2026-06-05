@@ -1,6 +1,6 @@
 # 4-N12-B Confidence-Gated News FiLM
 
-Status: prepared and locally shape-checked.
+Status: completed on Kaggle, reviewed locally.
 
 ## Purpose
 
@@ -101,3 +101,42 @@ Result:
 - Delta versus Stage 2 I60 baseline: `+35,136`.
 - Initial modulation identity passed: `gamma=1`, `beta=0`.
 - Exported tensor shapes include `modulation_gate4` and `stage2_prob_up4`.
+
+## Kaggle Result
+
+Local result bundle:
+
+```text
+/Users/jaehyeonjeong/Desktop/논문/N12_B_result
+```
+
+Summary:
+
+| scale | accuracy mean | accuracy std | ROC-AUC mean | F1 mean | predicted-Up rate mean |
+|---:|---:|---:|---:|---:|---:|
+| `0.02` | `0.5793` | `0.0182` | `0.5849` | `0.6511` | `0.6644` |
+| `0.05` | `0.5793` | `0.0182` | `0.5851` | `0.6511` | `0.6644` |
+
+Stage 2 baseline comparison:
+
+| model | accuracy mean | ROC-AUC mean | interpretation |
+|---|---:|---:|---|
+| Stage 2 `I60/R20/ohlc_ma_vb` | `0.5793` | `0.5849` | selected visual baseline |
+| N12-B scale `0.02` | `0.5793` | `0.5849` | class decisions unchanged; tiny ROC-AUC movement |
+| N12-B scale `0.05` | `0.5793` | `0.5851` | class decisions unchanged; tiny ROC-AUC movement |
+
+Seed-level review:
+
+- For every seed, accuracy and predicted-Up rate match the Stage 2 baseline
+  exactly.
+- ROC-AUC changes only by roughly `-0.00008` to `+0.00037` depending on seed
+  and scale.
+- Scale `0.02` and `0.05` produce the same class predictions.
+
+Interpretation:
+
+N12-B preserves the frozen Stage 2 decision boundary but does not create a new
+performance gain. The confidence gate mostly acts as a very small probability
+calibration/ranking perturbation. This suggests that reinforcing
+high-confidence Stage 2 visual evidence is not enough; the next main workflow
+step should remain N12-C/N12-D rather than more confidence-gate scale tuning.

@@ -581,7 +581,7 @@ News-context extension:
 - [ ] 4-N11. LLM summary/embedding decision
   - Deferred until headline-only no-leakage track is stable.
   - If used, record model name, prompt, version/date, cache hash, and runtime.
-- [ ] 4-N12. Optional uncertainty-gated FiLM follow-up
+- [x] 4-N12. Optional uncertainty-gated FiLM follow-up
   - Run only after N9/N10 interpretation shows that context helps mainly when
     the Stage 2 chart model is uncertain.
   - Idea: let context-FiLM correction become stronger for ambiguous Stage 2
@@ -633,7 +633,7 @@ News-context extension:
     meaningful improvement.
   - Result note:
     [4-N12-C technical-only pretrained frozen bounded FiLM](checklist_results/4-N12-C_technical_only_pretrained_frozen_bounded_film.md)
-- [ ] 4-N12-D. Context-source comparison under the frozen Stage 2 protocol
+- [x] 4-N12-D. Context-source comparison under the frozen Stage 2 protocol
   - Purpose: decide which context source is thesis-defensible rather than
     continuing one-off variants.
   - Compare with the same image, split, checkpoint loading, freeze policy, and
@@ -643,6 +643,14 @@ News-context extension:
     correction count, regression count, net correction.
   - Output: compact comparison table plus recommendation for the final Stage 4
     model.
+  - Result: completed for existing context sources. F&G-only scale `0.02` is the
+    best compact accuracy candidate (`0.580291` vs Stage 2 `0.579320`), news
+    gives the clearest ROC-AUC/Brier signal but weaker hard decisions, and
+    technical-only is effectively tied with Stage 2.
+  - Caveat: `news + F&G` combined context is recorded as planned/not-run in the
+    comparison table; do not claim a result for it until a five-seed run exists.
+  - Result note:
+    [4-N12-D context-source comparison](checklist_results/4-N12-D_context_source_comparison.md)
 - [ ] 4-N13. Macro/RORO context extension
   - Purpose: move beyond chart-derived or crypto-sentiment-only context and test
     whether external risk-on/risk-off market regime improves FiLM correction.

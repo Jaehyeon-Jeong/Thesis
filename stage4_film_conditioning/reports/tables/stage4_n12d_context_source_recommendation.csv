@@ -1,0 +1,6 @@
+decision_axis,selected_model,evidence,recommendation
+Best accuracy candidate,N8-B F&G-only bounded FiLM s0.02,"Accuracy 0.580291 vs Stage2 0.579320, but the gain is only +0.000972 and F1 is slightly lower.","Use as the strongest compact Stage 4 context-FiLM candidate, not as a large performance claim."
+Best ranking/calibration signal,N9 grid news SVD8 s0.05,"ROC-AUC 0.586619 and Brier 0.272327 are best among completed rows, but accuracy and F1 drop.",Use as evidence that news affects probability ranking; not the final classifier unless threshold/calibration is improved.
+Most interpretable correction sample set,N9 grid news SVD32 s0.02,Small net correction: 27 Stage2 wrong-to-correct vs 24 correct-to-wrong across 7205 samples.,"Keep for Grad-CAM/gamma-beta interpretation, but report that the net effect is very small."
+Chart-derived context,N12-C technical-only bounded FiLM s0.02,Accuracy 0.579736 and ROC-AUC 0.584778 are effectively tied with Stage2.,Do not spend more time on BB/MFI/RV-only. The signal is likely redundant with ohlc_ma_vb chart pixels.
+Next context family,N13 macro/RORO-only,Completed N12 sources produce only tiny gains; chart-derived context is redundant and news is weak/noisy.,Move to image-external macro/RORO regime features before adding more technical variants.

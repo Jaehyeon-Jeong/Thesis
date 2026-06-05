@@ -14,14 +14,14 @@ Large source data, checkpoints, paper PDFs, and large prediction files are not t
 | `stage1_reimage_reproduction` | Original Re-image I20 stock-chart pipeline | Completed for current seed-42 full-data fast diagnostics on `I20/R5`, `I20/R20`, `I20/R60` | [README](stage1_reimage_reproduction/README.md), [status report](stage1_reimage_reproduction/reports/stage1_current_status_report.md), [CSV](stage1_reimage_reproduction/reports/tables/stage1_seed42_current_status.csv) |
 | `stage2_btc_extension` | Asset change from stock charts to BTC OHLCV | Completed for current scope: first screened all `I5/I20/I60 x R5/R20/R60 x 4 image specs` with one seed, then reran selected effective candidates with five seeds; best stable baseline is `I60/R20/ohlc_ma_vb` | [README](stage2_btc_extension/README.md), [single-seed screening report](stage2_btc_extension/reports/stage2_single_seed_result_report.md), [selected five-seed report](stage2_btc_extension/reports/stage2_i20_i60_r20_five_seed_result_report.md) |
 | `stage3_linear_adapter` | Linear adapter ablation | Negative result; adapter underperformed the Stage 2 visual baseline | [README](stage3_linear_adapter/README.md), [checklist](stage3_linear_adapter/checklist.md) |
-| `stage4_film_conditioning` | Market-context concat/gating/FiLM | In progress; pretrained/frozen Stage 2 FiLM now preserves the baseline, N9/N10 news-FiLM is analyzed, and N12-A uncertainty-gated news FiLM is prepared for the next five-seed run | [README](stage4_film_conditioning/README.md), [checklist](stage4_film_conditioning/checklist.md) |
+| `stage4_film_conditioning` | Market-context concat/gating/FiLM | In progress; pretrained/frozen Stage 2 FiLM preserves the baseline, N12 context-source comparison is complete for existing sources, and the next planned source family is macro/RORO | [README](stage4_film_conditioning/README.md), [checklist](stage4_film_conditioning/checklist.md) |
 
 ### Short Result Summary
 
 - **Stage 1:** the original I20 pipeline is implemented and was run end-to-end for `R5`, `R20`, and `R60` under the same seed-42 fast diagnostic setting. Detailed metrics are in the Stage 1 report.
 - **Stage 2:** the pipeline was transferred to BTC. The first pass used one seed to screen all image-window, return-horizon, and image-spec candidates; selected effective candidates were then checked with five seeds. `I60/R20/ohlc_ma_vb` is the strongest stable BTC baseline so far.
 - **Stage 3:** the Linear adapter did not improve the BTC visual baseline and is treated as a failed ablation.
-- **Stage 4:** market-context conditioning is under active refinement. Scratch-trained FiLM was unstable, so the current path loads/freeze-preserves the Stage 2 visual baseline and trains only bounded context-FiLM correction. N12-A tests uncertainty-gated news FiLM.
+- **Stage 4:** market-context conditioning is under active refinement. Scratch-trained FiLM was unstable, so the current path loads/freeze-preserves the Stage 2 visual baseline and trains only bounded context-FiLM correction. N12 shows that F&G-only is the best compact candidate, news mainly improves ranking/calibration, and chart-derived technical context is mostly redundant. Next source family: macro/RORO.
 
 ### Main Documents
 
@@ -61,14 +61,14 @@ Not tracked:
 | `stage1_reimage_reproduction` | 원 논문 I20 stock-chart pipeline 재현 | 현재 범위 완료: `I20/R5`, `I20/R20`, `I20/R60` seed-42 full-data fast diagnostic 완료 | [README](stage1_reimage_reproduction/README.md), [status report](stage1_reimage_reproduction/reports/stage1_current_status_report.md), [CSV](stage1_reimage_reproduction/reports/tables/stage1_seed42_current_status.csv) |
 | `stage2_btc_extension` | 자산군을 BTC OHLCV로 교체 | 현재 범위 완료: `I5/I20/I60 x R5/R20/R60 x 4 image specs`를 seed 1개로 1차 선별한 뒤, 효과가 있던 후보만 seed 5개로 재검증; 가장 안정적인 baseline은 `I60/R20/ohlc_ma_vb` | [README](stage2_btc_extension/README.md), [single-seed screening report](stage2_btc_extension/reports/stage2_single_seed_result_report.md), [selected five-seed report](stage2_btc_extension/reports/stage2_i20_i60_r20_five_seed_result_report.md) |
 | `stage3_linear_adapter` | Linear adapter ablation | 실패/negative result; Stage 2 visual baseline보다 낮음 | [README](stage3_linear_adapter/README.md), [checklist](stage3_linear_adapter/checklist.md) |
-| `stage4_film_conditioning` | Market-context concat/gating/FiLM | 진행 중; pretrained/frozen Stage 2 FiLM 구조로 baseline을 보존했고, N9/N10 news-FiLM 해석 후 N12-A uncertainty-gated news FiLM five-seed 실행을 준비함 | [README](stage4_film_conditioning/README.md), [checklist](stage4_film_conditioning/checklist.md) |
+| `stage4_film_conditioning` | Market-context concat/gating/FiLM | 진행 중; pretrained/frozen Stage 2 FiLM 구조로 baseline을 보존했고, 기존 context source에 대한 N12 비교를 완료했으며, 다음 후보는 macro/RORO context | [README](stage4_film_conditioning/README.md), [checklist](stage4_film_conditioning/checklist.md) |
 
 ### 짧은 결과 요약
 
 - **Stage 1:** 원 논문 I20 pipeline을 구현했고 `R5`, `R20`, `R60` 전체를 seed-42 fast diagnostic 조건으로 실행했습니다. 자세한 수치는 Stage 1 report에 있습니다.
 - **Stage 2:** 같은 pipeline을 BTC로 옮겨 실험했습니다. 먼저 seed 1개로 전체 후보를 1차 선별했고, 효과가 있던 후보만 seed 5개로 재검증했습니다. 현재는 `I60/R20/ohlc_ma_vb`가 가장 안정적인 BTC baseline입니다.
 - **Stage 3:** Linear adapter는 성능을 개선하지 못해 실패한 ablation으로 정리했습니다.
-- **Stage 4:** market context를 FiLM/gating/concat으로 붙이는 실험을 진행 중입니다. Scratch 학습 FiLM은 불안정했기 때문에 현재는 Stage 2 visual baseline을 load/freeze로 보존하고 bounded context-FiLM correction만 학습합니다. 다음 실행은 N12-A uncertainty-gated news FiLM입니다.
+- **Stage 4:** market context를 FiLM/gating/concat으로 붙이는 실험을 진행 중입니다. Scratch 학습 FiLM은 불안정했기 때문에 현재는 Stage 2 visual baseline을 load/freeze로 보존하고 bounded context-FiLM correction만 학습합니다. N12 결과상 F&G-only는 가장 작은 accuracy 개선 후보, news는 ranking/calibration 개선 후보, chart-derived technical context는 중복 신호에 가깝습니다. 다음 후보는 macro/RORO context입니다.
 
 ### 주요 문서
 

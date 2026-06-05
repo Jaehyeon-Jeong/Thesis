@@ -1,6 +1,6 @@
 # 4-N12 Gated FiLM And Context-Source Plan
 
-Status: N12-A completed, N12-B completed, N12-C completed.
+Status: N12-A completed, N12-B completed, N12-C completed, N12-D completed for existing context sources.
 
 ## Why N12
 
@@ -164,7 +164,31 @@ news + F&G tests whether verbose headlines and compact regime score complement
 each other.
 ```
 
-N12-D should produce the context-source table before moving to macro/RORO.
+N12-D produced the context-source table before moving to macro/RORO.
+
+Result:
+
+```text
+best compact accuracy candidate: F&G-only bounded FiLM, scale 0.02
+accuracy mean: 0.580291
+Stage 2 baseline accuracy mean: 0.579320
+
+best ROC-AUC/calibration signal: news SVD8, scale 0.05
+ROC-AUC mean: 0.586619
+tradeoff: lower accuracy/F1 and lower predicted-Up rate
+
+technical-only context: effectively tied with Stage 2
+interpretation: BB/MFI/RV-like information is mostly redundant with ohlc_ma_vb
+```
+
+Review:
+[4-N12-D context-source comparison](4-N12-D_context_source_comparison.md)
+
+Tables:
+
+- `reports/tables/stage4_n12d_context_source_comparison.csv`
+- `reports/tables/stage4_n12d_context_source_comparison_compact.csv`
+- `reports/tables/stage4_n12d_context_source_recommendation.csv`
 
 ## Result Upload Policy
 

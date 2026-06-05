@@ -26,10 +26,17 @@ Current result tables:
   baseline verification tables used by the N8/N12 protocol.
 - `stage4_n8b_fg_only_pretrained_frozen_bounded_film_*`: F&G-only frozen
   Stage 2 bounded-FiLM results.
+- `stage4_n12a_uncertainty_gated_news_film_*`: N12-A uncertainty-gated news
+  FiLM results under the frozen Stage 2 protocol.
+- `stage4_n12b_confidence_gated_news_film_*`: N12-B confidence-gated news FiLM
+  results under the frozen Stage 2 protocol.
 - `stage4_n12c_technical_only_pretrained_frozen_bounded_film_*`: N12-C
   technical-only frozen Stage 2 bounded-FiLM results.
 - `stage4_n12c_context_source_audit.json`: N12-C BTC/F&G source audit and
   primary technical feature list.
+- `stage4_n12d_context_source_comparison*`: N12-D comparison of existing
+  frozen Stage 2 context sources plus recommendation table. The `news + F&G`
+  row is recorded as planned/not-run, not as a result.
 
 Current news-context tables:
 - `stage4_news_source_audit.json`: selected BTC news source audit.
@@ -72,10 +79,17 @@ Future result tables:
   Stage 2 checkpoint reload baseline 검증 table입니다.
 - `stage4_n8b_fg_only_pretrained_frozen_bounded_film_*`: F&G-only frozen
   Stage 2 bounded-FiLM 결과입니다.
+- `stage4_n12a_uncertainty_gated_news_film_*`: frozen Stage 2 protocol에서
+  실행한 N12-A uncertainty-gated news FiLM 결과입니다.
+- `stage4_n12b_confidence_gated_news_film_*`: frozen Stage 2 protocol에서
+  실행한 N12-B confidence-gated news FiLM 결과입니다.
 - `stage4_n12c_technical_only_pretrained_frozen_bounded_film_*`: N12-C
   technical-only frozen Stage 2 bounded-FiLM 결과입니다.
 - `stage4_n12c_context_source_audit.json`: N12-C BTC/F&G source audit와 primary
   technical feature list입니다.
+- `stage4_n12d_context_source_comparison*`: 기존 frozen Stage 2 context source
+  비교와 추천 table입니다. `news + F&G` 행은 planned/not-run으로 기록되어
+  있으며 결과값으로 주장하지 않습니다.
 
 현재 news-context table:
 - `stage4_news_source_audit.json`: 선택한 BTC news source audit입니다.

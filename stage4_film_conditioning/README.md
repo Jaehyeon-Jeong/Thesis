@@ -135,16 +135,12 @@ News-context track:
 | `4-N12-A` | Stage 2 checkpoint loaded/frozen + uncertainty-gated news FiLM | Completed; essentially tied with Stage 2 on accuracy, tiny ROC-AUC lift, useful as diagnostic rather than final claim | [N12-A review](checklist_results/4-N12-A_uncertainty_gated_news_film.md) |
 | `4-N12-B` | Stage 2 checkpoint loaded/frozen + confidence-gated news FiLM | Completed; class decisions match Stage 2 exactly, ROC-AUC moves only minimally | [N12-B review](checklist_results/4-N12-B_confidence_gated_news_film.md) |
 | `4-N12-C` | Stage 2 checkpoint loaded/frozen + technical-only bounded FiLM | Completed; scale `0.02` accuracy mean `0.5797`, ROC-AUC `0.5848`, effectively tied with Stage 2 | [N12-C review](checklist_results/4-N12-C_technical_only_pretrained_frozen_bounded_film.md) |
-| `4-N12-D` | Frozen Stage 2 context-source comparison | Planned; compares `F&G-only`, `news-only`, `technical-only`, and `news + F&G` under one protocol | [N12 plan](checklist_results/4-N12_gated_film_and_context_source_plan.md) |
+| `4-N12-D` | Frozen Stage 2 context-source comparison | Completed for existing sources; F&G-only is the best compact accuracy candidate, news improves ROC-AUC/Brier more than hard decisions, and technical-only is mostly redundant | [N12-D review](checklist_results/4-N12-D_context_source_comparison.md), [table](reports/tables/stage4_n12d_context_source_comparison_compact.csv) |
 | `4-N13` | Macro/RORO context extension | Planned; tests external risk-on/risk-off regime features after N12-D context-source comparison | [N12/N13 plan](checklist_results/4-N12_gated_film_and_context_source_plan.md) |
 | `4-N13-B` | Optional sentiment/event feature extension | Deferred; only needed if headline TF-IDF/SVD remains weak or hard to interpret | [N12/N13 plan](checklist_results/4-N12_gated_film_and_context_source_plan.md) |
 | `4-N14` | Final Stage 4 interpretability report | Planned final evidence package: metrics, correction/regression, targeted Grad-CAM, gamma/beta/gate summaries | [N12/N14 plan](checklist_results/4-N12_gated_film_and_context_source_plan.md) |
 
 Next direction:
-- run N12-D before any new macro/sentiment extension, so context
-  source choice is decided under the same frozen Stage 2 protocol;
-- compare against Stage 2, N8-B, and N10 on accuracy, ROC-AUC, predicted
-  positive rate stability, and correction/regression balance;
 - after N12-D, test macro/RORO features as image-external market-regime context
   rather than adding more chart-derived technical indicators;
 - use targeted Grad-CAM plus `modulation_gate`, `stage2_prob_up`, gamma, and
@@ -186,4 +182,4 @@ stage4_film_conditioning/
 
 ## Thesis Position
 
-Stage 4 should be presented as an interpretability and conditional-modulation experiment, not as a simple feature-adding experiment. The strongest current conclusion is that structured F&G-only numeric context is not robust enough, so the next defensible step is richer external news context with strict no-leakage alignment.
+Stage 4 should be presented as an interpretability and conditional-modulation experiment, not as a simple feature-adding experiment. The strongest current conclusion is that frozen Stage 2 + bounded context-FiLM preserves the visual baseline, but completed context sources produce only tiny improvements. F&G-only is the best compact accuracy candidate; news is more useful for ranking/calibration; chart-derived technical context is mostly redundant. The next defensible source family is macro/RORO market-regime context.

@@ -1,0 +1,87 @@
+{
+  "btc": {
+    "source_file": "/kaggle/input/datasets/novandraanugrah/bitcoin-historical-datasets-2018-2024/btc_1d_data_2018_to_2025.csv",
+    "num_rows": 3076,
+    "date_min": "2018-01-01",
+    "date_max": "2026-06-03"
+  },
+  "fear_greed": {
+    "source_file": "/kaggle/input/datasets/ashishpatel8736/historical-and-fear-greed-index-datasets/fear_greed_index.csv",
+    "num_rows": 2644,
+    "date_min": "2018-02-01",
+    "date_max": "2025-05-02",
+    "duplicate_dates_after_cleaning": 0,
+    "missing_days_inside_range": 4,
+    "missing_dates_first_20": [
+      "2018-04-14",
+      "2018-04-15",
+      "2018-04-16",
+      "2024-10-26"
+    ],
+    "value_min": 5.0,
+    "value_max": 95.0,
+    "classification_counts": {
+      "Fear": 781,
+      "Greed": 633,
+      "Extreme Fear": 508,
+      "Neutral": 396,
+      "Extreme Greed": 326
+    }
+  },
+  "context_policy": {
+    "context_window": 60,
+    "asof_rule": "latest Fear & Greed date <= image end date t",
+    "rolling_rule": "trailing calendar windows only; no future backfill"
+  },
+  "sample_coverage": {
+    "num_samples": 2399,
+    "date_min": "2018-04-29",
+    "date_max": "2024-12-11",
+    "fg_asof_missing_dates": 0,
+    "fg_max_age_days": 1,
+    "fg_mean_age_days": 0.00041684035014589413,
+    "by_split": {
+      "train": {
+        "num_rows": 671,
+        "date_min": "2018-04-29",
+        "date_max": "2020-12-10",
+        "unique_dates": 671,
+        "fg_asof_missing_dates": 0,
+        "fg_exact_date_matches": 671,
+        "fg_max_age_days": 0,
+        "fg_mean_age_days": 0.0
+      },
+      "validation": {
+        "num_rows": 287,
+        "date_min": "2018-04-30",
+        "date_max": "2020-12-11",
+        "unique_dates": 287,
+        "fg_asof_missing_dates": 0,
+        "fg_exact_date_matches": 287,
+        "fg_max_age_days": 0,
+        "fg_mean_age_days": 0.0
+      },
+      "test": {
+        "num_rows": 1441,
+        "date_min": "2021-01-01",
+        "date_max": "2024-12-11",
+        "unique_dates": 1441,
+        "fg_asof_missing_dates": 0,
+        "fg_exact_date_matches": 1440,
+        "fg_max_age_days": 1,
+        "fg_mean_age_days": 0.0006939625260235947
+      }
+    }
+  },
+  "stage4_run": {
+    "image_window": 60,
+    "return_horizon": 20,
+    "context_window": 60,
+    "primary_features": [
+      "fg_value",
+      "fg_mean_60",
+      "fg_delta_60",
+      "fg_std_60"
+    ]
+  }
+}

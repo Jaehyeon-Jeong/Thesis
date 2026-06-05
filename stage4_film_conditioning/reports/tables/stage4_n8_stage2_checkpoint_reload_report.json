@@ -1,0 +1,23 @@
+{
+  "status": "ok",
+  "stage": "4-N8-A1",
+  "purpose": "Stage 2 checkpoint reload sanity before baseline-preserving FiLM.",
+  "stage4_config": "/Users/jaehyeonjeong/Desktop/\u1102\u1169\u11ab\u1106\u116e\u11ab/stage4_film_conditioning/configs/env_local.yaml",
+  "stage2_config": "/Users/jaehyeonjeong/Desktop/\ub17c\ubb38/stage2_btc_extension/configs/env_local.yaml",
+  "stage2_bundle_root": "/Users/jaehyeonjeong/Desktop/\u1102\u1169\u11ab\u1106\u116e\u11ab/stage2_i60_ohlc_ma_vb_r20_seed42_46_checkpoints_for_stage4_n8",
+  "stage2_output_root": "/Users/jaehyeonjeong/Desktop/\u1102\u1169\u11ab\u1106\u116e\u11ab/stage2_i60_ohlc_ma_vb_r20_seed42_46_checkpoints_for_stage4_n8/outputs/stage2",
+  "experiment_name": "stage2_i60_ohlc_ma_vb_r20",
+  "run_seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+  ],
+  "split": "test",
+  "expected_csv": "/Users/jaehyeonjeong/Desktop/\u1102\u1169\u11ab\u1106\u116e\u11ab/stage2_i60_ohlc_ma_vb_r20_seed42_46_checkpoints_for_stage4_n8/reports/tables/stage2_n8a0_i60_ohlc_ma_vb_r20_five_seed_seed_results.csv",
+  "comparison_tolerance": 1e-05,
+  "comparison_within_tolerance": true,
+  "seed_results_csv": "/Users/jaehyeonjeong/Desktop/\ub17c\ubb38/stage4_film_conditioning/reports/tables/stage4_n8_stage2_checkpoint_reload_seed_results.csv",
+  "metric_comparison_csv": "/Users/jaehyeonjeong/Desktop/\ub17c\ubb38/stage4_film_conditioning/reports/tables/stage4_n8_stage2_checkpoint_reload_metric_comparison.csv"
+}

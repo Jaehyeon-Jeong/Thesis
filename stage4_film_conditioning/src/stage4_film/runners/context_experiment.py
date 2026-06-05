@@ -10,6 +10,7 @@ generation, time split, and train-only pixel normalization. Stage 4 adds only:
 from __future__ import annotations
 
 import json
+import zipfile
 from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
@@ -21,6 +22,7 @@ from torch import nn
 from torch.utils.data import DataLoader, Dataset
 
 from stage2_btc.models.stock_cnn import count_parameters
+from stage2_btc.models.stock_cnn import initialize_model_weights
 from stage2_btc.runners.btc_baseline import (
     PreparedBtcData,
     build_dataloaders,
@@ -540,6 +542,14 @@ def run_stage4_context_training(
         image_window=int(image_window),
         context_method=method,
     )
+    pretrained_metadata = configure_stage2_pretrained_context_model(
+        model=model,
+        config=config,
+        image_window=int(image_window),
+        image_spec=str(image_spec),
+        return_horizon=int(return_horizon),
+        run_seed=int(run_seed),
+    )
 
     run_context = stage4_run_context_base(
         config,
@@ -560,6 +570,8 @@ def run_stage4_context_training(
             "source_file": prepared.source_file,
             "fear_greed_source_file": prepared.fear_greed_source_file,
             "num_parameters": count_parameters(model),
+            "num_trainable_parameters": count_parameters(model, trainable_only=True),
+            "pretrained_stage2": pretrained_metadata,
             "split_summary": split_summary(prepared.btc_data.splits),
             "context_name": prepared.context_name,
             "context_features_path": prepared.context_features_path,
@@ -594,6 +606,7 @@ def run_stage4_context_training(
         run_context=run_context,
         normalization_metadata=prepared.btc_data.normalization.as_dict(),
         context_metadata=context_metadata,
+        initialize_weights=not bool(pretrained_metadata.get("enabled", False)),
     )
 
     manifest_dir = paths.run_manifest_root / experiment_name / f"seed_{int(run_seed)}"
@@ -610,6 +623,244 @@ def run_stage4_context_training(
     }
     manifest_path.write_text(json.dumps(_jsonable(manifest), indent=2), encoding="utf-8")
     return manifest
+
+
+def configure_stage2_pretrained_context_model(
+    *,
+    model: nn.Module,
+    config: Mapping[str, Any],
+    image_window: int,
+    image_spec: str,
+    return_horizon: int,
+    run_seed: int,
+) -> dict[str, Any]:
+    """Optionally load Stage 2 learned weights and freeze baseline modules.
+
+    N8 uses this to keep the selected Stage 2 visual baseline intact while
+    training only the context encoder and bounded FiLM correction heads.
+    """
+
+    stage4_model = config.get("stage4_model", {})
+    if not isinstance(stage4_model, Mapping):
+        raise TypeError("Config section stage4_model must be a mapping.")
+    pretrained_config = stage4_model.get("pretrained_stage2", {})
+    if not isinstance(pretrained_config, Mapping):
+        raise TypeError("stage4_model.pretrained_stage2 must be a mapping.")
+    enabled = bool(pretrained_config.get("enabled", False))
+    if not enabled:
+        return {"enabled": False}
+
+    checkpoint_path = _resolve_stage2_pretrained_checkpoint(
+        config=config,
+        pretrained_config=pretrained_config,
+        image_window=int(image_window),
+        image_spec=str(image_spec),
+        return_horizon=int(return_horizon),
+        run_seed=int(run_seed),
+    )
+    load_summary = _load_stage2_visual_weights_into_context_model(
+        model,
+        checkpoint_path=checkpoint_path,
+        strict=bool(pretrained_config.get("strict_load", True)),
+    )
+
+    if bool(pretrained_config.get("initialize_new_context_modules", True)):
+        context_encoder = getattr(model, "context_encoder", None)
+        if context_encoder is not None:
+            initialize_model_weights(context_encoder)
+    _reset_identity_modulation_if_available(model)
+
+    freeze_visual_backbone = bool(pretrained_config.get("freeze_visual_backbone", True))
+    freeze_classifier = bool(pretrained_config.get("freeze_classifier", True))
+    if freeze_visual_backbone:
+        _set_requires_grad(getattr(model, "layers", None), requires_grad=False)
+        setattr(model, "_stage4_frozen_backbone_eval", True)
+    if freeze_classifier:
+        _set_requires_grad(getattr(model, "fc1", None), requires_grad=False)
+        setattr(model, "_stage4_frozen_classifier_eval", True)
+
+    trainable_names = [
+        name for name, parameter in model.named_parameters() if parameter.requires_grad
+    ]
+    frozen_names = [
+        name for name, parameter in model.named_parameters() if not parameter.requires_grad
+    ]
+    if not trainable_names:
+        raise ValueError("Pretrained Stage 4 model has no trainable parameters after freeze.")
+
+    return {
+        "enabled": True,
+        "checkpoint_path": str(checkpoint_path),
+        "freeze_visual_backbone": freeze_visual_backbone,
+        "freeze_classifier": freeze_classifier,
+        "initialize_new_context_modules": bool(
+            pretrained_config.get("initialize_new_context_modules", True)
+        ),
+        "keep_frozen_modules_eval": True,
+        "loaded_keys": load_summary["loaded_keys"],
+        "unexpected_stage2_keys": load_summary["unexpected_stage2_keys"],
+        "missing_required_keys": load_summary["missing_required_keys"],
+        "num_trainable_parameters": int(count_parameters(model, trainable_only=True)),
+        "num_frozen_parameters": int(
+            sum(parameter.numel() for parameter in model.parameters() if not parameter.requires_grad)
+        ),
+        "trainable_parameter_names": trainable_names,
+        "frozen_parameter_name_count": len(frozen_names),
+    }
+
+
+def _resolve_stage2_pretrained_checkpoint(
+    *,
+    config: Mapping[str, Any],
+    pretrained_config: Mapping[str, Any],
+    image_window: int,
+    image_spec: str,
+    return_horizon: int,
+    run_seed: int,
+) -> Path:
+    """Resolve selected Stage 2 `best.pt` for a Stage 4/N8 run."""
+
+    explicit = str(pretrained_config.get("checkpoint_path", "")).strip()
+    if explicit:
+        checkpoint_path = Path(explicit).expanduser()
+        if not checkpoint_path.exists():
+            raise FileNotFoundError(f"Configured Stage 2 checkpoint missing: {checkpoint_path}")
+        return checkpoint_path
+
+    output_root_text = str(pretrained_config.get("checkpoint_output_root", "")).strip()
+    if output_root_text:
+        output_root = _resolve_stage2_output_root(Path(output_root_text).expanduser())
+    else:
+        dependency = config.get("stage2_dependency", {})
+        if not isinstance(dependency, Mapping):
+            raise TypeError("Config section stage2_dependency must be a mapping.")
+        output_root = Path(str(dependency.get("baseline_output_root", ""))).expanduser()
+        output_root = _resolve_stage2_output_root(output_root)
+
+    experiment_name = f"stage2_i{int(image_window)}_{image_spec}_r{int(return_horizon)}"
+    checkpoint_path = (
+        output_root
+        / "checkpoints"
+        / experiment_name
+        / f"seed_{int(run_seed)}"
+        / "best.pt"
+    )
+    if not checkpoint_path.exists():
+        raise FileNotFoundError(f"Stage 2 pretrained checkpoint missing: {checkpoint_path}")
+    return checkpoint_path
+
+
+def _resolve_stage2_output_root(root: Path) -> Path:
+    """Accept a bundle root, a bundle zip, or the direct `outputs/stage2` directory."""
+
+    resolved = root.expanduser().resolve()
+    if resolved.is_file() and resolved.suffix.lower() == ".zip":
+        resolved = _extract_stage2_checkpoint_zip(resolved)
+
+    candidates = [
+        resolved / "outputs" / "stage2",
+        resolved / "stage2",
+        resolved,
+    ]
+    for candidate in candidates:
+        if (candidate / "checkpoints").exists():
+            return candidate
+    raise FileNotFoundError(
+        "Could not resolve Stage 2 output root from: "
+        + ", ".join(str(candidate) for candidate in candidates)
+    )
+
+
+def _extract_stage2_checkpoint_zip(zip_path: Path) -> Path:
+    """Extract a Stage 2 checkpoint bundle zip into a writable local folder."""
+
+    kaggle_working = Path("/kaggle/working")
+    if kaggle_working.exists():
+        extract_parent = kaggle_working / "stage2_checkpoint_bundle_extracted"
+    else:
+        extract_parent = zip_path.parent / "stage2_checkpoint_bundle_extracted"
+    extract_root = extract_parent / zip_path.stem
+    marker = extract_root / ".stage4_extract_complete"
+    if not marker.exists():
+        extract_root.mkdir(parents=True, exist_ok=True)
+        with zipfile.ZipFile(zip_path) as archive:
+            archive.extractall(extract_root)
+        marker.write_text(str(zip_path), encoding="utf-8")
+    return extract_root
+
+
+def _load_stage2_visual_weights_into_context_model(
+    model: nn.Module,
+    *,
+    checkpoint_path: Path,
+    strict: bool,
+) -> dict[str, Any]:
+    """Load matching Stage 2 visual/classifier weights into a Stage 4 model."""
+
+    checkpoint = torch.load(checkpoint_path, map_location=torch.device("cpu"))
+    stage2_state = _strip_module_prefix(checkpoint["model_state_dict"])
+    model_state = model.state_dict()
+    load_state: dict[str, torch.Tensor] = {}
+    unexpected: list[str] = []
+    for key, value in stage2_state.items():
+        if key in model_state and tuple(model_state[key].shape) == tuple(value.shape):
+            load_state[key] = value
+        else:
+            unexpected.append(str(key))
+
+    missing_required = [
+        key
+        for key in model_state
+        if (key.startswith("layers.") or key.startswith("fc1."))
+        and key not in load_state
+    ]
+    if strict and missing_required:
+        raise RuntimeError(
+            "Stage 2 checkpoint did not provide required visual/classifier key(s): "
+            + ", ".join(missing_required[:20])
+        )
+    model.load_state_dict(load_state, strict=False)
+    return {
+        "loaded_keys": len(load_state),
+        "unexpected_stage2_keys": unexpected,
+        "missing_required_keys": missing_required,
+    }
+
+
+def _strip_module_prefix(state_dict: Mapping[str, Any]) -> dict[str, Any]:
+    """Handle checkpoints saved from `nn.DataParallel`."""
+
+    prefix = "module."
+    if not any(str(key).startswith(prefix) for key in state_dict):
+        return dict(state_dict)
+    return {
+        str(key)[len(prefix) :] if str(key).startswith(prefix) else str(key): value
+        for key, value in state_dict.items()
+    }
+
+
+def _set_requires_grad(module: nn.Module | None, *, requires_grad: bool) -> None:
+    """Set `requires_grad` for all parameters in a module, if present."""
+
+    if module is None:
+        return
+    for parameter in module.parameters():
+        parameter.requires_grad = bool(requires_grad)
+
+
+def _reset_identity_modulation_if_available(model: nn.Module) -> None:
+    """Reset context modulation heads after initializing new context modules."""
+
+    if hasattr(model, "_init_identity_gate"):
+        model._init_identity_gate()
+    if hasattr(model, "_init_identity_modulation"):
+        model._init_identity_modulation()
+    film_generator = getattr(model, "film_generator", None)
+    if film_generator is not None:
+        if hasattr(film_generator, "reset_to_identity"):
+            film_generator.reset_to_identity()
+        elif hasattr(film_generator, "_init_identity_outputs"):
+            film_generator._init_identity_outputs()
 
 
 def _build_feature_summary(context_table: pd.DataFrame, features: list[str]) -> pd.DataFrame:

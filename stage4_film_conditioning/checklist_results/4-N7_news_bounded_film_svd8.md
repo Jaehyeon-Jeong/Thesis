@@ -1,6 +1,6 @@
 # 4-N7 News-Context Bounded FiLM SVD8
 
-Status: prepared for Kaggle execution
+Status: completed on Kaggle
 
 ## Goal
 
@@ -49,14 +49,46 @@ The output bundle is:
 /kaggle/working/stage4_news_context_n7_bounded_film_svd8_result_bundle.zip
 ```
 
-## Decision Rule
+## Result
 
-Promote N7 only if it satisfies both:
+Five-seed result:
 
-1. Accuracy or ROC-AUC is at least competitive with Stage 2 baseline
-   (`accuracy=0.5793`, `ROC-AUC=0.5849`), or it clearly improves over SVD8
-   concat while preserving ranking signal.
-2. Seed-level predicted positive rate is less collapsed than N6.1 SVD8.
+| Metric | N7 value |
+| --- | ---: |
+| Accuracy mean | `0.5591` |
+| Accuracy std | `0.0116` |
+| ROC-AUC mean | `0.5642` |
+| ROC-AUC std | `0.0281` |
+| F1 mean | `0.6387` |
+| Predicted-Up-rate mean | `0.6952` |
+| Long/flat Sharpe net mean | `3.1372` |
+| Long/short Sharpe net mean | `2.0629` |
 
-If N7 still collapses, the next step should be news-vector calibration or a
-different text representation, not another arbitrary gamma/beta search.
+Seed-level summary:
+
+| Seed | Accuracy | ROC-AUC | Predicted-Up rate |
+| ---: | ---: | ---: | ---: |
+| 42 | `0.5656` | `0.5746` | `0.6218` |
+| 43 | `0.5552` | `0.5769` | `0.5461` |
+| 44 | `0.5718` | `0.5912` | `0.5989` |
+| 45 | `0.5614` | `0.5602` | `0.7092` |
+| 46 | `0.5413` | `0.5180` | `1.0000` |
+
+## Interpretation
+
+N7 reduced seed-level collapse relative to SVD8 news concat, but it did not
+beat the Stage 2 selected visual baseline (`accuracy=0.5793`,
+`ROC-AUC=0.5849`). The bounded FiLM values stayed conservative:
+`gamma` was close to `1` and `beta` close to `0`, so the failure is not simply
+an uncontrolled gamma/beta explosion.
+
+The important design correction is that N7 still uses the Stage 2 CNN
+architecture from scratch. It does not load and preserve the Stage 2 learned
+weights. Therefore N7 does not yet test the intended hypothesis:
+
+```text
+strong pretrained chart CNN + market/news context as bounded FiLM correction
+```
+
+Next step: move to `4-N8`, Stage 2 pretrained baseline-preserving FiLM, before
+adding more context sources such as News + F&G combined context.

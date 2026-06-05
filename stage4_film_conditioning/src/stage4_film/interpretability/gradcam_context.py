@@ -97,6 +97,7 @@ def generate_stage4_gradcam_context_figure(
     device: torch.device | str,
     context_method: str,
     context_feature_names: Sequence[str],
+    selected_samples: pd.DataFrame | None = None,
 ) -> dict[str, Any]:
     """Write Grad-CAM figure, selected samples, and modulation metadata.
 
@@ -108,16 +109,25 @@ def generate_stage4_gradcam_context_figure(
     method = str(context_method)
     model.to(device).eval()
 
-    selected = select_gradcam_samples(predictions, samples_per_class=samples_per_class)
+    selected = _prepare_selected_samples(
+        selected_samples
+        if selected_samples is not None
+        else select_gradcam_samples(predictions, samples_per_class=samples_per_class)
+    )
     sample_lookup = _sample_index_lookup(dataset)
     target_layers, target_layer_kind = _target_layers_for_method(model, method)
     layer_names = list(target_layers.keys())
     rows_per_panel = 1 + len(layer_names)
-    cols = max(samples_per_class, 1)
+    panel_names = _ordered_panel_names(selected)
+    cols = max(
+        int(samples_per_class),
+        int(selected.groupby("gradcam_panel").size().max()),
+        1,
+    )
     fig, axes = plt.subplots(
-        rows_per_panel * 2,
+        rows_per_panel * len(panel_names),
         cols,
-        figsize=(cols * 1.9, rows_per_panel * 2.05),
+        figsize=(cols * 1.9, rows_per_panel * max(len(panel_names), 1) * 2.05),
         squeeze=False,
     )
 
@@ -125,7 +135,7 @@ def generate_stage4_gradcam_context_figure(
     modulation_summary_rows: list[dict[str, Any]] = []
     modulation_value_records: list[dict[str, Any]] = []
 
-    for panel_index, panel_name in enumerate(["up", "down"]):
+    for panel_index, panel_name in enumerate(panel_names):
         panel_rows = selected[selected["gradcam_panel"].eq(panel_name)].reset_index(drop=True)
         for col in range(cols):
             if col >= len(panel_rows):
@@ -161,7 +171,7 @@ def generate_stage4_gradcam_context_figure(
             axes[base_row, col].set_title(_sample_title(prediction_row), fontsize=7)
             if col == 0:
                 axes[base_row, col].set_ylabel(
-                    f"{_panel_label(panel_name)}\nOriginal",
+                    f"{_panel_label_from_rows(panel_name, panel_rows)}\nOriginal",
                     fontsize=8,
                     rotation=0,
                     labelpad=38,
@@ -239,6 +249,38 @@ def generate_stage4_gradcam_context_figure(
         "selected": selected_frame,
         "modulation_summary_frame": modulation_summary,
     }
+
+
+def _prepare_selected_samples(selected: pd.DataFrame) -> pd.DataFrame:
+    """Normalize targeted/default Grad-CAM selection columns."""
+
+    frame = selected.copy()
+    if frame.empty:
+        raise ValueError("No Grad-CAM samples selected.")
+    if "sample_index" not in frame.columns:
+        raise KeyError("selected samples must include sample_index")
+    if "target_class" not in frame.columns:
+        if "pred_class" not in frame.columns:
+            raise KeyError("selected samples need target_class or pred_class")
+        frame["target_class"] = pd.to_numeric(frame["pred_class"], errors="raise").astype(int)
+    if "target_class_name" not in frame.columns:
+        frame["target_class_name"] = frame["target_class"].map(_class_name)
+    if "gradcam_panel" not in frame.columns:
+        frame["gradcam_panel"] = frame["target_class"].map(lambda value: "up" if int(value) == 1 else "down")
+    if "gradcam_panel_label" not in frame.columns:
+        frame["gradcam_panel_label"] = frame["gradcam_panel"].map(_panel_label)
+    if "gradcam_sample_fallback" not in frame.columns:
+        frame["gradcam_sample_fallback"] = False
+    frame["sample_index"] = pd.to_numeric(frame["sample_index"], errors="raise").astype(int)
+    frame["target_class"] = pd.to_numeric(frame["target_class"], errors="raise").astype(int)
+    frame["gradcam_panel"] = frame["gradcam_panel"].astype(str)
+    return frame
+
+
+def _ordered_panel_names(selected: pd.DataFrame) -> list[str]:
+    """Return panel names in first-seen order."""
+
+    return list(dict.fromkeys(selected["gradcam_panel"].astype(str).tolist()))
 
 
 def _target_layers_for_method(
@@ -471,6 +513,16 @@ def _panel_label(panel_name: str) -> str:
     """Return readable Grad-CAM panel name."""
 
     return "Predicted Up" if panel_name == "up" else "Predicted Down"
+
+
+def _panel_label_from_rows(panel_name: str, panel_rows: pd.DataFrame) -> str:
+    """Return custom panel label when targeted rows provide one."""
+
+    if "gradcam_panel_label" in panel_rows.columns and not panel_rows.empty:
+        label = str(panel_rows.iloc[0].get("gradcam_panel_label", "")).strip()
+        if label:
+            return label
+    return _panel_label(panel_name)
 
 
 def _sample_title(prediction_row: pd.Series) -> str:

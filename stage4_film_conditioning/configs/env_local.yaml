@@ -212,6 +212,14 @@ stage4_model:
     gamma_initial_value: 1.0
     beta_initial_value: 0.0
     zero_init_generator_output: true
+  pretrained_stage2:
+    enabled: false
+    checkpoint_output_root: ""
+    freeze_visual_backbone: true
+    freeze_classifier: true
+    initialize_new_context_modules: true
+    strict_load: true
+    note: "4-N8 uses this to load Stage 2 learned weights before fitting only bounded context-FiLM correction."
 
 training:
   batch_size: 128

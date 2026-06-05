@@ -34,6 +34,9 @@ flowchart LR
     K --> L[N6: news concat control]
     L --> M[N6.1: news SVD-dim grid]
     M --> N[N7: SVD8 news bounded FiLM]
+    N --> O[N8: Stage 2 pretrained/frozen baseline preservation]
+    O --> P[N9: news pretrained/frozen FiLM grid]
+    P --> Q[N10: Stage 2 vs N10 correction + Grad-CAM/modulation]
 ```
 
 ## Checklist And Review Links
@@ -126,17 +129,26 @@ News-context track:
 | `4-N1`-`4-N5` | headline-only BTC news audit, strict `t-1` alignment, 7/20/60 headline windows, train-only TF-IDF/SVD, sample-level `102`-dim context table | Completed | [N5 review](checklist_results/4-N5_news_context_feature_builder.md) |
 | `4-N6` | `I60/R20/ohlc_ma_vb` + `CNN + news concat`, SVD dim `32`, five seeds | Accuracy mean `0.5478`, ROC-AUC mean `0.5644`; seeds `43`/`45` collapsed | [N6 review](checklist_results/4-N6_news_context_baseline_controls.md) |
 | `4-N6.1` | Same `CNN + news concat`, SVD dim grid `16`, `8` | SVD8 selected: accuracy mean `0.5407`, ROC-AUC mean `0.5817`; ranking signal strongest but seeds `45`/`46` collapsed Down | [N6.1 review](checklist_results/4-N6.1_news_svd_dim_grid.md) |
-| `4-N7` | SVD8 news vector + bounded last-block FiLM, scale `0.05` | Prepared for Kaggle; tests whether FiLM can stabilize/use the SVD8 news signal | [N7 review](checklist_results/4-N7_news_bounded_film_svd8.md) |
+| `4-N7` | SVD8 news vector + bounded last-block FiLM, scale `0.05` | Scratch/newly trained Stage4 path remained below Stage 2, motivating pretrained/frozen baseline preservation | [N7 review](checklist_results/4-N7_news_bounded_film_svd8.md) |
+| `4-N8-A` | Reload Stage 2 `I60/R20/ohlc_ma_vb` checkpoints inside Stage4 | Reload sanity passed; Stage4 path reproduced Stage2 baseline, accuracy mean `0.579320`, ROC-AUC mean `0.584863` | [N8 review](checklist_results/4-N8_pretrained_baseline_preserving_film.md) |
+| `4-N8-B` | F&G-only, Stage2 CNN/classifier frozen, bounded last-block FiLM | Best scale `0.02`: accuracy mean `0.580291`, ROC-AUC mean `0.584930`; tiny but stable gain over Stage2 reload | [N8 review](checklist_results/4-N8_pretrained_baseline_preserving_film.md) |
+| `4-N9` | News SVD context, Stage2 CNN/classifier frozen, bounded last-block FiLM | N9-A preserves baseline; grid-best accuracy candidate `SVD32/scale0.02` has accuracy mean `0.579736`, ROC-AUC mean `0.585353`; `SVD8/scale0.05` has best ROC-AUC/Brier but lower accuracy | [N9 review](checklist_results/4-N9_news_pretrained_frozen_film_design.md) |
+| `4-N10` | Interpretability comparison | N8/N9 improve ranking/calibration slightly, reduce Up-bias, but accuracy gains are too small to claim a strong performance improvement | [N10 review](checklist_results/4-N10_news_interpretability_report.md) |
+| `4-N10-A/B` | Stage2 vs N10 correction analysis and targeted Grad-CAM/gamma-beta export | `27` Stage2 errors corrected, `24` regressions, net `+3/7205`; gamma/beta modulation is very small and mostly acts as a Down/risk-off correction | [N10-B review](checklist_results/4-N10-B_targeted_gradcam_modulation_export.md) |
 
 Next direction:
-- close the structured F&G-only track as a negative/unstable result for the
-  main claim;
-- continue the news-context track using headline-only, strict `t-1`,
-  train-only TF-IDF/SVD vectors; the first `102`-dimensional N6 vector was
-  unstable, so N6.1 tests smaller dimensions;
-- reduce the news SVD dimension if the first concat control collapses;
-- run SVD8 `CNN + news bounded last-block FiLM` with conservative scale `0.05`,
-  then consider F&G or LLM summaries only if the news-only path is useful.
+- close scratch-trained numeric/news FiLM as a weak or unstable result;
+- keep the Stage 2 pretrained/frozen baseline-preserving structure as the
+  cleanest Stage 4 model family;
+- report N8-B F&G-only as a tiny stable improvement and N9/N10 as
+  ranking/calibration/interpretability evidence rather than a large accuracy
+  gain;
+- use N10-B targeted Grad-CAM and gamma/beta exports to show what the bounded
+  FiLM correction is doing on `Stage2 wrong -> N10 correct` and
+  `Stage2 correct -> N10 wrong` samples;
+- if more architecture work is pursued, the justified next step is
+  uncertainty-gated FiLM, because N10 corrections appear mainly near the
+  Stage 2 decision boundary.
 
 ## Code Map
 

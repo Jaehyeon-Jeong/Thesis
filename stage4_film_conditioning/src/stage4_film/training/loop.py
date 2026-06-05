@@ -52,6 +52,7 @@ def fit_context_model(
     run_context: Mapping[str, Any],
     normalization_metadata: Mapping[str, Any],
     context_metadata: Mapping[str, Any],
+    initialize_weights: bool = True,
 ) -> Stage4TrainingResult:
     """Context-conditioned Stage 4 model을 학습하고 output을 저장한다."""
 
@@ -62,7 +63,8 @@ def fit_context_model(
     checkpoint_path.mkdir(parents=True, exist_ok=True)
     metrics_path.mkdir(parents=True, exist_ok=True)
 
-    initialize_model_weights(model)
+    if initialize_weights:
+        initialize_model_weights(model)
     _reset_context_modulation_identity(model)
 
     use_data_parallel = (
@@ -79,8 +81,13 @@ def fit_context_model(
 
     model = model.to(device)
     criterion = nn.CrossEntropyLoss()
+    trainable_parameters = [
+        parameter for parameter in model.parameters() if parameter.requires_grad
+    ]
+    if not trainable_parameters:
+        raise ValueError("Stage 4 model has no trainable parameters.")
     optimizer = torch.optim.Adam(
-        model.parameters(),
+        trainable_parameters,
         lr=float(training_config.get("learning_rate", 1.0e-5)),
     )
 
@@ -225,6 +232,7 @@ def _run_context_epoch(
     """train 또는 validation epoch 하나를 context input까지 포함해 실행한다."""
 
     model.train(mode=train)
+    _enforce_frozen_module_eval_mode(model)
     total_loss = 0.0
     total_correct = 0
     total_rows = 0
@@ -272,12 +280,28 @@ def _reset_context_modulation_identity(model: nn.Module) -> None:
     target = model.module if isinstance(model, nn.DataParallel) else model
     if hasattr(target, "_init_identity_gate"):
         target._init_identity_gate()
+    if hasattr(target, "_init_identity_modulation"):
+        target._init_identity_modulation()
     film_generator = getattr(target, "film_generator", None)
     if film_generator is not None:
         if hasattr(film_generator, "reset_to_identity"):
             film_generator.reset_to_identity()
         elif hasattr(film_generator, "_init_identity_outputs"):
             film_generator._init_identity_outputs()
+
+
+def _enforce_frozen_module_eval_mode(model: nn.Module) -> None:
+    """Keep frozen pretrained modules deterministic during Stage 4 training."""
+
+    target = model.module if isinstance(model, nn.DataParallel) else model
+    if bool(getattr(target, "_stage4_frozen_backbone_eval", False)):
+        layers = getattr(target, "layers", None)
+        if layers is not None:
+            layers.eval()
+    if bool(getattr(target, "_stage4_frozen_classifier_eval", False)):
+        classifier = getattr(target, "fc1", None)
+        if classifier is not None:
+            classifier.eval()
 
 
 def _write_csv(path: Path, rows: list[dict[str, Any]]) -> None:

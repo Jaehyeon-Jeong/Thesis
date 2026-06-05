@@ -15,17 +15,22 @@ Fixed baseline:
 Active work view:
 - Completed numeric-context path: `4-A`/`4-B`/`4-C`/`4-D`, v1, and v2
   diagnostics through `4-V9`.
-- Current conclusion: structured numeric context, including F&G-only FiLM, has
-  useful ranking signal in some seeds but does not robustly beat the Stage 2
-  visual baseline.
-- Current next track: `4-N7`, SVD8 news-conditioned bounded last-block FiLM
-  on the same news-aligned sample universe.
+- Current conclusion: structured numeric context and headline-news context can
+  show useful signal in some seeds, but scratch-trained context/FiLM models do
+  not robustly beat the Stage 2 visual baseline.
+- Completed current track: `4-N8-A/B`, Stage 2 pretrained
+  baseline-preserving FiLM. Stage 4 now reloads the selected Stage 2
+  checkpoint, reproduces the baseline, freezes the visual CNN/classifier, and
+  trains only the F&G context encoder plus bounded final-block FiLM heads.
+- Current next track: use the same pretrained/frozen FiLM path for news-only
+  and then F&G + news context, followed by Stage 2 vs N8-B interpretability
+  comparison.
 - First news version: headline-only, non-LLM, train-only TF-IDF/SVD over
   7/20/60-day trailing news windows.
-- Main order now: source audit -> leakage-safe news alignment -> headline
-  windows -> train-only TF-IDF/SVD -> final sample-level news context builder
-  -> `CNN + news concat` control -> SVD-dim stability check -> SVD8 bounded
-  last-block FiLM -> interpretability report.
+- Main order now: record N8-B results -> run news-only pretrained/frozen FiLM
+  if time permits -> run F&G + news combined context only if news-only is
+  promising -> prepare Grad-CAM/gamma-beta interpretation -> finalize Stage 4
+  report and advisor update.
 
 Main Stage 4 ablation:
 - [x] 4-A. `CNN + context concat`
@@ -453,30 +458,150 @@ News-context extension:
     SVD16 accuracy mean `0.5348`, ROC-AUC mean `0.5608`.
   - Decision: use SVD8 for N7 because it preserves the strongest news ranking
     signal and keeps the FiLM input small.
-- [ ] 4-N7. News-context bounded FiLM main test
+- [x] 4-N7. News-context bounded FiLM main test
   - Run `CNN + news bounded last-block FiLM` five-seed with SVD8 news context.
   - Start from the conservative V9 lesson: protect the visual path first.
   - Use `modulation_scale=0.05`:
     `gamma = 1 + 0.05 * tanh(raw_gamma)`,
     `beta = 0.05 * tanh(raw_beta)`.
   - Compare against Stage 2 visual baseline and `CNN + news concat`.
+  - Result: five-seed accuracy mean `0.5591`, ROC-AUC mean `0.5642`,
+    predicted-Up-rate mean `0.6952`.
+  - Interpretation: N7 reduced seed collapse versus news concat SVD8 but did
+    not beat the Stage 2 visual baseline. The model still trains the Stage 2
+    architecture from scratch, so it does not yet test the intended
+    pretrained-baseline-preserving FiLM idea.
   - Prepared notebook:
     [kaggle_stage4_news_context_n7_bounded_film_svd8_one_cell.md](notebooks/kaggle_stage4_news_context_n7_bounded_film_svd8_one_cell.md)
   - Prepared result note:
     [4-N7 News bounded FiLM SVD8](checklist_results/4-N7_news_bounded_film_svd8.md)
-- [ ] 4-N8. News + F&G combined-context ablation
-  - Run only after news-only shows useful signal.
-  - Candidate vector: `news_svd_7d/20d/60d + news_count_7d/20d/60d + F&G-only`.
-  - Purpose: test whether F&G helps as a compact regime summary beside richer
-    news context.
-- [ ] 4-N9. News interpretability report
-  - Export Grad-CAM plus news titles, news-count features, and FiLM
-    gamma/beta summaries for correct/incorrect Up/Down samples.
-  - Add feature sensitivity: zero news vector, remove F&G, or replace news
+- [x] 4-N8. Stage 2 pretrained baseline-preserving FiLM
+  - First substep: Stage 2 checkpoint reload sanity. Load the selected Stage 2
+    `I60/R20/ohlc_ma_vb` learned weights inside the Stage 4 code path and
+    verify that context-free predictions reproduce the Stage 2 baseline.
+  - 4-N8-A1 reload sanity passed locally with the rebuilt Stage 2 checkpoint
+    bundle. Stage4-side reload reproduced the five-seed Stage 2 baseline:
+    accuracy mean `0.579320`, ROC-AUC mean `0.584863`; classification metrics
+    matched the bundle within tolerance.
+  - Second substep: freeze the Stage 2 visual CNN and train only the context
+    encoder plus bounded last-block FiLM heads. Start with F&G-only and news
+    SVD8-only before combining context sources.
+  - 4-N8-B implementation completed: Stage 2 checkpoint load, visual-backbone
+    freeze, classifier freeze, frozen BatchNorm/dropout eval mode, and
+    trainable context encoder plus bounded final-block FiLM heads.
+  - Local smoke passed for F&G-only, seed42, scale `0.05`, 64-row train/val/test.
+    Loaded Stage 2 keys: `30`; frozen parameters: `2,952,962`; trainable
+    parameters: `35,008`.
+  - Full N8-B F&G-only Kaggle five-seed run completed for scales `0.02` and
+    `0.05`.
+  - Result: scale `0.02` accuracy mean `0.580291`, ROC-AUC mean `0.584930`;
+    scale `0.05` accuracy mean `0.579320`, ROC-AUC mean `0.584921`.
+  - Interpretation: N8-B does not materially beat the Stage 2 baseline, but it
+    preserves the baseline and avoids the severe scratch-FiLM seed collapse.
+  - Optional substep if needed: keep the CNN frozen but allow the classifier to
+    train; only then consider unfreezing the final CNN block.
+  - Purpose: test whether market/news context can improve an already strong
+    visual model by bounded correction instead of retraining a new CNN from
+    scratch.
+  - Prepared next-step note:
+    [4-N8 Pretrained baseline-preserving FiLM](checklist_results/4-N8_pretrained_baseline_preserving_film.md)
+  - Reload sanity script:
+    [check_stage4_n8_stage2_checkpoint_reload.py](scripts/check_stage4_n8_stage2_checkpoint_reload.py)
+  - N8-B Kaggle runner:
+    [kaggle_stage4_n8b_fg_only_pretrained_frozen_bounded_film_one_cell.md](notebooks/kaggle_stage4_n8b_fg_only_pretrained_frozen_bounded_film_one_cell.md)
+- [ ] 4-N9. News-only and News + F&G pretrained/frozen ablation
+  - Run after `4-N8` showed that baseline-preserving context-FiLM can reproduce
+    and safely modify the Stage 2 baseline.
+  - Gamma/beta rule: do not manually set gamma/beta per sample. The model learns
+    `context -> MLP -> gamma/beta`; the experimenter only controls the context
+    vector, freeze policy, insertion point, and bounded modulation scale.
+  - N9-A weak correction completed: news SVD8-only, CNN frozen, classifier
+    frozen, scale `0.02`, five seeds. Result: accuracy mean `0.579459`,
+    ROC-AUC mean `0.585670`; stable but only a very small correction versus the
+    Stage 2 baseline.
+  - N9-B weak correction: news SVD8-only, CNN frozen, classifier frozen, scale
+    `0.05`, only if N9-A is stable but too conservative.
+  - N9-C medium correction: news SVD8-only, CNN frozen, classifier trainable,
+    scale `0.02`.
+  - N9-D medium correction: news SVD8-only, CNN frozen, classifier trainable,
+    scale `0.05`, only if N9-C is stable but too weak.
+  - N9-E combined context: `news_svd_7d/20d/60d + news_count_7d/20d/60d +
+    F&G-only`, scale `0.02`, only if news-only is promising or needed for the
+    advisor-facing final comparison.
+  - Purpose: test whether richer external news context provides incremental
+    signal under the stable N8-B structure.
+  - Kaggle runner prepared:
+    [kaggle_stage4_n9_news_pretrained_frozen_bounded_film_one_cell.md](notebooks/kaggle_stage4_n9_news_pretrained_frozen_bounded_film_one_cell.md)
+  - Default run: `N9A`, news SVD8-only, Stage 2 CNN/classifier frozen,
+    bounded last-block FiLM scale `0.02`, five seeds.
+  - SVD/scale grid runner prepared:
+    [kaggle_stage4_n9_news_pretrained_frozen_svd_scale_grid_one_cell.md](notebooks/kaggle_stage4_n9_news_pretrained_frozen_svd_scale_grid_one_cell.md)
+  - Grid points: `SVD8/0.05`, `SVD16/0.02`, `SVD16/0.05`, `SVD32/0.02`,
+    `SVD32/0.05`. `SVD8/0.02` is excluded because N9-A already ran it.
+  - Grid purpose: test whether N9-A was too conservative because FiLM scale was
+    too small or SVD8 compressed the headline context too aggressively.
+  - To run older single-variant follow-ups, change `N9_VARIANT` at the top of
+    the bounded-FiLM cell: `N9B`, `N9C`, or `N9D`.
+  - Design note:
+    [4-N9 News pretrained/frozen FiLM design](checklist_results/4-N9_news_pretrained_frozen_film_design.md)
+- [x] 4-N10. News interpretability report
+  - First export Stage 2 baseline vs N8-B F&G-only Grad-CAM on matched samples.
+  - Then export news titles, news-count features, and FiLM gamma/beta summaries
+    for correct/incorrect Up/Down samples if 4-N9 is run.
+  - Add feature sensitivity: zero news vector, remove F&G, or replace context
     vector with train mean.
-- [ ] 4-N10. LLM summary/embedding decision
+  - Primary interpretability target: `Stage 2 wrong -> N8/N9 correct` samples,
+    because these show whether context-FiLM corrected a visual-baseline error.
+  - Initial report completed from available artifacts:
+    [4-N10 News interpretability report](checklist_results/4-N10_news_interpretability_report.md)
+  - Selected N9 grid-best Grad-CAM export cell prepared:
+    [kaggle_stage4_n10_selected_news_interpretability_one_cell.md](notebooks/kaggle_stage4_n10_selected_news_interpretability_one_cell.md)
+  - Current finding: N8/N9 bounded FiLM preserves the Stage 2 baseline and
+    slightly improves ROC-AUC/calibration/reduces Up-bias, but it does not yet
+    produce a defensible accuracy gain.
+  - Limitation: the N9 SVD/scale grid bundle is metric-only. Targeted
+    `Stage 2 wrong -> N9 correct` Grad-CAM requires an additional selected
+    export for the best grid candidate, primarily `SVD32/scale0.02`.
+- [x] 4-N10-A. Stage 2 vs N10 correction-analysis code
+  - Added a prediction-level comparison script:
+    [analyze_stage4_stage2_context_corrections.py](scripts/analyze_stage4_stage2_context_corrections.py)
+  - Added a Kaggle one-cell runner:
+    [kaggle_stage4_n10_stage2_vs_n10_correction_analysis_one_cell.md](notebooks/kaggle_stage4_n10_stage2_vs_n10_correction_analysis_one_cell.md)
+  - Purpose: export `Stage2 wrong -> N10 correct`,
+    `Stage2 correct -> N10 wrong`, transition summaries, and selected
+    sample-index lists for targeted Grad-CAM/gamma-beta/news interpretation.
+- [x] 4-N10-B. Targeted Grad-CAM + gamma/beta modulation export code
+  - Added targeted sample support to Stage 2 and Stage 4 Grad-CAM exporters.
+  - Added a Kaggle one-cell runner:
+    [kaggle_stage4_n10_b_targeted_gradcam_modulation_one_cell.md](notebooks/kaggle_stage4_n10_b_targeted_gradcam_modulation_one_cell.md)
+  - Purpose: use the N10-A selected `sample_index` list to export matched
+    Stage 2 vs N10 Grad-CAM and N10 FiLM gamma/beta modulation metadata.
+  - Design note:
+    [4-N10-B targeted Grad-CAM modulation export](checklist_results/4-N10-B_targeted_gradcam_modulation_export.md)
+- [ ] 4-N11. LLM summary/embedding decision
   - Deferred until headline-only no-leakage track is stable.
   - If used, record model name, prompt, version/date, cache hash, and runtime.
+- [ ] 4-N12. Optional uncertainty-gated FiLM follow-up
+  - Run only after N9/N10 interpretation shows that context helps mainly when
+    the Stage 2 chart model is uncertain.
+  - Idea: let context-FiLM correction become stronger for ambiguous Stage 2
+    decisions and weaker for high-confidence chart decisions.
+  - Candidate uncertainty:
+    `uncertainty = 4 * prob_up_stage2 * (1 - prob_up_stage2)`.
+  - Candidate formula:
+    `gamma = 1 + uncertainty * scale * tanh(raw_gamma)`,
+    `beta = uncertainty * scale * tanh(raw_beta)`.
+  - Purpose: test the thesis-friendly claim that news/F&G context is most useful
+    as a correction signal when the visual chart evidence is ambiguous.
+- [ ] 4-N13. Optional sentiment/event feature extension
+  - Run only if headline TF-IDF/SVD is too weak or hard to interpret.
+  - Candidate features: FinBERT-style sentiment score, positive/negative/neutral
+    counts, crypto-regulation/exchange/ETF/macro event tags, or cached
+    headline-level sentiment/event labels.
+  - Leakage rule: sentiment/event extraction must use only headlines available
+    by strict `t-1`; encoder/model/version/date/cache hash must be recorded.
+  - Purpose: test whether explicit news polarity/event type is more useful than
+    unsupervised TF-IDF/SVD vectors for context-FiLM correction.
 
 Important:
 - Do not draw the context values into the chart image for the main Stage 4
@@ -484,8 +609,10 @@ Important:
 - The context enters as a separate vector.
 - All context features must be available at or before image end date `t`.
 - Train-only statistics must be used for context normalization.
-- News is now the next Stage 4 context track after V9 showed that structured
-  F&G-only numeric FiLM is not robust enough.
+- After N7, the main Stage 4 risk is no longer only context quality. The next
+  key risk is that previous Stage 4 runs reused the Stage 2 architecture but
+  not the learned Stage 2 weights. N8 addresses this before adding more
+  context sources.
 
 ## 한국어
 
@@ -502,16 +629,21 @@ Stage 4는 이제 **market context를 고정된 BTC chart-image CNN에 어떻게
 현재 작업 보기:
 - 완료된 numeric-context 경로: `4-A`/`4-B`/`4-C`/`4-D`, v1, v2 diagnostic
   `4-V9`까지.
-- 현재 결론: F&G-only FiLM을 포함한 structured numeric context는 일부 seed에서
-  ranking signal은 있지만, Stage 2 visual baseline을 안정적으로 넘지 못했습니다.
-- 현재 다음 track: 같은 news-aligned sample universe에서 SVD8
-  news-conditioned bounded last-block FiLM을 확인하는 `4-N7`입니다.
+- 현재 결론: structured numeric context와 headline-news context는 일부 seed에서
+  signal을 보였지만, scratch-trained context/FiLM 모델은 Stage 2 visual
+  baseline을 안정적으로 넘지 못했습니다.
+- 완료된 현재 track: `4-N8-A/B`, Stage 2 pretrained baseline-preserving
+  FiLM입니다. Stage 4 code path에서 선택된 Stage 2 checkpoint를 불러와 baseline을
+  재현했고, visual CNN/classifier를 freeze한 뒤 F&G context encoder와 bounded
+  final-block FiLM head만 학습했습니다.
+- 현재 다음 track: 같은 pretrained/frozen FiLM path로 news-only를 먼저 테스트하고,
+  이후 필요하면 F&G + news combined context와 Stage 2 vs N8-B 해석 비교로
+  넘어갑니다.
 - 첫 news version: headline-only, non-LLM, train-only TF-IDF/SVD를 7/20/60-day
   trailing news window에 적용합니다.
-- 현재 순서: source audit -> leakage-safe news alignment -> headline window
-  -> train-only TF-IDF/SVD -> final sample-level news context builder -> 같은
-  sample의 visual-only control -> `CNN + news concat` -> SVD-dim stability
-  check -> SVD8 bounded last-block FiLM -> interpretability report.
+- 현재 순서: N8-B 결과 반영 -> news-only pretrained/frozen FiLM 실행 가능 여부 결정
+  -> news-only가 유망하면 F&G + news combined context -> Grad-CAM/gamma-beta 해석
+  -> Stage 4 최종 보고와 교수님 보고 정리.
 
 Stage 4 main ablation:
 - [x] 4-A. `CNN + context concat`
@@ -934,7 +1066,7 @@ News-context 확장:
     SVD16 accuracy mean `0.5348`, ROC-AUC mean `0.5608`.
   - 결정: SVD8은 가장 강한 news ranking signal을 유지하고 FiLM input을 작게
     만들기 때문에 N7에 사용합니다.
-- [ ] 4-N7. News-context bounded FiLM main test
+- [x] 4-N7. News-context bounded FiLM main test
   - SVD8 news context로 `CNN + news bounded last-block FiLM` five-seed를
     실행합니다.
   - V9 교훈대로 visual path를 먼저 보호합니다.
@@ -942,29 +1074,150 @@ News-context 확장:
     `gamma = 1 + 0.05 * tanh(raw_gamma)`,
     `beta = 0.05 * tanh(raw_beta)`.
   - Stage 2 visual baseline, `CNN + news concat`과 비교합니다.
+  - 결과: five-seed accuracy mean `0.5591`, ROC-AUC mean `0.5642`,
+    predicted-Up-rate mean `0.6952`.
+  - 해석: N7은 news concat SVD8보다 seed collapse를 줄였지만 Stage 2 visual
+    baseline을 넘지 못했습니다. 또한 여전히 Stage 2 architecture를 scratch로
+    학습한 실험이므로, 의도한 pretrained-baseline-preserving FiLM을 아직 검증한
+    것은 아닙니다.
   - 준비된 notebook:
     [kaggle_stage4_news_context_n7_bounded_film_svd8_one_cell.md](notebooks/kaggle_stage4_news_context_n7_bounded_film_svd8_one_cell.md)
   - 준비 결과:
     [4-N7 News bounded FiLM SVD8](checklist_results/4-N7_news_bounded_film_svd8.md)
-- [ ] 4-N8. News + F&G combined-context ablation
-  - News-only가 유용한 signal을 보일 때만 실행합니다.
-  - 후보 vector: `news_svd_7d/20d/60d + news_count_7d/20d/60d + F&G-only`.
-  - 목적: 더 풍부한 news context 옆에서 F&G가 compact regime summary로
-    도움이 되는지 확인합니다.
-- [ ] 4-N9. News interpretability report
-  - Correct/incorrect Up/Down sample에 대해 Grad-CAM, news title,
+- [x] 4-N8. Stage 2 pretrained baseline-preserving FiLM
+  - 첫 substep: Stage 2 checkpoint reload sanity. 선택된 Stage 2
+    `I60/R20/ohlc_ma_vb` learned weight를 Stage 4 code path 안에서 불러와,
+    context 없이 Stage 2 baseline 예측이 재현되는지 확인합니다.
+  - 4-N8-A1 reload sanity는 rebuilt Stage 2 checkpoint bundle로 local 통과했습니다.
+    Stage4-side reload 결과가 five-seed Stage 2 baseline을 재현했습니다:
+    accuracy mean `0.579320`, ROC-AUC mean `0.584863`; classification metric은
+    bundle 결과와 tolerance 안에서 일치했습니다.
+  - 두 번째 substep: Stage 2 visual CNN을 freeze하고 context encoder와 bounded
+    last-block FiLM head만 학습합니다. Context는 F&G-only, news SVD8-only를
+    먼저 보고 그 다음 combined로 확장합니다.
+  - 4-N8-B 구현 완료: Stage 2 checkpoint load, visual-backbone freeze,
+    classifier freeze, frozen BatchNorm/dropout eval mode, context encoder와
+    bounded final-block FiLM head만 trainable로 두는 경로를 추가했습니다.
+  - Local smoke 통과: F&G-only, seed42, scale `0.05`, 64-row train/val/test.
+    Loaded Stage 2 key `30`, frozen parameter `2,952,962`, trainable parameter
+    `35,008`.
+  - Full N8-B F&G-only Kaggle five-seed run 완료: scale `0.02`, `0.05`.
+  - 결과: scale `0.02` accuracy mean `0.580291`, ROC-AUC mean `0.584930`;
+    scale `0.05` accuracy mean `0.579320`, ROC-AUC mean `0.584921`.
+  - 해석: N8-B는 Stage 2 baseline을 크게 이기지는 않았지만, baseline을 보존했고
+    scratch-FiLM에서 보였던 심한 seed collapse를 피했습니다.
+  - 필요할 경우 optional substep: CNN은 freeze하되 classifier만 열고, 그 다음에만
+    final CNN block partial-unfreeze를 고려합니다.
+  - 목적: 새 CNN을 scratch로 다시 학습하는 것이 아니라, 이미 강한 visual model을
+    bounded correction으로 개선할 수 있는지 검증합니다.
+  - 준비 결과:
+    [4-N8 Pretrained baseline-preserving FiLM](checklist_results/4-N8_pretrained_baseline_preserving_film.md)
+  - Reload sanity script:
+    [check_stage4_n8_stage2_checkpoint_reload.py](scripts/check_stage4_n8_stage2_checkpoint_reload.py)
+  - N8-B Kaggle runner:
+    [kaggle_stage4_n8b_fg_only_pretrained_frozen_bounded_film_one_cell.md](notebooks/kaggle_stage4_n8b_fg_only_pretrained_frozen_bounded_film_one_cell.md)
+- [ ] 4-N9. News-only와 News + F&G pretrained/frozen ablation
+  - `4-N8`에서 baseline-preserving context-FiLM이 Stage 2 baseline을 재현하고
+    안전하게 수정할 수 있음을 확인했으므로 실행 후보입니다.
+  - Gamma/beta 원칙: sample별 gamma/beta를 사람이 직접 정하지 않습니다. 모델이
+    `context -> MLP -> gamma/beta` mapping을 학습하고, 실험자는 context vector,
+    freeze policy, FiLM 위치, bounded modulation scale만 통제합니다.
+  - N9-A weak correction 완료: news SVD8-only, CNN frozen, classifier frozen,
+    scale `0.02`, five seeds. 결과: accuracy mean `0.579459`, ROC-AUC mean
+    `0.585670`; 안정적이지만 Stage 2 baseline 대비 correction 크기는 작았습니다.
+  - N9-B weak correction: news SVD8-only, CNN frozen, classifier frozen, scale
+    `0.05`. N9-A가 안정적이지만 너무 보수적일 때만 실행합니다.
+  - N9-C medium correction: news SVD8-only, CNN frozen, classifier trainable,
+    scale `0.02`.
+  - N9-D medium correction: news SVD8-only, CNN frozen, classifier trainable,
+    scale `0.05`. N9-C가 안정적이지만 너무 약할 때만 실행합니다.
+  - N9-E combined context: `news_svd_7d/20d/60d + news_count_7d/20d/60d +
+    F&G-only`, scale `0.02`. news-only가 유망하거나 교수님 보고용 final
+    comparison이 필요할 때 실행합니다.
+  - 목적: 안정화된 N8-B 구조에서 richer external news context가 incremental signal을
+    주는지 확인합니다.
+  - Kaggle runner 준비:
+    [kaggle_stage4_n9_news_pretrained_frozen_bounded_film_one_cell.md](notebooks/kaggle_stage4_n9_news_pretrained_frozen_bounded_film_one_cell.md)
+  - 기본 실행: `N9A`, news SVD8-only, Stage 2 CNN/classifier frozen,
+    bounded last-block FiLM scale `0.02`, five seeds.
+  - SVD/scale grid runner 준비:
+    [kaggle_stage4_n9_news_pretrained_frozen_svd_scale_grid_one_cell.md](notebooks/kaggle_stage4_n9_news_pretrained_frozen_svd_scale_grid_one_cell.md)
+  - Grid points: `SVD8/0.05`, `SVD16/0.02`, `SVD16/0.05`, `SVD32/0.02`,
+    `SVD32/0.05`. `SVD8/0.02`는 N9-A에서 이미 실행했기 때문에 제외합니다.
+  - Grid 목적: N9-A의 correction이 너무 보수적이었는지, 또는 SVD8이 headline
+    context를 너무 강하게 압축했는지 확인합니다.
+  - 기존 single-variant 후속 실험은 bounded-FiLM cell 상단의 `N9_VARIANT`만
+    `N9B`, `N9C`, `N9D`로 바꿔서 실행합니다.
+  - 설계 노트:
+    [4-N9 News pretrained/frozen FiLM design](checklist_results/4-N9_news_pretrained_frozen_film_design.md)
+- [x] 4-N10. News interpretability report
+  - 먼저 같은 sample에 대해 Stage 2 baseline vs N8-B F&G-only Grad-CAM을
+    비교합니다.
+  - 4-N9를 실행하면 correct/incorrect Up/Down sample에 대해 news title,
     news-count feature, FiLM gamma/beta summary를 함께 export합니다.
-  - Feature sensitivity: zero news vector, F&G 제거, news vector를 train mean으로
+  - Feature sensitivity: zero news vector, F&G 제거, context vector를 train mean으로
     대체하는 분석을 추가합니다.
-- [ ] 4-N10. LLM summary/embedding decision
+  - 핵심 해석 target은 `Stage 2 wrong -> N8/N9 correct` sample입니다. 이 케이스가
+    context-FiLM이 visual-baseline error를 수정했는지 보여줍니다.
+  - 현재 가진 artifact 기준 initial report 완료:
+    [4-N10 News interpretability report](checklist_results/4-N10_news_interpretability_report.md)
+  - 선택된 N9 grid-best Grad-CAM export cell 준비:
+    [kaggle_stage4_n10_selected_news_interpretability_one_cell.md](notebooks/kaggle_stage4_n10_selected_news_interpretability_one_cell.md)
+  - 현재 결론: N8/N9 bounded FiLM은 Stage 2 baseline을 보존하고
+    ROC-AUC/calibration/Up-bias를 약간 개선하지만, accuracy gain은 강하게
+    주장하기 어렵습니다.
+  - 한계: N9 SVD/scale grid bundle은 metric-only입니다. 핵심 target인
+    `Stage 2 wrong -> N9 correct` Grad-CAM은 best grid 후보인
+    `SVD32/scale0.02`에 대해 추가 export가 필요합니다.
+- [x] 4-N10-A. Stage 2 vs N10 correction-analysis code
+  - Prediction-level 비교 script 추가:
+    [analyze_stage4_stage2_context_corrections.py](scripts/analyze_stage4_stage2_context_corrections.py)
+  - Kaggle one-cell runner 추가:
+    [kaggle_stage4_n10_stage2_vs_n10_correction_analysis_one_cell.md](notebooks/kaggle_stage4_n10_stage2_vs_n10_correction_analysis_one_cell.md)
+  - 목적: `Stage2 wrong -> N10 correct`, `Stage2 correct -> N10 wrong`,
+    transition summary, targeted Grad-CAM/gamma-beta/news 해석용
+    sample-index list를 export합니다.
+- [x] 4-N10-B. Targeted Grad-CAM + gamma/beta modulation export code
+  - Stage 2와 Stage 4 Grad-CAM exporter에 targeted sample mode를 추가했습니다.
+  - Kaggle one-cell runner 추가:
+    [kaggle_stage4_n10_b_targeted_gradcam_modulation_one_cell.md](notebooks/kaggle_stage4_n10_b_targeted_gradcam_modulation_one_cell.md)
+  - 목적: N10-A에서 고른 동일한 `sample_index`에 대해 Stage 2 vs N10
+    Grad-CAM을 비교하고, N10 FiLM gamma/beta modulation metadata를 함께
+    export합니다.
+  - 설계 노트:
+    [4-N10-B targeted Grad-CAM modulation export](checklist_results/4-N10-B_targeted_gradcam_modulation_export.md)
+- [ ] 4-N11. LLM summary/embedding decision
   - Headline-only no-leakage track이 안정화된 뒤로 미룹니다.
   - 사용한다면 model name, prompt, version/date, cache hash, runtime을
     기록해야 합니다.
+- [ ] 4-N12. Optional uncertainty-gated FiLM follow-up
+  - N9/N10 해석에서 context가 주로 Stage 2 chart model이 애매한 sample에서
+    도움이 된다는 근거가 보일 때만 실행합니다.
+  - 아이디어: Stage 2 chart 판단이 애매할수록 context-FiLM correction을 더 허용하고,
+    chart 판단이 확신에 가까울수록 correction을 약하게 둡니다.
+  - 후보 uncertainty:
+    `uncertainty = 4 * prob_up_stage2 * (1 - prob_up_stage2)`.
+  - 후보 formula:
+    `gamma = 1 + uncertainty * scale * tanh(raw_gamma)`,
+    `beta = uncertainty * scale * tanh(raw_beta)`.
+  - 목적: news/F&G context가 visual chart evidence가 애매한 구간에서 correction
+    signal로 가장 유용하다는 thesis-friendly claim을 검증합니다.
+- [ ] 4-N13. Optional sentiment/event feature extension
+  - Headline TF-IDF/SVD가 너무 약하거나 해석하기 어려울 때만 실행합니다.
+  - 후보 feature: FinBERT-style sentiment score, positive/negative/neutral count,
+    crypto regulation/exchange/ETF/macro event tag, 또는 cached headline-level
+    sentiment/event label.
+  - Leakage rule: sentiment/event extraction은 strict `t-1`까지 사용 가능한
+    headline만 써야 하며 encoder/model/version/date/cache hash를 기록해야 합니다.
+  - 목적: 명시적 news polarity/event type이 unsupervised TF-IDF/SVD vector보다
+    context-FiLM correction에 더 유용한지 확인합니다.
 
 중요:
 - Main Stage 4 실험에서 context 값을 chart image 위에 추가로 그리지 않습니다.
 - context는 별도 vector로 들어갑니다.
 - 모든 context feature는 image end date `t` 또는 그 이전에 알 수 있어야 합니다.
 - context normalization은 train split 통계로만 fit합니다.
-- 뉴스는 이제 V9 이후 다음 Stage 4 context track입니다. V9에서 structured
-  F&G-only numeric FiLM이 robust하지 않다는 결론이 나왔기 때문입니다.
+- N7 이후 Stage 4의 핵심 risk는 context 품질만이 아닙니다. 이전 Stage 4 run은
+  Stage 2 architecture는 재사용했지만 Stage 2 learned weight는 재사용하지
+  않았습니다. N8은 더 많은 context source를 추가하기 전에 이 문제를 먼저
+  분리합니다.

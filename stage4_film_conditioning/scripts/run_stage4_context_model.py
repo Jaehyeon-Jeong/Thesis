@@ -49,6 +49,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-train-rows", type=int, default=0)
     parser.add_argument("--max-validation-rows", type=int, default=0)
     parser.add_argument("--max-test-rows", type=int, default=0)
+    parser.add_argument("--experiment-suffix", default="")
+    parser.add_argument("--context-feature-set-name", default="")
+    parser.add_argument("--context-features", nargs="*", default=None)
+    parser.add_argument("--modulation-scale", type=float, default=0.0)
+    parser.add_argument("--stage2-pretrained-bundle-root", default="")
+    parser.add_argument("--enable-stage2-pretrained", action="store_true")
     return parser.parse_args()
 
 
@@ -124,6 +130,24 @@ def _apply_cli_overrides(config: dict[str, Any], args: argparse.Namespace) -> di
 
     if int(args.max_epochs) > 0:
         config["training"]["max_epochs"] = int(args.max_epochs)
+    if str(args.experiment_suffix).strip():
+        config["stage4_model"]["experiment_suffix"] = str(args.experiment_suffix).strip()
+    if str(args.context_feature_set_name).strip():
+        config["context"]["feature_set_name"] = str(args.context_feature_set_name).strip()
+    if args.context_features is not None and len(args.context_features) > 0:
+        features = [str(feature) for feature in args.context_features]
+        config["context"]["primary_features"] = features
+        config["stage4_model"]["context_dim"] = len(features)
+    if float(args.modulation_scale) > 0:
+        config["stage4_model"]["film_full_bounded_last_block"]["modulation_scale"] = float(
+            args.modulation_scale
+        )
+    if args.enable_stage2_pretrained or str(args.stage2_pretrained_bundle_root).strip():
+        pretrained = dict(config["stage4_model"].get("pretrained_stage2", {}))
+        pretrained["enabled"] = True
+        if str(args.stage2_pretrained_bundle_root).strip():
+            pretrained["checkpoint_output_root"] = str(args.stage2_pretrained_bundle_root).strip()
+        config["stage4_model"]["pretrained_stage2"] = pretrained
     return config
 
 

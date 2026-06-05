@@ -37,6 +37,8 @@ flowchart LR
     N --> O[N8: Stage 2 pretrained/frozen baseline preservation]
     O --> P[N9: news pretrained/frozen FiLM grid]
     P --> Q[N10: Stage 2 vs N10 correction + Grad-CAM/modulation]
+    Q --> R[N12: uncertainty/confidence-gated FiLM + context-source ablations]
+    R --> S[N14: final interpretability report]
 ```
 
 ## Checklist And Review Links
@@ -48,6 +50,7 @@ flowchart LR
 | Professor direction brief | Why context + FiLM is the direction | [docs/professor_meeting_stage4_direction_brief.md](docs/professor_meeting_stage4_direction_brief.md) |
 | FiLM insertion design | Where concat/gating/FiLM are attached | [docs/film_insertion_design.md](docs/film_insertion_design.md) |
 | Context/news plan | Structured context and future news track | [docs/condition_track_plan.md](docs/condition_track_plan.md), [docs/news_context_plan.md](docs/news_context_plan.md) |
+| N12 gated FiLM plan | Next uncertainty/confidence-gated experiments and artifact policy | [checklist_results/4-N12_gated_film_and_context_source_plan.md](checklist_results/4-N12_gated_film_and_context_source_plan.md) |
 | v1 interpretation report | Five-seed v1 interpretation | [reports/stage4_v1_interpretation/stage4_v1_interpretation_report.md](reports/stage4_v1_interpretation/stage4_v1_interpretation_report.md) |
 
 ## How To Read This Folder
@@ -62,6 +65,9 @@ flowchart LR
   implementation.
 - Local raw data, Kaggle outputs, and downloaded result bundles are kept outside
   the active code path and should not be treated as source code.
+- Commit compact result tables and result notes to GitHub after each step.
+  Large bundles/checkpoints/full prediction CSVs stay local or in Kaggle
+  datasets, with their paths recorded in the matching checklist result file.
 
 ## Context Features
 
@@ -146,9 +152,11 @@ Next direction:
 - use N10-B targeted Grad-CAM and gamma/beta exports to show what the bounded
   FiLM correction is doing on `Stage2 wrong -> N10 correct` and
   `Stage2 correct -> N10 wrong` samples;
-- if more architecture work is pursued, the justified next step is
-  uncertainty-gated FiLM, because N10 corrections appear mainly near the
-  Stage 2 decision boundary.
+- N11 LLM summary/embedding is deferred until the headline-only no-leakage
+  track is finalized;
+- the next model step is N12-A uncertainty-gated news FiLM, followed by
+  N12-B confidence-gated FiLM and N12-C/D context-source ablations, because
+  N10 corrections appear mainly near the Stage 2 decision boundary.
 
 ## Code Map
 

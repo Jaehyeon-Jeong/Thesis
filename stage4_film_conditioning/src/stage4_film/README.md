@@ -41,6 +41,14 @@ Updated in `4-V7`:
 - `runners/context_experiment.py`: routes the new V7 method through the same
   fixed Stage 2 BTC data pipeline.
 
+Added in `4-N12-A`:
+- `models/film_stock_cnn.py`: `UncertaintyGatedLastBlockFilmContextStockCNN`
+  for `film_full_uncertainty_gated_last_block`.
+- It reuses the bounded final-block FiLM heads but scales the correction by
+  `4 * stage2_prob_up * (1 - stage2_prob_up)`, so context correction is
+  strongest when the frozen Stage 2 classifier is uncertain.
+- Grad-CAM modulation export includes `modulation_gate` and `stage2_prob_up`.
+
 Added in `4-I8`:
 - `training/loop.py`: context-aware training loop that calls
   `model(image, context)` and preserves identity initialization for gate/FiLM
@@ -102,6 +110,15 @@ Stage 4 FiLM/context-conditioning 구현 package입니다.
   Stock_CNN block에만 residual/bounded 방식으로 적용됩니다.
 - `runners/context_experiment.py`: 새 V7 method도 같은 Stage 2 BTC data
   pipeline을 통해 실행되도록 연결했습니다.
+
+`4-N12-A`에서 추가한 module:
+- `models/film_stock_cnn.py`: `film_full_uncertainty_gated_last_block`용
+  `UncertaintyGatedLastBlockFilmContextStockCNN`입니다.
+- 기존 bounded final-block FiLM head를 재사용하되
+  `4 * stage2_prob_up * (1 - stage2_prob_up)`로 correction 강도를 조절합니다.
+  그래서 frozen Stage 2 classifier가 애매할수록 context correction이 커집니다.
+- Grad-CAM modulation export에는 `modulation_gate`와 `stage2_prob_up`도
+  포함됩니다.
 
 `4-I8`에서 추가한 module:
 - `training/loop.py`: `model(image, context)`를 호출하는 context-aware training

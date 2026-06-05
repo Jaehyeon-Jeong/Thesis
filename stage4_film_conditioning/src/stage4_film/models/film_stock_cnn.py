@@ -39,6 +39,7 @@ from stage4_film.layers import FeatureWiseAffineModulation
 from stage4_film.models.context_stock_cnn import _expected_context_encoder_parameter_count
 
 BOUNDED_LAST_BLOCK_METHOD = "film_full_bounded_last_block"
+UNCERTAINTY_GATED_LAST_BLOCK_METHOD = "film_full_uncertainty_gated_last_block"
 
 
 class FilmContextStockCNN(nn.Module):
@@ -333,6 +334,9 @@ class BoundedLastBlockFilmContextStockCNN(nn.Module):
     def compute_bounded_parameters(
         self,
         context_embedding: torch.Tensor,
+        *,
+        modulation_gate: torch.Tensor | None = None,
+        stage2_prob_up: torch.Tensor | None = None,
     ) -> dict[str, torch.Tensor | float | int]:
         """Return raw and bounded FiLM parameters for the final CNN block."""
 
@@ -344,9 +348,15 @@ class BoundedLastBlockFilmContextStockCNN(nn.Module):
         raw_gamma = self.gamma_head(context_embedding)
         raw_beta = self.beta_head(context_embedding)
         scale = self.modulation_scale
-        gamma = 1.0 + scale * torch.tanh(raw_gamma)
-        beta = scale * torch.tanh(raw_beta)
-        return {
+        gate = self._normalize_modulation_gate(
+            modulation_gate,
+            batch_size=context_embedding.shape[0],
+            device=context_embedding.device,
+            dtype=context_embedding.dtype,
+        )
+        gamma = 1.0 + gate * scale * torch.tanh(raw_gamma)
+        beta = gate * scale * torch.tanh(raw_beta)
+        result: dict[str, torch.Tensor | float | int] = {
             "block": self.final_block_index,
             "gamma": gamma,
             "beta": beta,
@@ -354,7 +364,112 @@ class BoundedLastBlockFilmContextStockCNN(nn.Module):
             "raw_gamma": raw_gamma,
             "raw_beta": raw_beta,
             "modulation_scale": scale,
+            "modulation_gate": gate,
         }
+        if stage2_prob_up is not None:
+            result["stage2_prob_up"] = self._normalize_modulation_gate(
+                stage2_prob_up,
+                batch_size=context_embedding.shape[0],
+                device=context_embedding.device,
+                dtype=context_embedding.dtype,
+            )
+        return result
+
+    def _normalize_modulation_gate(
+        self,
+        gate: torch.Tensor | None,
+        *,
+        batch_size: int,
+        device: torch.device,
+        dtype: torch.dtype,
+    ) -> torch.Tensor:
+        """Return a `(batch, 1)` gate tensor used to scale bounded FiLM."""
+
+        if gate is None:
+            return torch.ones(int(batch_size), 1, device=device, dtype=dtype)
+        if gate.ndim == 1:
+            gate = gate.reshape(-1, 1)
+        if gate.ndim != 2 or gate.shape[0] != int(batch_size) or gate.shape[1] != 1:
+            raise ValueError(
+                "modulation_gate must have shape (batch, 1); "
+                f"got {tuple(gate.shape)} for batch={batch_size}"
+            )
+        return gate.to(device=device, dtype=dtype)
+
+    def _forward_bounded_blocks_with_parameters(
+        self,
+        image: torch.Tensor,
+        parameters: dict[str, torch.Tensor | float | int],
+    ) -> torch.Tensor:
+        """Run CNN blocks with a precomputed final-block FiLM parameter set."""
+
+        hidden = image.reshape(-1, *self.spec.input_shape)
+        for index, layer in enumerate(self.layers, start=1):
+            hidden = layer[0](hidden)
+            hidden = layer[1](hidden)
+            if index == self.final_block_index:
+                gamma = parameters["gamma"]
+                beta = parameters["beta"]
+                if not isinstance(gamma, torch.Tensor) or not isinstance(beta, torch.Tensor):
+                    raise RuntimeError("Bounded FiLM parameters must be tensors.")
+                hidden = self.film_layer(hidden, gamma, beta)
+            hidden = layer[2](hidden)
+            hidden = layer[3](hidden)
+        return hidden
+
+    def _forward_visual_baseline_logits(self, image: torch.Tensor) -> torch.Tensor:
+        """Run the unmodulated Stage 2 visual path with the current weights."""
+
+        hidden = image.reshape(-1, *self.spec.input_shape)
+        for layer in self.layers:
+            hidden = layer(hidden)
+        return self.fc1(hidden.reshape(hidden.shape[0], -1))
+
+    def _block_summary_from_parameters(
+        self,
+        parameters: dict[str, torch.Tensor | float | int],
+    ) -> dict[str, torch.Tensor | bool | float | int | None]:
+        """Build a compact final-block modulation record for export."""
+
+        gamma = parameters["gamma"]
+        beta = parameters["beta"]
+        if not isinstance(gamma, torch.Tensor) or not isinstance(beta, torch.Tensor):
+            raise RuntimeError("Bounded FiLM parameters must be tensors.")
+        return {
+            "block": self.final_block_index,
+            "gamma": gamma,
+            "beta": beta,
+            "delta_gamma": parameters["delta_gamma"],
+            "raw_gamma": parameters["raw_gamma"],
+            "raw_beta": parameters["raw_beta"],
+            "modulation_scale": parameters["modulation_scale"],
+            "modulation_gate": parameters.get("modulation_gate"),
+            "stage2_prob_up": parameters.get("stage2_prob_up"),
+            "identity_at_initialization": bool(
+                torch.allclose(gamma, torch.ones_like(gamma))
+                and torch.allclose(beta, torch.zeros_like(beta))
+            ),
+        }
+
+    def _shape_entries_for_parameters(
+        self,
+        shapes: dict[str, tuple[int, ...]],
+        parameters: dict[str, torch.Tensor | float | int],
+    ) -> None:
+        """Add bounded FiLM parameter tensor shapes to a shapes dictionary."""
+
+        block_index = self.final_block_index
+        for name in (
+            "raw_gamma",
+            "raw_beta",
+            "gamma",
+            "beta",
+            "modulation_gate",
+            "stage2_prob_up",
+        ):
+            tensor = parameters.get(name)
+            if isinstance(tensor, torch.Tensor):
+                shapes[f"{name}{block_index}"] = tuple(tensor.shape)
 
     def forward_with_shapes(
         self,
@@ -379,18 +494,11 @@ class BoundedLastBlockFilmContextStockCNN(nn.Module):
                 hidden = layer[1](hidden)
                 shapes[f"layer{index}_bn"] = tuple(hidden.shape)
                 if index == self.final_block_index:
+                    self._shape_entries_for_parameters(shapes, parameters)
                     gamma = parameters["gamma"]
                     beta = parameters["beta"]
-                    raw_gamma = parameters["raw_gamma"]
-                    raw_beta = parameters["raw_beta"]
                     if not isinstance(gamma, torch.Tensor) or not isinstance(beta, torch.Tensor):
                         raise RuntimeError("Bounded FiLM parameters must be tensors.")
-                    if not isinstance(raw_gamma, torch.Tensor) or not isinstance(raw_beta, torch.Tensor):
-                        raise RuntimeError("Raw bounded FiLM parameters must be tensors.")
-                    shapes[f"raw_gamma{index}"] = tuple(raw_gamma.shape)
-                    shapes[f"raw_beta{index}"] = tuple(raw_beta.shape)
-                    shapes[f"gamma{index}"] = tuple(gamma.shape)
-                    shapes[f"beta{index}"] = tuple(beta.shape)
                     hidden = self.film_layer(hidden, gamma, beta)
                     shapes[f"layer{index}_film"] = tuple(hidden.shape)
                 hidden = layer[2](hidden)
@@ -438,23 +546,7 @@ class BoundedLastBlockFilmContextStockCNN(nn.Module):
                 pooled_maps.append(hidden.detach().clone())
 
         logits = self.fc1(hidden.reshape(hidden.shape[0], -1))
-        gamma = parameters["gamma"]
-        beta = parameters["beta"]
-        if not isinstance(gamma, torch.Tensor) or not isinstance(beta, torch.Tensor):
-            raise RuntimeError("Bounded FiLM parameters must be tensors.")
-        block_summary = {
-            "block": self.final_block_index,
-            "gamma": gamma,
-            "beta": beta,
-            "delta_gamma": parameters["delta_gamma"],
-            "raw_gamma": parameters["raw_gamma"],
-            "raw_beta": parameters["raw_beta"],
-            "modulation_scale": parameters["modulation_scale"],
-            "identity_at_initialization": bool(
-                torch.allclose(gamma, torch.ones_like(gamma))
-                and torch.allclose(beta, torch.zeros_like(beta))
-            ),
-        }
+        block_summary = self._block_summary_from_parameters(parameters)
         result: dict[str, Any] = {
             "logits": logits,
             "context_embedding": context_embedding,
@@ -487,18 +579,7 @@ class BoundedLastBlockFilmContextStockCNN(nn.Module):
         """Run CNN blocks with bounded FiLM only in the final block."""
 
         parameters = self.compute_bounded_parameters(context_embedding)
-        hidden = image.reshape(-1, *self.spec.input_shape)
-        for index, layer in enumerate(self.layers, start=1):
-            hidden = layer[0](hidden)
-            hidden = layer[1](hidden)
-            if index == self.final_block_index:
-                gamma = parameters["gamma"]
-                beta = parameters["beta"]
-                if not isinstance(gamma, torch.Tensor) or not isinstance(beta, torch.Tensor):
-                    raise RuntimeError("Bounded FiLM parameters must be tensors.")
-                hidden = self.film_layer(hidden, gamma, beta)
-            hidden = layer[2](hidden)
-            hidden = layer[3](hidden)
+        hidden = self._forward_bounded_blocks_with_parameters(image, parameters)
         return hidden, parameters
 
     def _infer_flatten_dim(self) -> int:
@@ -520,6 +601,150 @@ class BoundedLastBlockFilmContextStockCNN(nn.Module):
         nn.init.zeros_(self.beta_head.weight)
         if self.beta_head.bias is not None:
             nn.init.zeros_(self.beta_head.bias)
+
+
+class UncertaintyGatedLastBlockFilmContextStockCNN(BoundedLastBlockFilmContextStockCNN):
+    """Bounded last-block FiLM gated by the frozen Stage 2 prediction uncertainty.
+
+    N12-A keeps the Stage 2 visual classifier as the reference path and lets the
+    context branch intervene mostly on ambiguous visual cases:
+
+        stage2_prob_up = softmax(stage2_logits)[up]
+        uncertainty    = 4 * stage2_prob_up * (1 - stage2_prob_up)
+        gamma          = 1 + uncertainty * scale * tanh(raw_gamma)
+        beta           =     uncertainty * scale * tanh(raw_beta)
+
+    The gate is 1.0 near 50/50 predictions and approaches 0.0 when the visual
+    baseline is confident. This tests whether context-FiLM works better as a
+    correction layer than as a uniform modulation layer.
+    """
+
+    def __init__(
+        self,
+        spec: CnnVariantSpec,
+        context_encoder: ContextEncoder,
+        dropout: float = 0.5,
+        modulation_scale: float = 0.10,
+    ) -> None:
+        super().__init__(
+            spec=spec,
+            context_encoder=context_encoder,
+            dropout=dropout,
+            modulation_scale=modulation_scale,
+        )
+        self.mode = UNCERTAINTY_GATED_LAST_BLOCK_METHOD
+
+    def forward(self, image: torch.Tensor, context: torch.Tensor) -> torch.Tensor:
+        """Return class logits after uncertainty-gated final-block FiLM."""
+
+        context_embedding = self.context_encoder(context)
+        gate_values = self.compute_uncertainty_gate(image)
+        parameters = self.compute_bounded_parameters(context_embedding, **gate_values)
+        hidden = self._forward_bounded_blocks_with_parameters(image, parameters)
+        return self.fc1(hidden.reshape(hidden.shape[0], -1))
+
+    def compute_uncertainty_gate(self, image: torch.Tensor) -> dict[str, torch.Tensor]:
+        """Return Stage 2 probability and `4p(1-p)` uncertainty gate."""
+
+        with torch.no_grad():
+            stage2_logits = self._forward_visual_baseline_logits(image)
+            stage2_prob_up = torch.softmax(stage2_logits, dim=1)[:, 1:2].detach()
+            modulation_gate = (4.0 * stage2_prob_up * (1.0 - stage2_prob_up)).clamp(
+                min=0.0,
+                max=1.0,
+            )
+        return {
+            "modulation_gate": modulation_gate,
+            "stage2_prob_up": stage2_prob_up,
+        }
+
+    def forward_with_shapes(
+        self,
+        image: torch.Tensor,
+        context: torch.Tensor,
+    ) -> dict[str, tuple[int, ...]]:
+        """Run a no-grad forward pass and return intermediate tensor shapes."""
+
+        self.eval()
+        with torch.no_grad():
+            context_embedding = self.context_encoder(context)
+            gate_values = self.compute_uncertainty_gate(image)
+            parameters = self.compute_bounded_parameters(context_embedding, **gate_values)
+            hidden = image.reshape(-1, *self.spec.input_shape)
+            shapes: dict[str, tuple[int, ...]] = {
+                "image": tuple(hidden.shape),
+                "context": tuple(context.shape),
+                "context_embedding": tuple(context_embedding.shape),
+            }
+            for index, layer in enumerate(self.layers, start=1):
+                hidden = layer[0](hidden)
+                shapes[f"layer{index}_conv"] = tuple(hidden.shape)
+                hidden = layer[1](hidden)
+                shapes[f"layer{index}_bn"] = tuple(hidden.shape)
+                if index == self.final_block_index:
+                    self._shape_entries_for_parameters(shapes, parameters)
+                    gamma = parameters["gamma"]
+                    beta = parameters["beta"]
+                    if not isinstance(gamma, torch.Tensor) or not isinstance(beta, torch.Tensor):
+                        raise RuntimeError("Uncertainty-gated FiLM parameters must be tensors.")
+                    hidden = self.film_layer(hidden, gamma, beta)
+                    shapes[f"layer{index}_film"] = tuple(hidden.shape)
+                hidden = layer[2](hidden)
+                hidden = layer[3](hidden)
+                shapes[f"layer{index}"] = tuple(hidden.shape)
+            flattened = hidden.reshape(hidden.shape[0], -1)
+            shapes["flatten"] = tuple(flattened.shape)
+            logits = self.fc1(flattened)
+            shapes["logits"] = tuple(logits.shape)
+        return shapes
+
+    def forward_with_modulation_values(
+        self,
+        image: torch.Tensor,
+        context: torch.Tensor,
+        *,
+        keep_feature_maps: bool = False,
+    ) -> dict[str, Any]:
+        """Return logits plus uncertainty gate and FiLM parameters."""
+
+        context_embedding = self.context_encoder(context)
+        gate_values = self.compute_uncertainty_gate(image)
+        parameters = self.compute_bounded_parameters(context_embedding, **gate_values)
+        hidden = image.reshape(-1, *self.spec.input_shape)
+        pre_film_maps: list[torch.Tensor] = []
+        post_film_maps: list[torch.Tensor] = []
+        pooled_maps: list[torch.Tensor] = []
+
+        for index, layer in enumerate(self.layers, start=1):
+            hidden = layer[0](hidden)
+            hidden = layer[1](hidden)
+            if index == self.final_block_index:
+                pre_film = hidden
+                gamma = parameters["gamma"]
+                beta = parameters["beta"]
+                if not isinstance(gamma, torch.Tensor) or not isinstance(beta, torch.Tensor):
+                    raise RuntimeError("Uncertainty-gated FiLM parameters must be tensors.")
+                post_film = self.film_layer(pre_film, gamma, beta)
+                if keep_feature_maps:
+                    pre_film_maps.append(pre_film.detach().clone())
+                    post_film_maps.append(post_film.detach().clone())
+                hidden = post_film
+            hidden = layer[2](hidden)
+            hidden = layer[3](hidden)
+            if index == self.final_block_index and keep_feature_maps:
+                pooled_maps.append(hidden.detach().clone())
+
+        logits = self.fc1(hidden.reshape(hidden.shape[0], -1))
+        result: dict[str, Any] = {
+            "logits": logits,
+            "context_embedding": context_embedding,
+            "film_parameters": [self._block_summary_from_parameters(parameters)],
+        }
+        if keep_feature_maps:
+            result["pre_film_feature_maps"] = pre_film_maps
+            result["post_film_feature_maps"] = post_film_maps
+            result["pooled_feature_maps"] = pooled_maps
+        return result
 
 
 def build_film_context_stock_cnn_for_window(
@@ -603,6 +828,50 @@ def build_bounded_last_block_film_context_stock_cnn_for_window(
     if actual != expected:
         raise ValueError(
             "Stage 4 bounded last-block FiLM parameter mismatch: "
+            f"actual={actual}, expected={expected}"
+        )
+    return model
+
+
+def build_uncertainty_gated_last_block_film_context_stock_cnn_for_window(
+    config: Mapping[str, Any],
+    image_window: int,
+) -> UncertaintyGatedLastBlockFilmContextStockCNN:
+    """Build the N12-A uncertainty-gated bounded final-block FiLM model."""
+
+    window = int(image_window)
+    if window not in VARIANT_SPECS:
+        raise KeyError(f"Unsupported image_window for Stage 4 FiLM StockCNN: {window}")
+
+    model_config = get_config_section(config, "model")
+    selected_model_config = get_model_config(config, window)
+    spec = VARIANT_SPECS[window]
+    if str(selected_model_config.get("name")) != spec.name:
+        raise ValueError(
+            f"Config/model mismatch for I{window}: "
+            f"config={selected_model_config.get('name')}, implementation={spec.name}"
+        )
+
+    stage4_model = get_stage4_model_config(config)
+    gated_config = stage4_model.get(
+        UNCERTAINTY_GATED_LAST_BLOCK_METHOD,
+        stage4_model.get(BOUNDED_LAST_BLOCK_METHOD, {}),
+    )
+    if not isinstance(gated_config, Mapping):
+        raise TypeError(f"stage4_model.{UNCERTAINTY_GATED_LAST_BLOCK_METHOD} must be a mapping.")
+
+    context_encoder = build_context_encoder_from_config(config)
+    model = UncertaintyGatedLastBlockFilmContextStockCNN(
+        spec=spec,
+        context_encoder=context_encoder,
+        dropout=float(model_config.get("dropout", 0.5)),
+        modulation_scale=float(gated_config.get("modulation_scale", 0.10)),
+    )
+    actual = count_parameters(model)
+    expected = expected_bounded_last_block_film_context_parameter_count(config, window)
+    if actual != expected:
+        raise ValueError(
+            "Stage 4 uncertainty-gated last-block FiLM parameter mismatch: "
             f"actual={actual}, expected={expected}"
         )
     return model

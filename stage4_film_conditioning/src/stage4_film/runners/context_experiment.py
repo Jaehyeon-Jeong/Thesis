@@ -47,6 +47,7 @@ from stage4_film.models import (
     build_concat_context_stock_cnn_for_window,
     build_film_context_stock_cnn_for_window,
     build_gated_context_stock_cnn_for_window,
+    build_uncertainty_gated_last_block_film_context_stock_cnn_for_window,
 )
 from stage4_film.paths import Stage4Paths, experiment_output_roots
 from stage4_film.training import fit_context_model
@@ -501,6 +502,11 @@ def build_stage4_context_model(
         )
     if method == "film_full_bounded_last_block":
         return build_bounded_last_block_film_context_stock_cnn_for_window(
+            config,
+            image_window=image_window,
+        )
+    if method == "film_full_uncertainty_gated_last_block":
+        return build_uncertainty_gated_last_block_film_context_stock_cnn_for_window(
             config,
             image_window=image_window,
         )

@@ -18,22 +18,19 @@ Active work view:
 - Current conclusion: structured numeric context and headline-news context can
   show useful signal in some seeds, but scratch-trained context/FiLM models do
   not robustly beat the Stage 2 visual baseline.
-- Completed current track: `4-N8` through `4-N10-B`. Stage 4 now reloads the
-  selected Stage 2 checkpoint, reproduces the baseline, freezes the visual
-  CNN/classifier, and trains only bounded context-FiLM correction modules.
-- Current interpretation: N10-B shows that news-FiLM mostly makes a very small
-  Down/risk-off correction near the Stage 2 decision boundary. It corrected
-  `27` Stage 2 errors and introduced `24` regressions, for net `+3 / 7205`.
-- Current next track: skip LLM embeddings for now, then test whether the N10-B
-  interpretation can be reflected in the model through gated FiLM: first
-  uncertainty-gated FiLM, then confidence-gated FiLM, then technical-context
-  ablations under the same frozen Stage 2 structure.
+- Completed current track: `4-N8-A/B`, Stage 2 pretrained
+  baseline-preserving FiLM. Stage 4 now reloads the selected Stage 2
+  checkpoint, reproduces the baseline, freezes the visual CNN/classifier, and
+  trains only the F&G context encoder plus bounded final-block FiLM heads.
+- Current next track: use the same pretrained/frozen FiLM path for news-only
+  and then F&G + news context, followed by Stage 2 vs N8-B interpretability
+  comparison.
 - First news version: headline-only, non-LLM, train-only TF-IDF/SVD over
   7/20/60-day trailing news windows.
-- Main order now: N11 deferred -> N12-A uncertainty-gated news FiLM ->
-  N12-B confidence-gated news FiLM -> N12-C technical-only frozen FiLM ->
-  N12-D context-source comparison -> N13 sentiment/event features only if the
-  gated headline track is still too weak -> N14 final interpretability report.
+- Main order now: record N8-B results -> run news-only pretrained/frozen FiLM
+  if time permits -> run F&G + news combined context only if news-only is
+  promising -> prepare Grad-CAM/gamma-beta interpretation -> finalize Stage 4
+  report and advisor update.
 
 Main Stage 4 ablation:
 - [x] 4-A. `CNN + context concat`
@@ -581,57 +578,33 @@ News-context extension:
     Stage 2 vs N10 Grad-CAM and N10 FiLM gamma/beta modulation metadata.
   - Design note:
     [4-N10-B targeted Grad-CAM modulation export](checklist_results/4-N10-B_targeted_gradcam_modulation_export.md)
-- [x] 4-N11. LLM summary/embedding decision deferred
+- [ ] 4-N11. LLM summary/embedding decision
   - Deferred until headline-only no-leakage track is stable.
   - If used, record model name, prompt, version/date, cache hash, and runtime.
-  - Reason: adding LLM summaries now would add a new encoder variable before
-    the headline-only frozen-FiLM logic is finalized.
-  - Decision note:
-    [4-N11 LLM decision deferred](checklist_results/4-N11_llm_embedding_deferred.md)
-- [ ] 4-N12-A. Uncertainty-gated news FiLM
-  - Main next experiment.
-  - Shared N12 plan:
-    [4-N12 gated FiLM and context-source plan](checklist_results/4-N12_gated_film_and_context_source_plan.md)
-  - Use Stage 2 `I60/R20/ohlc_ma_vb` CNN/classifier frozen.
-  - Use headline news context, initially the N10 candidate:
-    `news SVD32 + news-count features`, scale candidates `0.02` and `0.05`.
-  - Let context-FiLM correction become stronger for ambiguous Stage 2 chart
-    decisions and weaker for high-confidence decisions.
-  - Candidate gate:
+- [ ] 4-N12. Optional uncertainty-gated FiLM follow-up
+  - Run only after N9/N10 interpretation shows that context helps mainly when
+    the Stage 2 chart model is uncertain.
+  - Idea: let context-FiLM correction become stronger for ambiguous Stage 2
+    decisions and weaker for high-confidence chart decisions.
+  - Candidate uncertainty:
     `uncertainty = 4 * prob_up_stage2 * (1 - prob_up_stage2)`.
-  - Candidate FiLM:
+  - Candidate formula:
     `gamma = 1 + uncertainty * scale * tanh(raw_gamma)`,
     `beta = uncertainty * scale * tanh(raw_beta)`.
-  - Purpose: test the N10-B interpretation that context helps mainly around the
-    Stage 2 decision boundary.
-- [ ] 4-N12-B. Confidence-gated news FiLM
-  - Follow after N12-A.
-  - Use the same frozen Stage 2 and news context setup.
-  - Let context-FiLM correction become stronger when Stage 2 is already
-    confident, to test whether context can sharpen visual evidence rather than
-    only fix uncertain samples.
-  - Candidate gate:
-    `confidence = abs(2 * prob_up_stage2 - 1)`.
-  - Candidate FiLM:
-    `gamma = 1 + confidence * scale * tanh(raw_gamma)`,
-    `beta = confidence * scale * tanh(raw_beta)`.
-  - Main risk: if Stage 2 is confidently wrong, this can make the wrong class
-    stronger. Evaluate correction/regression counts, not accuracy alone.
-- [ ] 4-N12-C. Stage2 frozen + technical-only bounded FiLM ablation
-  - Re-test BB/MFI/RV/volatility only under the frozen Stage 2 structure.
-  - Purpose: separate image-derived technical context from image-external
-    context. Expected gain is small because `ohlc_ma_vb` already contains much
-    of this information, but this is a useful ablation for the thesis.
-  - Candidate features: `bb_percent_b_60`, `bb_bandwidth_60`, `mfi_60`,
-    `rv_60`.
-- [ ] 4-N12-D. Frozen context-source comparison table
-  - Compare context sources under the same Stage 2 frozen, bounded-FiLM
-    protocol:
-    `F&G-only`, `news-only`, `technical-only`, and `news + F&G`.
-  - Use the same metrics and stability diagnostics:
-    accuracy, ROC-AUC, Brier, F1, predicted-Up rate, correction count,
-    regression count, and net correction.
-  - Purpose: make the final Stage 4 comparison fair and non-duplicative.
+  - Purpose: test the thesis-friendly claim that news/F&G context is most useful
+    as a correction signal when the visual chart evidence is ambiguous.
+- [x] 4-N12-A. Uncertainty-gated news FiLM implementation and runner
+  - Added `film_full_uncertainty_gated_last_block`.
+  - Formula:
+    `uncertainty = 4 * prob_up_stage2 * (1 - prob_up_stage2)`.
+  - Same N8/N9/N10 preservation rule: load the Stage 2
+    `I60/R20/ohlc_ma_vb` checkpoint, freeze CNN/classifier, and train only the
+    news context encoder plus final-block FiLM heads.
+  - Kaggle runner:
+    [kaggle_stage4_n12a_uncertainty_gated_news_film_one_cell.md](notebooks/kaggle_stage4_n12a_uncertainty_gated_news_film_one_cell.md)
+  - Default grid: news SVD32, scales `0.02` and `0.05`, five seeds.
+  - Local shape check passed; result note:
+    [4-N12-A uncertainty-gated news FiLM](checklist_results/4-N12-A_uncertainty_gated_news_film.md)
 - [ ] 4-N13. Optional sentiment/event feature extension
   - Run only if headline TF-IDF/SVD is too weak or hard to interpret.
   - Candidate features: FinBERT-style sentiment score, positive/negative/neutral
@@ -641,13 +614,6 @@ News-context extension:
     by strict `t-1`; encoder/model/version/date/cache hash must be recorded.
   - Purpose: test whether explicit news polarity/event type is more useful than
     unsupervised TF-IDF/SVD vectors for context-FiLM correction.
-- [ ] 4-N14. Final Stage 4 interpretability report
-  - Select one final Stage 4 model family or one negative/stability conclusion.
-  - Export matched Stage 2 vs final-FiLM samples:
-    `Stage2 wrong -> FiLM correct`, `Stage2 correct -> FiLM wrong`,
-    `both correct`, and `both wrong`.
-  - Include chart image, Stage 2 Grad-CAM, FiLM Grad-CAM, context vector,
-    gamma/beta summary, prediction delta, and correction/regression table.
 
 Important:
 - Do not draw the context values into the chart image for the main Stage 4
@@ -655,16 +621,6 @@ Important:
 - The context enters as a separate vector.
 - All context features must be available at or before image end date `t`.
 - Train-only statistics must be used for context normalization.
-- GitHub update rule: after each planned step, commit and push code,
-  checklist changes, compact result tables, and result notes before moving to
-  the next step.
-- Result storage rule: keep large Kaggle bundles, checkpoints, and full
-  prediction CSVs in local downloaded folders or Kaggle datasets. Record the
-  local/Kaggle path and summary metrics in `checklist_results/`, but do not
-  commit large duplicate artifacts.
-- Duplicate prevention rule: if a step already has a result file, append the
-  new result section there instead of creating another note for the same
-  experiment.
 - After N7, the main Stage 4 risk is no longer only context quality. The next
   key risk is that previous Stage 4 runs reused the Stage 2 architecture but
   not the learned Stage 2 weights. N8 addresses this before adding more
@@ -688,22 +644,18 @@ Stage 4는 이제 **market context를 고정된 BTC chart-image CNN에 어떻게
 - 현재 결론: structured numeric context와 headline-news context는 일부 seed에서
   signal을 보였지만, scratch-trained context/FiLM 모델은 Stage 2 visual
   baseline을 안정적으로 넘지 못했습니다.
-- 완료된 현재 track: `4-N8`부터 `4-N10-B`까지입니다. Stage 4 code path에서
-  선택된 Stage 2 checkpoint를 불러와 baseline을 재현했고, visual CNN/classifier를
-  freeze한 뒤 bounded context-FiLM correction module만 학습했습니다.
-- 현재 해석: N10-B에서 news-FiLM은 Stage 2 decision boundary 근처에서 아주 작은
-  Down/risk-off correction으로 작동했습니다. `27`개 Stage 2 error를 고쳤고
-  `24`개 regression을 만들었으므로 net correction은 `+3 / 7205`입니다.
-- 현재 다음 track: LLM embedding은 미루고, N10-B 해석을 구조에 반영합니다.
-  먼저 uncertainty-gated FiLM, 그 다음 confidence-gated FiLM, 이후 같은 frozen
-  Stage 2 구조에서 technical-context ablation과 context-source comparison을
-  진행합니다.
+- 완료된 현재 track: `4-N8-A/B`, Stage 2 pretrained baseline-preserving
+  FiLM입니다. Stage 4 code path에서 선택된 Stage 2 checkpoint를 불러와 baseline을
+  재현했고, visual CNN/classifier를 freeze한 뒤 F&G context encoder와 bounded
+  final-block FiLM head만 학습했습니다.
+- 현재 다음 track: 같은 pretrained/frozen FiLM path로 news-only를 먼저 테스트하고,
+  이후 필요하면 F&G + news combined context와 Stage 2 vs N8-B 해석 비교로
+  넘어갑니다.
 - 첫 news version: headline-only, non-LLM, train-only TF-IDF/SVD를 7/20/60-day
   trailing news window에 적용합니다.
-- 현재 순서: N11 deferred -> N12-A uncertainty-gated news FiLM ->
-  N12-B confidence-gated news FiLM -> N12-C technical-only frozen FiLM ->
-  N12-D context-source comparison -> N13 sentiment/event feature는 필요할 때만 ->
-  N14 final interpretability report.
+- 현재 순서: N8-B 결과 반영 -> news-only pretrained/frozen FiLM 실행 가능 여부 결정
+  -> news-only가 유망하면 F&G + news combined context -> Grad-CAM/gamma-beta 해석
+  -> Stage 4 최종 보고와 교수님 보고 정리.
 
 Stage 4 main ablation:
 - [x] 4-A. `CNN + context concat`
@@ -1246,53 +1198,34 @@ News-context 확장:
     export합니다.
   - 설계 노트:
     [4-N10-B targeted Grad-CAM modulation export](checklist_results/4-N10-B_targeted_gradcam_modulation_export.md)
-- [x] 4-N11. LLM summary/embedding decision deferred
+- [ ] 4-N11. LLM summary/embedding decision
   - Headline-only no-leakage track이 안정화된 뒤로 미룹니다.
-  - 지금 LLM summary/embedding을 넣으면 headline-only frozen-FiLM 구조가
-    정리되기 전에 encoder 변수가 추가됩니다.
   - 사용한다면 model name, prompt, version/date, cache hash, runtime을
     기록해야 합니다.
-  - 결정 노트:
-    [4-N11 LLM decision deferred](checklist_results/4-N11_llm_embedding_deferred.md)
-- [ ] 4-N12-A. Uncertainty-gated news FiLM
-  - 다음 메인 실험입니다.
-  - 공통 N12 계획:
-    [4-N12 gated FiLM and context-source plan](checklist_results/4-N12_gated_film_and_context_source_plan.md)
-  - Stage 2 `I60/R20/ohlc_ma_vb` CNN/classifier를 frozen으로 둡니다.
-  - headline news context는 우선 N10 후보인 `news SVD32 + news-count features`,
-    scale 후보 `0.02`, `0.05`를 사용합니다.
-  - Stage 2 chart 판단이 애매할수록 context-FiLM correction을 더 허용하고,
-    확신에 가까울수록 correction을 약하게 둡니다.
-  - 후보 gate:
+- [ ] 4-N12. Optional uncertainty-gated FiLM follow-up
+  - N9/N10 해석에서 context가 주로 Stage 2 chart model이 애매한 sample에서
+    도움이 된다는 근거가 보일 때만 실행합니다.
+  - 아이디어: Stage 2 chart 판단이 애매할수록 context-FiLM correction을 더 허용하고,
+    chart 판단이 확신에 가까울수록 correction을 약하게 둡니다.
+  - 후보 uncertainty:
     `uncertainty = 4 * prob_up_stage2 * (1 - prob_up_stage2)`.
-  - 후보 FiLM:
+  - 후보 formula:
     `gamma = 1 + uncertainty * scale * tanh(raw_gamma)`,
     `beta = uncertainty * scale * tanh(raw_beta)`.
-  - 목적: N10-B에서 관찰된 “decision boundary 근처 작은 correction” 해석을
-    모델 구조에 직접 반영합니다.
-- [ ] 4-N12-B. Confidence-gated news FiLM
-  - N12-A 이후 실행합니다.
-  - 같은 frozen Stage 2와 news context setup을 사용합니다.
-  - Stage 2가 이미 확신하는 방향을 context가 더 강화할 수 있는지 확인합니다.
-  - 후보 gate:
-    `confidence = abs(2 * prob_up_stage2 - 1)`.
-  - 후보 FiLM:
-    `gamma = 1 + confidence * scale * tanh(raw_gamma)`,
-    `beta = confidence * scale * tanh(raw_beta)`.
-  - 주의: Stage 2가 확신하고도 틀린 경우까지 강화할 수 있으므로 accuracy만 보지
-    말고 correction/regression count를 같이 봅니다.
-- [ ] 4-N12-C. Stage2 frozen + technical-only bounded FiLM ablation
-  - BB/MFI/RV/volatility를 frozen Stage 2 구조에서 다시 확인합니다.
-  - 목적: image-derived technical context와 image-external context를 분리합니다.
-  - 후보 feature: `bb_percent_b_60`, `bb_bandwidth_60`, `mfi_60`, `rv_60`.
-  - 예상: `ohlc_ma_vb` 이미지가 이미 기술적 정보를 많이 담고 있어 큰 gain은
-    어렵지만, thesis ablation으로 필요합니다.
-- [ ] 4-N12-D. Frozen context-source comparison table
-  - 같은 Stage 2 frozen, bounded-FiLM protocol에서 context source를 비교합니다:
-    `F&G-only`, `news-only`, `technical-only`, `news + F&G`.
-  - metric: accuracy, ROC-AUC, Brier, F1, predicted-Up rate,
-    correction count, regression count, net correction.
-  - 목적: 최종 Stage 4 comparison을 공정하고 중복 없이 정리합니다.
+  - 목적: news/F&G context가 visual chart evidence가 애매한 구간에서 correction
+    signal로 가장 유용하다는 thesis-friendly claim을 검증합니다.
+- [x] 4-N12-A. Uncertainty-gated news FiLM 구현과 runner 준비
+  - `film_full_uncertainty_gated_last_block`을 추가했습니다.
+  - 공식:
+    `uncertainty = 4 * prob_up_stage2 * (1 - prob_up_stage2)`.
+  - N8/N9/N10과 같은 baseline 보존 규칙을 사용합니다. Stage 2
+    `I60/R20/ohlc_ma_vb` checkpoint를 load하고 CNN/classifier는 freeze한 뒤,
+    news context encoder와 final-block FiLM head만 학습합니다.
+  - Kaggle runner:
+    [kaggle_stage4_n12a_uncertainty_gated_news_film_one_cell.md](notebooks/kaggle_stage4_n12a_uncertainty_gated_news_film_one_cell.md)
+  - 기본 grid: news SVD32, scale `0.02`, `0.05`, five seeds.
+  - Local shape check 통과; 결과 노트:
+    [4-N12-A uncertainty-gated news FiLM](checklist_results/4-N12-A_uncertainty_gated_news_film.md)
 - [ ] 4-N13. Optional sentiment/event feature extension
   - Headline TF-IDF/SVD가 너무 약하거나 해석하기 어려울 때만 실행합니다.
   - 후보 feature: FinBERT-style sentiment score, positive/negative/neutral count,
@@ -1302,27 +1235,12 @@ News-context 확장:
     headline만 써야 하며 encoder/model/version/date/cache hash를 기록해야 합니다.
   - 목적: 명시적 news polarity/event type이 unsupervised TF-IDF/SVD vector보다
     context-FiLM correction에 더 유용한지 확인합니다.
-- [ ] 4-N14. Final Stage 4 interpretability report
-  - 최종 Stage 4 model family 또는 negative/stability conclusion을 하나 정리합니다.
-  - matched sample을 export합니다:
-    `Stage2 wrong -> FiLM correct`, `Stage2 correct -> FiLM wrong`,
-    `both correct`, `both wrong`.
-  - chart image, Stage 2 Grad-CAM, FiLM Grad-CAM, context vector,
-    gamma/beta summary, prediction delta, correction/regression table을 함께
-    정리합니다.
 
 중요:
 - Main Stage 4 실험에서 context 값을 chart image 위에 추가로 그리지 않습니다.
 - context는 별도 vector로 들어갑니다.
 - 모든 context feature는 image end date `t` 또는 그 이전에 알 수 있어야 합니다.
 - context normalization은 train split 통계로만 fit합니다.
-- GitHub update rule: 각 planned step 이후 code, checklist, compact result
-  table, result note를 commit/push하고 다음 단계로 넘어갑니다.
-- Result storage rule: 큰 Kaggle bundle, checkpoint, full prediction CSV는
-  로컬 다운로드 폴더나 Kaggle dataset에 보관합니다. GitHub에는 로컬/Kaggle 경로와
-  summary metric만 `checklist_results/`에 기록합니다.
-- Duplicate prevention rule: 같은 step의 result file이 이미 있으면 새 문서를 만들지
-  말고 기존 파일에 결과 section을 추가합니다.
 - N7 이후 Stage 4의 핵심 risk는 context 품질만이 아닙니다. 이전 Stage 4 run은
   Stage 2 architecture는 재사용했지만 Stage 2 learned weight는 재사용하지
   않았습니다. N8은 더 많은 context source를 추가하기 전에 이 문제를 먼저

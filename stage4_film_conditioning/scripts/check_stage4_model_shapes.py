@@ -32,6 +32,7 @@ from stage4_film.models import (
     build_concat_context_stock_cnn_for_window,
     build_film_context_stock_cnn_for_window,
     build_gated_context_stock_cnn_for_window,
+    build_uncertainty_gated_last_block_film_context_stock_cnn_for_window,
     expected_bounded_last_block_film_context_parameter_count,
     expected_concat_context_parameter_count,
     expected_film_context_parameter_count,
@@ -111,6 +112,15 @@ def main() -> None:
             config,
             image_window,
         )
+    elif method == "film_full_uncertainty_gated_last_block":
+        model = build_uncertainty_gated_last_block_film_context_stock_cnn_for_window(
+            config,
+            image_window=image_window,
+        )
+        expected_params = expected_bounded_last_block_film_context_parameter_count(
+            config,
+            image_window,
+        )
     else:
         raise ValueError(f"Unsupported model checker method: {method}")
     model.eval()
@@ -155,7 +165,10 @@ def main() -> None:
                 shapes[f"layer{block_index}_film"],
                 shapes[f"layer{block_index}_bn"],
             )
-    elif method == "film_full_bounded_last_block":
+    elif method in {
+        "film_full_bounded_last_block",
+        "film_full_uncertainty_gated_last_block",
+    }:
         block_index = len(spec.channels)
         channels = int(spec.channels[-1])
         _assert_shape(
@@ -183,6 +196,17 @@ def main() -> None:
             shapes[f"layer{block_index}_film"],
             shapes[f"layer{block_index}_bn"],
         )
+        if method == "film_full_uncertainty_gated_last_block":
+            _assert_shape(
+                f"modulation_gate{block_index}",
+                shapes[f"modulation_gate{block_index}"],
+                (batch_size, 1),
+            )
+            _assert_shape(
+                f"stage2_prob_up{block_index}",
+                shapes[f"stage2_prob_up{block_index}"],
+                (batch_size, 1),
+            )
     if not torch.isfinite(logits).all():
         raise RuntimeError(f"{method} context model produced non-finite dummy logits.")
 
@@ -228,7 +252,12 @@ def main() -> None:
                 torch.allclose(gate, torch.ones_like(gate))
             ),
         }
-    if method in {"film_gamma", "film_full", "film_full_bounded_last_block"}:
+    if method in {
+        "film_gamma",
+        "film_full",
+        "film_full_bounded_last_block",
+        "film_full_uncertainty_gated_last_block",
+    }:
         with torch.no_grad():
             details = model.forward_with_modulation_values(
                 dummy_image,
@@ -276,6 +305,24 @@ def main() -> None:
                 )
             if "modulation_scale" in block:
                 block_summary["modulation_scale"] = float(block["modulation_scale"])
+            if "modulation_gate" in block and block["modulation_gate"] is not None:
+                modulation_gate = block["modulation_gate"]
+                block_summary.update(
+                    {
+                        "modulation_gate_shape": list(modulation_gate.shape),
+                        "modulation_gate_min": float(modulation_gate.min().item()),
+                        "modulation_gate_max": float(modulation_gate.max().item()),
+                    }
+                )
+            if "stage2_prob_up" in block and block["stage2_prob_up"] is not None:
+                stage2_prob_up = block["stage2_prob_up"]
+                block_summary.update(
+                    {
+                        "stage2_prob_up_shape": list(stage2_prob_up.shape),
+                        "stage2_prob_up_min": float(stage2_prob_up.min().item()),
+                        "stage2_prob_up_max": float(stage2_prob_up.max().item()),
+                    }
+                )
             if beta is not None:
                 block_summary.update(
                     {
@@ -425,7 +472,12 @@ def _check_real_context_rows(
                     torch.allclose(gate, torch.ones_like(gate))
                 ),
             }
-        if method in {"film_gamma", "film_full", "film_full_bounded_last_block"}:
+        if method in {
+            "film_gamma",
+            "film_full",
+            "film_full_bounded_last_block",
+            "film_full_uncertainty_gated_last_block",
+        }:
             details = model.forward_with_modulation_values(
                 image,
                 context,
@@ -462,6 +514,22 @@ def _check_real_context_rows(
                     )
                 if "modulation_scale" in block:
                     block_summary["modulation_scale"] = float(block["modulation_scale"])
+                if "modulation_gate" in block and block["modulation_gate"] is not None:
+                    modulation_gate = block["modulation_gate"]
+                    block_summary.update(
+                        {
+                            "modulation_gate_min": float(modulation_gate.min().item()),
+                            "modulation_gate_max": float(modulation_gate.max().item()),
+                        }
+                    )
+                if "stage2_prob_up" in block and block["stage2_prob_up"] is not None:
+                    stage2_prob_up = block["stage2_prob_up"]
+                    block_summary.update(
+                        {
+                            "stage2_prob_up_min": float(stage2_prob_up.min().item()),
+                            "stage2_prob_up_max": float(stage2_prob_up.max().item()),
+                        }
+                    )
                 if beta is not None:
                     block_summary.update(
                         {
@@ -494,7 +562,12 @@ def _check_real_context_rows(
     if method == "gating":
         result["gated_feature_map_shape"] = list(shapes["gated_feature_map"])
         result["gate"] = gate_summary
-    if method in {"film_gamma", "film_full", "film_full_bounded_last_block"}:
+    if method in {
+        "film_gamma",
+        "film_full",
+        "film_full_bounded_last_block",
+        "film_full_uncertainty_gated_last_block",
+    }:
         result["film"] = film_summary
     return result
 

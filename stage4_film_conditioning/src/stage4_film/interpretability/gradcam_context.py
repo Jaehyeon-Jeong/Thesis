@@ -293,6 +293,7 @@ def _target_layers_for_method(
         "film_gamma",
         "film_full",
         "film_full_bounded_last_block",
+        "film_full_uncertainty_gated_last_block",
     } and hasattr(model, "film_target_layers"):
         return dict(model.film_target_layers()), "post_film"
     return dict(model.gradcam_target_layers()), "conv"
@@ -349,6 +350,7 @@ def _extract_context_and_modulation(
             "film_gamma",
             "film_full",
             "film_full_bounded_last_block",
+            "film_full_uncertainty_gated_last_block",
         } and hasattr(
             model,
             "forward_with_modulation_values",
@@ -393,6 +395,14 @@ def _extract_context_and_modulation(
                     block_record["raw_beta"] = _tensor_to_list(raw_beta)
                 if "modulation_scale" in block:
                     block_record["modulation_scale"] = float(block["modulation_scale"])
+                modulation_gate = block.get("modulation_gate")
+                stage2_prob_up = block.get("stage2_prob_up")
+                if modulation_gate is not None:
+                    summary.update(_tensor_stats(f"block{block_id}_modulation_gate", modulation_gate))
+                    block_record["modulation_gate"] = _tensor_to_list(modulation_gate)
+                if stage2_prob_up is not None:
+                    summary.update(_tensor_stats(f"block{block_id}_stage2_prob_up", stage2_prob_up))
+                    block_record["stage2_prob_up"] = _tensor_to_list(stage2_prob_up)
                 block_values.append(block_record)
             values = {
                 "context": _named_context_values(context, context_feature_names),

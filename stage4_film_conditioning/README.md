@@ -34,11 +34,9 @@ flowchart LR
     K --> L[N6: news concat control]
     L --> M[N6.1: news SVD-dim grid]
     M --> N[N7: SVD8 news bounded FiLM]
-    N --> O[N8: Stage 2 pretrained/frozen baseline preservation]
-    O --> P[N9: news pretrained/frozen FiLM grid]
-    P --> Q[N10: Stage 2 vs N10 correction + Grad-CAM/modulation]
-    Q --> R[N12: uncertainty/confidence-gated FiLM + context-source ablations]
-    R --> S[N14: final interpretability report]
+    N --> O[N8: Stage2 pretrained/frozen FiLM]
+    O --> P[N9/N10: news pretrained/frozen + interpretation]
+    P --> Q[N12-A: uncertainty-gated news FiLM]
 ```
 
 ## Checklist And Review Links
@@ -50,7 +48,6 @@ flowchart LR
 | Professor direction brief | Why context + FiLM is the direction | [docs/professor_meeting_stage4_direction_brief.md](docs/professor_meeting_stage4_direction_brief.md) |
 | FiLM insertion design | Where concat/gating/FiLM are attached | [docs/film_insertion_design.md](docs/film_insertion_design.md) |
 | Context/news plan | Structured context and future news track | [docs/condition_track_plan.md](docs/condition_track_plan.md), [docs/news_context_plan.md](docs/news_context_plan.md) |
-| N12 gated FiLM plan | Next uncertainty/confidence-gated experiments and artifact policy | [checklist_results/4-N12_gated_film_and_context_source_plan.md](checklist_results/4-N12_gated_film_and_context_source_plan.md) |
 | v1 interpretation report | Five-seed v1 interpretation | [reports/stage4_v1_interpretation/stage4_v1_interpretation_report.md](reports/stage4_v1_interpretation/stage4_v1_interpretation_report.md) |
 
 ## How To Read This Folder
@@ -65,9 +62,6 @@ flowchart LR
   implementation.
 - Local raw data, Kaggle outputs, and downloaded result bundles are kept outside
   the active code path and should not be treated as source code.
-- Commit compact result tables and result notes to GitHub after each step.
-  Large bundles/checkpoints/full prediction CSVs stay local or in Kaggle
-  datasets, with their paths recorded in the matching checklist result file.
 
 ## Context Features
 
@@ -135,28 +129,20 @@ News-context track:
 | `4-N1`-`4-N5` | headline-only BTC news audit, strict `t-1` alignment, 7/20/60 headline windows, train-only TF-IDF/SVD, sample-level `102`-dim context table | Completed | [N5 review](checklist_results/4-N5_news_context_feature_builder.md) |
 | `4-N6` | `I60/R20/ohlc_ma_vb` + `CNN + news concat`, SVD dim `32`, five seeds | Accuracy mean `0.5478`, ROC-AUC mean `0.5644`; seeds `43`/`45` collapsed | [N6 review](checklist_results/4-N6_news_context_baseline_controls.md) |
 | `4-N6.1` | Same `CNN + news concat`, SVD dim grid `16`, `8` | SVD8 selected: accuracy mean `0.5407`, ROC-AUC mean `0.5817`; ranking signal strongest but seeds `45`/`46` collapsed Down | [N6.1 review](checklist_results/4-N6.1_news_svd_dim_grid.md) |
-| `4-N7` | SVD8 news vector + bounded last-block FiLM, scale `0.05` | Scratch/newly trained Stage4 path remained below Stage 2, motivating pretrained/frozen baseline preservation | [N7 review](checklist_results/4-N7_news_bounded_film_svd8.md) |
-| `4-N8-A` | Reload Stage 2 `I60/R20/ohlc_ma_vb` checkpoints inside Stage4 | Reload sanity passed; Stage4 path reproduced Stage2 baseline, accuracy mean `0.579320`, ROC-AUC mean `0.584863` | [N8 review](checklist_results/4-N8_pretrained_baseline_preserving_film.md) |
-| `4-N8-B` | F&G-only, Stage2 CNN/classifier frozen, bounded last-block FiLM | Best scale `0.02`: accuracy mean `0.580291`, ROC-AUC mean `0.584930`; tiny but stable gain over Stage2 reload | [N8 review](checklist_results/4-N8_pretrained_baseline_preserving_film.md) |
-| `4-N9` | News SVD context, Stage2 CNN/classifier frozen, bounded last-block FiLM | N9-A preserves baseline; grid-best accuracy candidate `SVD32/scale0.02` has accuracy mean `0.579736`, ROC-AUC mean `0.585353`; `SVD8/scale0.05` has best ROC-AUC/Brier but lower accuracy | [N9 review](checklist_results/4-N9_news_pretrained_frozen_film_design.md) |
-| `4-N10` | Interpretability comparison | N8/N9 improve ranking/calibration slightly, reduce Up-bias, but accuracy gains are too small to claim a strong performance improvement | [N10 review](checklist_results/4-N10_news_interpretability_report.md) |
-| `4-N10-A/B` | Stage2 vs N10 correction analysis and targeted Grad-CAM/gamma-beta export | `27` Stage2 errors corrected, `24` regressions, net `+3/7205`; gamma/beta modulation is very small and mostly acts as a Down/risk-off correction | [N10-B review](checklist_results/4-N10-B_targeted_gradcam_modulation_export.md) |
+| `4-N7` | SVD8 news vector + bounded last-block FiLM, scale `0.05` | Prepared for Kaggle; tests whether FiLM can stabilize/use the SVD8 news signal | [N7 review](checklist_results/4-N7_news_bounded_film_svd8.md) |
+| `4-N8-B` | Stage 2 checkpoint loaded/frozen + F&G-only bounded FiLM | Baseline-preserving structure works; scale `0.02` accuracy mean `0.5803`, ROC-AUC mean `0.5849` | [N8 review](checklist_results/4-N8_pretrained_baseline_preserving_film.md) |
+| `4-N9/N10` | Stage 2 checkpoint loaded/frozen + news TF-IDF/SVD bounded FiLM | N10 news SVD32/scale `0.02` is the current news-only comparison; targeted correction analysis and Grad-CAM export are prepared | [N10 review](checklist_results/4-N10_news_interpretability_report.md), [N10-B review](checklist_results/4-N10-B_targeted_gradcam_modulation_export.md) |
+| `4-N12-A` | Stage 2 checkpoint loaded/frozen + uncertainty-gated news FiLM | Prepared; gate `4 * p_up * (1 - p_up)` makes FiLM stronger only for ambiguous Stage 2 chart predictions | [N12-A review](checklist_results/4-N12-A_uncertainty_gated_news_film.md) |
 
 Next direction:
-- close scratch-trained numeric/news FiLM as a weak or unstable result;
-- keep the Stage 2 pretrained/frozen baseline-preserving structure as the
-  cleanest Stage 4 model family;
-- report N8-B F&G-only as a tiny stable improvement and N9/N10 as
-  ranking/calibration/interpretability evidence rather than a large accuracy
-  gain;
-- use N10-B targeted Grad-CAM and gamma/beta exports to show what the bounded
-  FiLM correction is doing on `Stage2 wrong -> N10 correct` and
-  `Stage2 correct -> N10 wrong` samples;
-- N11 LLM summary/embedding is deferred until the headline-only no-leakage
-  track is finalized;
-- the next model step is N12-A uncertainty-gated news FiLM, followed by
-  N12-B confidence-gated FiLM and N12-C/D context-source ablations, because
-  N10 corrections appear mainly near the Stage 2 decision boundary.
+- run N12-A on Kaggle: news SVD32, uncertainty-gated bounded last-block FiLM,
+  scales `0.02` and `0.05`, five seeds;
+- compare against Stage 2, N8-B, and N10 on accuracy, ROC-AUC, predicted
+  positive rate stability, and correction/regression balance;
+- use targeted Grad-CAM plus `modulation_gate`, `stage2_prob_up`, gamma, and
+  beta summaries for the thesis interpretation section;
+- keep LLM/sentiment/event extraction as a later extension only if the
+  headline TF-IDF/SVD path remains too weak or hard to interpret.
 
 ## Code Map
 
@@ -166,7 +152,7 @@ Next direction:
 | Context features | [src/stage4_film/context/](src/stage4_film/context/) | F&G/OHLCV-derived feature construction |
 | Context encoder | [src/stage4_film/conditions/](src/stage4_film/conditions/) | MLP condition embedding |
 | FiLM layers | [src/stage4_film/layers/](src/stage4_film/layers/) | FiLM affine modulation and generator |
-| Models | [src/stage4_film/models/](src/stage4_film/models/) | concat/gating/FiLM context Stock_CNN variants |
+| Models | [src/stage4_film/models/](src/stage4_film/models/) | concat/gating/FiLM context Stock_CNN variants, including bounded and uncertainty-gated final-block FiLM |
 | Training | [src/stage4_film/training/](src/stage4_film/training/) | Context model training loop |
 | Evaluation | [src/stage4_film/evaluation/](src/stage4_film/evaluation/) | Prediction/trading metric helpers |
 | Interpretability | [src/stage4_film/interpretability/](src/stage4_film/interpretability/) | Grad-CAM and modulation export |

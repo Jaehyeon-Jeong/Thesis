@@ -234,6 +234,31 @@ Required backup root:
   - Grad-CAM/context modulation export가 켜져 있습니다.
   - 결과 download bundle:
     `/kaggle/working/stage4_news_context_n7_bounded_film_svd8_result_bundle.zip`.
+- `kaggle_stage4_n8b_fg_only_pretrained_frozen_bounded_film_one_cell.md`
+  - Stage 2 `I60/R20/ohlc_ma_vb` checkpoint를 load하고 CNN/classifier를
+    freeze한 뒤 F&G-only context encoder와 bounded final-block FiLM head만
+    학습합니다.
+  - 목적: context-FiLM이 baseline을 새로 흔드는 것이 아니라 강한 Stage 2
+    visual model 위에서 correction으로 작동하는지 확인합니다.
+- `kaggle_stage4_n9_news_pretrained_frozen_svd_scale_grid_one_cell.md`
+  - N8-B와 같은 frozen Stage 2 setup에 headline TF-IDF/SVD news context를
+    붙입니다.
+  - Grid: SVD dim `8/16/32`, scale `0.02/0.05` 중 이미 실행한
+    `SVD8/0.02`를 제외합니다.
+- `kaggle_stage4_n10_selected_news_interpretability_one_cell.md`
+  - 선택된 news bounded-FiLM 후보를 다시 실행하면서 Grad-CAM/context
+    modulation artifact를 저장합니다.
+- `kaggle_stage4_n10_stage2_vs_n10_correction_analysis_one_cell.md`
+  - Stage 2 prediction과 N10 prediction을 같은 sample index로 비교해
+    correction/regression table을 만듭니다.
+- `kaggle_stage4_n10_b_targeted_gradcam_modulation_one_cell.md`
+  - N10 correction-analysis에서 선택한 sample에 대해 Stage 2와 N10
+    targeted Grad-CAM 및 gamma/beta modulation metadata를 export합니다.
+- `kaggle_stage4_n12a_uncertainty_gated_news_film_one_cell.md`
+  - N12-A runner입니다.
+  - Stage 2 CNN/classifier를 frozen으로 보존하고, news SVD32 context가 만든
+    final-block FiLM을 `4 * p_up * (1 - p_up)` uncertainty gate로 조절합니다.
+  - Grid: scale `0.02`, `0.05` x seeds `42, 43, 44, 45, 46`.
 
 예정 notebook:
 - `kaggle_stage4_single_ablation_one_cell.md`

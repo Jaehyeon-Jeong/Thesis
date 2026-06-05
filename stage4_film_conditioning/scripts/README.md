@@ -44,12 +44,18 @@ Updated in `4-V7`:
   `--model film_full_bounded_last_block`, final-block-only bounded gamma/beta
   shapes, identity initialization, and parameter count.
 
+Updated in `4-N12-A`:
+- `check_stage4_model_shapes.py`: now validates
+  `--model film_full_uncertainty_gated_last_block`, including
+  `modulation_gate` and frozen Stage 2 `stage2_prob_up` tensor shapes.
+
 Added in `4-I8`:
 - `run_stage4_context_model.py`: runs one Stage 4 context-conditioned training
   job. It reuses the fixed Stage 2 BTC data/image/split/normalization path,
   builds context features, attaches `batch["context"]`, and trains one of
   `concat`, `gating`, `film_gamma`, `film_full`, or
-  `film_full_bounded_last_block`.
+  `film_full_bounded_last_block`. N12-A also supports
+  `film_full_uncertainty_gated_last_block`.
   - Smoke example:
     `python scripts/run_stage4_context_model.py --config configs/env_local.yaml --context-method concat --max-epochs 1 --max-train-rows 16 --max-validation-rows 8 --max-test-rows 8`
 
@@ -71,6 +77,8 @@ Added in `4-I10`:
 - For `film_gamma`/`film_full`, it exports block-wise gamma and beta values.
 - For `film_full_bounded_last_block`, it exports final-block bounded
   gamma/beta plus raw gamma/beta values.
+- For `film_full_uncertainty_gated_last_block`, it also exports the
+  uncertainty `modulation_gate` and frozen Stage 2 `stage2_prob_up`.
 
 Added in `4-I11`:
 - `check_stage4_outputs.py`: checks the complete Stage 4 output bundle for one
@@ -162,11 +170,16 @@ Stage 4 script는 구현 단계에서 순차적으로 추가합니다.
   final-block-only bounded gamma/beta shape, identity initialization,
   parameter count를 검증합니다.
 
+`4-N12-A`에서 수정한 script:
+- `check_stage4_model_shapes.py`: `--model film_full_uncertainty_gated_last_block`,
+  `modulation_gate`, frozen Stage 2 `stage2_prob_up` shape까지 검증합니다.
+
 `4-I8`에서 추가한 script:
 - `run_stage4_context_model.py`: Stage 4 context-conditioned training job 하나를
   실행합니다. 고정된 Stage 2 BTC data/image/split/normalization 경로를 재사용하고,
   context feature를 생성한 뒤 `batch["context"]`를 붙여 `concat`, `gating`,
-  `film_gamma`, `film_full`, `film_full_bounded_last_block` 중 하나를 학습합니다.
+  `film_gamma`, `film_full`, `film_full_bounded_last_block`,
+  `film_full_uncertainty_gated_last_block` 중 하나를 학습합니다.
   - Smoke 예시:
     `python scripts/run_stage4_context_model.py --config configs/env_local.yaml --context-method concat --max-epochs 1 --max-train-rows 16 --max-validation-rows 8 --max-test-rows 8`
 
@@ -186,6 +199,8 @@ Stage 4 script는 구현 단계에서 순차적으로 추가합니다.
 - `film_gamma`/`film_full`은 block별 gamma/beta 값을 저장합니다.
 - `film_full_bounded_last_block`은 final-block bounded gamma/beta와 raw
   gamma/beta 값을 저장합니다.
+- `film_full_uncertainty_gated_last_block`은 final-block bounded gamma/beta에
+  더해 `modulation_gate`와 `stage2_prob_up`을 저장합니다.
 
 `4-I11`에서 추가한 script:
 - `check_stage4_outputs.py`: 한 experiment/seed의 Stage 4 output bundle 전체를

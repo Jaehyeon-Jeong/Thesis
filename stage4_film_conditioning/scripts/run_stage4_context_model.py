@@ -139,9 +139,13 @@ def _apply_cli_overrides(config: dict[str, Any], args: argparse.Namespace) -> di
         config["context"]["primary_features"] = features
         config["stage4_model"]["context_dim"] = len(features)
     if float(args.modulation_scale) > 0:
-        config["stage4_model"]["film_full_bounded_last_block"]["modulation_scale"] = float(
-            args.modulation_scale
-        )
+        scale = float(args.modulation_scale)
+        for section in (
+            "film_full_bounded_last_block",
+            "film_full_uncertainty_gated_last_block",
+        ):
+            config["stage4_model"].setdefault(section, {})
+            config["stage4_model"][section]["modulation_scale"] = scale
     if args.enable_stage2_pretrained or str(args.stage2_pretrained_bundle_root).strip():
         pretrained = dict(config["stage4_model"].get("pretrained_stage2", {}))
         pretrained["enabled"] = True

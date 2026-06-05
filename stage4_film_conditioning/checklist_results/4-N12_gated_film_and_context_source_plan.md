@@ -1,6 +1,6 @@
 # 4-N12 Gated FiLM And Context-Source Plan
 
-Status: N12-A completed, N12-B prepared.
+Status: N12-A completed, N12-B completed, N12-C runner prepared.
 
 ## Why N12
 
@@ -100,6 +100,20 @@ Expected interpretation:
 The gain may be small because ohlc_ma_vb already contains MA/volume/shape
 information, but this ablation makes the Stage 4 context-source comparison
 cleaner.
+```
+
+Prepared runner:
+
+```text
+notebooks/kaggle_stage4_n12c_technical_only_pretrained_frozen_bounded_film_one_cell.md
+```
+
+Default grid:
+
+```text
+method: film_full_bounded_last_block
+scales: 0.02, 0.05
+seeds: 42, 43, 44, 45, 46
 ```
 
 ## N12-D. Context-Source Comparison

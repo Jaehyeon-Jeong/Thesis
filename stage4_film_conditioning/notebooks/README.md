@@ -264,6 +264,15 @@ Required backup root:
   - Stage 2 CNN/classifier를 frozen으로 보존하고, news SVD32 context가 만든
     final-block FiLM을 `abs(2 * p_up - 1)` confidence gate로 조절합니다.
   - Grid: scale `0.02`, `0.05` x seeds `42, 43, 44, 45, 46`.
+- `kaggle_stage4_n12c_technical_only_pretrained_frozen_bounded_film_one_cell.md`
+  - N12-C runner입니다.
+  - Stage 2 CNN/classifier를 frozen으로 보존하고, OHLCV-derived technical
+    context `bb_percent_b_60`, `bb_bandwidth_60`, `mfi_60`, `rv_60`만
+    bounded final-block FiLM condition으로 사용합니다.
+  - Grid: scale `0.02`, `0.05` x seeds `42, 43, 44, 45, 46`.
+  - 목적: F&G/news처럼 image-external context가 아니라, chart에서 이미 어느
+    정도 보이는 technical context가 별도 FiLM 조건으로 유용한지 분리해서
+    확인하는 것입니다.
 
 예정 notebook:
 - `kaggle_stage4_single_ablation_one_cell.md`

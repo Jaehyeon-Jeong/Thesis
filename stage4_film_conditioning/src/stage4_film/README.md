@@ -49,6 +49,16 @@ Added in `4-N12-A`:
   strongest when the frozen Stage 2 classifier is uncertain.
 - Grad-CAM modulation export includes `modulation_gate` and `stage2_prob_up`.
 
+Added in `4-N12-B`:
+- `models/film_stock_cnn.py`: `ConfidenceGatedLastBlockFilmContextStockCNN`
+  for `film_full_confidence_gated_last_block`.
+- It reuses the same frozen Stage 2 path and bounded final-block FiLM heads,
+  but scales correction by `abs(2 * stage2_prob_up - 1)`, so context correction
+  is strongest when the frozen Stage 2 classifier is confident.
+- This tests reinforcement of high-confidence visual evidence and must be
+  reviewed with correction/regression counts because it can amplify confidently
+  wrong visual predictions.
+
 Added in `4-I8`:
 - `training/loop.py`: context-aware training loop that calls
   `model(image, context)` and preserves identity initialization for gate/FiLM
@@ -119,6 +129,15 @@ Stage 4 FiLM/context-conditioning 구현 package입니다.
   그래서 frozen Stage 2 classifier가 애매할수록 context correction이 커집니다.
 - Grad-CAM modulation export에는 `modulation_gate`와 `stage2_prob_up`도
   포함됩니다.
+
+`4-N12-B`에서 추가한 module:
+- `models/film_stock_cnn.py`: `film_full_confidence_gated_last_block`용
+  `ConfidenceGatedLastBlockFilmContextStockCNN`입니다.
+- 같은 frozen Stage 2 path와 bounded final-block FiLM head를 재사용하되
+  `abs(2 * stage2_prob_up - 1)`로 correction 강도를 조절합니다. 그래서
+  frozen Stage 2 classifier가 확신할수록 context correction이 커집니다.
+- 높은 확신의 visual evidence를 강화하는지 보는 실험이며, confidently wrong
+  prediction을 키울 수 있으므로 correction/regression count로 함께 봐야 합니다.
 
 `4-I8`에서 추가한 module:
 - `training/loop.py`: `model(image, context)`를 호출하는 context-aware training

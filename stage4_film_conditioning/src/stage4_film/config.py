@@ -25,6 +25,7 @@ CONTEXT_METHODS: tuple[str, ...] = (
     "film_full",
     "film_full_bounded_last_block",
     "film_full_uncertainty_gated_last_block",
+    "film_full_confidence_gated_last_block",
 )
 
 REQUIRED_TOP_LEVEL_KEYS: tuple[str, ...] = (

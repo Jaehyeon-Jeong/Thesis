@@ -605,6 +605,37 @@ News-context extension:
   - Default grid: news SVD32, scales `0.02` and `0.05`, five seeds.
   - Local shape check passed; result note:
     [4-N12-A uncertainty-gated news FiLM](checklist_results/4-N12-A_uncertainty_gated_news_film.md)
+- [x] 4-N12-B. Confidence-gated news FiLM implementation and runner
+  - Added `film_full_confidence_gated_last_block`.
+  - Formula:
+    `confidence = abs(2 * stage2_prob_up - 1)`.
+  - Same baseline-preserving rule: load the Stage 2 `I60/R20/ohlc_ma_vb`
+    checkpoint, freeze CNN/classifier, and train only the news context encoder
+    plus final-block FiLM heads.
+  - Kaggle runner:
+    [kaggle_stage4_n12b_confidence_gated_news_film_one_cell.md](notebooks/kaggle_stage4_n12b_confidence_gated_news_film_one_cell.md)
+  - Default grid: news SVD32, scales `0.02` and `0.05`, five seeds.
+  - Local shape check passed; result note:
+    [4-N12-B confidence-gated news FiLM](checklist_results/4-N12-B_confidence_gated_news_film.md)
+- [ ] 4-N12-C. Stage 2 frozen + technical-only bounded FiLM
+  - Purpose: separate image-derived technical context from external/news context
+    under the same baseline-preserving Stage 2 frozen protocol.
+  - Candidate features: `bb_percent_b_60`, `bb_bandwidth_60`, `mfi_60`,
+    `rv_60`.
+  - Method: `film_full_bounded_last_block` first; gated variants only if the
+    bounded result shows useful signal.
+  - Required comparison: Stage 2 baseline, N8-B F&G-only, N9/N10 news-only,
+    N12-A/B gated news.
+- [ ] 4-N12-D. Context-source comparison under the frozen Stage 2 protocol
+  - Purpose: decide which context source is thesis-defensible rather than
+    continuing one-off variants.
+  - Compare with the same image, split, checkpoint loading, freeze policy, and
+    bounded/gated FiLM protocol:
+    `F&G-only`, `news-only`, `technical-only`, `news + F&G`.
+  - Required metrics: accuracy, ROC-AUC, Brier score, F1, predicted-Up rate,
+    correction count, regression count, net correction.
+  - Output: compact comparison table plus recommendation for the final Stage 4
+    model.
 - [ ] 4-N13. Optional sentiment/event feature extension
   - Run only if headline TF-IDF/SVD is too weak or hard to interpret.
   - Candidate features: FinBERT-style sentiment score, positive/negative/neutral
@@ -614,6 +645,16 @@ News-context extension:
     by strict `t-1`; encoder/model/version/date/cache hash must be recorded.
   - Purpose: test whether explicit news polarity/event type is more useful than
     unsupervised TF-IDF/SVD vectors for context-FiLM correction.
+- [ ] 4-N14. Final Stage 4 interpretability report
+  - Purpose: turn the selected Stage 4 model into thesis-ready evidence, not
+    just another metric table.
+  - Required content: Stage 2 baseline vs selected context-FiLM metrics,
+    correction/regression table, predicted-Up distribution, targeted Grad-CAM,
+    gamma/beta/modulation-gate summaries, and representative
+    `Stage2 wrong -> Stage4 correct` plus `Stage2 correct -> Stage4 wrong`
+    samples.
+  - Output: compact report for GitHub and professor update; large bundles stay
+    local/Kaggle dataset only.
 
 Important:
 - Do not draw the context values into the chart image for the main Stage 4
@@ -1226,6 +1267,35 @@ News-context 확장:
   - 기본 grid: news SVD32, scale `0.02`, `0.05`, five seeds.
   - Local shape check 통과; 결과 노트:
     [4-N12-A uncertainty-gated news FiLM](checklist_results/4-N12-A_uncertainty_gated_news_film.md)
+- [x] 4-N12-B. Confidence-gated news FiLM 구현과 runner 준비
+  - `film_full_confidence_gated_last_block`을 추가했습니다.
+  - 공식:
+    `confidence = abs(2 * stage2_prob_up - 1)`.
+  - 같은 baseline 보존 규칙을 사용합니다. Stage 2 `I60/R20/ohlc_ma_vb`
+    checkpoint를 load하고 CNN/classifier는 freeze한 뒤, news context encoder와
+    final-block FiLM head만 학습합니다.
+  - Kaggle runner:
+    [kaggle_stage4_n12b_confidence_gated_news_film_one_cell.md](notebooks/kaggle_stage4_n12b_confidence_gated_news_film_one_cell.md)
+  - 기본 grid: news SVD32, scale `0.02`, `0.05`, five seeds.
+  - Local shape check 통과; 결과 노트:
+    [4-N12-B confidence-gated news FiLM](checklist_results/4-N12-B_confidence_gated_news_film.md)
+- [ ] 4-N12-C. Stage 2 frozen + technical-only bounded FiLM
+  - 목적: image에서 파생되는 technical context와 외부/news context를 같은 Stage 2
+    frozen protocol 안에서 분리해서 확인합니다.
+  - 후보 feature: `bb_percent_b_60`, `bb_bandwidth_60`, `mfi_60`, `rv_60`.
+  - method는 우선 `film_full_bounded_last_block`으로 고정합니다. bounded 결과에서
+    signal이 보일 때만 gated variant로 확장합니다.
+  - 비교 대상: Stage 2 baseline, N8-B F&G-only, N9/N10 news-only, N12-A/B
+    gated news.
+- [ ] 4-N12-D. Frozen Stage 2 protocol 안에서 context-source comparison
+  - 목적: one-off variant를 계속 늘리지 않고, 어떤 context source가 thesis에서
+    방어 가능한지 결정합니다.
+  - 같은 image, split, checkpoint loading, freeze policy, bounded/gated FiLM
+    protocol 아래에서 `F&G-only`, `news-only`, `technical-only`, `news + F&G`를
+    비교합니다.
+  - 필수 metric: accuracy, ROC-AUC, Brier score, F1, predicted-Up rate,
+    correction count, regression count, net correction.
+  - output: compact comparison table과 final Stage 4 model 추천.
 - [ ] 4-N13. Optional sentiment/event feature extension
   - Headline TF-IDF/SVD가 너무 약하거나 해석하기 어려울 때만 실행합니다.
   - 후보 feature: FinBERT-style sentiment score, positive/negative/neutral count,
@@ -1235,6 +1305,15 @@ News-context 확장:
     headline만 써야 하며 encoder/model/version/date/cache hash를 기록해야 합니다.
   - 목적: 명시적 news polarity/event type이 unsupervised TF-IDF/SVD vector보다
     context-FiLM correction에 더 유용한지 확인합니다.
+- [ ] 4-N14. Final Stage 4 interpretability report
+  - 목적: 선택된 Stage 4 model을 단순 metric table이 아니라 논문에 넣을 수 있는
+    해석 evidence로 정리합니다.
+  - 필수 내용: Stage 2 baseline vs selected context-FiLM metric,
+    correction/regression table, predicted-Up distribution, targeted Grad-CAM,
+    gamma/beta/modulation-gate summary, 대표적인 `Stage2 wrong -> Stage4 correct`
+    및 `Stage2 correct -> Stage4 wrong` sample.
+  - output: GitHub와 교수님 보고용 compact report. 큰 bundle/checkpoint는
+    local 또는 Kaggle dataset에만 보관합니다.
 
 중요:
 - Main Stage 4 실험에서 context 값을 chart image 위에 추가로 그리지 않습니다.

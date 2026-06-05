@@ -132,11 +132,18 @@ News-context track:
 | `4-N7` | SVD8 news vector + bounded last-block FiLM, scale `0.05` | Prepared for Kaggle; tests whether FiLM can stabilize/use the SVD8 news signal | [N7 review](checklist_results/4-N7_news_bounded_film_svd8.md) |
 | `4-N8-B` | Stage 2 checkpoint loaded/frozen + F&G-only bounded FiLM | Baseline-preserving structure works; scale `0.02` accuracy mean `0.5803`, ROC-AUC mean `0.5849` | [N8 review](checklist_results/4-N8_pretrained_baseline_preserving_film.md) |
 | `4-N9/N10` | Stage 2 checkpoint loaded/frozen + news TF-IDF/SVD bounded FiLM | N10 news SVD32/scale `0.02` is the current news-only comparison; targeted correction analysis and Grad-CAM export are prepared | [N10 review](checklist_results/4-N10_news_interpretability_report.md), [N10-B review](checklist_results/4-N10-B_targeted_gradcam_modulation_export.md) |
-| `4-N12-A` | Stage 2 checkpoint loaded/frozen + uncertainty-gated news FiLM | Prepared; gate `4 * p_up * (1 - p_up)` makes FiLM stronger only for ambiguous Stage 2 chart predictions | [N12-A review](checklist_results/4-N12-A_uncertainty_gated_news_film.md) |
+| `4-N12-A` | Stage 2 checkpoint loaded/frozen + uncertainty-gated news FiLM | Completed; essentially tied with Stage 2 on accuracy, tiny ROC-AUC lift, useful as diagnostic rather than final claim | [N12-A review](checklist_results/4-N12-A_uncertainty_gated_news_film.md) |
+| `4-N12-B` | Stage 2 checkpoint loaded/frozen + confidence-gated news FiLM | Prepared; gate `abs(2 * p_up - 1)` tests whether news context should reinforce high-confidence chart evidence | [N12-B review](checklist_results/4-N12-B_confidence_gated_news_film.md) |
+| `4-N12-C` | Stage 2 checkpoint loaded/frozen + technical-only bounded FiLM | Planned; separates image-derived technical context from external/news context | [N12 plan](checklist_results/4-N12_gated_film_and_context_source_plan.md) |
+| `4-N12-D` | Frozen Stage 2 context-source comparison | Planned; compares `F&G-only`, `news-only`, `technical-only`, and `news + F&G` under one protocol | [N12 plan](checklist_results/4-N12_gated_film_and_context_source_plan.md) |
+| `4-N13` | Optional sentiment/event feature extension | Planned only if headline TF-IDF/SVD remains weak or hard to interpret | [N12/N13 plan](checklist_results/4-N12_gated_film_and_context_source_plan.md) |
+| `4-N14` | Final Stage 4 interpretability report | Planned final evidence package: metrics, correction/regression, targeted Grad-CAM, gamma/beta/gate summaries | [N12/N14 plan](checklist_results/4-N12_gated_film_and_context_source_plan.md) |
 
 Next direction:
-- run N12-A on Kaggle: news SVD32, uncertainty-gated bounded last-block FiLM,
+- run N12-B on Kaggle: news SVD32, confidence-gated bounded last-block FiLM,
   scales `0.02` and `0.05`, five seeds;
+- then run N12-C and N12-D before any sentiment/event extension, so context
+  source choice is decided under the same frozen Stage 2 protocol;
 - compare against Stage 2, N8-B, and N10 on accuracy, ROC-AUC, predicted
   positive rate stability, and correction/regression balance;
 - use targeted Grad-CAM plus `modulation_gate`, `stage2_prob_up`, gamma, and

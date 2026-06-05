@@ -222,6 +222,16 @@ stage4_model:
     gamma_initial_value: 1.0
     beta_initial_value: 0.0
     zero_init_generator_output: true
+  film_full_confidence_gated_last_block:
+    insertion_point: final_block_after_batchnorm_before_leakyrelu
+    apply_to_blocks: last
+    gate_formula: "abs(2 * stage2_prob_up - 1)"
+    gamma_formula: "1 + confidence_gate * modulation_scale * tanh(raw_gamma)"
+    beta_formula: "confidence_gate * modulation_scale * tanh(raw_beta)"
+    modulation_scale: 0.10
+    gamma_initial_value: 1.0
+    beta_initial_value: 0.0
+    zero_init_generator_output: true
   pretrained_stage2:
     enabled: false
     checkpoint_output_root: ""

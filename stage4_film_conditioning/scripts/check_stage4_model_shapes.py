@@ -29,6 +29,7 @@ from stage4_film.context.features import make_context_output_name
 from stage4_film.context.normalization import normalized_feature_columns
 from stage4_film.models import (
     build_bounded_last_block_film_context_stock_cnn_for_window,
+    build_confidence_gated_last_block_film_context_stock_cnn_for_window,
     build_concat_context_stock_cnn_for_window,
     build_film_context_stock_cnn_for_window,
     build_gated_context_stock_cnn_for_window,
@@ -121,6 +122,15 @@ def main() -> None:
             config,
             image_window,
         )
+    elif method == "film_full_confidence_gated_last_block":
+        model = build_confidence_gated_last_block_film_context_stock_cnn_for_window(
+            config,
+            image_window=image_window,
+        )
+        expected_params = expected_bounded_last_block_film_context_parameter_count(
+            config,
+            image_window,
+        )
     else:
         raise ValueError(f"Unsupported model checker method: {method}")
     model.eval()
@@ -168,6 +178,7 @@ def main() -> None:
     elif method in {
         "film_full_bounded_last_block",
         "film_full_uncertainty_gated_last_block",
+        "film_full_confidence_gated_last_block",
     }:
         block_index = len(spec.channels)
         channels = int(spec.channels[-1])
@@ -196,7 +207,10 @@ def main() -> None:
             shapes[f"layer{block_index}_film"],
             shapes[f"layer{block_index}_bn"],
         )
-        if method == "film_full_uncertainty_gated_last_block":
+        if method in {
+            "film_full_uncertainty_gated_last_block",
+            "film_full_confidence_gated_last_block",
+        }:
             _assert_shape(
                 f"modulation_gate{block_index}",
                 shapes[f"modulation_gate{block_index}"],
@@ -257,6 +271,7 @@ def main() -> None:
         "film_full",
         "film_full_bounded_last_block",
         "film_full_uncertainty_gated_last_block",
+        "film_full_confidence_gated_last_block",
     }:
         with torch.no_grad():
             details = model.forward_with_modulation_values(
@@ -477,6 +492,7 @@ def _check_real_context_rows(
             "film_full",
             "film_full_bounded_last_block",
             "film_full_uncertainty_gated_last_block",
+            "film_full_confidence_gated_last_block",
         }:
             details = model.forward_with_modulation_values(
                 image,
@@ -567,6 +583,7 @@ def _check_real_context_rows(
         "film_full",
         "film_full_bounded_last_block",
         "film_full_uncertainty_gated_last_block",
+        "film_full_confidence_gated_last_block",
     }:
         result["film"] = film_summary
     return result

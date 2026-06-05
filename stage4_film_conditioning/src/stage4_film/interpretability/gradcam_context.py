@@ -294,6 +294,7 @@ def _target_layers_for_method(
         "film_full",
         "film_full_bounded_last_block",
         "film_full_uncertainty_gated_last_block",
+        "film_full_confidence_gated_last_block",
     } and hasattr(model, "film_target_layers"):
         return dict(model.film_target_layers()), "post_film"
     return dict(model.gradcam_target_layers()), "conv"
@@ -351,6 +352,7 @@ def _extract_context_and_modulation(
             "film_full",
             "film_full_bounded_last_block",
             "film_full_uncertainty_gated_last_block",
+            "film_full_confidence_gated_last_block",
         } and hasattr(
             model,
             "forward_with_modulation_values",

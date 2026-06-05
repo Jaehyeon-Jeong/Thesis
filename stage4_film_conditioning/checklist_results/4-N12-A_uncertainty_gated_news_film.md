@@ -1,6 +1,6 @@
 # 4-N12-A Uncertainty-Gated News FiLM
 
-Status: prepared and locally shape-checked.
+Status: completed on Kaggle, reviewed locally.
 
 ## Purpose
 
@@ -96,3 +96,34 @@ collapse:
 - correction/regression balance in Stage 2 vs N12-A comparison;
 - interpretable cases where `Stage2 wrong -> N12-A correct` occurs with high
   uncertainty gate.
+
+## Kaggle Result
+
+Local result bundle:
+
+```text
+/Users/jaehyeonjeong/Desktop/논문/N12_A_results
+```
+
+Summary:
+
+| scale | accuracy mean | accuracy std | ROC-AUC mean | F1 mean | predicted-Up rate mean |
+|---:|---:|---:|---:|---:|---:|
+| `0.02` | `0.5790` | `0.0177` | `0.5851` | `0.6487` | `0.6572` |
+| `0.05` | `0.5786` | `0.0176` | `0.5855` | `0.6462` | `0.6498` |
+
+Interpretation:
+
+- Accuracy is essentially tied with, and slightly below, the selected Stage 2
+  baseline (`0.5793`).
+- ROC-AUC improves only marginally (`+0.0002` to `+0.0006`), which is too small
+  to claim a meaningful performance gain.
+- The structure avoids severe collapse, but the prediction distribution remains
+  Up-biased (`predicted_positive_rate` around `0.65` versus true positive rate
+  around `0.54`).
+- N12-A is therefore useful as a diagnostic/stability result, not as a final
+  thesis performance-improvement claim.
+
+Next controlled follow-up: N12-B confidence-gated news FiLM, which tests the
+opposite interpretation: context may be more useful when reinforcing
+high-confidence Stage 2 chart evidence rather than correcting uncertain cases.

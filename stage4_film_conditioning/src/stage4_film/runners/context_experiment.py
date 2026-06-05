@@ -44,6 +44,7 @@ from stage4_film.context.features import build_context_feature_audit, build_cont
 from stage4_film.context.normalization import normalized_feature_columns
 from stage4_film.models import (
     build_bounded_last_block_film_context_stock_cnn_for_window,
+    build_confidence_gated_last_block_film_context_stock_cnn_for_window,
     build_concat_context_stock_cnn_for_window,
     build_film_context_stock_cnn_for_window,
     build_gated_context_stock_cnn_for_window,
@@ -507,6 +508,11 @@ def build_stage4_context_model(
         )
     if method == "film_full_uncertainty_gated_last_block":
         return build_uncertainty_gated_last_block_film_context_stock_cnn_for_window(
+            config,
+            image_window=image_window,
+        )
+    if method == "film_full_confidence_gated_last_block":
+        return build_confidence_gated_last_block_film_context_stock_cnn_for_window(
             config,
             image_window=image_window,
         )

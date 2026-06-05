@@ -259,6 +259,11 @@ Required backup root:
   - Stage 2 CNN/classifier를 frozen으로 보존하고, news SVD32 context가 만든
     final-block FiLM을 `4 * p_up * (1 - p_up)` uncertainty gate로 조절합니다.
   - Grid: scale `0.02`, `0.05` x seeds `42, 43, 44, 45, 46`.
+- `kaggle_stage4_n12b_confidence_gated_news_film_one_cell.md`
+  - N12-B runner입니다.
+  - Stage 2 CNN/classifier를 frozen으로 보존하고, news SVD32 context가 만든
+    final-block FiLM을 `abs(2 * p_up - 1)` confidence gate로 조절합니다.
+  - Grid: scale `0.02`, `0.05` x seeds `42, 43, 44, 45, 46`.
 
 예정 notebook:
 - `kaggle_stage4_single_ablation_one_cell.md`

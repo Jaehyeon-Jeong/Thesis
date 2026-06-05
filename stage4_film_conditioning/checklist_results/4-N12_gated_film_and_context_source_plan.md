@@ -1,6 +1,6 @@
 # 4-N12 Gated FiLM And Context-Source Plan
 
-Status: planned.
+Status: N12-A completed, N12-B prepared.
 
 ## Why N12
 
@@ -137,3 +137,41 @@ For every N12 substep:
   CSVs unless they are intentionally small and needed for a table.
 - If a result table already exists for the same experiment, update the existing
   note instead of creating a duplicate result document.
+
+## N13. Sentiment/Event Feature Extension
+
+Run only if the TF-IDF/SVD headline representation is too weak or too hard to
+interpret.
+
+Candidate features:
+
+```text
+headline sentiment score
+positive / negative / neutral counts
+crypto regulation / exchange / ETF / macro event tags
+```
+
+Leakage rule:
+
+```text
+Only headlines available by strict t-1 may be used.
+Record encoder/model/version/date/cache hash.
+```
+
+## N14. Final Stage 4 Interpretability Report
+
+Purpose:
+
+```text
+Turn the selected Stage 4 model into thesis-ready evidence.
+```
+
+Required sections:
+
+- Stage 2 baseline vs selected context-FiLM metrics;
+- correction/regression table;
+- predicted-Up distribution;
+- targeted Stage 2 vs Stage 4 Grad-CAM;
+- gamma/beta/modulation-gate summaries;
+- representative `Stage2 wrong -> Stage4 correct` and
+  `Stage2 correct -> Stage4 wrong` samples.

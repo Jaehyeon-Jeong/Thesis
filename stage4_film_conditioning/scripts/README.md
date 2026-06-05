@@ -201,6 +201,8 @@ Stage 4 script는 구현 단계에서 순차적으로 추가합니다.
   gamma/beta 값을 저장합니다.
 - `film_full_uncertainty_gated_last_block`은 final-block bounded gamma/beta에
   더해 `modulation_gate`와 `stage2_prob_up`을 저장합니다.
+- `film_full_confidence_gated_last_block`도 final-block bounded gamma/beta에
+  더해 `modulation_gate`와 `stage2_prob_up`을 저장합니다.
 
 `4-I11`에서 추가한 script:
 - `check_stage4_outputs.py`: 한 experiment/seed의 Stage 4 output bundle 전체를

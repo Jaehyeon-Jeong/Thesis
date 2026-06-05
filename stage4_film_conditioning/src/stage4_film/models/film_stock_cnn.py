@@ -40,6 +40,7 @@ from stage4_film.models.context_stock_cnn import _expected_context_encoder_param
 
 BOUNDED_LAST_BLOCK_METHOD = "film_full_bounded_last_block"
 UNCERTAINTY_GATED_LAST_BLOCK_METHOD = "film_full_uncertainty_gated_last_block"
+CONFIDENCE_GATED_LAST_BLOCK_METHOD = "film_full_confidence_gated_last_block"
 
 
 class FilmContextStockCNN(nn.Module):
@@ -747,6 +748,58 @@ class UncertaintyGatedLastBlockFilmContextStockCNN(BoundedLastBlockFilmContextSt
         return result
 
 
+class ConfidenceGatedLastBlockFilmContextStockCNN(UncertaintyGatedLastBlockFilmContextStockCNN):
+    """Bounded last-block FiLM gated by frozen Stage 2 prediction confidence.
+
+    N12-B is the counterpart to N12-A. Instead of intervening mostly near the
+    Stage 2 decision boundary, it asks whether news context can strengthen
+    high-confidence visual evidence:
+
+        stage2_prob_up = softmax(stage2_logits)[up]
+        confidence     = abs(2 * stage2_prob_up - 1)
+        gamma          = 1 + confidence * scale * tanh(raw_gamma)
+        beta           =     confidence * scale * tanh(raw_beta)
+
+    The gate is 0.0 near 50/50 predictions and approaches 1.0 when the frozen
+    visual baseline is confident. This can help if context should reinforce
+    strong chart signals, but it can also amplify confidently wrong visual
+    decisions, so correction/regression counts must be reviewed.
+    """
+
+    def __init__(
+        self,
+        spec: CnnVariantSpec,
+        context_encoder: ContextEncoder,
+        dropout: float = 0.5,
+        modulation_scale: float = 0.10,
+    ) -> None:
+        super().__init__(
+            spec=spec,
+            context_encoder=context_encoder,
+            dropout=dropout,
+            modulation_scale=modulation_scale,
+        )
+        self.mode = CONFIDENCE_GATED_LAST_BLOCK_METHOD
+
+    def compute_uncertainty_gate(self, image: torch.Tensor) -> dict[str, torch.Tensor]:
+        """Return Stage 2 probability and `abs(2p-1)` confidence gate.
+
+        The method name is kept to reuse the N12-A inherited forward path.
+        """
+
+        with torch.no_grad():
+            stage2_logits = self._forward_visual_baseline_logits(image)
+            stage2_prob_up = torch.softmax(stage2_logits, dim=1)[:, 1:2].detach()
+            modulation_gate = torch.abs(2.0 * stage2_prob_up - 1.0).clamp(
+                min=0.0,
+                max=1.0,
+            )
+        return {
+            "modulation_gate": modulation_gate,
+            "stage2_prob_up": stage2_prob_up,
+        }
+
+
 def build_film_context_stock_cnn_for_window(
     config: Mapping[str, Any],
     image_window: int,
@@ -872,6 +925,50 @@ def build_uncertainty_gated_last_block_film_context_stock_cnn_for_window(
     if actual != expected:
         raise ValueError(
             "Stage 4 uncertainty-gated last-block FiLM parameter mismatch: "
+            f"actual={actual}, expected={expected}"
+        )
+    return model
+
+
+def build_confidence_gated_last_block_film_context_stock_cnn_for_window(
+    config: Mapping[str, Any],
+    image_window: int,
+) -> ConfidenceGatedLastBlockFilmContextStockCNN:
+    """Build the N12-B confidence-gated bounded final-block FiLM model."""
+
+    window = int(image_window)
+    if window not in VARIANT_SPECS:
+        raise KeyError(f"Unsupported image_window for Stage 4 FiLM StockCNN: {window}")
+
+    model_config = get_config_section(config, "model")
+    selected_model_config = get_model_config(config, window)
+    spec = VARIANT_SPECS[window]
+    if str(selected_model_config.get("name")) != spec.name:
+        raise ValueError(
+            f"Config/model mismatch for I{window}: "
+            f"config={selected_model_config.get('name')}, implementation={spec.name}"
+        )
+
+    stage4_model = get_stage4_model_config(config)
+    gated_config = stage4_model.get(
+        CONFIDENCE_GATED_LAST_BLOCK_METHOD,
+        stage4_model.get(BOUNDED_LAST_BLOCK_METHOD, {}),
+    )
+    if not isinstance(gated_config, Mapping):
+        raise TypeError(f"stage4_model.{CONFIDENCE_GATED_LAST_BLOCK_METHOD} must be a mapping.")
+
+    context_encoder = build_context_encoder_from_config(config)
+    model = ConfidenceGatedLastBlockFilmContextStockCNN(
+        spec=spec,
+        context_encoder=context_encoder,
+        dropout=float(model_config.get("dropout", 0.5)),
+        modulation_scale=float(gated_config.get("modulation_scale", 0.10)),
+    )
+    actual = count_parameters(model)
+    expected = expected_bounded_last_block_film_context_parameter_count(config, window)
+    if actual != expected:
+        raise ValueError(
+            "Stage 4 confidence-gated last-block FiLM parameter mismatch: "
             f"actual={actual}, expected={expected}"
         )
     return model

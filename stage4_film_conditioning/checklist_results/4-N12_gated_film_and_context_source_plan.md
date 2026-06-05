@@ -128,6 +128,13 @@ redundant with ohlc_ma_vb visual information
 
 ## N12-D. Context-Source Comparison
 
+Purpose:
+
+```text
+Stop adding one-off variants and decide which context source is defensible
+under the same frozen Stage 2 FiLM protocol.
+```
+
 Compare under the same frozen Stage 2 bounded-FiLM protocol:
 
 ```text
@@ -148,6 +155,17 @@ Metrics:
 - regression count,
 - net correction.
 
+Interpretation:
+
+```text
+technical-only mostly tests redundant chart-derived context;
+F&G/news test image-external crypto sentiment/context;
+news + F&G tests whether verbose headlines and compact regime score complement
+each other.
+```
+
+N12-D should produce the context-source table before moving to macro/RORO.
+
 ## Result Upload Policy
 
 For every N12 substep:
@@ -162,10 +180,62 @@ For every N12 substep:
 - If a result table already exists for the same experiment, update the existing
   note instead of creating a duplicate result document.
 
-## N13. Sentiment/Event Feature Extension
+## N13. Macro/RORO Context Extension
 
-Run only if the TF-IDF/SVD headline representation is too weak or too hard to
-interpret.
+Run after N12-D if the context-source comparison confirms that image-external
+context is the better direction than chart-derived technical context.
+
+Purpose:
+
+```text
+Test whether macro risk-on/risk-off regime can condition the frozen BTC chart
+model better than BTC technical indicators that are already visible in the
+chart.
+```
+
+Candidate raw features:
+
+```text
+SPY/S&P500 20-day return
+QQQ/Nasdaq 20-day return
+VIX level/change
+DXY return
+US 10Y yield change
+gold return
+BTC-equity rolling correlation
+```
+
+Candidate synthetic score:
+
+```text
+roro_score =
+  z(spx_ret_20)
+  + z(nasdaq_ret_20)
+  - z(vix_change_20)
+  - z(dxy_ret_20)
+  - z(us10y_change_20)
+```
+
+Planned ablations:
+
+```text
+macro/RORO-only
+macro/RORO + F&G
+weak visual baseline + best context-FiLM, optional diagnostic
+```
+
+Leakage rule:
+
+```text
+Use only values available at or before image end date t.
+Rolling features are trailing-window only.
+Normalization is fit on train split only.
+```
+
+## N13-B. Sentiment/Event Feature Extension
+
+Run only if the TF-IDF/SVD headline representation remains too weak or too hard
+to interpret after N12-D/N13 planning.
 
 Candidate features:
 

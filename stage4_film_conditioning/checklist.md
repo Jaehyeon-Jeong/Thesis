@@ -643,8 +643,30 @@ News-context extension:
     correction count, regression count, net correction.
   - Output: compact comparison table plus recommendation for the final Stage 4
     model.
-- [ ] 4-N13. Optional sentiment/event feature extension
-  - Run only if headline TF-IDF/SVD is too weak or hard to interpret.
+- [ ] 4-N13. Macro/RORO context extension
+  - Purpose: move beyond chart-derived or crypto-sentiment-only context and test
+    whether external risk-on/risk-off market regime improves FiLM correction.
+  - Rationale: `ohlc_ma_vb` already contains much of BB/MFI/RV-like technical
+    information. The next feature family should be image-external.
+  - Candidate raw sources/features:
+    `SPY`/S&P500 20-day return, `QQQ`/Nasdaq 20-day return, `VIX` level/change,
+    `DXY` return, US 10Y yield change, gold return, and BTC-equity rolling
+    correlation.
+  - Candidate synthetic score:
+    `roro_score = z(spx_ret_20) + z(nasdaq_ret_20) - z(vix_change_20) -
+    z(dxy_ret_20) - z(us10y_change_20)`.
+  - Leakage rule: all macro/RORO values must be available at or before image end
+    date `t`; rolling features use trailing windows only and train-only
+    normalization.
+  - Planned ablations:
+    `macro/RORO-only`, `macro/RORO + F&G`, and optionally weak visual baseline
+    + best context-FiLM to test whether context helps when chart evidence is
+    incomplete.
+  - Thesis question: can macro risk regime condition the Stage 2 visual features
+    more meaningfully than context derived from the same BTC OHLCV chart?
+- [ ] 4-N13-B. Optional sentiment/event feature extension
+  - Run only if headline TF-IDF/SVD is too weak or hard to interpret after N13
+    macro/RORO planning.
   - Candidate features: FinBERT-style sentiment score, positive/negative/neutral
     counts, crypto-regulation/exchange/ETF/macro event tags, or cached
     headline-level sentiment/event labels.
@@ -1309,8 +1331,29 @@ News-context 확장:
   - 필수 metric: accuracy, ROC-AUC, Brier score, F1, predicted-Up rate,
     correction count, regression count, net correction.
   - output: compact comparison table과 final Stage 4 model 추천.
-- [ ] 4-N13. Optional sentiment/event feature extension
-  - Headline TF-IDF/SVD가 너무 약하거나 해석하기 어려울 때만 실행합니다.
+- [ ] 4-N13. Macro/RORO context extension
+  - 목적: chart-derived 또는 crypto sentiment-only context를 넘어, 외부
+    risk-on/risk-off market regime이 FiLM correction에 도움이 되는지
+    확인합니다.
+  - 이유: `ohlc_ma_vb` 이미지는 BB/MFI/RV와 유사한 technical information을 이미
+    많이 담고 있습니다. 다음 feature family는 image-external이어야 합니다.
+  - 후보 raw source/feature: `SPY`/S&P500 20-day return, `QQQ`/Nasdaq 20-day
+    return, `VIX` level/change, `DXY` return, US 10Y yield change, gold return,
+    BTC-equity rolling correlation.
+  - 후보 synthetic score:
+    `roro_score = z(spx_ret_20) + z(nasdaq_ret_20) - z(vix_change_20) -
+    z(dxy_ret_20) - z(us10y_change_20)`.
+  - Leakage rule: 모든 macro/RORO value는 image end date `t` 또는 그 이전에
+    사용 가능해야 합니다. rolling feature는 trailing window만 쓰고 normalization은
+    train-only 통계로 fit합니다.
+  - planned ablation: `macro/RORO-only`, `macro/RORO + F&G`, 필요하면 weak
+    visual baseline + best context-FiLM.
+  - thesis question: 같은 BTC OHLCV chart에서 파생된 context보다 macro risk
+    regime이 Stage 2 visual feature를 더 의미 있게 condition할 수 있는지
+    확인합니다.
+- [ ] 4-N13-B. Optional sentiment/event feature extension
+  - N13 macro/RORO planning 이후에도 headline TF-IDF/SVD가 너무 약하거나
+    해석하기 어려울 때만 실행합니다.
   - 후보 feature: FinBERT-style sentiment score, positive/negative/neutral count,
     crypto regulation/exchange/ETF/macro event tag, 또는 cached headline-level
     sentiment/event label.

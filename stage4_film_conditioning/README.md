@@ -136,14 +136,17 @@ News-context track:
 | `4-N12-B` | Stage 2 checkpoint loaded/frozen + confidence-gated news FiLM | Completed; class decisions match Stage 2 exactly, ROC-AUC moves only minimally | [N12-B review](checklist_results/4-N12-B_confidence_gated_news_film.md) |
 | `4-N12-C` | Stage 2 checkpoint loaded/frozen + technical-only bounded FiLM | Completed; scale `0.02` accuracy mean `0.5797`, ROC-AUC `0.5848`, effectively tied with Stage 2 | [N12-C review](checklist_results/4-N12-C_technical_only_pretrained_frozen_bounded_film.md) |
 | `4-N12-D` | Frozen Stage 2 context-source comparison | Planned; compares `F&G-only`, `news-only`, `technical-only`, and `news + F&G` under one protocol | [N12 plan](checklist_results/4-N12_gated_film_and_context_source_plan.md) |
-| `4-N13` | Optional sentiment/event feature extension | Planned only if headline TF-IDF/SVD remains weak or hard to interpret | [N12/N13 plan](checklist_results/4-N12_gated_film_and_context_source_plan.md) |
+| `4-N13` | Macro/RORO context extension | Planned; tests external risk-on/risk-off regime features after N12-D context-source comparison | [N12/N13 plan](checklist_results/4-N12_gated_film_and_context_source_plan.md) |
+| `4-N13-B` | Optional sentiment/event feature extension | Deferred; only needed if headline TF-IDF/SVD remains weak or hard to interpret | [N12/N13 plan](checklist_results/4-N12_gated_film_and_context_source_plan.md) |
 | `4-N14` | Final Stage 4 interpretability report | Planned final evidence package: metrics, correction/regression, targeted Grad-CAM, gamma/beta/gate summaries | [N12/N14 plan](checklist_results/4-N12_gated_film_and_context_source_plan.md) |
 
 Next direction:
-- run N12-C and N12-D before any sentiment/event extension, so context
+- run N12-D before any new macro/sentiment extension, so context
   source choice is decided under the same frozen Stage 2 protocol;
 - compare against Stage 2, N8-B, and N10 on accuracy, ROC-AUC, predicted
   positive rate stability, and correction/regression balance;
+- after N12-D, test macro/RORO features as image-external market-regime context
+  rather than adding more chart-derived technical indicators;
 - use targeted Grad-CAM plus `modulation_gate`, `stage2_prob_up`, gamma, and
   beta summaries for the thesis interpretation section;
 - keep LLM/sentiment/event extraction as a later extension only if the

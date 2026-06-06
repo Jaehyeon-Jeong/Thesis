@@ -1,0 +1,35 @@
+{
+  "status": "ok",
+  "stage": "4-N13-5B",
+  "context_name": "stage4_selected_combo_context_i60_ohlc_ma_vb_r20_n13_5a_combo6",
+  "feature_set_name": "n13_5a_combo6",
+  "context_dim": 6,
+  "feature_order": [
+    "combo_news_svd_60d_09",
+    "combo_news_svd_20d_18",
+    "combo_fg_mean_60",
+    "combo_fg_delta_60",
+    "combo_ofr_fsi_std_60",
+    "combo_riskoff_dollar_return_20"
+  ],
+  "normalized_feature_columns": [
+    "combo_news_svd_60d_09_normalized",
+    "combo_news_svd_20d_18_normalized",
+    "combo_fg_mean_60_normalized",
+    "combo_fg_delta_60_normalized",
+    "combo_ofr_fsi_std_60_normalized",
+    "combo_riskoff_dollar_return_20_normalized"
+  ],
+  "source_paths": {
+    "structured": "/Users/jaehyeonjeong/Desktop/\ub17c\ubb38/stage4_film_conditioning/stage4_p7_p8_result_bundle/outputs/stage4/context/stage4_context_i60_ohlc_ma_vb_r20_c60_fg_only/seed_42/context_features.csv",
+    "news": "/Users/jaehyeonjeong/Desktop/\ub17c\ubb38/stage4_film_conditioning/outputs/stage4/context/stage4_news_context_i60_ohlc_ma_vb_r20_tfidf_svd_w7_20_60/seed_42/context_features.csv",
+    "fsi": "/Users/jaehyeonjeong/Desktop/\ub17c\ubb38/N13_2_results/outputs/stage4/context/stage4_fsi_context_i60_ohlc_ma_vb_r20_ofr_fsi_lag1_w20_60/seed_42/context_features.csv",
+    "roro": "/Users/jaehyeonjeong/Desktop/\ub17c\ubb38/N13_4_results/outputs/stage4/context/stage4_roro_context_i60_ohlc_ma_vb_r20_public_roro_pca_lag1_w20_60/seed_42/context_features.csv"
+  },
+  "outputs": {
+    "context_features": "/Users/jaehyeonjeong/Desktop/\ub17c\ubb38/stage4_film_conditioning/outputs/stage4/context/stage4_selected_combo_context_i60_ohlc_ma_vb_r20_n13_5a_combo6/seed_42/context_features.csv",
+    "context_scaler": "/Users/jaehyeonjeong/Desktop/\ub17c\ubb38/stage4_film_conditioning/outputs/stage4/context/stage4_selected_combo_context_i60_ohlc_ma_vb_r20_n13_5a_combo6/seed_42/context_scaler.json",
+    "context_feature_audit": "/Users/jaehyeonjeong/Desktop/\ub17c\ubb38/stage4_film_conditioning/outputs/stage4/context/stage4_selected_combo_context_i60_ohlc_ma_vb_r20_n13_5a_combo6/seed_42/context_feature_audit.json",
+    "context_feature_summary": "/Users/jaehyeonjeong/Desktop/\ub17c\ubb38/stage4_film_conditioning/outputs/stage4/context/stage4_selected_combo_context_i60_ohlc_ma_vb_r20_n13_5a_combo6/seed_42/context_feature_summary.csv"
+  }
+}

@@ -793,6 +793,11 @@ News-context extension:
     and optionally `0.05`.
   - Decision rule: keep only if it improves or clarifies the source comparison
     without reducing interpretability.
+  - Preparation: selected-combo builder and Kaggle one-cell runner are ready.
+    Local seed-42 artifact check passed with 2,399 aligned rows, context dim
+    `6`, and zero missing normalized selected features.
+  - Review:
+    [4-N13-5B selected-combo context FiLM](checklist_results/4-N13-5B_selected_combo_context_film.md).
 - [ ] 4-N13-6. Macro interpretability export
   - Target samples: Stage 2 wrong -> N13 correct, Stage 2 correct -> N13 wrong,
     and high-stress / low-stress regimes.
@@ -1645,6 +1650,11 @@ News-context 확장:
     그리고 필요하면 `0.05`.
   - 결정 기준: 성능을 높이거나 source comparison 해석을 명확하게 만들 때만
     유지합니다.
+  - 준비 상태: selected-combo builder와 Kaggle one-cell runner를 준비했습니다.
+    local seed-42 artifact check에서 2,399개 aligned row, context dim `6`,
+    selected normalized feature 결측률 `0.0`을 확인했습니다.
+  - 리뷰:
+    [4-N13-5B selected-combo context FiLM](checklist_results/4-N13-5B_selected_combo_context_film.md).
 - [ ] 4-N13-6. Macro interpretability export
   - target sample: Stage 2 wrong -> N13 correct, Stage 2 correct -> N13 wrong,
     high-stress / low-stress regime.

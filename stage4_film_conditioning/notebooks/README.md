@@ -289,6 +289,18 @@ Required backup root:
   - Grid: scale `0.02` x seeds `42, 43, 44, 45, 46`.
   - 목적: 여섯 개 FSI feature를 무조건 모두 쓰지 않고, screening에서 나온
     compact risk-regime feature set이 더 안정적인지 확인합니다.
+- `kaggle_stage4_n13_4_roro_only_pretrained_frozen_bounded_film_one_cell.md`
+  - N13-4 runner입니다.
+  - cached VIX/S&P500/DXY/US10Y source로 public-data RORO proxy context를
+    만들고, Stage 2 frozen bounded FiLM으로 `roro_2`, `roro_3`,
+    `roro_proxy_all`을 비교합니다.
+- `kaggle_stage4_n13_5b_selected_combo_pretrained_frozen_bounded_film_one_cell.md`
+  - N13-5B runner입니다.
+  - N13-5A audit에서 고른 six-feature selected-combo context를 만들고,
+    Stage 2 CNN/classifier frozen + bounded final-block FiLM으로 five-seed
+    실험을 실행합니다.
+  - Selected features: `news_svd_60d_09`, `news_svd_20d_18`, `fg_mean_60`,
+    `fg_delta_60`, `ofr_fsi_std_60`, `riskoff_dollar_return_20`.
 
 예정 notebook:
 - `kaggle_stage4_single_ablation_one_cell.md`

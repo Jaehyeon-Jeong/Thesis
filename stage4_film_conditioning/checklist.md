@@ -740,7 +740,7 @@ News-context extension:
   - Exclusion note: HYG/high-yield ETF price is not used in this N13-3 version
     because it is not HY OAS and would mix ETF price dynamics into the
     credit-risk proxy.
-- [ ] 4-N13-4. RORO-proxy-only frozen bounded FiLM five-seed run
+- [x] 4-N13-4. RORO-proxy-only frozen bounded FiLM five-seed run
   - Context source: public-data RORO proxy features only.
   - Same protocol and metrics as 4-N13-2.
   - Prepared Kaggle runner:
@@ -749,7 +749,12 @@ News-context extension:
     `stage4_film_conditioning_n13_4_with_stage2_bundle.zip`, which embeds the
     Stage 2 I60/R20/ohlc_ma_vb seed 42-46 checkpoint bundle to avoid Kaggle
     reset/path issues.
-  - Compare whether a synthetic risk-regime vector is more useful than OFR FSI.
+  - Result: completed over 3 RORO feature sets x 5 seeds. No collapse warning.
+    Best accuracy row is `roro_3`, accuracy `0.579320`, ROC-AUC `0.584748`,
+    Brier `0.274278`, F1 `0.650924`; this effectively ties Stage 2 and is
+    weaker than the best F&G-only row.
+  - Review:
+    [4-N13-4 RORO-only frozen bounded FiLM](checklist_results/4-N13-4_roro_proxy_only_pretrained_frozen_bounded_film.md).
 - [ ] 4-N13-5. Macro context-source comparison
   - Compare `FSI-only`, `RORO-proxy-only`, `F&G-only`, `news-only`,
     `technical-only`.
@@ -1575,7 +1580,7 @@ News-context 확장:
     제외됩니다.
   - 제외 메모: HYG/high-yield ETF price는 HY OAS가 아니고 ETF price dynamics가
     섞이므로 이번 N13-3에서는 사용하지 않습니다.
-- [ ] 4-N13-4. RORO-proxy-only frozen bounded FiLM five-seed run
+- [x] 4-N13-4. RORO-proxy-only frozen bounded FiLM five-seed run
   - context source: public-data RORO proxy features only.
   - 4-N13-2와 같은 protocol/metric을 사용합니다.
   - 준비된 Kaggle runner:
@@ -1584,7 +1589,12 @@ News-context 확장:
     `stage4_film_conditioning_n13_4_with_stage2_bundle.zip`. Stage 2
     I60/R20/ohlc_ma_vb seed 42-46 checkpoint bundle을 포함해 Kaggle reset/path
     문제를 줄입니다.
-  - synthetic risk-regime vector가 OFR FSI보다 유용한지 비교합니다.
+  - 결과: 3개 RORO feature set x 5 seeds 완료. collapse warning은 없습니다.
+    best accuracy row는 `roro_3`이며 accuracy `0.579320`, ROC-AUC `0.584748`,
+    Brier `0.274278`, F1 `0.650924`입니다. Stage 2와 사실상 동률이고,
+    best F&G-only row보다는 약합니다.
+  - 리뷰:
+    [4-N13-4 RORO-only frozen bounded FiLM](checklist_results/4-N13-4_roro_proxy_only_pretrained_frozen_bounded_film.md).
 - [ ] 4-N13-5. Macro context-source comparison
   - `FSI-only`, `RORO-proxy-only`, `F&G-only`, `news-only`, `technical-only`,
     를 비교합니다.

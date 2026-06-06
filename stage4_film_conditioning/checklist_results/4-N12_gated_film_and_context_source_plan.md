@@ -281,6 +281,16 @@ ofr_safe_assets
 ofr_volatility
 ```
 
+Prepared implementation:
+
+```text
+scripts/build_stage4_fsi_context_features.py
+notebooks/kaggle_stage4_n13_1_ofr_fsi_context_features_one_cell.md
+```
+
+Prep note:
+[4-N13-1 OFR FSI feature builder](4-N13-1_ofr_fsi_feature_builder.md)
+
 ### N13-2. FSI-Only Frozen Bounded FiLM
 
 Protocol:

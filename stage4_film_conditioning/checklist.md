@@ -677,6 +677,12 @@ News-context extension:
     `ofr_fsi_std_60`, plus optional category values `Credit`,
     `Equity valuation`, `Funding`, `Safe assets`, `Volatility`.
   - Normalize with train-only imputation, clipping, and z-score statistics.
+  - Prepared script:
+    [build_stage4_fsi_context_features.py](scripts/build_stage4_fsi_context_features.py)
+  - Kaggle one-cell:
+    [kaggle_stage4_n13_1_ofr_fsi_context_features_one_cell.md](notebooks/kaggle_stage4_n13_1_ofr_fsi_context_features_one_cell.md)
+  - Prep note:
+    [4-N13-1 OFR FSI feature builder](checklist_results/4-N13-1_ofr_fsi_feature_builder.md)
 - [ ] 4-N13-2. FSI-only frozen bounded FiLM five-seed run
   - Context source: OFR FSI features only.
   - Main comparison: Stage 2 frozen baseline, N8-B F&G-only, N10/N12 news-only,
@@ -1406,6 +1412,12 @@ News-context 확장:
     `ofr_fsi_std_60`, optional category values `Credit`,
     `Equity valuation`, `Funding`, `Safe assets`, `Volatility`.
   - train-only imputation, clipping, z-score normalization을 사용합니다.
+  - 준비된 script:
+    [build_stage4_fsi_context_features.py](scripts/build_stage4_fsi_context_features.py)
+  - Kaggle one-cell:
+    [kaggle_stage4_n13_1_ofr_fsi_context_features_one_cell.md](notebooks/kaggle_stage4_n13_1_ofr_fsi_context_features_one_cell.md)
+  - 준비 노트:
+    [4-N13-1 OFR FSI feature builder](checklist_results/4-N13-1_ofr_fsi_feature_builder.md)
 - [ ] 4-N13-2. FSI-only frozen bounded FiLM five-seed run
   - context source: OFR FSI features only.
   - comparison: Stage 2 frozen baseline, N8-B F&G-only, N10/N12 news-only,

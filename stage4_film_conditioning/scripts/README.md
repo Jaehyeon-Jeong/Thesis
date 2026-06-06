@@ -118,6 +118,16 @@ Added in `4-N6`:
 - The prebuilt context loader reads `context_scaler.json` for feature order and
   aligns `context_features.csv` to BTC samples through `sample_index`.
 
+Added in `4-N13-1`:
+- `build_stage4_fsi_context_features.py`: reads the official OFR Financial
+  Stress Index CSV, aligns it to BTC sample image end dates with a conservative
+  as-of lag, and writes model-ready `context_features.csv`,
+  `context_scaler.json`, `context_feature_audit.json`, and
+  `context_feature_summary.csv`.
+- OFR FSI is recorded as an official financial-stress / risk-off proxy, not as
+  a direct RORO index. The BTC direction is not hard-coded; the FiLM/context
+  model learns the relationship.
+
 Planned next scripts:
 - `summarize_stage4_results.py`
 

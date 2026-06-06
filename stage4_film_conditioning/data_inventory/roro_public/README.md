@@ -39,3 +39,24 @@ PCA components = VIX change 20, negative S&P 500 return 20, negative 10Y yield c
 PCA explained variance ratio = 0.720108
 missing warnings = none
 ```
+
+Current implemented formula:
+
+```text
+Our_RORO_proxy_t
+= PC1_train_only(
+    z_train(VIX_t - VIX_{t-20}),
+    z_train(-log(SP500_t / SP500_{t-20})),
+    z_train(-(DGS10_t - DGS10_{t-20}))
+)
+```
+
+Candidate extension if clean long-history manual CSV files are added:
+
+```text
+credit risk proxy: -log(HY_Index_t / HY_Index_{t-20})
+currency proxy:     log(DXY_t / DXY_{t-20})
+```
+
+The high-yield index price proxy must not be described as HY OAS. It is a
+high-yield bond index price based credit-risk proxy.

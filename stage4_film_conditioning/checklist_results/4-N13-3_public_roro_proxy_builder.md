@@ -26,6 +26,83 @@ This is official and useful for terminology, but it does not cover Stage 4
 train/validation dates. Therefore it is not used directly for the first N13-4
 training run.
 
+## Formula Mapping
+
+KC Fed releases category-level daily scores rather than all raw proprietary
+inputs. Conceptually, its RORO index can be written as:
+
+```text
+KC_RORO_t = PC1(
+    credit risk / spreads,
+    equity market and volatility,
+    funding liquidity,
+    currencies and gold
+)
+```
+
+The official cached file exposes these already-processed categories:
+
+```text
+z_spreads
+z_equities
+z_liquidity
+z_goldcurrency
+z_roro
+```
+
+Because `z_roro` starts in June 2023 in the available KC Fed file, Stage 4 uses
+a public-data proxy that preserves the same idea: align public market
+components so larger values mean risk-off pressure, then fit the first PCA/SVD
+component on the train period only.
+
+Current implemented proxy:
+
+```text
+x1_t = VIX_t - VIX_{t-20}
+x2_t = -log(SP500_t / SP500_{t-20})
+x3_t = -(DGS10_t - DGS10_{t-20})
+
+Our_RORO_proxy_t = PC1_train_only(
+    z_train(x1_t),
+    z_train(x2_t),
+    z_train(x3_t)
+)
+```
+
+The fitted first-component weights in the current local artifact are:
+
+```text
+Our_RORO_proxy_t
+= 0.617254 * z_train(VIX_t - VIX_{t-20})
++ 0.639203 * z_train(-log(SP500_t / SP500_{t-20}))
++ 0.458713 * z_train(-(DGS10_t - DGS10_{t-20}))
+```
+
+Higher `Our_RORO_proxy_t` means stronger risk-off pressure. PCA weights,
+normalization, clipping, and missing-value imputation are fitted only on the
+train split, then reused unchanged for validation/test.
+
+Candidate extended proxy if clean long-history DXY and high-yield index price
+CSV files are added:
+
+```text
+x4_t = -log(HY_Index_t / HY_Index_{t-20})
+x5_t = log(DXY_t / DXY_{t-20})
+
+Our_RORO_proxy_extended_t = PC1_train_only(
+    z_train(x1_t),
+    z_train(x2_t),
+    z_train(x3_t),
+    z_train(x4_t),
+    z_train(x5_t)
+)
+```
+
+Important naming rule: the Investing.com ICE BofA U.S. High Yield historical
+page is a high-yield bond index price series, not HY OAS. If used, it must be
+described as a `HY bond index price based credit-risk proxy`, where negative
+high-yield index return means stronger credit-risk pressure.
+
 ## Implemented Builder
 
 Added:

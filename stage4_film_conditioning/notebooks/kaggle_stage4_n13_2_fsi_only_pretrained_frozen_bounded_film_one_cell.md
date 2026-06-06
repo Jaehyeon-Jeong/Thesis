@@ -41,8 +41,8 @@ from IPython.display import display, Markdown
 # User settings
 # ============================================================
 CODE_INPUT_CANDIDATES = [
-    Path("/kaggle/input/datasets/moskow/stage4/stage4_film_conditioning"),
     Path("/kaggle/input/datasets/moskow/stage4/stage4_film_conditioning_n13_2_with_stage2_bundle.zip"),
+    Path("/kaggle/input/datasets/moskow/stage4/stage4_film_conditioning"),
     Path("/kaggle/input/datasets/moskow/stage4/stage4_film_conditioning_n13_1_latest.zip"),
 ]
 STAGE2_CODE_INPUT_CANDIDATES = [

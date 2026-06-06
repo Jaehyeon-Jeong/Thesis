@@ -766,7 +766,7 @@ News-context extension:
     but not strong enough alone.
   - Review:
     [4-N13-5 macro context-source comparison](checklist_results/4-N13-5_macro_context_source_comparison.md).
-- [ ] 4-N13-5A. Cross-context feature audit
+- [x] 4-N13-5A. Cross-context feature audit
   - Merge already-built context features on the same sample/date index:
     F&G, news SVD/count, technical BB/MFI/RV, OFR FSI, public RORO, label,
     future return, Stage 2 `prob_up`, and Stage 2 `correct`.
@@ -775,14 +775,20 @@ News-context extension:
   - Audit: missing rate, feature-label correlation, feature-future-return
     correlation, feature-Stage2-error correlation, feature-feature correlation,
     and redundancy clusters.
-  - Output: a small interpretable selected feature list, not a large
-    all-context vector.
+  - Result: completed on 2,399 aligned samples and 126 context features. News
+    SVD dimensions show the strongest train-only signal, F&G remains the
+    cleanest compact regime source, and FSI/RORO are stable but weaker alone.
+    Stage 2 error-rate correlations are weak across families, so selected-combo
+    FiLM should stay small and conservative.
+  - Review:
+    [4-N13-5A cross-context feature audit](checklist_results/4-N13-5A_cross_context_feature_audit.md).
 - [ ] 4-N13-5B. Selected-combo context FiLM
   - Run one controlled selected-combo context experiment only if 4-N13-5A finds
     a non-redundant feature set.
-  - Candidate size: roughly 3-6 features.
-  - Example candidates: `fg_value`, `fg_delta_60`, one news SVD/count feature,
-    `roro_proxy_value`, `roro_proxy_delta_20`, `fsi_delta_60`.
+  - Candidate size: roughly 6 features.
+  - Primary candidate: `news_svd_60d_09`, `news_svd_20d_18`, `fg_mean_60`,
+    `fg_delta_60`, `ofr_fsi_std_60`, `riskoff_dollar_return_20`.
+  - Optional technical add-on: `bb_bandwidth_60`.
   - Stage 2 frozen protocol, bounded last-block FiLM, five seeds, scale `0.02`
     and optionally `0.05`.
   - Decision rule: keep only if it improves or clarifies the source comparison
@@ -1612,7 +1618,7 @@ News-context 확장:
     단독 최종 모델로는 약합니다.
   - 리뷰:
     [4-N13-5 macro context-source comparison](checklist_results/4-N13-5_macro_context_source_comparison.md).
-- [ ] 4-N13-5A. Cross-context feature audit
+- [x] 4-N13-5A. Cross-context feature audit
   - 이미 만든 context feature들을 같은 sample/date index 기준으로 merge합니다:
     F&G, news SVD/count, technical BB/MFI/RV, OFR FSI, public RORO, label,
     future return, Stage 2 `prob_up`, Stage 2 `correct`.
@@ -1621,13 +1627,20 @@ News-context 확장:
   - audit 항목: missing rate, feature-label correlation, feature-future-return
     correlation, feature-Stage2-error correlation, feature-feature correlation,
     redundancy cluster.
-  - output: 큰 all-context vector가 아니라 작고 해석 가능한 selected feature list.
+  - 결과: 2,399개 aligned sample과 126개 context feature로 완료했습니다.
+    News SVD가 train-only signal이 가장 강하고, F&G는 가장 compact한 regime
+    source입니다. FSI/RORO는 안정적이지만 단독 signal은 약합니다. Stage 2
+    error-rate와의 상관은 전반적으로 약하므로 selected-combo FiLM은 작고
+    보수적으로 가야 합니다.
+  - 리뷰:
+    [4-N13-5A cross-context feature audit](checklist_results/4-N13-5A_cross_context_feature_audit.md).
 - [ ] 4-N13-5B. Selected-combo context FiLM
   - 4-N13-5A에서 중복이 적은 feature set이 보일 때만 selected-combo context
     실험을 한 번 실행합니다.
-  - 후보 크기: 대략 3-6개 feature.
-  - 예시 후보: `fg_value`, `fg_delta_60`, news SVD/count 1개,
-    `roro_proxy_value`, `roro_proxy_delta_20`, `fsi_delta_60`.
+  - 후보 크기: 대략 6개 feature.
+  - primary candidate: `news_svd_60d_09`, `news_svd_20d_18`, `fg_mean_60`,
+    `fg_delta_60`, `ofr_fsi_std_60`, `riskoff_dollar_return_20`.
+  - optional technical add-on: `bb_bandwidth_60`.
   - Stage 2 frozen protocol, bounded last-block FiLM, five seeds, scale `0.02`
     그리고 필요하면 `0.05`.
   - 결정 기준: 성능을 높이거나 source comparison 해석을 명확하게 만들 때만

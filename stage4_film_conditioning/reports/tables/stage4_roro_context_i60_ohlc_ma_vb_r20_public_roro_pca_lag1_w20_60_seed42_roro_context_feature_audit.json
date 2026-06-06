@@ -55,6 +55,16 @@
         "date_max": "2026-06-04",
         "rows": 795,
         "non_missing": 787
+      },
+      "dollar": {
+        "series_id": "DXY",
+        "description": "U.S. Dollar Index DXY via Yahoo Finance chart API",
+        "source_url": "https://finance.yahoo.com/quote/DX-Y.NYB/history/",
+        "cache_path": "/Users/jaehyeonjeong/Desktop/\u1102\u1169\u11ab\u1106\u116e\u11ab/Thesis/stage4_film_conditioning/data_inventory/roro_public/raw/DXY_yahoo_DX-Y.NYB.csv",
+        "date_min": "2018-01-02",
+        "date_max": "2024-12-31",
+        "rows": 2127,
+        "non_missing": 1761
       }
     }
   },
@@ -70,6 +80,7 @@
     "component_columns": [
       "riskoff_vix_change_20",
       "riskoff_neg_sp500_return_20",
+      "riskoff_dollar_return_20",
       "riskoff_neg_10y_yield_change_20"
     ],
     "anchor_columns": [
@@ -88,43 +99,49 @@
     "medians": {
       "riskoff_vix_change_20": -0.870000000000001,
       "riskoff_neg_sp500_return_20": -0.017365547970169874,
+      "riskoff_dollar_return_20": 0.0003080747577317609,
       "riskoff_neg_10y_yield_change_20": 0.020000000000000018
     },
     "q01": {
       "riskoff_vix_change_20": -24.370000000000005,
       "riskoff_neg_sp500_return_20": -0.1182121347204178,
+      "riskoff_dollar_return_20": -0.033635710113401045,
       "riskoff_neg_10y_yield_change_20": -0.25
     },
     "q99": {
       "riskoff_vix_change_20": 32.108999999999966,
       "riskoff_neg_sp500_return_20": 0.21062949042836557,
+      "riskoff_dollar_return_20": 0.03564191984608398,
       "riskoff_neg_10y_yield_change_20": 0.5929999999999996
     },
     "means": {
       "riskoff_vix_change_20": -0.10314008941877849,
       "riskoff_neg_sp500_return_20": -0.007687019584297326,
+      "riskoff_dollar_return_20": -0.0002068198186505977,
       "riskoff_neg_10y_yield_change_20": 0.03784053651266766
     },
     "stds": {
       "riskoff_vix_change_20": 7.552845502691581,
       "riskoff_neg_sp500_return_20": 0.0493583424972035,
+      "riskoff_dollar_return_20": 0.012453803771135034,
       "riskoff_neg_10y_yield_change_20": 0.15550855918003867
     },
     "weights": {
-      "riskoff_vix_change_20": 0.6172539743344165,
-      "riskoff_neg_sp500_return_20": 0.6392026234648984,
-      "riskoff_neg_10y_yield_change_20": 0.4587129138404105
+      "riskoff_vix_change_20": 0.6032071491892916,
+      "riskoff_neg_sp500_return_20": 0.6395829305702803,
+      "riskoff_dollar_return_20": 0.21713986884152164,
+      "riskoff_neg_10y_yield_change_20": 0.4241757742369861
     },
-    "sign_multiplier": 1.0,
-    "anchor_correlation_after_sign_fix": 0.9596552981799281,
-    "explained_variance_ratio": 0.720108060038516,
-    "proxy_train_mean_raw": -4.765189733115426e-17,
-    "proxy_train_std_raw": 1.469804129847087
+    "sign_multiplier": -1.0,
+    "anchor_correlation_after_sign_fix": 0.962092043982066,
+    "explained_variance_ratio": 0.5548314590134528,
+    "proxy_train_mean_raw": -5.29465525901714e-17,
+    "proxy_train_std_raw": 1.4897401907895929
   },
   "image_window": 60,
   "image_spec": "ohlc_ma_vb",
   "return_horizon": 20,
-  "context_dim": 9,
+  "context_dim": 10,
   "feature_order": [
     "roro_proxy_value",
     "roro_proxy_mean_20",
@@ -134,6 +151,7 @@
     "roro_proxy_std_60",
     "riskoff_vix_change_20",
     "riskoff_neg_sp500_return_20",
+    "riskoff_dollar_return_20",
     "riskoff_neg_10y_yield_change_20"
   ],
   "normalized_feature_columns": [
@@ -145,11 +163,12 @@
     "roro_proxy_std_60_normalized",
     "riskoff_vix_change_20_normalized",
     "riskoff_neg_sp500_return_20_normalized",
+    "riskoff_dollar_return_20_normalized",
     "riskoff_neg_10y_yield_change_20_normalized"
   ],
   "feature_group_counts": {
     "roro_proxy": 6,
-    "risk_off_components": 3
+    "risk_off_components": 4
   },
   "split_counts": {
     "train": 671,

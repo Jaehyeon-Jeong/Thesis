@@ -61,11 +61,13 @@ Current implemented proxy:
 x1_t = VIX_t - VIX_{t-20}
 x2_t = -log(SP500_t / SP500_{t-20})
 x3_t = -(DGS10_t - DGS10_{t-20})
+x4_t = log(DXY_t / DXY_{t-20})
 
 Our_RORO_proxy_t = PC1_train_only(
     z_train(x1_t),
     z_train(x2_t),
-    z_train(x3_t)
+    z_train(x3_t),
+    z_train(x4_t)
 )
 ```
 
@@ -73,35 +75,20 @@ The fitted first-component weights in the current local artifact are:
 
 ```text
 Our_RORO_proxy_t
-= 0.617254 * z_train(VIX_t - VIX_{t-20})
-+ 0.639203 * z_train(-log(SP500_t / SP500_{t-20}))
-+ 0.458713 * z_train(-(DGS10_t - DGS10_{t-20}))
+= 0.603207 * z_train(VIX_t - VIX_{t-20})
++ 0.639583 * z_train(-log(SP500_t / SP500_{t-20}))
++ 0.217140 * z_train(log(DXY_t / DXY_{t-20}))
++ 0.424176 * z_train(-(DGS10_t - DGS10_{t-20}))
 ```
 
 Higher `Our_RORO_proxy_t` means stronger risk-off pressure. PCA weights,
 normalization, clipping, and missing-value imputation are fitted only on the
 train split, then reused unchanged for validation/test.
 
-Candidate extended proxy if clean long-history DXY and high-yield index price
-CSV files are added:
-
-```text
-x4_t = -log(HY_Index_t / HY_Index_{t-20})
-x5_t = log(DXY_t / DXY_{t-20})
-
-Our_RORO_proxy_extended_t = PC1_train_only(
-    z_train(x1_t),
-    z_train(x2_t),
-    z_train(x3_t),
-    z_train(x4_t),
-    z_train(x5_t)
-)
-```
-
-Important naming rule: the Investing.com ICE BofA U.S. High Yield historical
-page is a high-yield bond index price series, not HY OAS. If used, it must be
-described as a `HY bond index price based credit-risk proxy`, where negative
-high-yield index return means stronger credit-risk pressure.
+HY OAS remains excluded from the current PCA because the locally cached FRED
+file starts in June 2023 and does not cover the train period. HYG/high-yield
+ETF price is not used in this N13-3 version to avoid mixing ETF price dynamics
+with direct spread/risk-regime signals.
 
 ## Implemented Builder
 
@@ -118,6 +105,7 @@ data_inventory/roro_public/raw/VIXCLS.csv
 data_inventory/roro_public/raw/SP500.csv
 data_inventory/roro_public/raw/DGS10.csv
 data_inventory/roro_public/raw/BAMLH0A0HYM2.csv
+data_inventory/roro_public/raw/DXY_yahoo_DX-Y.NYB.csv
 ```
 
 The experimental builder creates a KC Fed-inspired public-data RORO proxy from
@@ -128,6 +116,7 @@ VIXCLS from Cboe VIX history, converted to FRED-like CSV
 SP500 from FRED CSV
 DGS10 from U.S. Treasury daily yield XML, converted to FRED-like CSV
 BAMLH0A0HYM2 from FRED CSV, cached but excluded from PCA because train coverage is missing
+DXY from Yahoo Finance chart API, used as currency/risk-off proxy
 ```
 
 Construction rule:
@@ -148,18 +137,19 @@ Local full feature generation passed:
 
 ```text
 context_name = stage4_roro_context_i60_ohlc_ma_vb_r20_public_roro_pca_lag1_w20_60
-context_dim = 9
+context_dim = 10
 split counts = train 671 / validation 287 / test 1441
 missing warnings = none
-PCA explained variance ratio = 0.720108
+PCA explained variance ratio = 0.554831
 ```
 
 PCA components used:
 
 ```text
-riskoff_vix_change_20                 weight 0.617254
-riskoff_neg_sp500_return_20           weight 0.639203
-riskoff_neg_10y_yield_change_20       weight 0.458713
+riskoff_vix_change_20                 weight 0.603207
+riskoff_neg_sp500_return_20           weight 0.639583
+riskoff_dollar_return_20              weight 0.217140
+riskoff_neg_10y_yield_change_20       weight 0.424176
 ```
 
 All context features have `0.0` raw missing rate in train, validation, and test

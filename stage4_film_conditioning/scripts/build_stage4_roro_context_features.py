@@ -69,6 +69,14 @@ DEFAULT_SERIES: dict[str, dict[str, str]] = {
         "description": "ICE BofA U.S. high-yield option-adjusted spread via FRED",
     },
 }
+MANUAL_SERIES: dict[str, dict[str, str]] = {
+    "dollar": {
+        "series_id": "DXY",
+        "cache_filename": "DXY_yahoo_DX-Y.NYB.csv",
+        "source_url": "https://finance.yahoo.com/quote/DX-Y.NYB/history/",
+        "description": "U.S. Dollar Index DXY via Yahoo Finance chart API",
+    },
+}
 SPLIT_ORDER = {"train": 0, "validation": 1, "test": 2}
 RISK_OFF_COMPONENTS = [
     "riskoff_vix_change_20",
@@ -331,12 +339,41 @@ def load_public_macro_sources(
         if not cache_path.exists():
             continue
         frame = pd.read_csv(cache_path)
-        sources[name] = clean_fred_series(
+        cleaned = clean_fred_series(
             frame,
             series_id=series_id,
             output_column=name,
             cache_path=cache_path,
         )
+        cleaned.attrs.update(
+            {
+                "series_id": series_id,
+                "description": metadata["description"],
+                "source_url": metadata["source_url"],
+                "cache_path": str(cache_path),
+            }
+        )
+        sources[name] = cleaned
+    for name, metadata in MANUAL_SERIES.items():
+        cache_path = source_dir / metadata["cache_filename"]
+        if not cache_path.exists():
+            continue
+        frame = pd.read_csv(cache_path)
+        cleaned = clean_fred_series(
+            frame,
+            series_id=metadata["series_id"],
+            output_column=name,
+            cache_path=cache_path,
+        )
+        cleaned.attrs.update(
+            {
+                "series_id": metadata["series_id"],
+                "description": metadata["description"],
+                "source_url": metadata["source_url"],
+                "cache_path": str(cache_path),
+            }
+        )
+        sources[name] = cleaned
     missing_required = sorted(required_sources.difference(sources))
     if missing_required:
         missing_text = ", ".join(missing_required)
@@ -410,6 +447,7 @@ def write_source_readme(source_dir: Path) -> None:
         "DTWEXBGS": "Dollar strength is treated as risk-off pressure.",
         "DGS10": "Falling 10-year yield is treated as risk-off pressure with caution.",
         "BAMLH0A0HYM2": "High-yield spread widening is risk-off pressure.",
+        "DXY": "Dollar strength is treated as risk-off pressure.",
     }
     source_urls = {
         "VIXCLS": "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv",
@@ -421,6 +459,7 @@ def write_source_readme(source_dir: Path) -> None:
             "interest-rates/pages/xml?data=daily_treasury_yield_curve"
         ),
         "BAMLH0A0HYM2": DEFAULT_SERIES["hy_oas"]["source_url"],
+        "DXY": MANUAL_SERIES["dollar"]["source_url"],
     }
     for metadata in DEFAULT_SERIES.values():
         series_id = metadata["series_id"]
@@ -428,6 +467,15 @@ def write_source_readme(source_dir: Path) -> None:
         cached = "yes" if cache_path.exists() else "optional/missing"
         lines.append(
             f"| `raw/{series_id}.csv` | `{series_id}` | "
+            f"{cached} | {source_urls[series_id]} | {interpretation[series_id]} |"
+        )
+    for metadata in MANUAL_SERIES.values():
+        series_id = metadata["series_id"]
+        cache_filename = metadata["cache_filename"]
+        cache_path = source_dir / cache_filename
+        cached = "yes" if cache_path.exists() else "optional/missing"
+        lines.append(
+            f"| `raw/{cache_filename}` | `{series_id}` | "
             f"{cached} | {source_urls[series_id]} | {interpretation[series_id]} |"
         )
     readme.write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -441,13 +489,19 @@ def build_source_manifest(
 
     rows: dict[str, Any] = {}
     for name, frame in sources.items():
-        metadata = DEFAULT_SERIES[name]
-        series_id = metadata["series_id"]
+        metadata = {**DEFAULT_SERIES, **MANUAL_SERIES}[name]
+        series_id = str(frame.attrs.get("series_id", metadata["series_id"]))
+        cache_path = str(
+            frame.attrs.get(
+                "cache_path",
+                source_dir / metadata.get("cache_filename", f"{series_id}.csv"),
+            )
+        )
         rows[name] = {
             "series_id": series_id,
-            "description": metadata["description"],
-            "source_url": metadata["source_url"],
-            "cache_path": str(source_dir / f"{series_id}.csv"),
+            "description": str(frame.attrs.get("description", metadata["description"])),
+            "source_url": str(frame.attrs.get("source_url", metadata["source_url"])),
+            "cache_path": cache_path,
             "date_min": date_or_none(frame["macro_date"].min()),
             "date_max": date_or_none(frame["macro_date"].max()),
             "rows": int(len(frame)),

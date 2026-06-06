@@ -725,21 +725,21 @@ News-context extension:
     downloaded files start in June 2023 and do not cover Stage 4 train dates;
     the trainable proxy therefore uses longer-history cached public inputs.
   - Result: local N13-3 artifact was created successfully with VIX, S&P500,
-    and US 10Y components. `context_dim=9`, PCA explained variance ratio
-    `0.720108`, split counts `671/287/1441`, and missing warnings `0`.
+    DXY, and US 10Y components. `context_dim=10`, PCA explained variance ratio
+    `0.554831`, split counts `671/287/1441`, and missing warnings `0`.
   - Implemented formula:
-    `PC1_train_only(z(VIX_t - VIX_{t-20}), z(-log(SP500_t/SP500_{t-20})), z(-(DGS10_t - DGS10_{t-20})))`.
+    `PC1_train_only(z(VIX_t - VIX_{t-20}), z(-log(SP500_t/SP500_{t-20})), z(log(DXY_t/DXY_{t-20})), z(-(DGS10_t - DGS10_{t-20})))`.
     The sign is fixed so a larger value means stronger risk-off pressure.
   - Cached raw inputs:
     `data_inventory/roro_public/raw/VIXCLS.csv`,
     `data_inventory/roro_public/raw/SP500.csv`,
+    `data_inventory/roro_public/raw/DXY_yahoo_DX-Y.NYB.csv`,
     `data_inventory/roro_public/raw/DGS10.csv`.
     `BAMLH0A0HYM2.csv` is cached but excluded from PCA because it lacks
     train-period coverage.
-  - Extension note: if long-history manual CSV files are added, DXY can be
-    used as `log(DXY_t/DXY_{t-20})` and the ICE BofA high-yield index price can
-    be used as `-log(HY_Index_t/HY_Index_{t-20})`. The latter must be described
-    as a high-yield bond index price based credit-risk proxy, not HY OAS.
+  - Exclusion note: HYG/high-yield ETF price is not used in this N13-3 version
+    because it is not HY OAS and would mix ETF price dynamics into the
+    credit-risk proxy.
 - [ ] 4-N13-4. RORO-proxy-only frozen bounded FiLM five-seed run
   - Context source: public-data RORO proxy features only.
   - Same protocol and metrics as 4-N13-2.
@@ -1502,22 +1502,21 @@ News-context 확장:
     KC Fed official daily/weekly 파일은 documentation용으로 cache했지만
     2023년 6월부터 시작해 Stage 4 train period를 커버하지 못합니다.
     따라서 학습용 proxy는 longer-history public input cache를 사용합니다.
-  - 결과: VIX, S&P500, US 10Y component로 local N13-3 artifact 생성까지
-    완료했습니다. `context_dim=9`, PCA explained variance ratio `0.720108`,
+  - 결과: VIX, S&P500, DXY, US 10Y component로 local N13-3 artifact 생성까지
+    완료했습니다. `context_dim=10`, PCA explained variance ratio `0.554831`,
     split counts `671/287/1441`, missing warning `0`입니다.
   - 구현 공식:
-    `PC1_train_only(z(VIX_t - VIX_{t-20}), z(-log(SP500_t/SP500_{t-20})), z(-(DGS10_t - DGS10_{t-20})))`.
+    `PC1_train_only(z(VIX_t - VIX_{t-20}), z(-log(SP500_t/SP500_{t-20})), z(log(DXY_t/DXY_{t-20})), z(-(DGS10_t - DGS10_{t-20})))`.
     값이 클수록 stronger risk-off pressure가 되도록 sign을 고정했습니다.
   - cached raw input:
     `data_inventory/roro_public/raw/VIXCLS.csv`,
     `data_inventory/roro_public/raw/SP500.csv`,
+    `data_inventory/roro_public/raw/DXY_yahoo_DX-Y.NYB.csv`,
     `data_inventory/roro_public/raw/DGS10.csv`.
     `BAMLH0A0HYM2.csv`도 cache했지만 train-period coverage가 없어 PCA에서는
     제외됩니다.
-  - 확장 메모: long-history manual CSV가 추가되면 DXY는
-    `log(DXY_t/DXY_{t-20})`, ICE BofA high-yield index price는
-    `-log(HY_Index_t/HY_Index_{t-20})`로 추가할 수 있습니다. 후자는 HY OAS가
-    아니라 high-yield bond index price based credit-risk proxy로 표기합니다.
+  - 제외 메모: HYG/high-yield ETF price는 HY OAS가 아니고 ETF price dynamics가
+    섞이므로 이번 N13-3에서는 사용하지 않습니다.
 - [ ] 4-N13-4. RORO-proxy-only frozen bounded FiLM five-seed run
   - context source: public-data RORO proxy features only.
   - 4-N13-2와 같은 protocol/metric을 사용합니다.

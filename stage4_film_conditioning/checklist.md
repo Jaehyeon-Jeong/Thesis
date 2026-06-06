@@ -768,18 +768,29 @@ News-context extension:
     the Stage 2 frozen protocol.
   - Baseline-preserving fixed setup: Stage 2 I60/R20/ohlc_ma_vb visual CNN and
     classifier frozen, same split, same seeds, same selected context features.
-  - First grid, no new model code required:
+  - A. Same bounded equation, larger scale, no new model code required:
     bounded last-block FiLM scale `0.02`, `0.05`, `0.10`, `0.20`.
-  - Optional second grid, only if the scale grid is stable:
+  - B. Relax gamma/beta constraint:
     unbounded or weakly regularized last-block FiLM with zero-init
-    `gamma/beta` heads. This requires a separate implementation and must be
-    reported as a constraint ablation, not as a new context source.
+    `gamma/beta` heads.
+  - C. Alternative gamma/beta equation:
+    compare the current `1 + scale * tanh(raw)` rule against a second
+    baseline-preserving parameterization such as positive-gamma sigmoid/softplus
+    or regularized residual-linear FiLM.
+  - D. Classifier-unfreeze variant:
+    keep the Stage 2 visual CNN frozen but unfreeze the final classifier,
+    training only classifier plus context encoder/FiLM heads.
+  - Implementation rule: B/C/D require separate implementation and must be
+    reported as FiLM/freeze-policy ablations, not as new context sources.
   - Required metrics: accuracy, ROC-AUC, Brier score, predicted-positive rate,
     collapse warning, correction/regression vs Stage 2, net correction, and
     gamma/beta magnitude summaries.
   - Decision rule: keep the larger-scale or relaxed-constraint model only if it
     improves at least one main metric without class-collapse or a large
     regression increase.
+  - If none improves the overall metrics, use the same outputs for conditional
+    regime analysis: extreme context regimes, high-volatility/high-stress
+    regimes, and Stage 2 wrong -> FiLM correct samples.
 - [ ] 4-N13-B. Optional sentiment/event feature extension
   - Run only if headline TF-IDF/SVD is too weak or hard to interpret after N13
     macro/RORO planning.
@@ -1570,17 +1581,28 @@ News-context 확장:
     확인합니다.
   - 고정 조건: Stage 2 I60/R20/ohlc_ma_vb visual CNN과 classifier freeze, 같은
     split, 같은 seeds, 같은 selected context feature.
-  - 1차 grid, 새 모델 코드 불필요:
+  - A. 같은 bounded equation에서 scale만 키우는 grid, 새 모델 코드 불필요:
     bounded last-block FiLM scale `0.02`, `0.05`, `0.10`, `0.20`.
-  - 2차 optional grid, scale grid가 안정적일 때만:
+  - B. gamma/beta constraint 완화:
     zero-init `gamma/beta` head를 쓰는 unbounded 또는 weakly regularized
-    last-block FiLM. 이건 새 context source가 아니라 constraint ablation으로
-    보고합니다.
+    last-block FiLM.
+  - C. gamma/beta equation 변경:
+    현재 `1 + scale * tanh(raw)` 규칙을 positive-gamma sigmoid/softplus 또는
+    regularized residual-linear FiLM 같은 다른 baseline-preserving 방식과
+    비교합니다.
+  - D. classifier-unfreeze variant:
+    Stage 2 visual CNN은 freeze하고 final classifier만 열어서 classifier +
+    context encoder/FiLM head만 학습합니다.
+  - 구현 규칙: B/C/D는 별도 구현이 필요하며, 새 context source가 아니라
+    FiLM/freeze-policy ablation으로 보고합니다.
   - 필수 metric: accuracy, ROC-AUC, Brier score, predicted-positive rate,
     collapse warning, Stage 2 대비 correction/regression, net correction,
     gamma/beta magnitude summary.
   - 결정 기준: 큰 scale 또는 constraint 완화 모델은 class-collapse나 regression
     증가 없이 주요 metric 중 하나라도 개선될 때만 유지합니다.
+  - 전체 metric 개선이 없으면 같은 output으로 조건부 regime 분석을 수행합니다:
+    extreme context regime, high-volatility/high-stress regime, Stage 2 wrong ->
+    FiLM correct sample.
 - [ ] 4-N13-B. Optional sentiment/event feature extension
   - N13 macro/RORO planning 이후에도 headline TF-IDF/SVD가 너무 약하거나
     해석하기 어려울 때만 실행합니다.

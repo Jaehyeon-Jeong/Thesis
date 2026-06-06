@@ -58,9 +58,12 @@ features or collapses predictions into one class.
 This is a defensible baseline-preserving design, but it may be too conservative
 after the visual backbone and classifier are frozen.
 
-## Primary Grid
+## Ablation Axes
 
-Use the existing bounded last-block FiLM implementation first:
+### A. Same Equation, Larger Scale
+
+Use the existing bounded last-block FiLM implementation first. This requires no
+new model code:
 
 ```text
 scale = 0.02
@@ -82,7 +85,7 @@ Do not go beyond `0.20` unless the grid is clearly stable. The purpose is not to
 search random numbers, but to test whether larger allowed gamma/beta movement
 helps once Stage 2 is fixed.
 
-## Optional Relaxed-Constraint Grid
+### B. Relax Gamma/Beta Constraint
 
 Run only if the bounded scale grid does not collapse:
 
@@ -94,6 +97,45 @@ regularization on ||gamma - 1|| and ||beta||
 
 This requires new model code. It should be reported as a FiLM constraint
 ablation, not as a new context-source experiment.
+
+### C. Alternative Gamma/Beta Equation
+
+Compare the current bounded residual rule against another
+baseline-preserving FiLM parameterization:
+
+```text
+current:
+gamma = 1 + scale * tanh(raw_gamma)
+beta  =     scale * tanh(raw_beta)
+
+candidate 1: positive-gamma sigmoid rule
+gamma = 2 * sigmoid(scale * raw_gamma)
+beta  = scale * tanh(raw_beta)
+
+candidate 2: weakly regularized residual-linear rule
+gamma = 1 + scale * raw_gamma
+beta  = scale * raw_beta
+loss += lambda * ||gamma - 1||^2 + lambda * ||beta||^2
+```
+
+Use only one alternative equation first. The goal is not to try every possible
+FiLM formula, but to check whether the current `tanh` saturation is too
+restrictive.
+
+### D. Classifier-Unfreeze Variant
+
+Keep the Stage 2 visual CNN frozen, but unfreeze the final classifier:
+
+```text
+visual CNN: frozen
+classifier: trainable
+context encoder: trainable
+FiLM heads: trainable
+```
+
+This tests whether the context-FiLM branch can help if the final decision
+boundary is allowed to adapt, while still preserving the Stage 2 visual feature
+extractor. It should be reported as a freeze-policy ablation.
 
 ## Required Metrics
 
@@ -124,3 +166,24 @@ and has interpretable gamma/beta movement.
 
 If large scales do not help, keep the current bounded small-scale FiLM as the
 more defensible thesis model.
+
+## If Overall Metrics Still Do Not Improve
+
+Do not keep expanding random architecture variants. Use the same outputs for
+conditional analysis:
+
+```text
+extreme F&G / FSI / RORO regime
+high-volatility or high-stress regime
+Stage 2 wrong -> FiLM correct samples
+Stage 2 correct -> FiLM wrong samples
+high-confidence Stage 2 cases vs low-confidence Stage 2 cases
+```
+
+This can support a narrower thesis claim:
+
+```text
+context-FiLM does not materially improve average BTC direction accuracy over a
+strong chart baseline, but it can be inspected as a conditional correction path
+for specific market-regime regimes.
+```

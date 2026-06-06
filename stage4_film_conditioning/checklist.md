@@ -782,7 +782,7 @@ News-context extension:
     FiLM should stay small and conservative.
   - Review:
     [4-N13-5A cross-context feature audit](checklist_results/4-N13-5A_cross_context_feature_audit.md).
-- [ ] 4-N13-5B. Selected-combo context FiLM
+- [x] 4-N13-5B. Selected-combo context FiLM
   - Run one controlled selected-combo context experiment only if 4-N13-5A finds
     a non-redundant feature set.
   - Candidate size: roughly 6 features.
@@ -793,15 +793,22 @@ News-context extension:
     and optionally `0.05`.
   - Decision rule: keep only if it improves or clarifies the source comparison
     without reducing interpretability.
-  - Preparation: selected-combo builder and Kaggle one-cell runner are ready.
-    Local seed-42 artifact check passed with 2,399 aligned rows, context dim
-    `6`, and zero missing normalized selected features.
+  - Result: completed as a metric-only five-seed run. Mean accuracy tied the
+    Stage 2 frozen baseline (`0.579320`), ROC-AUC changed only by `+0.000004`,
+    Brier improved slightly by `-0.000202`, and net correction was `0.0`.
+    The raw table has `status=failed` only because Grad-CAM was disabled while
+    the previous output checker still required Grad-CAM artifacts.
+  - Conclusion: stable but not a final performance candidate. The six-feature
+    selected combo mostly preserves Stage 2 decisions, so larger all-context
+    stacking is not justified.
   - Review:
     [4-N13-5B selected-combo context FiLM](checklist_results/4-N13-5B_selected_combo_context_film.md).
 - [ ] 4-N13-6. Macro interpretability export
-  - Target samples: Stage 2 wrong -> N13 correct, Stage 2 correct -> N13 wrong,
-    and high-stress / low-stress regimes.
-  - Export targeted Grad-CAM, FSI/RORO values, gamma/beta summaries,
+  - Focus on the strongest compact candidates rather than the selected combo:
+    F&G-only `s0.02` and news SVD32 `s0.02`.
+  - Target samples: Stage 2 wrong -> context-FiLM correct, Stage 2 correct ->
+    context-FiLM wrong, and extreme regime/news windows.
+  - Export targeted Grad-CAM, context values, gamma/beta summaries,
     modulation gate if used, and `prob_up` changes.
 - [ ] 4-N13-7. Final FiLM constraint and scale ablation on the selected context
   source
@@ -1639,7 +1646,7 @@ News-context 확장:
     보수적으로 가야 합니다.
   - 리뷰:
     [4-N13-5A cross-context feature audit](checklist_results/4-N13-5A_cross_context_feature_audit.md).
-- [ ] 4-N13-5B. Selected-combo context FiLM
+- [x] 4-N13-5B. Selected-combo context FiLM
   - 4-N13-5A에서 중복이 적은 feature set이 보일 때만 selected-combo context
     실험을 한 번 실행합니다.
   - 후보 크기: 대략 6개 feature.
@@ -1650,15 +1657,22 @@ News-context 확장:
     그리고 필요하면 `0.05`.
   - 결정 기준: 성능을 높이거나 source comparison 해석을 명확하게 만들 때만
     유지합니다.
-  - 준비 상태: selected-combo builder와 Kaggle one-cell runner를 준비했습니다.
-    local seed-42 artifact check에서 2,399개 aligned row, context dim `6`,
-    selected normalized feature 결측률 `0.0`을 확인했습니다.
+  - 결과: metric-only five-seed run으로 완료했습니다. 평균 accuracy는 Stage 2
+    frozen baseline과 동일한 `0.579320`, ROC-AUC 변화는 `+0.000004`, Brier는
+    `-0.000202`만큼 소폭 개선, net correction은 `0.0`입니다. raw table의
+    `status=failed`는 Grad-CAM을 끈 상태에서 이전 output checker가 Grad-CAM
+    artifact를 요구해서 생긴 check mismatch입니다.
+  - 결론: 안정적이지만 final performance candidate는 아닙니다. 6개 feature
+    selected combo는 Stage 2 decision을 거의 보존했으므로, 더 큰 all-context
+    stacking은 정당화하기 어렵습니다.
   - 리뷰:
     [4-N13-5B selected-combo context FiLM](checklist_results/4-N13-5B_selected_combo_context_film.md).
 - [ ] 4-N13-6. Macro interpretability export
-  - target sample: Stage 2 wrong -> N13 correct, Stage 2 correct -> N13 wrong,
-    high-stress / low-stress regime.
-  - targeted Grad-CAM, FSI/RORO value, gamma/beta summary, modulation gate,
+  - selected combo가 아니라 가장 강한 compact 후보인 F&G-only `s0.02`와
+    news SVD32 `s0.02`를 중심으로 봅니다.
+  - target sample: Stage 2 wrong -> context-FiLM correct, Stage 2 correct ->
+    context-FiLM wrong, extreme regime/news window.
+  - targeted Grad-CAM, context value, gamma/beta summary, modulation gate,
     `prob_up` change를 export합니다.
 - [ ] 4-N13-7. 선택된 context source에 대한 최종 FiLM constraint/scale ablation
   - 4-N13-5/6에서 가장 안정적인 context source(`F&G`, `news`, `FSI`, `RORO`)를

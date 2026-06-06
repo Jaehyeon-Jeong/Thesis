@@ -44,6 +44,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--run-seed", type=int, default=42)
     parser.add_argument("--split", default="test", choices=["train", "validation", "test"])
     parser.add_argument("--gradcam-samples-per-class", type=int, default=2)
+    parser.add_argument(
+        "--skip-gradcam",
+        action="store_true",
+        help="Do not require Grad-CAM/modulation artifacts for metric-only runs.",
+    )
     parser.add_argument("--min-predictions", type=int, default=1)
     parser.add_argument("--write-summary", default="")
     return parser.parse_args()
@@ -99,18 +104,27 @@ def main() -> None:
         ),
         "classification_metrics": _json_check(output_roots["metrics"] / f"{split}_metrics.json"),
         "trading_metrics": _json_check(output_roots["metrics"] / f"{split}_trading_metrics.json"),
-        "gradcam": _file_check(
-            gradcam_root / f"btc_context_gradcam_{split}_{int(args.gradcam_samples_per_class)}perclass.png"
-        ),
-        "gradcam_samples": _csv_check(gradcam_root / "samples.csv", min_rows=1),
-        "modulation_summary": _csv_check(gradcam_root / "modulation_summary.csv", min_rows=1),
-        "modulation_values": _json_list_check(gradcam_root / "modulation_values.json", min_items=1),
         "context_features": _csv_check(context_root / "context_features.csv", min_rows=1),
         "context_scaler": _json_check(context_root / "context_scaler.json"),
         "context_feature_audit": _json_check(context_root / "context_feature_audit.json"),
         "context_feature_summary": _csv_check(context_root / "context_feature_summary.csv", min_rows=1),
         "run_manifest": _json_check(manifest_root / "run_manifest.json"),
     }
+    if not bool(args.skip_gradcam):
+        checks.update(
+            {
+                "gradcam": _file_check(
+                    gradcam_root
+                    / f"btc_context_gradcam_{split}_{int(args.gradcam_samples_per_class)}perclass.png"
+                ),
+                "gradcam_samples": _csv_check(gradcam_root / "samples.csv", min_rows=1),
+                "modulation_summary": _csv_check(gradcam_root / "modulation_summary.csv", min_rows=1),
+                "modulation_values": _json_list_check(
+                    gradcam_root / "modulation_values.json",
+                    min_items=1,
+                ),
+            }
+        )
 
     status = "ok" if all(item["ok"] for item in checks.values()) else "missing"
     summary = {

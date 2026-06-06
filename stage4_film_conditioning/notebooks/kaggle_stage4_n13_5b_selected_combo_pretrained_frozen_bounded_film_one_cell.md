@@ -573,7 +573,7 @@ def build_selected_combo_context_for_seed(run_seed: int):
 
 
 def output_check_cmd(scale: float, run_seed: int):
-    return [
+    cmd = [
         sys.executable, "-u",
         "scripts/check_stage4_outputs.py",
         "--config", "configs/env_kaggle.yaml",
@@ -586,6 +586,9 @@ def output_check_cmd(scale: float, run_seed: int):
         "--gradcam-samples-per-class", str(GRADCAM_SAMPLES_PER_CLASS),
         "--min-predictions", str(MIN_PREDICTIONS),
     ]
+    if not RUN_GRADCAM:
+        cmd.append("--skip-gradcam")
+    return cmd
 
 
 def is_completed(scale: float, run_seed: int) -> bool:

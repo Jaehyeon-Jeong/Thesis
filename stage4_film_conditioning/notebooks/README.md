@@ -273,6 +273,22 @@ Required backup root:
   - 목적: F&G/news처럼 image-external context가 아니라, chart에서 이미 어느
     정도 보이는 technical context가 별도 FiLM 조건으로 유용한지 분리해서
     확인하는 것입니다.
+- `kaggle_stage4_n13_1_ofr_fsi_context_features_one_cell.md`
+  - N13-1 runner입니다.
+  - OFR Financial Stress Index CSV를 읽고, BTC sample date보다 하루 이전
+    값만 사용해 source-level `value`, `mean_20`, `mean_60`, `delta_20`,
+    `delta_60`, `std_60` feature를 만듭니다.
+  - 목적: FSI를 공식 financial-stress/risk-off proxy로 정렬하고, Stage 4
+    frozen FiLM이 쓸 수 있는 prebuilt macro context artifact를 준비합니다.
+- `kaggle_stage4_n13_2_fsi_only_pretrained_frozen_bounded_film_one_cell.md`
+  - N13-2 runner입니다.
+  - Stage 2 CNN/classifier를 frozen으로 보존하고, OFR FSI context encoder와
+    bounded final-block FiLM head만 학습합니다.
+  - Feature-set grid: `fsi_2 = mean_60 + delta_60`,
+    `fsi_3 = mean_60 + delta_60 + std_60`, `fsi_all = all six FSI features`.
+  - Grid: scale `0.02` x seeds `42, 43, 44, 45, 46`.
+  - 목적: 여섯 개 FSI feature를 무조건 모두 쓰지 않고, screening에서 나온
+    compact risk-regime feature set이 더 안정적인지 확인합니다.
 
 예정 notebook:
 - `kaggle_stage4_single_ablation_one_cell.md`

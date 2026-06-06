@@ -688,8 +688,16 @@ News-context extension:
   - Result: completed with six FSI features, `context_dim=6`,
     train/validation/test split counts `671/287/1441`, and zero missing rate
     across all six FSI features after source-level rolling feature generation.
+  - Feature screening result:
+    [4-N13-1 OFR FSI feature screening](checklist_results/4-N13-1_fsi_feature_screening.md).
+    Use `FSI-2 = mean_60 + delta_60`, `FSI-3 = mean_60 + delta_60 + std_60`,
+    and `FSI-all` in the next frozen-FiLM run instead of assuming all six
+    features are optimal.
 - [ ] 4-N13-2. FSI-only frozen bounded FiLM five-seed run
   - Context source: OFR FSI features only.
+  - Kaggle one-cell:
+    [kaggle_stage4_n13_2_fsi_only_pretrained_frozen_bounded_film_one_cell.md](notebooks/kaggle_stage4_n13_2_fsi_only_pretrained_frozen_bounded_film_one_cell.md)
+  - Feature-set grid: `fsi_2`, `fsi_3`, `fsi_all`.
   - Main comparison: Stage 2 frozen baseline, N8-B F&G-only, N10/N12 news-only,
     and N12-C technical-only.
   - Required metrics: accuracy, ROC-AUC, Brier, F1, predicted-Up rate,
@@ -1429,8 +1437,16 @@ News-context 확장:
     train/validation/test split counts `671/287/1441`, source-level rolling
     feature generation 적용 후 six FSI features 모두 missing rate 0으로
     완료했습니다.
+  - feature screening 결과:
+    [4-N13-1 OFR FSI feature screening](checklist_results/4-N13-1_fsi_feature_screening.md).
+    다음 frozen-FiLM run에서는 여섯 개 전체가 정답이라고 가정하지 않고,
+    `FSI-2 = mean_60 + delta_60`, `FSI-3 = mean_60 + delta_60 + std_60`,
+    `FSI-all`을 비교합니다.
 - [ ] 4-N13-2. FSI-only frozen bounded FiLM five-seed run
   - context source: OFR FSI features only.
+  - Kaggle one-cell:
+    [kaggle_stage4_n13_2_fsi_only_pretrained_frozen_bounded_film_one_cell.md](notebooks/kaggle_stage4_n13_2_fsi_only_pretrained_frozen_bounded_film_one_cell.md)
+  - feature-set grid: `fsi_2`, `fsi_3`, `fsi_all`.
   - comparison: Stage 2 frozen baseline, N8-B F&G-only, N10/N12 news-only,
     N12-C technical-only.
   - metric: accuracy, ROC-AUC, Brier, F1, predicted-Up rate,

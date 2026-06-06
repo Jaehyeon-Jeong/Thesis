@@ -752,9 +752,30 @@ News-context extension:
   - Compare whether a synthetic risk-regime vector is more useful than OFR FSI.
 - [ ] 4-N13-5. Macro context-source comparison
   - Compare `FSI-only`, `RORO-proxy-only`, `F&G-only`, `news-only`,
-    `technical-only`, and optional `FSI + F&G` / `RORO + F&G`.
+    `technical-only`.
   - Select one candidate for final Stage 4 interpretation only if it improves
     either accuracy or ROC/Brier without class-collapse.
+- [ ] 4-N13-5A. Cross-context feature audit
+  - Merge already-built context features on the same sample/date index:
+    F&G, news SVD/count, technical BB/MFI/RV, OFR FSI, public RORO, label,
+    future return, Stage 2 `prob_up`, and Stage 2 `correct`.
+  - Use train split only for feature selection diagnostics. Validation/test are
+    for confirmation only.
+  - Audit: missing rate, feature-label correlation, feature-future-return
+    correlation, feature-Stage2-error correlation, feature-feature correlation,
+    and redundancy clusters.
+  - Output: a small interpretable selected feature list, not a large
+    all-context vector.
+- [ ] 4-N13-5B. Selected-combo context FiLM
+  - Run one controlled selected-combo context experiment only if 4-N13-5A finds
+    a non-redundant feature set.
+  - Candidate size: roughly 3-6 features.
+  - Example candidates: `fg_value`, `fg_delta_60`, one news SVD/count feature,
+    `roro_proxy_value`, `roro_proxy_delta_20`, `fsi_delta_60`.
+  - Stage 2 frozen protocol, bounded last-block FiLM, five seeds, scale `0.02`
+    and optionally `0.05`.
+  - Decision rule: keep only if it improves or clarifies the source comparison
+    without reducing interpretability.
 - [ ] 4-N13-6. Macro interpretability export
   - Target samples: Stage 2 wrong -> N13 correct, Stage 2 correct -> N13 wrong,
     and high-stress / low-stress regimes.
@@ -1566,9 +1587,29 @@ News-context 확장:
   - synthetic risk-regime vector가 OFR FSI보다 유용한지 비교합니다.
 - [ ] 4-N13-5. Macro context-source comparison
   - `FSI-only`, `RORO-proxy-only`, `F&G-only`, `news-only`, `technical-only`,
-    optional `FSI + F&G` / `RORO + F&G`를 비교합니다.
+    를 비교합니다.
   - accuracy 또는 ROC/Brier가 개선되고 class-collapse가 없을 때만 final Stage 4
     interpretation 후보로 선택합니다.
+- [ ] 4-N13-5A. Cross-context feature audit
+  - 이미 만든 context feature들을 같은 sample/date index 기준으로 merge합니다:
+    F&G, news SVD/count, technical BB/MFI/RV, OFR FSI, public RORO, label,
+    future return, Stage 2 `prob_up`, Stage 2 `correct`.
+  - feature selection diagnostic은 train split만 사용합니다. validation/test는
+    확인용으로만 둡니다.
+  - audit 항목: missing rate, feature-label correlation, feature-future-return
+    correlation, feature-Stage2-error correlation, feature-feature correlation,
+    redundancy cluster.
+  - output: 큰 all-context vector가 아니라 작고 해석 가능한 selected feature list.
+- [ ] 4-N13-5B. Selected-combo context FiLM
+  - 4-N13-5A에서 중복이 적은 feature set이 보일 때만 selected-combo context
+    실험을 한 번 실행합니다.
+  - 후보 크기: 대략 3-6개 feature.
+  - 예시 후보: `fg_value`, `fg_delta_60`, news SVD/count 1개,
+    `roro_proxy_value`, `roro_proxy_delta_20`, `fsi_delta_60`.
+  - Stage 2 frozen protocol, bounded last-block FiLM, five seeds, scale `0.02`
+    그리고 필요하면 `0.05`.
+  - 결정 기준: 성능을 높이거나 source comparison 해석을 명확하게 만들 때만
+    유지합니다.
 - [ ] 4-N13-6. Macro interpretability export
   - target sample: Stage 2 wrong -> N13 correct, Stage 2 correct -> N13 wrong,
     high-stress / low-stress regime.

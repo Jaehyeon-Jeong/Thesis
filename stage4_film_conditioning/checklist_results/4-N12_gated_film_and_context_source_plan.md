@@ -372,7 +372,6 @@ news-only bounded/gated FiLM
 technical-only bounded FiLM
 FSI-only bounded FiLM
 RORO-proxy-only bounded FiLM
-optional: FSI + F&G, RORO + F&G
 ```
 
 Selection rule:
@@ -383,6 +382,79 @@ ROC/Brier without predicted-class collapse.
 If metric gains are tiny, keep it as interpretability/context evidence rather
 than a performance claim.
 ```
+
+### N13-5A. Cross-Context Feature Audit
+
+This step is allowed before a combined-context run, but it must be a diagnostic
+feature audit, not a broad all-feature grid.
+
+Merge available context artifacts by sample/date:
+
+```text
+F&G features
+news SVD/count features
+technical BB/MFI/RV features
+OFR FSI features
+public RORO proxy/features
+label
+future_return
+Stage 2 prob_up
+Stage 2 correct
+```
+
+Use train split only for selection diagnostics:
+
+```text
+missing rate
+feature-label correlation
+feature-future-return correlation
+feature-Stage2-error correlation
+feature-feature correlation
+redundancy clusters
+```
+
+Selection rule:
+
+```text
+prefer features that are interpretable,
+available with strict t-1 alignment,
+weakly associated with label/future_return or Stage2 error,
+and not redundant with already selected features.
+```
+
+### N13-5B. Selected-Combo Context FiLM
+
+Run one selected-combo experiment only if N13-5A finds a small non-redundant
+feature set.
+
+Recommended size:
+
+```text
+3-6 context features
+```
+
+Example candidates:
+
+```text
+fg_value
+fg_delta_60
+one news SVD/count signal
+roro_proxy_value
+roro_proxy_delta_20
+fsi_delta_60
+```
+
+Use the same Stage 2 frozen bounded-FiLM protocol:
+
+```text
+image: I60/R20/ohlc_ma_vb
+visual backbone/classifier: frozen
+scale: 0.02, optional 0.05
+seeds: 42, 43, 44, 45, 46
+```
+
+Do not run a large all-context vector unless the selected-combo audit clearly
+justifies it.
 
 ### N13-6. Macro Interpretability Export
 

@@ -743,6 +743,12 @@ News-context extension:
 - [ ] 4-N13-4. RORO-proxy-only frozen bounded FiLM five-seed run
   - Context source: public-data RORO proxy features only.
   - Same protocol and metrics as 4-N13-2.
+  - Prepared Kaggle runner:
+    `notebooks/kaggle_stage4_n13_4_roro_only_pretrained_frozen_bounded_film_one_cell.md`.
+  - Recommended upload bundle:
+    `stage4_film_conditioning_n13_4_with_stage2_bundle.zip`, which embeds the
+    Stage 2 I60/R20/ohlc_ma_vb seed 42-46 checkpoint bundle to avoid Kaggle
+    reset/path issues.
   - Compare whether a synthetic risk-regime vector is more useful than OFR FSI.
 - [ ] 4-N13-5. Macro context-source comparison
   - Compare `FSI-only`, `RORO-proxy-only`, `F&G-only`, `news-only`,
@@ -1520,6 +1526,12 @@ News-context 확장:
 - [ ] 4-N13-4. RORO-proxy-only frozen bounded FiLM five-seed run
   - context source: public-data RORO proxy features only.
   - 4-N13-2와 같은 protocol/metric을 사용합니다.
+  - 준비된 Kaggle runner:
+    `notebooks/kaggle_stage4_n13_4_roro_only_pretrained_frozen_bounded_film_one_cell.md`.
+  - 권장 업로드 bundle:
+    `stage4_film_conditioning_n13_4_with_stage2_bundle.zip`. Stage 2
+    I60/R20/ohlc_ma_vb seed 42-46 checkpoint bundle을 포함해 Kaggle reset/path
+    문제를 줄입니다.
   - synthetic risk-regime vector가 OFR FSI보다 유용한지 비교합니다.
 - [ ] 4-N13-5. Macro context-source comparison
   - `FSI-only`, `RORO-proxy-only`, `F&G-only`, `news-only`, `technical-only`,

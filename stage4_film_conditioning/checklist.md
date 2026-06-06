@@ -707,7 +707,7 @@ News-context extension:
     Best FSI row is `fsi_all`, accuracy `0.579875`, ROC-AUC `0.584859`,
     net correction `+4` total over five seeds, and zero collapse warnings.
     This is stable but not materially better than Stage 2 or N8-B F&G-only.
-- [ ] 4-N13-3. KC Fed-inspired public-data RORO proxy builder
+- [x] 4-N13-3. KC Fed-inspired public-data RORO proxy builder
   - Raw sources: VIX, S&P500/NASDAQ returns, Broad Dollar Index, US 10Y yield,
     optional high-yield OAS and gold.
   - Direction rule: align features so positive values mean risk-off pressure.
@@ -715,6 +715,15 @@ News-context extension:
     changes/returns; keep raw components beside the synthetic score.
   - Document explicitly that this is a public-data RORO proxy, not a replication
     of the KC Fed proprietary/full input set.
+  - Implemented:
+    [build_stage4_roro_context_features.py](scripts/build_stage4_roro_context_features.py)
+    and
+    [kaggle_stage4_n13_3_public_roro_context_features_one_cell.md](notebooks/kaggle_stage4_n13_3_public_roro_context_features_one_cell.md).
+  - Source audit:
+    [4-N13-3 public RORO proxy builder](checklist_results/4-N13-3_public_roro_proxy_builder.md).
+    KC Fed official daily/weekly files are cached for documentation, but the
+    downloaded files start in June 2023 and do not cover Stage 4 train dates;
+    N13-4 therefore needs the longer-history public proxy artifact.
 - [ ] 4-N13-4. RORO-proxy-only frozen bounded FiLM five-seed run
   - Context source: public-data RORO proxy features only.
   - Same protocol and metrics as 4-N13-2.
@@ -1461,7 +1470,7 @@ News-context 확장:
     best FSI row는 `fsi_all`, accuracy `0.579875`, ROC-AUC `0.584859`,
     five-seed total net correction `+4`, collapse warning `0`입니다.
     안정적이지만 Stage 2 또는 N8-B F&G-only보다 의미 있게 강하지는 않습니다.
-- [ ] 4-N13-3. KC Fed-inspired public-data RORO proxy builder
+- [x] 4-N13-3. KC Fed-inspired public-data RORO proxy builder
   - raw sources: VIX, S&P500/NASDAQ returns, Broad Dollar Index, US 10Y yield,
     optional high-yield OAS and gold.
   - 방향: positive value가 risk-off pressure를 의미하도록 부호를 정렬합니다.
@@ -1469,6 +1478,15 @@ News-context 확장:
     first component를 만들고, raw components도 같이 저장합니다.
   - 명시: KC Fed full/proprietary input replication이 아니라 public-data RORO
     proxy입니다.
+  - 구현:
+    [build_stage4_roro_context_features.py](scripts/build_stage4_roro_context_features.py),
+    [kaggle_stage4_n13_3_public_roro_context_features_one_cell.md](notebooks/kaggle_stage4_n13_3_public_roro_context_features_one_cell.md).
+  - source audit:
+    [4-N13-3 public RORO proxy builder](checklist_results/4-N13-3_public_roro_proxy_builder.md).
+    KC Fed official daily/weekly 파일은 documentation용으로 cache했지만
+    2023년 6월부터 시작해 Stage 4 train period를 커버하지 못합니다.
+    따라서 N13-4는 longer-history public proxy artifact가 만들어진 뒤
+    진행합니다.
 - [ ] 4-N13-4. RORO-proxy-only frozen bounded FiLM five-seed run
   - context source: public-data RORO proxy features only.
   - 4-N13-2와 같은 protocol/metric을 사용합니다.

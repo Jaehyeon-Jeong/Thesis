@@ -1,0 +1,6 @@
+rank,recommendation,reason
+1,Use Stage 2 frozen baseline as the main benchmark.,All completed context sources only move five-seed metrics by tiny margins.
+2,Keep N8-B F&G-only s0.02 as the best compact context-FiLM candidate.,"It has the best five-seed accuracy among completed context rows, but the gain is only about +0.001."
+3,Use news SVD32 s0.02 for targeted interpretability examples.,"It gives the clearest correction/regression table and modest ROC/Brier improvement, but weak hard-decision gain."
+4,Do not select FSI-only or RORO-only as final models.,"Both macro sources are stable and conceptually useful, but they do not materially beat F&G or the visual baseline."
+5,Proceed to N13-5A cross-context feature audit before selected-combo FiLM.,"A selected combo should be based on train-only redundancy/error-correlation diagnostics, not by stacking every context source."

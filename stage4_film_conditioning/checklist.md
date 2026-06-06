@@ -755,11 +755,17 @@ News-context extension:
     weaker than the best F&G-only row.
   - Review:
     [4-N13-4 RORO-only frozen bounded FiLM](checklist_results/4-N13-4_roro_proxy_only_pretrained_frozen_bounded_film.md).
-- [ ] 4-N13-5. Macro context-source comparison
+- [x] 4-N13-5. Macro context-source comparison
   - Compare `FSI-only`, `RORO-proxy-only`, `F&G-only`, `news-only`,
     `technical-only`.
   - Select one candidate for final Stage 4 interpretation only if it improves
     either accuracy or ROC/Brier without class-collapse.
+  - Result: completed. F&G-only scale `0.02` remains the best compact accuracy
+    candidate (`0.580291`, +`0.000972` vs Stage 2). News SVD32 scale `0.02`
+    remains the best interpretability/calibration candidate. FSI/RORO are stable
+    but not strong enough alone.
+  - Review:
+    [4-N13-5 macro context-source comparison](checklist_results/4-N13-5_macro_context_source_comparison.md).
 - [ ] 4-N13-5A. Cross-context feature audit
   - Merge already-built context features on the same sample/date index:
     F&G, news SVD/count, technical BB/MFI/RV, OFR FSI, public RORO, label,
@@ -1595,11 +1601,17 @@ News-context 확장:
     best F&G-only row보다는 약합니다.
   - 리뷰:
     [4-N13-4 RORO-only frozen bounded FiLM](checklist_results/4-N13-4_roro_proxy_only_pretrained_frozen_bounded_film.md).
-- [ ] 4-N13-5. Macro context-source comparison
+- [x] 4-N13-5. Macro context-source comparison
   - `FSI-only`, `RORO-proxy-only`, `F&G-only`, `news-only`, `technical-only`,
     를 비교합니다.
   - accuracy 또는 ROC/Brier가 개선되고 class-collapse가 없을 때만 final Stage 4
     interpretation 후보로 선택합니다.
+  - 결과: 완료. F&G-only scale `0.02`가 compact accuracy 후보 1위입니다
+    (`0.580291`, Stage 2 대비 +`0.000972`). News SVD32 scale `0.02`는
+    interpretability/calibration 후보로 유지합니다. FSI/RORO는 안정적이지만
+    단독 최종 모델로는 약합니다.
+  - 리뷰:
+    [4-N13-5 macro context-source comparison](checklist_results/4-N13-5_macro_context_source_comparison.md).
 - [ ] 4-N13-5A. Cross-context feature audit
   - 이미 만든 context feature들을 같은 sample/date index 기준으로 merge합니다:
     F&G, news SVD/count, technical BB/MFI/RV, OFR FSI, public RORO, label,

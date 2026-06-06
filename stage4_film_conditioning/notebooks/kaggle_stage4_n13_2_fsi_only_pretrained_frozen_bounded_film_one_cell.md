@@ -42,6 +42,7 @@ from IPython.display import display, Markdown
 # ============================================================
 CODE_INPUT_CANDIDATES = [
     Path("/kaggle/input/datasets/moskow/stage4/stage4_film_conditioning"),
+    Path("/kaggle/input/datasets/moskow/stage4/stage4_film_conditioning_n13_2_with_stage2_bundle.zip"),
     Path("/kaggle/input/datasets/moskow/stage4/stage4_film_conditioning_n13_1_latest.zip"),
 ]
 STAGE2_CODE_INPUT_CANDIDATES = [
@@ -219,6 +220,13 @@ def find_stage2_checkpoint_bundle() -> Path:
     )
     if working_checkpoint.exists():
         return STAGE2_PROJECT_ROOT
+
+    embedded_checkpoint_bundle = (
+        PROJECT_ROOT
+        / "stage2_i60_ohlc_ma_vb_r20_seed42_46_checkpoints_for_stage4_n8"
+    )
+    if embedded_checkpoint_bundle.exists():
+        return resolve_checkpoint_candidate(embedded_checkpoint_bundle)
 
     for search_root in [Path("/kaggle/working"), Path("/kaggle/input")]:
         if not search_root.exists():

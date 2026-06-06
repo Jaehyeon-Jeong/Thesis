@@ -314,14 +314,14 @@ def build_fsi_sample_context(
     asof_lag_days: int,
     include_category_features: bool,
 ) -> pd.DataFrame:
-    """Align OFR FSI to BTC sample dates and compute trailing features."""
+    """Align OFR FSI to BTC sample dates after source-level feature engineering."""
 
     sample_min = pd.to_datetime(samples["Date"]).min().normalize()
     sample_max = pd.to_datetime(samples["Date"]).max().normalize()
     calendar = pd.DataFrame({"Date": pd.date_range(sample_min, sample_max, freq="D")})
     calendar["ofr_asof_date"] = calendar["Date"] - pd.to_timedelta(int(asof_lag_days), unit="D")
 
-    fsi_sorted = fsi.sort_values("ofr_date").reset_index(drop=True)
+    fsi_sorted = add_source_level_fsi_features(fsi)
     aligned = pd.merge_asof(
         calendar.sort_values("ofr_asof_date"),
         fsi_sorted,
@@ -333,13 +333,6 @@ def build_fsi_sample_context(
     aligned["ofr_age_days"] = (aligned["Date"] - aligned["ofr_source_date"]).dt.days
     aligned["ofr_exact_asof_match"] = aligned["ofr_source_date"].eq(aligned["ofr_asof_date"])
     aligned["ofr_missing"] = aligned["ofr_fsi_value"].isna()
-
-    value = pd.to_numeric(aligned["ofr_fsi_value"], errors="coerce")
-    aligned["ofr_fsi_mean_20"] = value.rolling(20, min_periods=20).mean()
-    aligned["ofr_fsi_mean_60"] = value.rolling(60, min_periods=60).mean()
-    aligned["ofr_fsi_delta_20"] = value - value.shift(20)
-    aligned["ofr_fsi_delta_60"] = value - value.shift(60)
-    aligned["ofr_fsi_std_60"] = value.rolling(60, min_periods=60).std(ddof=0)
 
     context_columns = [
         "Date",
@@ -393,6 +386,19 @@ def build_fsi_sample_context(
         + [column for column in table.columns if column not in set(metadata + feature_order)]
     )
     return table.loc[:, list(dict.fromkeys(ordered))].reset_index(drop=True)
+
+
+def add_source_level_fsi_features(fsi: pd.DataFrame) -> pd.DataFrame:
+    """Compute trailing features on the full OFR FSI source history before merge."""
+
+    result = fsi.sort_values("ofr_date").reset_index(drop=True).copy()
+    value = pd.to_numeric(result["ofr_fsi_value"], errors="coerce")
+    result["ofr_fsi_mean_20"] = value.rolling(20, min_periods=20).mean()
+    result["ofr_fsi_mean_60"] = value.rolling(60, min_periods=60).mean()
+    result["ofr_fsi_delta_20"] = value - value.shift(20)
+    result["ofr_fsi_delta_60"] = value - value.shift(60)
+    result["ofr_fsi_std_60"] = value.rolling(60, min_periods=60).std(ddof=0)
+    return result
 
 
 def fit_transform_fsi_context_features(

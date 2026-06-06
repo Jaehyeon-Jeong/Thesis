@@ -686,8 +686,8 @@ News-context extension:
   - Prep note:
     [4-N13-1 OFR FSI feature builder](checklist_results/4-N13-1_ofr_fsi_feature_builder.md)
   - Result: completed with six FSI features, `context_dim=6`,
-    train/validation/test split counts `671/287/1441`, and zero test missing
-    rate across all FSI features.
+    train/validation/test split counts `671/287/1441`, and zero missing rate
+    across all six FSI features after source-level rolling feature generation.
 - [ ] 4-N13-2. FSI-only frozen bounded FiLM five-seed run
   - Context source: OFR FSI features only.
   - Main comparison: Stage 2 frozen baseline, N8-B F&G-only, N10/N12 news-only,
@@ -1426,8 +1426,9 @@ News-context 확장:
   - 준비 노트:
     [4-N13-1 OFR FSI feature builder](checklist_results/4-N13-1_ofr_fsi_feature_builder.md)
   - 결과: six FSI features, `context_dim=6`,
-    train/validation/test split counts `671/287/1441`, test split missing rate
-    0으로 완료했습니다.
+    train/validation/test split counts `671/287/1441`, source-level rolling
+    feature generation 적용 후 six FSI features 모두 missing rate 0으로
+    완료했습니다.
 - [ ] 4-N13-2. FSI-only frozen bounded FiLM five-seed run
   - context source: OFR FSI features only.
   - comparison: Stage 2 frozen baseline, N8-B F&G-only, N10/N12 news-only,

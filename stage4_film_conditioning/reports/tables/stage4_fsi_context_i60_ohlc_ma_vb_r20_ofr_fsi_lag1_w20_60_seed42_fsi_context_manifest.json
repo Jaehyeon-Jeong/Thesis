@@ -24,9 +24,9 @@
     "ofr_fsi_categories": 0
   },
   "split_counts": {
+    "test": 1441,
     "train": 671,
-    "validation": 287,
-    "test": 1441
+    "validation": 287
   },
   "fit_on": "train",
   "normalization": "train_median_impute_train_quantile_clip_train_zscore",
@@ -34,6 +34,7 @@
     "asof_lag_days": 1,
     "policy": "use latest OFR FSI source date <= BTC image end date minus lag",
     "same_day_policy": "disabled by default through asof_lag_days=1",
+    "source_feature_policy": "compute 20/60-observation trailing features on full OFR FSI source history before BTC as-of alignment",
     "max_age_days": 4.0,
     "mean_age_days": 1.4639433097123802
   },

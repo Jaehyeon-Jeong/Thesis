@@ -120,8 +120,9 @@ Added in `4-N6`:
 
 Added in `4-N13-1`:
 - `build_stage4_fsi_context_features.py`: reads the official OFR Financial
-  Stress Index CSV, aligns it to BTC sample image end dates with a conservative
-  as-of lag, and writes model-ready `context_features.csv`,
+  Stress Index CSV, computes 20/60-observation trailing features on the full
+  OFR source history, aligns those features to BTC sample image end dates with
+  a conservative as-of lag, and writes model-ready `context_features.csv`,
   `context_scaler.json`, `context_feature_audit.json`, and
   `context_feature_summary.csv`.
 - OFR FSI is recorded as an official financial-stress / risk-off proxy, not as

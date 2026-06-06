@@ -40,9 +40,9 @@ The builder:
 
 ```text
 loads official OFR FSI CSV
-aligns FSI to BTC sample Date with as-of policy
 uses default lag: t - 1 day
-builds trailing 20/60-day FSI features
+builds trailing 20/60-observation FSI features on the full OFR source history
+aligns FSI to BTC sample Date with as-of policy
 fits imputation/clipping/z-score on train split only
 writes a prebuilt context artifact for the existing Stage 4 runner
 ```
@@ -126,25 +126,32 @@ split counts: train 671, validation 287, test 1441
 BTC sample date range: 2018-04-29 to 2024-12-11
 OFR FSI date range: 2000-01-03 to 2026-06-03
 as-of policy: latest OFR FSI source date <= BTC image end date - 1 day
+source feature policy: compute trailing features on full OFR FSI source history
+                       before BTC as-of alignment
 mean OFR source age: 1.46 days
 max OFR source age: 4.0 days
 normalized features finite: true
+warnings: none
 ```
 
-The only warnings are early-window missing rates for 60-day trailing features
-in train/validation:
+Earlier implementation note:
 
 ```text
-ofr_fsi_mean_60
-ofr_fsi_delta_60
-ofr_fsi_std_60
+The first N13-1 builder computed 20/60 trailing features after aligning OFR
+FSI to the Stage 4 BTC sample calendar. That unnecessarily created early
+train/validation missing values even though the official OFR source has data
+from 2000.
 ```
 
-This is expected because the first Stage 4 BTC samples do not yet have enough
-prior FSI observations to compute full 60-day trailing windows. The builder
-uses train-only median imputation, train quantile clipping, and train z-score
-normalization. The test split has zero raw missing rate for all six FSI
-features.
+The builder was corrected to compute trailing features on the full OFR FSI
+source history first, then align those already-computed features to BTC sample
+dates. This removes the unnecessary early-window missing values:
+
+```text
+train missing rate:      0.0 for all six FSI features
+validation missing rate: 0.0 for all six FSI features
+test missing rate:       0.0 for all six FSI features
+```
 
 ## Next Step
 

@@ -206,54 +206,193 @@ For every N12 substep:
 
 ## N13. Macro/RORO Context Extension
 
-Run after N12-D if the context-source comparison confirms that image-external
-context is the better direction than chart-derived technical context.
+Run after N12-D because the completed context-source comparison shows that
+chart-derived technical context is mostly redundant with `ohlc_ma_vb`, while
+image-external context remains the more defensible direction.
 
 Purpose:
 
 ```text
-Test whether macro risk-on/risk-off regime can condition the frozen BTC chart
-model better than BTC technical indicators that are already visible in the
-chart.
+Test whether official financial stress and macro risk-on/risk-off regime can
+condition the frozen BTC chart model better than BTC technical indicators that
+are already visible in the chart.
 ```
 
-Candidate raw features:
+Important terminology:
 
 ```text
-SPY/S&P500 20-day return
-QQQ/Nasdaq 20-day return
+OFR FSI is not a direct RORO index.
+It is an official financial-stress index and will be used as a risk-off proxy:
+high OFR FSI = higher financial stress = risk-off context.
+
+The RORO proxy is separate.
+It is KC Fed-inspired, but built only from public FRED/Cboe data.
+Do not claim full replication of the KC Fed RORO index.
+```
+
+### N13-0. Source Audit And Terminology Lock
+
+Tasks:
+
+```text
+verify official links
+verify date coverage over 2018-2024
+verify direct CSV load path
+document missing-date/as-of policy
+document feature interpretation and leakage rule
+```
+
+Primary sources:
+
+```text
+OFR FSI:
+https://www.financialresearch.gov/financial-stress-index/data/fsi.csv
+
+Cboe VIX:
+https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv
+
+FRED/FRED CSV:
+VIXCLS, SP500, NASDAQCOM, DTWEXBGS, DGS10, BAMLH0A0HYM2
+```
+
+### N13-1. OFR FSI Feature Builder
+
+Feature interpretation:
+
+```text
+ofr_fsi high -> financial stress high -> risk-off proxy
+do not hard-code BTC down
+let FiLM learn whether and how this context modulates BTC chart features
+```
+
+Candidate features:
+
+```text
+ofr_fsi_value
+ofr_fsi_mean_20
+ofr_fsi_mean_60
+ofr_fsi_delta_20
+ofr_fsi_delta_60
+ofr_fsi_std_60
+ofr_credit
+ofr_equity_valuation
+ofr_funding
+ofr_safe_assets
+ofr_volatility
+```
+
+### N13-2. FSI-Only Frozen Bounded FiLM
+
+Protocol:
+
+```text
+image: I60/R20/ohlc_ma_vb
+seeds: 42,43,44,45,46
+Stage 2 CNN: loaded and frozen
+Stage 2 classifier: frozen
+context source: OFR FSI features only
+method: bounded last-block FiLM first
+scale: 0.02 first
+```
+
+Required metrics:
+
+```text
+accuracy
+ROC-AUC
+Brier score
+F1
+predicted-Up rate
+correction count
+regression count
+net correction
+seed-level collapse check
+```
+
+### N13-3. KC Fed-Inspired Public-Data RORO Proxy Builder
+
+Candidate raw components:
+
+```text
 VIX level/change
-DXY return
+S&P500 20-day return
+NASDAQ 20-day return
+Broad Dollar Index return/change
 US 10Y yield change
-gold return
-BTC-equity rolling correlation
+High-yield OAS change
+gold return, optional
+BTC-equity rolling correlation, optional diagnostic
 ```
 
-Candidate synthetic score:
+Direction rule:
 
 ```text
-roro_score =
-  z(spx_ret_20)
-  + z(nasdaq_ret_20)
-  - z(vix_change_20)
-  - z(dxy_ret_20)
-  - z(us10y_change_20)
+positive component value should mean risk-off pressure
+VIX up -> positive
+HY OAS up -> positive
+equity return down -> positive
+dollar strength up -> positive, depending on final audit
+10Y move -> keep as raw component first; avoid overclaiming direction
 ```
 
-Planned ablations:
+Synthetic score:
 
 ```text
-macro/RORO-only
-macro/RORO + F&G
-weak visual baseline + best context-FiLM, optional diagnostic
+train-fit PCA first component on risk-off-aligned public features
+then fix the sign so higher roro_proxy means more risk-off
+store both roro_proxy and raw components for interpretation
 ```
 
-Leakage rule:
+### N13-4. RORO-Proxy-Only Frozen Bounded FiLM
 
 ```text
-Use only values available at or before image end date t.
-Rolling features are trailing-window only.
-Normalization is fit on train split only.
+same protocol as N13-2
+context source: public-data RORO proxy features only
+goal: compare synthetic risk-regime proxy against official OFR FSI
+```
+
+### N13-5. Macro Context-Source Comparison
+
+Compare:
+
+```text
+Stage 2 frozen visual baseline
+F&G-only bounded FiLM
+news-only bounded/gated FiLM
+technical-only bounded FiLM
+FSI-only bounded FiLM
+RORO-proxy-only bounded FiLM
+optional: FSI + F&G, RORO + F&G
+```
+
+Selection rule:
+
+```text
+Choose a final Stage 4 macro candidate only if it improves accuracy or
+ROC/Brier without predicted-class collapse.
+If metric gains are tiny, keep it as interpretability/context evidence rather
+than a performance claim.
+```
+
+### N13-6. Macro Interpretability Export
+
+Target samples:
+
+```text
+Stage 2 wrong -> N13 correct
+Stage 2 correct -> N13 wrong
+high-FSI/risk-off dates
+low-FSI/risk-on or calm dates
+```
+
+Export:
+
+```text
+targeted Grad-CAM
+FSI/RORO raw and normalized values
+gamma/beta summaries
+prob_up change from Stage 2 to N13
+correction/regression labels
 ```
 
 ## N13-B. Sentiment/Event Feature Extension

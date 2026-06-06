@@ -36,7 +36,10 @@ flowchart LR
     M --> N[N7: SVD8 news bounded FiLM]
     N --> O[N8: Stage2 pretrained/frozen FiLM]
     O --> P[N9/N10: news pretrained/frozen + interpretation]
-    P --> Q[N12-A: uncertainty-gated news FiLM]
+    P --> Q[N12-A/B/C/D: gated FiLM + context-source comparison]
+    Q --> R[N13-0/1: FSI/RORO source audit + FSI features]
+    R --> S[N13-2/4: FSI-only and RORO-proxy-only FiLM]
+    S --> T[N13-5/6: macro comparison + interpretability]
 ```
 
 ## Checklist And Review Links
@@ -136,13 +139,18 @@ News-context track:
 | `4-N12-B` | Stage 2 checkpoint loaded/frozen + confidence-gated news FiLM | Completed; class decisions match Stage 2 exactly, ROC-AUC moves only minimally | [N12-B review](checklist_results/4-N12-B_confidence_gated_news_film.md) |
 | `4-N12-C` | Stage 2 checkpoint loaded/frozen + technical-only bounded FiLM | Completed; scale `0.02` accuracy mean `0.5797`, ROC-AUC `0.5848`, effectively tied with Stage 2 | [N12-C review](checklist_results/4-N12-C_technical_only_pretrained_frozen_bounded_film.md) |
 | `4-N12-D` | Frozen Stage 2 context-source comparison | Completed for existing sources; F&G-only is the best compact accuracy candidate, news improves ROC-AUC/Brier more than hard decisions, and technical-only is mostly redundant | [N12-D review](checklist_results/4-N12-D_context_source_comparison.md), [table](reports/tables/stage4_n12d_context_source_comparison_compact.csv) |
-| `4-N13` | Macro/RORO context extension | Planned; tests external risk-on/risk-off regime features after N12-D context-source comparison | [N12/N13 plan](checklist_results/4-N12_gated_film_and_context_source_plan.md) |
+| `4-N13-0/1` | Macro/RORO source audit + OFR FSI feature builder | Planned; lock terminology and build official financial-stress/risk-off proxy features | [N12/N13 plan](checklist_results/4-N12_gated_film_and_context_source_plan.md) |
+| `4-N13-2` | FSI-only frozen bounded FiLM | Planned; test OFR FSI as official risk-off context under the frozen Stage 2 protocol | [N12/N13 plan](checklist_results/4-N12_gated_film_and_context_source_plan.md) |
+| `4-N13-3/4` | KC Fed-inspired public-data RORO proxy + FiLM | Planned; build and test a public-data RORO proxy, explicitly not a full KC Fed replication | [N12/N13 plan](checklist_results/4-N12_gated_film_and_context_source_plan.md) |
+| `4-N13-5/6` | Macro comparison + interpretability export | Planned; compare FSI/RORO/F&G/news/technical and export targeted Grad-CAM plus gamma/beta summaries | [N12/N13 plan](checklist_results/4-N12_gated_film_and_context_source_plan.md) |
 | `4-N13-B` | Optional sentiment/event feature extension | Deferred; only needed if headline TF-IDF/SVD remains weak or hard to interpret | [N12/N13 plan](checklist_results/4-N12_gated_film_and_context_source_plan.md) |
 | `4-N14` | Final Stage 4 interpretability report | Planned final evidence package: metrics, correction/regression, targeted Grad-CAM, gamma/beta/gate summaries | [N12/N14 plan](checklist_results/4-N12_gated_film_and_context_source_plan.md) |
 
 Next direction:
-- after N12-D, test macro/RORO features as image-external market-regime context
-  rather than adding more chart-derived technical indicators;
+- test OFR FSI first as an official financial-stress/risk-off regime proxy;
+- then build a KC Fed-inspired public-data RORO proxy from FRED/Cboe sources;
+- compare FSI/RORO against F&G, news, and technical context under the same
+  frozen Stage 2 protocol;
 - use targeted Grad-CAM plus `modulation_gate`, `stage2_prob_up`, gamma, and
   beta summaries for the thesis interpretation section;
 - keep LLM/sentiment/event extraction as a later extension only if the

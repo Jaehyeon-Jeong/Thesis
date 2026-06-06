@@ -22,15 +22,15 @@ Active work view:
   baseline-preserving FiLM. Stage 4 now reloads the selected Stage 2
   checkpoint, reproduces the baseline, freezes the visual CNN/classifier, and
   trains only the F&G context encoder plus bounded final-block FiLM heads.
-- Current next track: use the same pretrained/frozen FiLM path for news-only
-  and then F&G + news context, followed by Stage 2 vs N8-B interpretability
-  comparison.
+- Current next track: move from crypto/news context to official macro
+  risk-regime context. Use OFR FSI as an official financial-stress/risk-off
+  proxy and a KC Fed-inspired public-data RORO proxy as separate N13 sources.
 - First news version: headline-only, non-LLM, train-only TF-IDF/SVD over
   7/20/60-day trailing news windows.
-- Main order now: record N8-B results -> run news-only pretrained/frozen FiLM
-  if time permits -> run F&G + news combined context only if news-only is
-  promising -> prepare Grad-CAM/gamma-beta interpretation -> finalize Stage 4
-  report and advisor update.
+- Main order now: finish the frozen Stage 2 context-source comparison -> run
+  N13 FSI/RORO source audit -> test FSI-only -> test RORO-proxy-only -> compare
+  FSI/RORO/F&G/news under the same frozen protocol -> prepare final
+  Grad-CAM/gamma-beta interpretation.
 
 Main Stage 4 ablation:
 - [x] 4-A. `CNN + context concat`
@@ -652,26 +652,59 @@ News-context extension:
   - Result note:
     [4-N12-D context-source comparison](checklist_results/4-N12-D_context_source_comparison.md)
 - [ ] 4-N13. Macro/RORO context extension
-  - Purpose: move beyond chart-derived or crypto-sentiment-only context and test
-    whether external risk-on/risk-off market regime improves FiLM correction.
-  - Rationale: `ohlc_ma_vb` already contains much of BB/MFI/RV-like technical
-    information. The next feature family should be image-external.
-  - Candidate raw sources/features:
-    `SPY`/S&P500 20-day return, `QQQ`/Nasdaq 20-day return, `VIX` level/change,
-    `DXY` return, US 10Y yield change, gold return, and BTC-equity rolling
-    correlation.
-  - Candidate synthetic score:
-    `roro_score = z(spx_ret_20) + z(nasdaq_ret_20) - z(vix_change_20) -
-    z(dxy_ret_20) - z(us10y_change_20)`.
-  - Leakage rule: all macro/RORO values must be available at or before image end
-    date `t`; rolling features use trailing windows only and train-only
-    normalization.
-  - Planned ablations:
-    `macro/RORO-only`, `macro/RORO + F&G`, and optionally weak visual baseline
-    + best context-FiLM to test whether context helps when chart evidence is
-    incomplete.
-  - Thesis question: can macro risk regime condition the Stage 2 visual features
-    more meaningfully than context derived from the same BTC OHLCV chart?
+  - Purpose: test image-external macro risk-regime context after F&G/news and
+    technical context produced only tiny gains.
+  - Thesis question: can official financial stress or risk-on/risk-off regime
+    condition the frozen Stage 2 BTC chart features more meaningfully than
+    context derived from BTC OHLCV?
+  - Shared protocol: `I60/R20/ohlc_ma_vb`, five seeds `42-46`, Stage 2
+    checkpoints loaded/frozen, classifier frozen, bounded last-block FiLM first
+    with conservative scale `0.02`.
+- [ ] 4-N13-0. Macro/RORO source audit and terminology lock
+  - Distinguish `OFR FSI` from `RORO`: OFR FSI is not a direct RORO index; it is
+    an official financial-stress/risk-off proxy.
+  - Record source links, date coverage, CSV load path, missing-date policy, and
+    whether each feature is available at or before image end date `t`.
+  - Candidate source 1: OFR Financial Stress Index CSV, covering 2000-present.
+  - Candidate source 2: public-data RORO proxy inspired by KC Fed methodology,
+    built from FRED/Cboe indicators rather than proprietary/refinitiv series.
+- [ ] 4-N13-1. OFR FSI feature builder
+  - Raw source: `https://www.financialresearch.gov/financial-stress-index/data/fsi.csv`.
+  - Interpretation: higher `OFR FSI` = stronger financial stress = risk-off
+    proxy. Do not hard-code that BTC must fall; let FiLM learn the relation.
+  - Candidate features: `ofr_fsi_value`, `ofr_fsi_mean_20`,
+    `ofr_fsi_mean_60`, `ofr_fsi_delta_20`, `ofr_fsi_delta_60`,
+    `ofr_fsi_std_60`, plus optional category values `Credit`,
+    `Equity valuation`, `Funding`, `Safe assets`, `Volatility`.
+  - Normalize with train-only imputation, clipping, and z-score statistics.
+- [ ] 4-N13-2. FSI-only frozen bounded FiLM five-seed run
+  - Context source: OFR FSI features only.
+  - Main comparison: Stage 2 frozen baseline, N8-B F&G-only, N10/N12 news-only,
+    and N12-C technical-only.
+  - Required metrics: accuracy, ROC-AUC, Brier, F1, predicted-Up rate,
+    correction/regression/net correction, seed-level collapse check.
+- [ ] 4-N13-3. KC Fed-inspired public-data RORO proxy builder
+  - Raw sources: VIX, S&P500/NASDAQ returns, Broad Dollar Index, US 10Y yield,
+    optional high-yield OAS and gold.
+  - Direction rule: align features so positive values mean risk-off pressure.
+  - Candidate proxy: train-fit PCA first component on risk-off-aligned daily
+    changes/returns; keep raw components beside the synthetic score.
+  - Document explicitly that this is a public-data RORO proxy, not a replication
+    of the KC Fed proprietary/full input set.
+- [ ] 4-N13-4. RORO-proxy-only frozen bounded FiLM five-seed run
+  - Context source: public-data RORO proxy features only.
+  - Same protocol and metrics as 4-N13-2.
+  - Compare whether a synthetic risk-regime vector is more useful than OFR FSI.
+- [ ] 4-N13-5. Macro context-source comparison
+  - Compare `FSI-only`, `RORO-proxy-only`, `F&G-only`, `news-only`,
+    `technical-only`, and optional `FSI + F&G` / `RORO + F&G`.
+  - Select one candidate for final Stage 4 interpretation only if it improves
+    either accuracy or ROC/Brier without class-collapse.
+- [ ] 4-N13-6. Macro interpretability export
+  - Target samples: Stage 2 wrong -> N13 correct, Stage 2 correct -> N13 wrong,
+    and high-stress / low-stress regimes.
+  - Export targeted Grad-CAM, FSI/RORO values, gamma/beta summaries,
+    modulation gate if used, and `prob_up` changes.
 - [ ] 4-N13-B. Optional sentiment/event feature extension
   - Run only if headline TF-IDF/SVD is too weak or hard to interpret after N13
     macro/RORO planning.
@@ -1280,7 +1313,7 @@ News-context 확장:
   - Headline-only no-leakage track이 안정화된 뒤로 미룹니다.
   - 사용한다면 model name, prompt, version/date, cache hash, runtime을
     기록해야 합니다.
-- [ ] 4-N12. Optional uncertainty-gated FiLM follow-up
+- [x] 4-N12. Optional uncertainty-gated FiLM follow-up
   - N9/N10 해석에서 context가 주로 Stage 2 chart model이 애매한 sample에서
     도움이 된다는 근거가 보일 때만 실행합니다.
   - 아이디어: Stage 2 chart 판단이 애매할수록 context-FiLM correction을 더 허용하고,
@@ -1330,7 +1363,7 @@ News-context 확장:
     Stage 2 frozen baseline과 사실상 동률이며 의미 있는 개선은 아닙니다.
   - 결과 노트:
     [4-N12-C technical-only pretrained frozen bounded FiLM](checklist_results/4-N12-C_technical_only_pretrained_frozen_bounded_film.md)
-- [ ] 4-N12-D. Frozen Stage 2 protocol 안에서 context-source comparison
+- [x] 4-N12-D. Frozen Stage 2 protocol 안에서 context-source comparison
   - 목적: one-off variant를 계속 늘리지 않고, 어떤 context source가 thesis에서
     방어 가능한지 결정합니다.
   - 같은 image, split, checkpoint loading, freeze policy, bounded/gated FiLM
@@ -1339,26 +1372,68 @@ News-context 확장:
   - 필수 metric: accuracy, ROC-AUC, Brier score, F1, predicted-Up rate,
     correction count, regression count, net correction.
   - output: compact comparison table과 final Stage 4 model 추천.
+  - 결과: existing context source 기준 완료. F&G-only scale `0.02`가 가장
+    compact한 accuracy 후보입니다(`0.580291` vs Stage 2 `0.579320`). News는
+    ROC-AUC/Brier signal이 가장 뚜렷하지만 hard decision은 약하고,
+    technical-only는 Stage 2와 사실상 동률입니다.
+  - 주의: `news + F&G` combined context는 comparison table에서 planned/not-run으로
+    기록합니다. five-seed run 전에는 결과로 주장하지 않습니다.
+  - 결과 노트:
+    [4-N12-D context-source comparison](checklist_results/4-N12-D_context_source_comparison.md)
 - [ ] 4-N13. Macro/RORO context extension
-  - 목적: chart-derived 또는 crypto sentiment-only context를 넘어, 외부
-    risk-on/risk-off market regime이 FiLM correction에 도움이 되는지
-    확인합니다.
-  - 이유: `ohlc_ma_vb` 이미지는 BB/MFI/RV와 유사한 technical information을 이미
-    많이 담고 있습니다. 다음 feature family는 image-external이어야 합니다.
-  - 후보 raw source/feature: `SPY`/S&P500 20-day return, `QQQ`/Nasdaq 20-day
-    return, `VIX` level/change, `DXY` return, US 10Y yield change, gold return,
-    BTC-equity rolling correlation.
-  - 후보 synthetic score:
-    `roro_score = z(spx_ret_20) + z(nasdaq_ret_20) - z(vix_change_20) -
-    z(dxy_ret_20) - z(us10y_change_20)`.
-  - Leakage rule: 모든 macro/RORO value는 image end date `t` 또는 그 이전에
-    사용 가능해야 합니다. rolling feature는 trailing window만 쓰고 normalization은
-    train-only 통계로 fit합니다.
-  - planned ablation: `macro/RORO-only`, `macro/RORO + F&G`, 필요하면 weak
-    visual baseline + best context-FiLM.
-  - thesis question: 같은 BTC OHLCV chart에서 파생된 context보다 macro risk
-    regime이 Stage 2 visual feature를 더 의미 있게 condition할 수 있는지
-    확인합니다.
+  - 목적: F&G/news/technical context가 작은 개선만 보였기 때문에, 이미지 밖
+    macro risk-regime context를 frozen Stage 2 FiLM 구조에 넣어봅니다.
+  - thesis question: 공식 financial stress 또는 risk-on/risk-off regime이 BTC
+    OHLCV에서 파생한 context보다 Stage 2 visual feature를 더 의미 있게
+    condition할 수 있는지 확인합니다.
+  - shared protocol: `I60/R20/ohlc_ma_vb`, seeds `42-46`, Stage 2 checkpoint
+    loaded/frozen, classifier frozen, bounded last-block FiLM, 우선 conservative
+    scale `0.02`.
+- [ ] 4-N13-0. Macro/RORO source audit and terminology lock
+  - `OFR FSI`와 `RORO`를 명확히 구분합니다. OFR FSI는 직접 RORO가 아니라
+    공식 financial-stress/risk-off proxy입니다.
+  - source link, date coverage, CSV load path, missing-date policy, image end
+    date `t` 기준 사용 가능성을 기록합니다.
+  - source 1: OFR Financial Stress Index CSV, 2000-present coverage.
+  - source 2: KC Fed methodology를 참고한 public-data RORO proxy. KC Fed의
+    proprietary/full input을 복제한다고 쓰지 않습니다.
+- [ ] 4-N13-1. OFR FSI feature builder
+  - raw source: `https://www.financialresearch.gov/financial-stress-index/data/fsi.csv`.
+  - 해석: 높은 `OFR FSI` = 높은 financial stress = risk-off proxy. BTC가 반드시
+    하락한다고 hard-code하지 않고 FiLM이 관계를 학습하게 둡니다.
+  - 후보 feature: `ofr_fsi_value`, `ofr_fsi_mean_20`,
+    `ofr_fsi_mean_60`, `ofr_fsi_delta_20`, `ofr_fsi_delta_60`,
+    `ofr_fsi_std_60`, optional category values `Credit`,
+    `Equity valuation`, `Funding`, `Safe assets`, `Volatility`.
+  - train-only imputation, clipping, z-score normalization을 사용합니다.
+- [ ] 4-N13-2. FSI-only frozen bounded FiLM five-seed run
+  - context source: OFR FSI features only.
+  - comparison: Stage 2 frozen baseline, N8-B F&G-only, N10/N12 news-only,
+    N12-C technical-only.
+  - metric: accuracy, ROC-AUC, Brier, F1, predicted-Up rate,
+    correction/regression/net correction, seed-level collapse check.
+- [ ] 4-N13-3. KC Fed-inspired public-data RORO proxy builder
+  - raw sources: VIX, S&P500/NASDAQ returns, Broad Dollar Index, US 10Y yield,
+    optional high-yield OAS and gold.
+  - 방향: positive value가 risk-off pressure를 의미하도록 부호를 정렬합니다.
+  - candidate proxy: risk-off-aligned daily changes/returns에 대해 train-fit PCA
+    first component를 만들고, raw components도 같이 저장합니다.
+  - 명시: KC Fed full/proprietary input replication이 아니라 public-data RORO
+    proxy입니다.
+- [ ] 4-N13-4. RORO-proxy-only frozen bounded FiLM five-seed run
+  - context source: public-data RORO proxy features only.
+  - 4-N13-2와 같은 protocol/metric을 사용합니다.
+  - synthetic risk-regime vector가 OFR FSI보다 유용한지 비교합니다.
+- [ ] 4-N13-5. Macro context-source comparison
+  - `FSI-only`, `RORO-proxy-only`, `F&G-only`, `news-only`, `technical-only`,
+    optional `FSI + F&G` / `RORO + F&G`를 비교합니다.
+  - accuracy 또는 ROC/Brier가 개선되고 class-collapse가 없을 때만 final Stage 4
+    interpretation 후보로 선택합니다.
+- [ ] 4-N13-6. Macro interpretability export
+  - target sample: Stage 2 wrong -> N13 correct, Stage 2 correct -> N13 wrong,
+    high-stress / low-stress regime.
+  - targeted Grad-CAM, FSI/RORO value, gamma/beta summary, modulation gate,
+    `prob_up` change를 export합니다.
 - [ ] 4-N13-B. Optional sentiment/event feature extension
   - N13 macro/RORO planning 이후에도 headline TF-IDF/SVD가 너무 약하거나
     해석하기 어려울 때만 실행합니다.

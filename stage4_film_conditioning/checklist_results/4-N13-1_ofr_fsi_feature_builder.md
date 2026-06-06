@@ -1,6 +1,6 @@
 # 4-N13-1 OFR FSI Feature Builder
 
-Status: prepared; Kaggle artifact build pending.
+Status: completed.
 
 Latest Kaggle upload snapshot prepared locally:
 
@@ -86,6 +86,20 @@ outputs/stage4/context/<context_name>/seed_42/context_feature_summary.csv
 outputs/stage4/context/<context_name>/seed_42/fsi_context_manifest.json
 ```
 
+Kaggle artifact was generated and archived locally at:
+
+```text
+/Users/jaehyeonjeong/Desktop/논문/N13_1_result
+```
+
+Report copies:
+
+```text
+reports/tables/stage4_fsi_context_i60_ohlc_ma_vb_r20_ofr_fsi_lag1_w20_60_seed42_fsi_context_feature_audit.json
+reports/tables/stage4_fsi_context_i60_ohlc_ma_vb_r20_ofr_fsi_lag1_w20_60_seed42_fsi_context_feature_summary.csv
+reports/tables/stage4_fsi_context_i60_ohlc_ma_vb_r20_ofr_fsi_lag1_w20_60_seed42_fsi_context_manifest.json
+```
+
 ## Verification
 
 Static compile passed:
@@ -103,16 +117,35 @@ columns: Date, OFR FSI, Credit, Equity valuation, Safe assets, Funding,
          Volatility, United States, Other advanced economies, Emerging markets
 ```
 
-Local end-to-end artifact build was not run because the current local Python
-environment cannot import `torch`, which is required by the Stage 2 BTC sample
-builder. Run the Kaggle one-cell for the actual context artifact.
+Kaggle artifact build passed:
+
+```text
+status: ok
+context_dim: 6
+split counts: train 671, validation 287, test 1441
+BTC sample date range: 2018-04-29 to 2024-12-11
+OFR FSI date range: 2000-01-03 to 2026-06-03
+as-of policy: latest OFR FSI source date <= BTC image end date - 1 day
+mean OFR source age: 1.46 days
+max OFR source age: 4.0 days
+normalized features finite: true
+```
+
+The only warnings are early-window missing rates for 60-day trailing features
+in train/validation:
+
+```text
+ofr_fsi_mean_60
+ofr_fsi_delta_60
+ofr_fsi_std_60
+```
+
+This is expected because the first Stage 4 BTC samples do not yet have enough
+prior FSI observations to compute full 60-day trailing windows. The builder
+uses train-only median imputation, train quantile clipping, and train z-score
+normalization. The test split has zero raw missing rate for all six FSI
+features.
 
 ## Next Step
 
-Run:
-
-```text
-notebooks/kaggle_stage4_n13_1_ofr_fsi_context_features_one_cell.md
-```
-
-Then proceed to `4-N13-2`: FSI-only frozen bounded FiLM five-seed run.
+Proceed to `4-N13-2`: FSI-only frozen bounded FiLM five-seed run.

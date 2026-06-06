@@ -1,0 +1,62 @@
+{
+  "status": "ok",
+  "stage": "4-N13-1",
+  "context_source": "ofr_fsi_risk_off_proxy",
+  "terminology": {
+    "ofr_fsi": "official financial-stress / risk-off proxy, not direct RORO",
+    "risk_off_direction": "higher OFR FSI means higher financial stress",
+    "btc_direction": "not hard-coded; learned by context-FiLM"
+  },
+  "source": {
+    "ofr_fsi_source": "/kaggle/working/stage4_film_conditioning/data_inventory/ofr_fsi/fsi.csv",
+    "btc_source": "/kaggle/input/datasets/novandraanugrah/bitcoin-historical-datasets-2018-2024/btc_1d_data_2018_to_2025.csv",
+    "ofr_fsi_date_min": "2000-01-03",
+    "ofr_fsi_date_max": "2026-06-03",
+    "ofr_fsi_rows": 6685
+  },
+  "alignment": {
+    "asof_lag_days": 1,
+    "policy": "use latest OFR FSI source date <= BTC image end date minus lag",
+    "same_day_policy": "disabled by default through asof_lag_days=1",
+    "max_age_days": 4.0,
+    "mean_age_days": 1.4639433097123802
+  },
+  "image_window": 60,
+  "image_spec": "ohlc_ma_vb",
+  "return_horizon": 20,
+  "context_dim": 6,
+  "feature_order": [
+    "ofr_fsi_value",
+    "ofr_fsi_mean_20",
+    "ofr_fsi_mean_60",
+    "ofr_fsi_delta_20",
+    "ofr_fsi_delta_60",
+    "ofr_fsi_std_60"
+  ],
+  "normalized_feature_columns": [
+    "ofr_fsi_value_normalized",
+    "ofr_fsi_mean_20_normalized",
+    "ofr_fsi_mean_60_normalized",
+    "ofr_fsi_delta_20_normalized",
+    "ofr_fsi_delta_60_normalized",
+    "ofr_fsi_std_60_normalized"
+  ],
+  "feature_group_counts": {
+    "ofr_fsi_trailing": 6,
+    "ofr_fsi_categories": 0
+  },
+  "split_counts": {
+    "train": 671,
+    "validation": 287,
+    "test": 1441
+  },
+  "date_min": "2018-04-29",
+  "date_max": "2024-12-11",
+  "fit_on": "train",
+  "normalization": "train_median_impute_train_quantile_clip_train_zscore",
+  "finite_normalized": true,
+  "warnings": [
+    "train: high missing rate features >5%: ofr_fsi_mean_60, ofr_fsi_delta_60, ofr_fsi_std_60",
+    "validation: high missing rate features >5%: ofr_fsi_mean_60, ofr_fsi_delta_60, ofr_fsi_std_60"
+  ]
+}

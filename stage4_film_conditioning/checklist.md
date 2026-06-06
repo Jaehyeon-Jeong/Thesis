@@ -668,7 +668,7 @@ News-context extension:
   - Candidate source 1: OFR Financial Stress Index CSV, covering 2000-present.
   - Candidate source 2: public-data RORO proxy inspired by KC Fed methodology,
     built from FRED/Cboe indicators rather than proprietary/refinitiv series.
-- [ ] 4-N13-1. OFR FSI feature builder
+- [x] 4-N13-1. OFR FSI feature builder
   - Raw source: `https://www.financialresearch.gov/financial-stress-index/data/fsi.csv`.
   - Interpretation: higher `OFR FSI` = stronger financial stress = risk-off
     proxy. Do not hard-code that BTC must fall; let FiLM learn the relation.
@@ -685,6 +685,9 @@ News-context extension:
     `/Users/jaehyeonjeong/Desktop/논문/stage4_film_conditioning_n13_1_latest.zip`.
   - Prep note:
     [4-N13-1 OFR FSI feature builder](checklist_results/4-N13-1_ofr_fsi_feature_builder.md)
+  - Result: completed with six FSI features, `context_dim=6`,
+    train/validation/test split counts `671/287/1441`, and zero test missing
+    rate across all FSI features.
 - [ ] 4-N13-2. FSI-only frozen bounded FiLM five-seed run
   - Context source: OFR FSI features only.
   - Main comparison: Stage 2 frozen baseline, N8-B F&G-only, N10/N12 news-only,
@@ -1405,7 +1408,7 @@ News-context 확장:
   - source 1: OFR Financial Stress Index CSV, 2000-present coverage.
   - source 2: KC Fed methodology를 참고한 public-data RORO proxy. KC Fed의
     proprietary/full input을 복제한다고 쓰지 않습니다.
-- [ ] 4-N13-1. OFR FSI feature builder
+- [x] 4-N13-1. OFR FSI feature builder
   - raw source: `https://www.financialresearch.gov/financial-stress-index/data/fsi.csv`.
   - 해석: 높은 `OFR FSI` = 높은 financial stress = risk-off proxy. BTC가 반드시
     하락한다고 hard-code하지 않고 FiLM이 관계를 학습하게 둡니다.
@@ -1422,6 +1425,9 @@ News-context 확장:
     `/Users/jaehyeonjeong/Desktop/논문/stage4_film_conditioning_n13_1_latest.zip`.
   - 준비 노트:
     [4-N13-1 OFR FSI feature builder](checklist_results/4-N13-1_ofr_fsi_feature_builder.md)
+  - 결과: six FSI features, `context_dim=6`,
+    train/validation/test split counts `671/287/1441`, test split missing rate
+    0으로 완료했습니다.
 - [ ] 4-N13-2. FSI-only frozen bounded FiLM five-seed run
   - context source: OFR FSI features only.
   - comparison: Stage 2 frozen baseline, N8-B F&G-only, N10/N12 news-only,

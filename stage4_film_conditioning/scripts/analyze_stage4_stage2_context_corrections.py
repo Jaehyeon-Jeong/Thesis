@@ -50,6 +50,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--top-k", type=int, default=20)
     parser.add_argument("--output-dir", default="")
     parser.add_argument(
+        "--analysis-name",
+        default="context-FiLM",
+        help="Readable Stage 4 model label used in the markdown report.",
+    )
+    parser.add_argument(
         "--output-prefix",
         default="stage4_n10_stage2_vs_n10_correction_analysis",
     )
@@ -229,6 +234,7 @@ def main() -> None:
             stage2_experiment=stage2_experiment,
             stage4_experiment=stage4_experiment,
             context_name=context_name,
+            analysis_name=str(args.analysis_name),
             seed_summary_df=seed_summary_df,
             transition_summary_df=transition_summary_df,
             correction_df=correction_df,
@@ -524,16 +530,18 @@ def _build_markdown_report(
     stage2_experiment: str,
     stage4_experiment: str,
     context_name: str,
+    analysis_name: str,
     seed_summary_df: pd.DataFrame,
     transition_summary_df: pd.DataFrame,
     correction_df: pd.DataFrame,
     regression_df: pd.DataFrame,
     missing_df: pd.DataFrame,
 ) -> str:
+    model_label = str(analysis_name).strip() or "context-FiLM"
     lines = [
-        "# Stage 2 vs N10 Correction Analysis",
+        f"# Stage 2 vs {model_label} Correction Analysis",
         "",
-        "Purpose: identify samples where the N10 news-FiLM model corrects or breaks "
+        f"Purpose: identify samples where the {model_label} model corrects or breaks "
         "the fixed Stage 2 visual baseline.",
         "",
         "## Inputs",
@@ -589,7 +597,7 @@ def _build_markdown_report(
         "## How To Use For Grad-CAM",
         "",
         "Use `selected_for_gradcam.csv` or `selected_indices_by_seed.json` to "
-        "generate targeted Stage 2 and N10 Grad-CAM figures. The important group "
+        f"generate targeted Stage 2 and {model_label} Grad-CAM figures. The important group "
         "for the thesis claim is `stage2_wrong_to_stage4_correct`: same chart "
         "image, Stage 2 wrong, context-FiLM correct.",
         "",

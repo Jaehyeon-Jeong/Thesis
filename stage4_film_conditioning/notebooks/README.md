@@ -301,6 +301,15 @@ Required backup root:
     실험을 실행합니다.
   - Selected features: `news_svd_60d_09`, `news_svd_20d_18`, `fg_mean_60`,
     `fg_delta_60`, `ofr_fsi_std_60`, `riskoff_dollar_return_20`.
+- `kaggle_stage4_n13_6_interpretability_export_one_cell.md`
+  - N13-6 runner입니다.
+  - 새 학습 없이 N8-B F&G-only와 N10 news SVD32 후보를 대상으로 Stage 2
+    wrong -> FiLM correct, Stage 2 correct -> FiLM wrong, extreme context
+    sample을 고릅니다.
+  - 같은 sample index에 대해 Stage 2 Grad-CAM과 context-FiLM Grad-CAM,
+    gamma/beta modulation summary, context value, probability change를 export합니다.
+  - 결과 download bundle:
+    `/kaggle/working/stage4_n13_6_interpretability_export_bundle.zip`.
 
 예정 notebook:
 - `kaggle_stage4_single_ablation_one_cell.md`

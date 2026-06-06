@@ -810,6 +810,12 @@ News-context extension:
     context-FiLM wrong, and extreme regime/news windows.
   - Export targeted Grad-CAM, context values, gamma/beta summaries,
     modulation gate if used, and `prob_up` changes.
+  - Preparation: N13-6 Kaggle one-cell runner is ready. It generates
+    candidate-specific correction/regression tables, augments them with
+    extreme-context panels, exports matched Stage 2 vs context-FiLM Grad-CAM,
+    and writes one downloadable bundle.
+  - Review:
+    [4-N13-6 interpretability export](checklist_results/4-N13-6_interpretability_export.md).
 - [ ] 4-N13-7. Final FiLM constraint and scale ablation on the selected context
   source
   - Run only after 4-N13-5/6 select the strongest stable context source
@@ -1674,6 +1680,12 @@ News-context 확장:
     context-FiLM wrong, extreme regime/news window.
   - targeted Grad-CAM, context value, gamma/beta summary, modulation gate,
     `prob_up` change를 export합니다.
+  - 준비 상태: N13-6 Kaggle one-cell runner를 준비했습니다. 후보별
+    correction/regression table을 만들고, extreme-context panel을 추가한 뒤,
+    같은 sample index에 대해 Stage 2 vs context-FiLM Grad-CAM/gamma-beta를
+    export하고 bundle로 묶습니다.
+  - 리뷰:
+    [4-N13-6 interpretability export](checklist_results/4-N13-6_interpretability_export.md).
 - [ ] 4-N13-7. 선택된 context source에 대한 최종 FiLM constraint/scale ablation
   - 4-N13-5/6에서 가장 안정적인 context source(`F&G`, `news`, `FSI`, `RORO`)를
     고른 뒤에만 실행합니다.

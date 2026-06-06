@@ -1,52 +1,41 @@
-# Public RORO / Macro Source Inventory
+# Public RORO Proxy Source Cache
 
-Stage 4 N13 uses macro risk-regime context to test whether image-external
-market stress information can improve the frozen Stage 2 chart baseline.
+These files are cached for Stage 4 N13-3 so Kaggle runs do not depend on
+live public endpoints. The training context is a KC Fed-inspired public-data
+RORO proxy, not a full replication of the Kansas City Fed RORO index.
 
-## KC Fed Official RORO
+## Official KC Fed RORO Reference
 
-The Kansas City Fed publishes an official Risk-On Risk-Off index. The cached
-files are:
+The official KC Fed daily/weekly files are cached for terminology and source
+audit only:
 
 - `kc_fed_official/roro_daily.csv`
 - `kc_fed_official/roro_weekly.csv`
+- `kc_fed_official/RORO_Index_README.pdf`
 
-Source page:
-https://www.kansascityfed.org/data-and-trends/risk-on-risk-off-index/
+The cached KC Fed files start in June 2023, so they do not cover the Stage 4
+train/validation period. They are therefore not used directly in N13-4.
 
-The KC Fed page states that the RORO index uses daily asset-market data from
-the United States and euro area, aggregates credit risk, equity volatility,
-funding conditions, currencies, and gold, and uses the first principal
-component of daily changes.
+## Local Public Proxy Inputs
 
-Important Stage 4 limitation:
-the downloaded KC Fed daily and weekly files currently start in June 2023.
-That does not cover the Stage 4 train/validation period. Therefore they are
-kept as source evidence and audit material, but not used directly as the first
-N13-4 training context.
+| Local file | Series | Cached coverage | Use in current PCA proxy | Interpretation |
+| --- | --- | --- | --- | --- |
+| `raw/VIXCLS.csv` | VIX close, converted from Cboe VIX history | 1990-01-02 to 2026-06-05 | yes | VIX up over 20 observations is risk-off pressure. |
+| `raw/SP500.csv` | S&P 500 via FRED CSV | 2016-06-06 to 2026-06-04 | yes | Negative S&P 500 return is risk-off pressure. |
+| `raw/DGS10.csv` | 10-year Treasury yield, parsed from U.S. Treasury daily yield XML | 2016-01-04 to 2026-06-05 | yes | Falling 10-year yield is treated as risk-off pressure with caution. |
+| `raw/BAMLH0A0HYM2.csv` | High-yield OAS via FRED CSV | 2023-06-06 to 2026-06-04 | no, no train-period coverage | High-yield spread widening is risk-off pressure. |
 
-## Public Proxy Inputs
+`NASDAQCOM` and `DTWEXBGS` are optional inputs in the builder, but their direct
+CSV downloads were unavailable during the local cache build. The script skips
+missing optional sources and fits PCA only on components with train-period
+coverage.
 
-The experimental N13-3 builder uses longer-history public macro series from
-FRED when available:
-
-- `VIXCLS`: VIX; higher 20-observation change is risk-off.
-- `BAMLH0A0HYM2`: high-yield OAS; higher 20-observation change is risk-off.
-- `SP500`: S&P 500; lower 20-observation return is risk-off.
-- `NASDAQCOM`: NASDAQ Composite; lower 20-observation return is risk-off.
-- `DTWEXBGS`: broad U.S. dollar index; higher 20-observation return is treated
-  as risk-off pressure.
-- `DGS10`: 10-year Treasury yield; falling 20-observation change is treated as
-  risk-off with caution.
-
-The proxy is fitted without BTC labels:
+Current N13-3 artifact:
 
 ```text
-risk-off aligned public components
--> train-only median/clip/z-score
--> train-only PCA/SVD first component
--> sign fixed so larger value means stronger risk-off pressure
+stage4_roro_context_i60_ohlc_ma_vb_r20_public_roro_pca_lag1_w20_60
+context_dim = 9
+PCA components = VIX change 20, negative S&P 500 return 20, negative 10Y yield change 20
+PCA explained variance ratio = 0.720108
+missing warnings = none
 ```
-
-This is a KC Fed-inspired public-data RORO proxy, not a full replication of the
-KC Fed index.

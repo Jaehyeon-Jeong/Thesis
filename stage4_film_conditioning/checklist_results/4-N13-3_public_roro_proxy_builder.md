@@ -36,18 +36,21 @@ notebooks/kaggle_stage4_n13_3_public_roro_context_features_one_cell.md
 data_inventory/roro_public/README.md
 data_inventory/roro_public/kc_fed_official/roro_daily.csv
 data_inventory/roro_public/kc_fed_official/roro_weekly.csv
+data_inventory/roro_public/kc_fed_official/RORO_Index_README.pdf
+data_inventory/roro_public/raw/VIXCLS.csv
+data_inventory/roro_public/raw/SP500.csv
+data_inventory/roro_public/raw/DGS10.csv
+data_inventory/roro_public/raw/BAMLH0A0HYM2.csv
 ```
 
 The experimental builder creates a KC Fed-inspired public-data RORO proxy from
-longer-history public macro series when the FRED files are available:
+longer-history public macro series when local cached files are available:
 
 ```text
-VIXCLS
-BAMLH0A0HYM2
-SP500
-NASDAQCOM
-DTWEXBGS
-DGS10
+VIXCLS from Cboe VIX history, converted to FRED-like CSV
+SP500 from FRED CSV
+DGS10 from U.S. Treasury daily yield XML, converted to FRED-like CSV
+BAMLH0A0HYM2 from FRED CSV, cached but excluded from PCA because train coverage is missing
 ```
 
 Construction rule:
@@ -62,23 +65,40 @@ risk-off aligned public components
 
 No BTC labels are used in the proxy construction.
 
-## Current Execution Note
+## Current Execution Result
 
-Local syntax validation passed:
+Local full feature generation passed:
 
 ```text
-python3 -m py_compile scripts/build_stage4_roro_context_features.py
+context_name = stage4_roro_context_i60_ohlc_ma_vb_r20_public_roro_pca_lag1_w20_60
+context_dim = 9
+split counts = train 671 / validation 287 / test 1441
+missing warnings = none
+PCA explained variance ratio = 0.720108
 ```
 
-Local full feature generation was blocked by temporary FRED `504 Gateway
-Time-out` responses for several series. The Kaggle one-cell is ready to retry
-with internet enabled or to run from cached `data_inventory/roro_public/raw`
-CSV files when those files are attached in the Stage 4 snapshot.
+PCA components used:
+
+```text
+riskoff_vix_change_20                 weight 0.617254
+riskoff_neg_sp500_return_20           weight 0.639203
+riskoff_neg_10y_yield_change_20       weight 0.458713
+```
+
+All context features have `0.0` raw missing rate in train, validation, and test
+after source-level daily forward-fill and strict `t-1` alignment.
+
+Output reports:
+
+```text
+reports/tables/stage4_roro_context_i60_ohlc_ma_vb_r20_public_roro_pca_lag1_w20_60_seed42_roro_context_feature_audit.json
+reports/tables/stage4_roro_context_i60_ohlc_ma_vb_r20_public_roro_pca_lag1_w20_60_seed42_roro_context_feature_summary.csv
+reports/tables/stage4_roro_context_i60_ohlc_ma_vb_r20_public_roro_pca_lag1_w20_60_seed42_roro_context_manifest.json
+```
 
 ## Next Step
 
-Proceed to `4-N13-4` only after the N13-3 context artifact is successfully
-created:
+Proceed to `4-N13-4` with the generated N13-3 context artifact:
 
 ```text
 stage4_roro_context_i60_ohlc_ma_vb_r20_public_roro_pca_lag1_w20_60

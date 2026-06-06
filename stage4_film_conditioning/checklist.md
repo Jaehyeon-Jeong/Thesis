@@ -723,7 +723,16 @@ News-context extension:
     [4-N13-3 public RORO proxy builder](checklist_results/4-N13-3_public_roro_proxy_builder.md).
     KC Fed official daily/weekly files are cached for documentation, but the
     downloaded files start in June 2023 and do not cover Stage 4 train dates;
-    N13-4 therefore needs the longer-history public proxy artifact.
+    the trainable proxy therefore uses longer-history cached public inputs.
+  - Result: local N13-3 artifact was created successfully with VIX, S&P500,
+    and US 10Y components. `context_dim=9`, PCA explained variance ratio
+    `0.720108`, split counts `671/287/1441`, and missing warnings `0`.
+  - Cached raw inputs:
+    `data_inventory/roro_public/raw/VIXCLS.csv`,
+    `data_inventory/roro_public/raw/SP500.csv`,
+    `data_inventory/roro_public/raw/DGS10.csv`.
+    `BAMLH0A0HYM2.csv` is cached but excluded from PCA because it lacks
+    train-period coverage.
 - [ ] 4-N13-4. RORO-proxy-only frozen bounded FiLM five-seed run
   - Context source: public-data RORO proxy features only.
   - Same protocol and metrics as 4-N13-2.
@@ -1485,8 +1494,16 @@ News-context 확장:
     [4-N13-3 public RORO proxy builder](checklist_results/4-N13-3_public_roro_proxy_builder.md).
     KC Fed official daily/weekly 파일은 documentation용으로 cache했지만
     2023년 6월부터 시작해 Stage 4 train period를 커버하지 못합니다.
-    따라서 N13-4는 longer-history public proxy artifact가 만들어진 뒤
-    진행합니다.
+    따라서 학습용 proxy는 longer-history public input cache를 사용합니다.
+  - 결과: VIX, S&P500, US 10Y component로 local N13-3 artifact 생성까지
+    완료했습니다. `context_dim=9`, PCA explained variance ratio `0.720108`,
+    split counts `671/287/1441`, missing warning `0`입니다.
+  - cached raw input:
+    `data_inventory/roro_public/raw/VIXCLS.csv`,
+    `data_inventory/roro_public/raw/SP500.csv`,
+    `data_inventory/roro_public/raw/DGS10.csv`.
+    `BAMLH0A0HYM2.csv`도 cache했지만 train-period coverage가 없어 PCA에서는
+    제외됩니다.
 - [ ] 4-N13-4. RORO-proxy-only frozen bounded FiLM five-seed run
   - context source: public-data RORO proxy features only.
   - 4-N13-2와 같은 protocol/metric을 사용합니다.

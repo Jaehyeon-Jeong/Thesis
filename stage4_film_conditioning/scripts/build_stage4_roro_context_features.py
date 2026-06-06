@@ -186,8 +186,9 @@ def main() -> None:
         asof_lag_days=int(args.asof_lag_days),
         epsilon=float(args.epsilon),
     )
+    component_columns = list(pca_metadata["component_columns"])
     feature_order = RORO_PROXY_FEATURES + (
-        RISK_OFF_COMPONENTS if bool(args.include_component_features) else []
+        component_columns if bool(args.include_component_features) else []
     )
     context_table, scaler = fit_transform_roro_context_features(
         raw_context,
@@ -318,18 +319,30 @@ def load_public_macro_sources(
 
     source_dir.mkdir(parents=True, exist_ok=True)
     sources: dict[str, pd.DataFrame] = {}
+    required_sources = {"vix", "sp500", "ten_year"}
     for name, metadata in DEFAULT_SERIES.items():
         series_id = metadata["series_id"]
         cache_path = source_dir / f"{series_id}.csv"
         if refresh_downloads or not cache_path.exists():
+            if not refresh_downloads and not cache_path.exists():
+                continue
             frame = pd.read_csv(metadata["source_url"])
             frame.to_csv(cache_path, index=False)
+        if not cache_path.exists():
+            continue
         frame = pd.read_csv(cache_path)
         sources[name] = clean_fred_series(
             frame,
             series_id=series_id,
             output_column=name,
             cache_path=cache_path,
+        )
+    missing_required = sorted(required_sources.difference(sources))
+    if missing_required:
+        missing_text = ", ".join(missing_required)
+        raise FileNotFoundError(
+            "Missing required RORO public source cache(s): "
+            f"{missing_text}. Place CSV files in {source_dir} or run with --refresh-downloads."
         )
     write_source_readme(source_dir)
     return sources
@@ -379,12 +392,16 @@ def write_source_readme(source_dir: Path) -> None:
     lines = [
         "# Public RORO Proxy Source Cache",
         "",
-        "These CSV files are official public series cached for Stage 4 N13-3.",
-        "They are used to build a KC Fed-inspired public-data RORO proxy, not a",
-        "full replication of the Kansas City Fed RORO index.",
+        "These files are cached for Stage 4 N13-3 so Kaggle runs do not depend on",
+        "live public endpoints. The training context is a KC Fed-inspired public-data",
+        "RORO proxy, not a full replication of the Kansas City Fed RORO index.",
         "",
-        "| Local file | Series | Source URL | Interpretation |",
-        "| --- | --- | --- | --- |",
+        "The official KC Fed daily/weekly files are kept in `kc_fed_official/` for",
+        "terminology and source audit. They currently start in June 2023, so the",
+        "training proxy uses longer-history public source caches from `raw/`.",
+        "",
+        "| Local file | Series | Cached | Source URL | Interpretation |",
+        "| --- | --- | --- | --- | --- |",
     ]
     interpretation = {
         "VIXCLS": "VIX up is risk-off pressure.",
@@ -394,11 +411,24 @@ def write_source_readme(source_dir: Path) -> None:
         "DGS10": "Falling 10-year yield is treated as risk-off pressure with caution.",
         "BAMLH0A0HYM2": "High-yield spread widening is risk-off pressure.",
     }
+    source_urls = {
+        "VIXCLS": "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv",
+        "SP500": DEFAULT_SERIES["sp500"]["source_url"],
+        "NASDAQCOM": DEFAULT_SERIES["nasdaq"]["source_url"],
+        "DTWEXBGS": DEFAULT_SERIES["dollar"]["source_url"],
+        "DGS10": (
+            "https://home.treasury.gov/resource-center/data-chart-center/"
+            "interest-rates/pages/xml?data=daily_treasury_yield_curve"
+        ),
+        "BAMLH0A0HYM2": DEFAULT_SERIES["hy_oas"]["source_url"],
+    }
     for metadata in DEFAULT_SERIES.values():
         series_id = metadata["series_id"]
+        cache_path = source_dir / f"{series_id}.csv"
+        cached = "yes" if cache_path.exists() else "optional/missing"
         lines.append(
             f"| `raw/{series_id}.csv` | `{series_id}` | "
-            f"{metadata['source_url']} | {interpretation[series_id]} |"
+            f"{cached} | {source_urls[series_id]} | {interpretation[series_id]} |"
         )
     readme.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
@@ -438,26 +468,49 @@ def build_risk_off_components(sources: dict[str, pd.DataFrame]) -> pd.DataFrame:
     if merged is None or merged.empty:
         raise ValueError("No macro source data loaded.")
 
-    daily = merged.sort_values("macro_date").reset_index(drop=True)
+    merged = merged.sort_values("macro_date").reset_index(drop=True)
+    calendar = pd.DataFrame(
+        {
+            "macro_date": pd.date_range(
+                pd.to_datetime(merged["macro_date"]).min(),
+                pd.to_datetime(merged["macro_date"]).max(),
+                freq="D",
+            )
+        }
+    )
+    # Public market sources have different holiday calendars. Use only past
+    # observations by forward-filling each source before computing changes.
+    daily = calendar.merge(merged, on="macro_date", how="left").sort_values("macro_date")
     for column in ["vix", "sp500", "nasdaq", "dollar", "ten_year", "hy_oas"]:
-        daily[column] = pd.to_numeric(daily[column], errors="coerce")
+        if column in daily.columns:
+            daily[column] = pd.to_numeric(daily[column], errors="coerce").ffill()
 
-    daily["riskoff_vix_change_20"] = daily["vix"] - daily["vix"].shift(20)
-    daily["riskoff_hy_oas_change_20"] = daily["hy_oas"] - daily["hy_oas"].shift(20)
-    daily["riskoff_neg_sp500_return_20"] = -safe_log_return(daily["sp500"], 20)
-    daily["riskoff_neg_nasdaq_return_20"] = -safe_log_return(daily["nasdaq"], 20)
-    daily["riskoff_dollar_return_20"] = safe_log_return(daily["dollar"], 20)
-    daily["riskoff_neg_10y_yield_change_20"] = -(daily["ten_year"] - daily["ten_year"].shift(20))
+    if "vix" in daily.columns:
+        daily["riskoff_vix_change_20"] = daily["vix"] - daily["vix"].shift(20)
+    if "hy_oas" in daily.columns:
+        daily["riskoff_hy_oas_change_20"] = daily["hy_oas"] - daily["hy_oas"].shift(20)
+    if "sp500" in daily.columns:
+        daily["riskoff_neg_sp500_return_20"] = -safe_log_return(daily["sp500"], 20)
+    if "nasdaq" in daily.columns:
+        daily["riskoff_neg_nasdaq_return_20"] = -safe_log_return(daily["nasdaq"], 20)
+    if "dollar" in daily.columns:
+        daily["riskoff_dollar_return_20"] = safe_log_return(daily["dollar"], 20)
+    if "ten_year" in daily.columns:
+        daily["riskoff_neg_10y_yield_change_20"] = -(daily["ten_year"] - daily["ten_year"].shift(20))
 
     keep_columns = [
-        "macro_date",
-        "vix",
-        "sp500",
-        "nasdaq",
-        "dollar",
-        "ten_year",
-        "hy_oas",
-        *RISK_OFF_COMPONENTS,
+        column
+        for column in [
+            "macro_date",
+            "vix",
+            "sp500",
+            "nasdaq",
+            "dollar",
+            "ten_year",
+            "hy_oas",
+            *RISK_OFF_COMPONENTS,
+        ]
+        if column in daily.columns
     ]
     return daily.loc[:, keep_columns].reset_index(drop=True)
 
@@ -512,8 +565,9 @@ def build_roro_sample_context(
         direction="backward",
     ).sort_values("Date")
 
+    available_components = [column for column in RISK_OFF_COMPONENTS if column in macro_components.columns]
     sample_aligned = samples.loc[:, ["sample_index", "split", "Date"]].merge(
-        aligned_components.loc[:, ["Date", "macro_date", *RISK_OFF_COMPONENTS]],
+        aligned_components.loc[:, ["Date", "macro_date", *available_components]],
         on="Date",
         how="left",
     )
@@ -521,10 +575,11 @@ def build_roro_sample_context(
     pca_fit = fit_train_only_pca(
         sample_aligned,
         train_mask=train_mask,
-        component_columns=RISK_OFF_COMPONENTS,
-        anchor_columns=ANCHOR_COMPONENTS,
+        component_columns=available_components,
+        anchor_columns=[column for column in ANCHOR_COMPONENTS if column in available_components],
         epsilon=epsilon,
     )
+    component_columns = list(pca_fit["metadata"]["component_columns"])
 
     macro_with_proxy = apply_pca_proxy_to_macro_components(macro_components, pca_fit)
     macro_with_proxy = add_source_level_roro_features(macro_with_proxy)
@@ -551,7 +606,7 @@ def build_roro_sample_context(
         "roro_missing",
         "roro_exact_asof_match",
         *RORO_PROXY_FEATURES,
-        *RISK_OFF_COMPONENTS,
+        *component_columns,
     ]
     roro_context = aligned_proxy.loc[:, context_columns].copy()
 
@@ -562,7 +617,7 @@ def build_roro_sample_context(
     if "label_end_date" in table.columns:
         table["label_end_date"] = pd.to_datetime(table["label_end_date"]).dt.date.astype(str)
 
-    feature_order = RORO_PROXY_FEATURES + RISK_OFF_COMPONENTS
+    feature_order = RORO_PROXY_FEATURES + component_columns
     for feature in feature_order:
         table[f"{feature}_missing"] = ~np.isfinite(pd.to_numeric(table[feature], errors="coerce"))
 
@@ -609,6 +664,22 @@ def fit_train_only_pca(
     if not train_mask.any():
         raise ValueError("Cannot fit RORO PCA because split == train is empty.")
     raw = frame.loc[:, component_columns].apply(pd.to_numeric, errors="coerce")
+    train_raw = raw.loc[train_mask].replace([np.inf, -np.inf], np.nan)
+    usable_columns = [
+        column
+        for column in component_columns
+        if train_raw[column].notna().any()
+    ]
+    if len(usable_columns) < 2:
+        raise ValueError(
+            "RORO PCA needs at least two public components with train-period "
+            "coverage. Usable components: " + ", ".join(usable_columns)
+        )
+    component_columns = usable_columns
+    anchor_columns = [column for column in anchor_columns if column in component_columns]
+    if not anchor_columns:
+        anchor_columns = list(component_columns)
+    raw = raw.loc[:, component_columns]
     train_raw = raw.loc[train_mask].replace([np.inf, -np.inf], np.nan)
 
     medians = train_raw.median()

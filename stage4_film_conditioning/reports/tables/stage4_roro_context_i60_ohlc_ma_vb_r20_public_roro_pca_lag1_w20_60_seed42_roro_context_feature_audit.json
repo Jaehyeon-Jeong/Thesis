@@ -1,0 +1,165 @@
+{
+  "status": "ok",
+  "stage": "4-N13-3",
+  "context_source": "public_data_roro_proxy",
+  "terminology": {
+    "roro_proxy": "KC Fed-inspired public-data risk-on/risk-off proxy; not a full KC Fed replication",
+    "risk_off_direction": "higher roro_proxy means stronger risk-off pressure",
+    "btc_direction": "not hard-coded; learned by context-FiLM"
+  },
+  "method": {
+    "raw_component_direction": "components are aligned so positive means risk-off",
+    "proxy_construction": "train-only z-score plus SVD/PCA first component",
+    "sign_policy": "flip first component sign to correlate positively with risk-off anchors",
+    "no_label_leakage": "PCA/scaler uses macro components and train split dates only, not BTC labels"
+  },
+  "source": {
+    "btc_source": "/Users/jaehyeonjeong/Desktop/\ub17c\ubb38/\ub370\uc774\ud130\uc14b/BTC _OHLCV/btc_1d_data_2018_to_2025.csv",
+    "macro_sources": {
+      "vix": {
+        "series_id": "VIXCLS",
+        "description": "CBOE VIX daily close via FRED",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=VIXCLS",
+        "cache_path": "/Users/jaehyeonjeong/Desktop/\u1102\u1169\u11ab\u1106\u116e\u11ab/Thesis/stage4_film_conditioning/data_inventory/roro_public/raw/VIXCLS.csv",
+        "date_min": "1990-01-02",
+        "date_max": "2026-06-05",
+        "rows": 9201,
+        "non_missing": 9201
+      },
+      "sp500": {
+        "series_id": "SP500",
+        "description": "S&P 500 index via FRED",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=SP500",
+        "cache_path": "/Users/jaehyeonjeong/Desktop/\u1102\u1169\u11ab\u1106\u116e\u11ab/Thesis/stage4_film_conditioning/data_inventory/roro_public/raw/SP500.csv",
+        "date_min": "2016-06-06",
+        "date_max": "2026-06-04",
+        "rows": 2609,
+        "non_missing": 2514
+      },
+      "ten_year": {
+        "series_id": "DGS10",
+        "description": "10-year Treasury constant maturity rate via FRED",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+        "cache_path": "/Users/jaehyeonjeong/Desktop/\u1102\u1169\u11ab\u1106\u116e\u11ab/Thesis/stage4_film_conditioning/data_inventory/roro_public/raw/DGS10.csv",
+        "date_min": "2016-01-04",
+        "date_max": "2026-06-05",
+        "rows": 2607,
+        "non_missing": 2607
+      },
+      "hy_oas": {
+        "series_id": "BAMLH0A0HYM2",
+        "description": "ICE BofA U.S. high-yield option-adjusted spread via FRED",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAMLH0A0HYM2",
+        "cache_path": "/Users/jaehyeonjeong/Desktop/\u1102\u1169\u11ab\u1106\u116e\u11ab/Thesis/stage4_film_conditioning/data_inventory/roro_public/raw/BAMLH0A0HYM2.csv",
+        "date_min": "2023-06-06",
+        "date_max": "2026-06-04",
+        "rows": 795,
+        "non_missing": 787
+      }
+    }
+  },
+  "alignment": {
+    "asof_lag_days": 1,
+    "policy": "use latest public macro source date <= BTC image end date minus lag",
+    "same_day_policy": "disabled by default through asof_lag_days=1",
+    "max_age_days": 1.0,
+    "mean_age_days": 1.0
+  },
+  "pca": {
+    "method": "train_only_svd_first_component",
+    "component_columns": [
+      "riskoff_vix_change_20",
+      "riskoff_neg_sp500_return_20",
+      "riskoff_neg_10y_yield_change_20"
+    ],
+    "anchor_columns": [
+      "riskoff_vix_change_20",
+      "riskoff_neg_sp500_return_20"
+    ],
+    "direction": "higher roro_proxy means stronger risk-off pressure",
+    "component_direction_rules": {
+      "riskoff_vix_change_20": "VIX up over 20 observations -> risk-off",
+      "riskoff_hy_oas_change_20": "high-yield OAS widening over 20 observations -> risk-off",
+      "riskoff_neg_sp500_return_20": "S&P 500 falling over 20 observations -> risk-off",
+      "riskoff_neg_nasdaq_return_20": "NASDAQ falling over 20 observations -> risk-off",
+      "riskoff_dollar_return_20": "broad dollar strengthening over 20 observations -> risk-off",
+      "riskoff_neg_10y_yield_change_20": "10Y yield falling over 20 observations -> risk-off with caution"
+    },
+    "medians": {
+      "riskoff_vix_change_20": -0.870000000000001,
+      "riskoff_neg_sp500_return_20": -0.017365547970169874,
+      "riskoff_neg_10y_yield_change_20": 0.020000000000000018
+    },
+    "q01": {
+      "riskoff_vix_change_20": -24.370000000000005,
+      "riskoff_neg_sp500_return_20": -0.1182121347204178,
+      "riskoff_neg_10y_yield_change_20": -0.25
+    },
+    "q99": {
+      "riskoff_vix_change_20": 32.108999999999966,
+      "riskoff_neg_sp500_return_20": 0.21062949042836557,
+      "riskoff_neg_10y_yield_change_20": 0.5929999999999996
+    },
+    "means": {
+      "riskoff_vix_change_20": -0.10314008941877849,
+      "riskoff_neg_sp500_return_20": -0.007687019584297326,
+      "riskoff_neg_10y_yield_change_20": 0.03784053651266766
+    },
+    "stds": {
+      "riskoff_vix_change_20": 7.552845502691581,
+      "riskoff_neg_sp500_return_20": 0.0493583424972035,
+      "riskoff_neg_10y_yield_change_20": 0.15550855918003867
+    },
+    "weights": {
+      "riskoff_vix_change_20": 0.6172539743344165,
+      "riskoff_neg_sp500_return_20": 0.6392026234648984,
+      "riskoff_neg_10y_yield_change_20": 0.4587129138404105
+    },
+    "sign_multiplier": 1.0,
+    "anchor_correlation_after_sign_fix": 0.9596552981799281,
+    "explained_variance_ratio": 0.720108060038516,
+    "proxy_train_mean_raw": -4.765189733115426e-17,
+    "proxy_train_std_raw": 1.469804129847087
+  },
+  "image_window": 60,
+  "image_spec": "ohlc_ma_vb",
+  "return_horizon": 20,
+  "context_dim": 9,
+  "feature_order": [
+    "roro_proxy_value",
+    "roro_proxy_mean_20",
+    "roro_proxy_mean_60",
+    "roro_proxy_delta_20",
+    "roro_proxy_delta_60",
+    "roro_proxy_std_60",
+    "riskoff_vix_change_20",
+    "riskoff_neg_sp500_return_20",
+    "riskoff_neg_10y_yield_change_20"
+  ],
+  "normalized_feature_columns": [
+    "roro_proxy_value_normalized",
+    "roro_proxy_mean_20_normalized",
+    "roro_proxy_mean_60_normalized",
+    "roro_proxy_delta_20_normalized",
+    "roro_proxy_delta_60_normalized",
+    "roro_proxy_std_60_normalized",
+    "riskoff_vix_change_20_normalized",
+    "riskoff_neg_sp500_return_20_normalized",
+    "riskoff_neg_10y_yield_change_20_normalized"
+  ],
+  "feature_group_counts": {
+    "roro_proxy": 6,
+    "risk_off_components": 3
+  },
+  "split_counts": {
+    "train": 671,
+    "validation": 287,
+    "test": 1441
+  },
+  "date_min": "2018-04-29",
+  "date_max": "2024-12-11",
+  "fit_on": "train",
+  "normalization": "train_median_impute_train_quantile_clip_train_zscore",
+  "finite_normalized": true,
+  "warnings": []
+}

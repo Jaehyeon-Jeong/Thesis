@@ -693,7 +693,7 @@ News-context extension:
     Use `FSI-2 = mean_60 + delta_60`, `FSI-3 = mean_60 + delta_60 + std_60`,
     and `FSI-all` in the next frozen-FiLM run instead of assuming all six
     features are optimal.
-- [ ] 4-N13-2. FSI-only frozen bounded FiLM five-seed run
+- [x] 4-N13-2. FSI-only frozen bounded FiLM five-seed run
   - Context source: OFR FSI features only.
   - Kaggle one-cell:
     [kaggle_stage4_n13_2_fsi_only_pretrained_frozen_bounded_film_one_cell.md](notebooks/kaggle_stage4_n13_2_fsi_only_pretrained_frozen_bounded_film_one_cell.md)
@@ -702,6 +702,11 @@ News-context extension:
     and N12-C technical-only.
   - Required metrics: accuracy, ROC-AUC, Brier, F1, predicted-Up rate,
     correction/regression/net correction, seed-level collapse check.
+  - Result:
+    [4-N13-2 FSI-only frozen bounded FiLM](checklist_results/4-N13-2_fsi_only_pretrained_frozen_bounded_film.md).
+    Best FSI row is `fsi_all`, accuracy `0.579875`, ROC-AUC `0.584859`,
+    net correction `+4` total over five seeds, and zero collapse warnings.
+    This is stable but not materially better than Stage 2 or N8-B F&G-only.
 - [ ] 4-N13-3. KC Fed-inspired public-data RORO proxy builder
   - Raw sources: VIX, S&P500/NASDAQ returns, Broad Dollar Index, US 10Y yield,
     optional high-yield OAS and gold.
@@ -1442,7 +1447,7 @@ News-context 확장:
     다음 frozen-FiLM run에서는 여섯 개 전체가 정답이라고 가정하지 않고,
     `FSI-2 = mean_60 + delta_60`, `FSI-3 = mean_60 + delta_60 + std_60`,
     `FSI-all`을 비교합니다.
-- [ ] 4-N13-2. FSI-only frozen bounded FiLM five-seed run
+- [x] 4-N13-2. FSI-only frozen bounded FiLM five-seed run
   - context source: OFR FSI features only.
   - Kaggle one-cell:
     [kaggle_stage4_n13_2_fsi_only_pretrained_frozen_bounded_film_one_cell.md](notebooks/kaggle_stage4_n13_2_fsi_only_pretrained_frozen_bounded_film_one_cell.md)
@@ -1451,6 +1456,11 @@ News-context 확장:
     N12-C technical-only.
   - metric: accuracy, ROC-AUC, Brier, F1, predicted-Up rate,
     correction/regression/net correction, seed-level collapse check.
+  - 결과:
+    [4-N13-2 FSI-only frozen bounded FiLM](checklist_results/4-N13-2_fsi_only_pretrained_frozen_bounded_film.md).
+    best FSI row는 `fsi_all`, accuracy `0.579875`, ROC-AUC `0.584859`,
+    five-seed total net correction `+4`, collapse warning `0`입니다.
+    안정적이지만 Stage 2 또는 N8-B F&G-only보다 의미 있게 강하지는 않습니다.
 - [ ] 4-N13-3. KC Fed-inspired public-data RORO proxy builder
   - raw sources: VIX, S&P500/NASDAQ returns, Broad Dollar Index, US 10Y yield,
     optional high-yield OAS and gold.

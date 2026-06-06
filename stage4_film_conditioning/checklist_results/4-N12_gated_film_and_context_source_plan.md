@@ -389,6 +389,83 @@ than a performance claim.
 Target samples:
 
 ```text
+Stage 2 wrong -> selected context-FiLM correct
+Stage 2 correct -> selected context-FiLM wrong
+high-stress regime samples
+low-stress regime samples
+```
+
+Export:
+
+```text
+Stage 2 Grad-CAM
+selected context-FiLM Grad-CAM
+context values
+gamma/beta summaries
+prob_up change
+correction/regression label
+```
+
+### N13-7. Final FiLM Constraint And Scale Ablation
+
+Run only after N13-5/6 select the best stable context source. This step is not
+another search for a new context variable. It answers a separate modeling
+question:
+
+```text
+Was the current bounded FiLM correction too conservative once the Stage 2 chart
+CNN and classifier were frozen?
+```
+
+Fixed setup:
+
+```text
+image: I60/R20/ohlc_ma_vb
+visual backbone: Stage 2 checkpoint loaded and frozen
+classifier: Stage 2 checkpoint loaded and frozen
+context source: selected best stable source from N13-5/6
+seeds: 42, 43, 44, 45, 46
+```
+
+Primary grid:
+
+```text
+bounded last-block FiLM
+gamma = 1 + scale * tanh(raw_gamma)
+beta  =     scale * tanh(raw_beta)
+
+scale = 0.02, 0.05, 0.10, 0.20
+```
+
+Optional relaxed-constraint grid:
+
+```text
+unbounded or weakly regularized last-block FiLM
+zero-init gamma/beta heads
+regularization: penalize ||gamma - 1|| and ||beta||
+```
+
+The optional relaxed grid requires new model code and should be run only if the
+bounded scale grid remains stable.
+
+Decision criteria:
+
+```text
+accuracy
+ROC-AUC
+Brier score
+predicted-positive rate
+collapse warning
+Stage2 wrong -> context correct
+Stage2 correct -> context wrong
+net correction
+gamma/beta magnitude
+```
+
+Keep the larger-scale or relaxed-constraint model only if it improves at least
+one major metric without class collapse or a large regression increase.
+
+```text
 Stage 2 wrong -> N13 correct
 Stage 2 correct -> N13 wrong
 high-FSI/risk-off dates

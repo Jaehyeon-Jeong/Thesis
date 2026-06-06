@@ -760,6 +760,26 @@ News-context extension:
     and high-stress / low-stress regimes.
   - Export targeted Grad-CAM, FSI/RORO values, gamma/beta summaries,
     modulation gate if used, and `prob_up` changes.
+- [ ] 4-N13-7. Final FiLM constraint and scale ablation on the selected context
+  source
+  - Run only after 4-N13-5/6 select the strongest stable context source
+    (`F&G`, `news`, `FSI`, or `RORO`).
+  - Purpose: test whether the current bounded FiLM was too conservative under
+    the Stage 2 frozen protocol.
+  - Baseline-preserving fixed setup: Stage 2 I60/R20/ohlc_ma_vb visual CNN and
+    classifier frozen, same split, same seeds, same selected context features.
+  - First grid, no new model code required:
+    bounded last-block FiLM scale `0.02`, `0.05`, `0.10`, `0.20`.
+  - Optional second grid, only if the scale grid is stable:
+    unbounded or weakly regularized last-block FiLM with zero-init
+    `gamma/beta` heads. This requires a separate implementation and must be
+    reported as a constraint ablation, not as a new context source.
+  - Required metrics: accuracy, ROC-AUC, Brier score, predicted-positive rate,
+    collapse warning, correction/regression vs Stage 2, net correction, and
+    gamma/beta magnitude summaries.
+  - Decision rule: keep the larger-scale or relaxed-constraint model only if it
+    improves at least one main metric without class-collapse or a large
+    regression increase.
 - [ ] 4-N13-B. Optional sentiment/event feature extension
   - Run only if headline TF-IDF/SVD is too weak or hard to interpret after N13
     macro/RORO planning.
@@ -1543,6 +1563,24 @@ News-context 확장:
     high-stress / low-stress regime.
   - targeted Grad-CAM, FSI/RORO value, gamma/beta summary, modulation gate,
     `prob_up` change를 export합니다.
+- [ ] 4-N13-7. 선택된 context source에 대한 최종 FiLM constraint/scale ablation
+  - 4-N13-5/6에서 가장 안정적인 context source(`F&G`, `news`, `FSI`, `RORO`)를
+    고른 뒤에만 실행합니다.
+  - 목적: Stage 2 frozen protocol에서는 현재 bounded FiLM이 너무 보수적이었는지
+    확인합니다.
+  - 고정 조건: Stage 2 I60/R20/ohlc_ma_vb visual CNN과 classifier freeze, 같은
+    split, 같은 seeds, 같은 selected context feature.
+  - 1차 grid, 새 모델 코드 불필요:
+    bounded last-block FiLM scale `0.02`, `0.05`, `0.10`, `0.20`.
+  - 2차 optional grid, scale grid가 안정적일 때만:
+    zero-init `gamma/beta` head를 쓰는 unbounded 또는 weakly regularized
+    last-block FiLM. 이건 새 context source가 아니라 constraint ablation으로
+    보고합니다.
+  - 필수 metric: accuracy, ROC-AUC, Brier score, predicted-positive rate,
+    collapse warning, Stage 2 대비 correction/regression, net correction,
+    gamma/beta magnitude summary.
+  - 결정 기준: 큰 scale 또는 constraint 완화 모델은 class-collapse나 regression
+    증가 없이 주요 metric 중 하나라도 개선될 때만 유지합니다.
 - [ ] 4-N13-B. Optional sentiment/event feature extension
   - N13 macro/RORO planning 이후에도 headline TF-IDF/SVD가 너무 약하거나
     해석하기 어려울 때만 실행합니다.

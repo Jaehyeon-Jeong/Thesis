@@ -2,6 +2,16 @@
 
 Status: prepared; Kaggle artifact build pending.
 
+Latest Kaggle upload snapshot prepared locally:
+
+```text
+/Users/jaehyeonjeong/Desktop/논문/stage4_film_conditioning_n13_1_latest.zip
+```
+
+This zip excludes old `outputs/` and result bundles, but keeps the Stage 4
+code, notebooks, reports, `FG_data`, and `news_data` needed for continued
+Kaggle runs.
+
 ## Purpose
 
 N13 moves from crypto/news/technical context to official macro risk-regime

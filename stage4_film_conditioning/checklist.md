@@ -681,6 +681,8 @@ News-context extension:
     [build_stage4_fsi_context_features.py](scripts/build_stage4_fsi_context_features.py)
   - Kaggle one-cell:
     [kaggle_stage4_n13_1_ofr_fsi_context_features_one_cell.md](notebooks/kaggle_stage4_n13_1_ofr_fsi_context_features_one_cell.md)
+  - Latest upload zip:
+    `/Users/jaehyeonjeong/Desktop/논문/stage4_film_conditioning_n13_1_latest.zip`.
   - Prep note:
     [4-N13-1 OFR FSI feature builder](checklist_results/4-N13-1_ofr_fsi_feature_builder.md)
 - [ ] 4-N13-2. FSI-only frozen bounded FiLM five-seed run
@@ -1416,6 +1418,8 @@ News-context 확장:
     [build_stage4_fsi_context_features.py](scripts/build_stage4_fsi_context_features.py)
   - Kaggle one-cell:
     [kaggle_stage4_n13_1_ofr_fsi_context_features_one_cell.md](notebooks/kaggle_stage4_n13_1_ofr_fsi_context_features_one_cell.md)
+  - 최신 업로드 zip:
+    `/Users/jaehyeonjeong/Desktop/논문/stage4_film_conditioning_n13_1_latest.zip`.
   - 준비 노트:
     [4-N13-1 OFR FSI feature builder](checklist_results/4-N13-1_ofr_fsi_feature_builder.md)
 - [ ] 4-N13-2. FSI-only frozen bounded FiLM five-seed run

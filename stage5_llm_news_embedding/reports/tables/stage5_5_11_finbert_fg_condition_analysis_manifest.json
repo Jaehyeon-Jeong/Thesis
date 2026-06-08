@@ -1,0 +1,16 @@
+{
+  "status": "ok",
+  "created_utc": "2026-06-08T16:57:07Z",
+  "result_root": "5_9e_results",
+  "context_name": "stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1",
+  "num_rows": 7205,
+  "num_selected_samples_for_5_12": 60,
+  "outputs": {
+    "merged_decisions": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_5_11_finbert_fg_condition_analysis_merged_decisions.csv",
+    "bucket_summary": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_5_11_finbert_fg_condition_analysis_bucket_summary.csv",
+    "transition_context_summary": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_5_11_finbert_fg_condition_analysis_transition_context_summary.csv",
+    "selected_samples_for_5_12": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_5_11_finbert_fg_condition_analysis_selected_samples_for_5_12.csv",
+    "report": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_5_11_finbert_fg_condition_analysis_report.md",
+    "manifest": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_5_11_finbert_fg_condition_analysis_manifest.json"
+  }
+}

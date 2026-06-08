@@ -187,7 +187,7 @@ choice is fixed:
 
 ## Interpretation And Reporting
 
-- [ ] 5-11. Correction/regression analysis
+- [x] 5-11. Correction/regression analysis
   - Compare Stage2 baseline vs Stage5 candidates.
   - Required buckets:
     Stage2 wrong -> Stage5 correct,
@@ -204,6 +204,12 @@ choice is fixed:
     - Changed predictions: `181`, or `2.51%`.
     - Interpretation: small but real net correction; bounded FiLM remains
       conservative and changes only a small subset of Stage2 decisions.
+  - 5-11 full condition result: [FinBERT + F&G conditional correction analysis](checklist_results/5-11_finbert_fg_condition_analysis.md)
+    - Stage2 uncertain 45-55 bucket: delta accuracy `+0.012484`.
+    - F&G greed bucket: delta accuracy `+0.010849`.
+    - Low 60-day news-count and F&G neutral buckets are negative.
+    - Selected sample CSV for 5-12:
+      `reports/tables/stage5_5_11_finbert_fg_condition_analysis_selected_samples_for_5_12.csv`.
 
 - [ ] 5-12. Grad-CAM and FiLM modulation export
   - For selected correction/regression samples, export:
@@ -405,7 +411,7 @@ Stage 5는 LLM에서 만든 뉴스 표현을 FiLM context로 넣는 실험입니
 
 ## 해석 및 보고
 
-- [ ] 5-11. Correction/regression analysis
+- [x] 5-11. Correction/regression analysis
   - Stage2 baseline과 Stage5 candidate 비교.
   - 필수 bucket:
     Stage2 wrong -> Stage5 correct,
@@ -422,6 +428,12 @@ Stage 5는 LLM에서 만든 뉴스 표현을 FiLM context로 넣는 실험입니
     - Changed predictions: `181`, 즉 `2.51%`.
     - 해석: 작지만 실제 net correction이 있으며, bounded FiLM은 Stage2
       decision 중 일부만 보수적으로 바꾸는 방식으로 작동했다.
+  - 5-11 전체 조건 분석 결과: [FinBERT + F&G conditional correction analysis](checklist_results/5-11_finbert_fg_condition_analysis.md)
+    - Stage2 uncertain 45-55 bucket: delta accuracy `+0.012484`.
+    - F&G greed bucket: delta accuracy `+0.010849`.
+    - low 60-day news-count와 F&G neutral bucket은 negative.
+    - 5-12 입력 sample:
+      `reports/tables/stage5_5_11_finbert_fg_condition_analysis_selected_samples_for_5_12.csv`.
 
 - [ ] 5-12. Grad-CAM and FiLM modulation export
   - 선택된 correction/regression sample에 대해 export:

@@ -144,6 +144,13 @@ choice is fixed:
       `notebooks/kaggle_stage5_9d_finbert_film_ablation_one_cell.md`.
     - Compact upload bundle:
       `stage5_llm_news_embedding_5_9d_finbert_context_bundle.zip`.
+  - 5-9D result: [FinBERT-only bounded FiLM](checklist_results/5-9D_finbert_only_bounded_film_results.md)
+    - Mean accuracy `0.578487`, ROC-AUC `0.586072`, AP `0.611943`.
+    - It does not beat Stage2 `ohlc_ma_vb` accuracy (`0.579320`) or N8B
+      F&G-only accuracy (`0.580291`), but it slightly improves ROC-AUC/AP/Brier.
+    - Main issue: test-period FinBERT sentiment/news-count features are shifted
+      positive and create Up-bias; mean predicted positive rate is `0.637196`
+      vs true positive rate `0.541291`.
 
 - [ ] 5-10. Prompt/event auxiliary features
   - Execute only if FinBERT sentiment is insufficient or if a richer
@@ -325,6 +332,13 @@ Stage 5는 LLM에서 만든 뉴스 표현을 FiLM context로 넣는 실험입니
       `notebooks/kaggle_stage5_9d_finbert_film_ablation_one_cell.md`.
     - compact upload bundle:
       `stage5_llm_news_embedding_5_9d_finbert_context_bundle.zip`.
+  - 5-9D 결과: [FinBERT-only bounded FiLM](checklist_results/5-9D_finbert_only_bounded_film_results.md)
+    - 평균 accuracy `0.578487`, ROC-AUC `0.586072`, AP `0.611943`.
+    - Stage2 `ohlc_ma_vb` accuracy `0.579320`, N8B F&G-only accuracy
+      `0.580291`은 넘지 못했지만 ROC-AUC/AP/Brier는 아주 작게 개선.
+    - 핵심 문제: test 구간의 FinBERT sentiment/news-count feature가 positive
+      방향으로 shift되어 Up-bias를 만듦. 평균 predicted positive rate는
+      `0.637196`, 실제 positive rate는 `0.541291`.
 
 - [ ] 5-10. Prompt/event auxiliary features
   - FinBERT sentiment가 부족하거나 더 풍부한 해석 layer가 필요할 때 실행.

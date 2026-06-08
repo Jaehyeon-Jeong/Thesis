@@ -226,13 +226,21 @@ choice is fixed:
     - Probability effect is mainly a downward `prob_up` calibration, explaining
       both corrections on false-Up samples and regressions on true-Up samples.
 
-- [ ] 5-13. Final Stage 5 report and thesis-title decision
+- [x] 5-13. Final Stage 5 report and thesis-title decision
   - Decide whether the final thesis can claim LLM/news context contribution.
   - Separate claims:
     overall accuracy,
     conditional improvement,
     interpretability,
     limitations.
+  - 5-13 result: [Final Stage5 report and thesis title decision](checklist_results/5-13_final_stage5_report_title_decision.md)
+    - Stage5 is closed for the first thesis draft.
+    - Final Stage5 candidate: FinBERT+F&G bounded last-block FiLM with frozen
+      Stage2 `I60/R20/ohlc_ma_vb`.
+    - Allowed claim: small positive / conditional calibration result, not a
+      large LLM/news performance breakthrough.
+    - Recommended title:
+      `Context-Conditioned FiLM for Bitcoin Direction Prediction from Price Charts`.
 
 ## 한국어
 
@@ -241,7 +249,6 @@ Stage 5는 LLM에서 만든 뉴스 표현을 FiLM context로 넣는 실험입니
 
 - OpenAI embedding을 먼저 평가했고, 이후 FinBERT sentiment를 평가합니다.
   Prompt/event label은 필요할 때만 해석 보조로 사용합니다.
-- Prompt label은 해석 보조로만 먼저 사용합니다.
 - Stage 2 visual baseline은 pretrained checkpoint를 load하고 freeze합니다.
 - 별도 ablation이 아니면 CNN/classifier를 다시 흔들지 않습니다.
 
@@ -395,8 +402,8 @@ Stage 5는 LLM에서 만든 뉴스 표현을 FiLM context로 넣는 실험입니
   - 5-9E 결과: [FinBERT + F&G bounded FiLM](checklist_results/5-9E_finbert_fg_bounded_film_results.md)
     - 평균 accuracy `0.580569`, ROC-AUC `0.585843`, AP `0.611899`,
       Brier `0.272701`.
-    - Stage2 `ohlc_ma_vb` 대비 accuracy `+0.001249`, ROC-AUC `+0.000981`,
-      Brier `-0.001636`.
+    - Stage2 `ohlc_ma_vb` 대비 accuracy `+0.001249`, ROC-AUC
+      `+0.000981`, Brier `-0.001636`.
     - N8B F&G-only 대비 accuracy `+0.000278`, ROC-AUC `+0.000913`,
       Brier `-0.001304`.
     - 해석: small positive/near-tie result. 강한 성능 개선이라고 주장하기는
@@ -456,10 +463,18 @@ Stage 5는 LLM에서 만든 뉴스 표현을 FiLM context로 넣는 실험입니
     - 핵심 효과는 `prob_up`을 아래로 살짝 보정하는 방향이라 false-Up은
       correction하지만 true-Up에서는 regression을 만들 수 있음.
 
-- [ ] 5-13. Final Stage 5 report and thesis-title decision
+- [x] 5-13. Final Stage 5 report and thesis-title decision
   - 최종 논문에서 LLM/news context contribution을 주장할 수 있는지 결정.
   - Claim은 분리해서 작성:
     overall accuracy,
     conditional improvement,
     interpretability,
     limitations.
+  - 5-13 결과: [Final Stage5 report and thesis title decision](checklist_results/5-13_final_stage5_report_title_decision.md)
+    - Stage5는 1차 thesis draft 기준으로 종료.
+    - 최종 Stage5 후보: frozen Stage2 `I60/R20/ohlc_ma_vb` + FinBERT+F&G
+      bounded last-block FiLM.
+    - 주장 가능 범위: 큰 LLM/news 성능 향상이 아니라 small positive /
+      conditional calibration.
+    - 추천 제목:
+      `Context-Conditioned FiLM for Bitcoin Direction Prediction from Price Charts`.

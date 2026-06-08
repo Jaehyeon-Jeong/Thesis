@@ -93,6 +93,9 @@ used as an interpretation layer, not as the main prediction model.
   contains `91` context features for `2,399` samples, with missing rates `0`
   and count match rates `1.0000` against Stage4 deduplicated headline windows.
   Proceed to `5-9D` Stage2 frozen + FinBERT-only bounded FiLM.
+- `5-9D` prepared: Kaggle one-cell and compact context bundle are ready.
+  The Stage4 prebuilt context has `79` training features after excluding
+  diagnostic columns.
 - `5-9D` result: FinBERT-only bounded FiLM completed. Mean accuracy
   `0.578487`, ROC-AUC `0.586072`, AP `0.611943`, Brier `0.272739`.
   It does not beat Stage2/F&G-only accuracy, but it slightly improves
@@ -108,11 +111,14 @@ used as an interpretation layer, not as the main prediction model.
   The export contains `30` Grad-CAM/report artifacts and `40` selected
   modulation rows. Gamma/beta changes are very small, supporting the
   interpretation that FinBERT+F&G acts as a conservative calibration layer.
+- `5-13` result: Stage5 final report and title decision completed. Stage5 is
+  closed for the first thesis draft. The final Stage5 claim is small positive
+  / conditional calibration, not a large LLM/news performance breakthrough.
 - Current reading: F&G remains the strongest compact external regime source;
   FinBERT sentiment can be combined with it without destabilizing the frozen
   Stage2 + bounded FiLM setup, but headline-level sentiment is still too weak
-  to be the headline contribution. Next useful work is `5-13`: final Stage5
-  report and thesis-title decision.
+  to be the headline contribution. The next work is thesis draft v0 plus the
+  supplementary Stage4 `4-N14B2-B6` derivatives/leverage conditional analysis.
 
 ## Output Policy
 

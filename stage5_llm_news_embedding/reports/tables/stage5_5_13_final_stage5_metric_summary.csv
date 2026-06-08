@@ -1,0 +1,5 @@
+model,context,accuracy,roc_auc,average_precision,brier_score,predicted_positive_rate,interpretation
+stage2_i60_ohlc_ma_vb_r20,visual_only,0.579320,0.584862,0.611256,0.274337,0.664400,strong_visual_baseline
+n8b_fg_only_bounded_film,F&G_raw_regime,0.580291,0.584930,0.611272,0.274004,0.660652,best_compact_external_regime_source
+stage5_9d_finbert_only_bounded_film,FinBERT_sentiment_aggregates,0.578487,0.586072,0.611943,0.272739,0.637196,ranking_calibration_improves_but_accuracy_drops
+stage5_9e_finbert_fg_bounded_film,FinBERT_sentiment_plus_F&G,0.580569,0.585843,0.611899,0.272701,0.639278,best_stage5_small_positive_result

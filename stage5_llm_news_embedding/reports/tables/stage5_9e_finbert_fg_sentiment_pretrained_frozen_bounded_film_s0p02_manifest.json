@@ -1,0 +1,26 @@
+{
+  "status": "ok",
+  "stage": "5-9E",
+  "stage4_experiment_name": "stage4_film_full_bounded_last_block_i60_ohlc_ma_vb_r20_c60_stage5_finbert_fg_sentiment_v1_pretrained_frozen_s0p02",
+  "context_name": "stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1",
+  "feature_set_name": "stage5_finbert_fg_sentiment_v1",
+  "feature_source": "finbert_fg",
+  "fg_features": [
+    "fg_value",
+    "fg_mean_60",
+    "fg_delta_60",
+    "fg_std_60"
+  ],
+  "finbert_run_id": "finbert_prosusai_headline_v1",
+  "modulation_scale": 0.02,
+  "run_seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+  ],
+  "stage2_checkpoint_bundle_root": "/kaggle/input/datasets/moskow/stage22/stage2_i60_r20_four_image_full_seed_checkpoints_for_stage4_n15/stage2_i60_r20_four_image_full_seed_checkpoints_for_stage4_n15",
+  "seed_csv": "/kaggle/working/stage4_film_conditioning/reports/tables/stage5_9e_finbert_fg_sentiment_pretrained_frozen_bounded_film_s0p02_seed_results.csv",
+  "mean_std_csv": "/kaggle/working/stage4_film_conditioning/reports/tables/stage5_9e_finbert_fg_sentiment_pretrained_frozen_bounded_film_s0p02_mean_std_results.csv"
+}

@@ -118,7 +118,7 @@ choice is fixed:
   - Closeout: no further embedding scale/dimension expansion before the
     FinBERT + F&G final comparison.
 
-- [ ] 5-9. FinBERT news sentiment regime proxy
+- [x] 5-9. FinBERT news sentiment regime proxy
   - Run this before GPT/Claude prompt labels.
   - Rationale: generic embeddings were not explicitly aligned to BTC
     direction/regime. FinBERT gives a cheaper, reproducible financial text tone
@@ -160,6 +160,21 @@ choice is fixed:
       + `4` F&G raw regime features.
     - Kaggle one-cell:
       `notebooks/kaggle_stage5_9e_finbert_fg_film_ablation_one_cell.md`.
+  - 5-9E result: [FinBERT + F&G bounded FiLM](checklist_results/5-9E_finbert_fg_bounded_film_results.md)
+    - Mean accuracy `0.580569`, ROC-AUC `0.585843`, AP `0.611899`,
+      Brier `0.272701`.
+    - Versus Stage2 `ohlc_ma_vb`: accuracy `+0.001249`, ROC-AUC
+      `+0.000981`, Brier `-0.001636`.
+    - Versus N8B F&G-only: accuracy `+0.000278`, ROC-AUC `+0.000913`,
+      Brier `-0.001304`.
+    - Interpretation: small positive/near-tie result. It does not justify a
+      strong performance-improvement claim, but it shows that explicit
+      headline-level sentiment can be combined with F&G without destabilizing
+      the frozen Stage2 + bounded FiLM protocol.
+  - 5-9F comparison: [Stage2 vs F&G vs FinBERT vs FinBERT + F&G](checklist_results/5-9F_stage5_finbert_comparison.md)
+    - Decision: close the first FinBERT branch. Continue with
+      correction/regression analysis, or use prompt/event labels only if a
+      richer interpretable news feature is still needed.
 
 - [ ] 5-10. Prompt/event auxiliary features
   - Execute only if FinBERT sentiment is insufficient or if a richer
@@ -316,7 +331,7 @@ Stage 5는 LLM에서 만든 뉴스 표현을 FiLM context로 넣는 실험입니
   - Closeout: FinBERT + F&G 최종 비교 전에는 embedding scale/dimension
     확장을 더 진행하지 않습니다.
 
-- [ ] 5-9. FinBERT news sentiment regime proxy
+- [x] 5-9. FinBERT news sentiment regime proxy
   - GPT/Claude prompt label 전에 먼저 실행.
   - 이유: generic embedding은 BTC 방향성/regime에 직접 정렬된 feature가
     아니었음. FinBERT는 더 저렴하고 재현 가능한 금융 텍스트 tone signal.
@@ -357,6 +372,20 @@ Stage 5는 LLM에서 만든 뉴스 표현을 FiLM context로 넣는 실험입니
       + F&G raw regime feature `4`개.
     - Kaggle one-cell:
       `notebooks/kaggle_stage5_9e_finbert_fg_film_ablation_one_cell.md`.
+  - 5-9E 결과: [FinBERT + F&G bounded FiLM](checklist_results/5-9E_finbert_fg_bounded_film_results.md)
+    - 평균 accuracy `0.580569`, ROC-AUC `0.585843`, AP `0.611899`,
+      Brier `0.272701`.
+    - Stage2 `ohlc_ma_vb` 대비 accuracy `+0.001249`, ROC-AUC `+0.000981`,
+      Brier `-0.001636`.
+    - N8B F&G-only 대비 accuracy `+0.000278`, ROC-AUC `+0.000913`,
+      Brier `-0.001304`.
+    - 해석: small positive/near-tie result. 강한 성능 개선이라고 주장하기는
+      어렵지만, headline-level sentiment를 F&G와 결합해도 frozen Stage2 +
+      bounded FiLM 구조는 무너지지 않고 아주 작은 개선을 보였다.
+  - 5-9F 비교: [Stage2 vs F&G vs FinBERT vs FinBERT + F&G](checklist_results/5-9F_stage5_finbert_comparison.md)
+    - 결정: 첫 FinBERT branch는 닫는다. 다음은 correction/regression 분석,
+      또는 더 풍부한 해석형 뉴스 feature가 필요할 때만 prompt/event label로
+      넘어간다.
 
 - [ ] 5-10. Prompt/event auxiliary features
   - FinBERT sentiment가 부족하거나 더 풍부한 해석 layer가 필요할 때 실행.

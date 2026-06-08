@@ -93,9 +93,21 @@ used as an interpretation layer, not as the main prediction model.
   contains `91` context features for `2,399` samples, with missing rates `0`
   and count match rates `1.0000` against Stage4 deduplicated headline windows.
   Proceed to `5-9D` Stage2 frozen + FinBERT-only bounded FiLM.
-- `5-9D` prepared: Kaggle one-cell and compact context bundle are ready.
-  The Stage4 prebuilt context has `79` training features after excluding
-  diagnostic columns.
+- `5-9D` result: FinBERT-only bounded FiLM completed. Mean accuracy
+  `0.578487`, ROC-AUC `0.586072`, AP `0.611943`, Brier `0.272739`.
+  It does not beat Stage2/F&G-only accuracy, but it slightly improves
+  ranking/calibration.
+- `5-9E` result: FinBERT + F&G bounded FiLM completed. Mean accuracy
+  `0.580569`, ROC-AUC `0.585843`, AP `0.611899`, Brier `0.272701`.
+  This is a small positive/near-tie result: `+0.001249` accuracy over Stage2
+  `ohlc_ma_vb` and `+0.000278` over F&G-only, but the margin is too small for a
+  strong performance-improvement claim.
+- Current reading: F&G remains the strongest compact external regime source;
+  FinBERT sentiment can be combined with it without destabilizing the frozen
+  Stage2 + bounded FiLM setup, but headline-level sentiment is still too weak
+  to be the headline contribution. Next useful work is correction/regression
+  analysis or prompt/event labels if a richer interpretable news feature is
+  required.
 
 ## Output Policy
 

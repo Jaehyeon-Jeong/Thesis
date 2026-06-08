@@ -1,0 +1,55 @@
+{
+  "status": "ok",
+  "stage": "stage5-prebuilt-context-build",
+  "context_name": "stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1",
+  "feature_table": "/kaggle/working/stage5_llm_news_embedding/outputs/stage5/finbert_context/finbert_prosusai_headline_v1/stage5_finbert_context_features.csv",
+  "run_seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+  ],
+  "written_by_seed": {
+    "42": {
+      "context_features": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_42/context_features.csv",
+      "context_features_parquet": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_42/context_features.parquet",
+      "context_scaler": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_42/context_scaler.json",
+      "context_feature_audit": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_42/context_feature_audit.json",
+      "context_feature_summary": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_42/context_feature_summary.csv",
+      "stage5_context_manifest": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_42/stage5_context_manifest.json"
+    },
+    "43": {
+      "context_features": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_43/context_features.csv",
+      "context_features_parquet": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_43/context_features.parquet",
+      "context_scaler": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_43/context_scaler.json",
+      "context_feature_audit": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_43/context_feature_audit.json",
+      "context_feature_summary": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_43/context_feature_summary.csv",
+      "stage5_context_manifest": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_43/stage5_context_manifest.json"
+    },
+    "44": {
+      "context_features": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_44/context_features.csv",
+      "context_features_parquet": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_44/context_features.parquet",
+      "context_scaler": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_44/context_scaler.json",
+      "context_feature_audit": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_44/context_feature_audit.json",
+      "context_feature_summary": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_44/context_feature_summary.csv",
+      "stage5_context_manifest": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_44/stage5_context_manifest.json"
+    },
+    "45": {
+      "context_features": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_45/context_features.csv",
+      "context_features_parquet": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_45/context_features.parquet",
+      "context_scaler": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_45/context_scaler.json",
+      "context_feature_audit": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_45/context_feature_audit.json",
+      "context_feature_summary": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_45/context_feature_summary.csv",
+      "stage5_context_manifest": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_45/stage5_context_manifest.json"
+    },
+    "46": {
+      "context_features": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_46/context_features.csv",
+      "context_features_parquet": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_46/context_features.parquet",
+      "context_scaler": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_46/context_scaler.json",
+      "context_feature_audit": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_46/context_feature_audit.json",
+      "context_feature_summary": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_46/context_feature_summary.csv",
+      "stage5_context_manifest": "/kaggle/working/stage4_film_conditioning/outputs/stage4/context/stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1/seed_46/stage5_context_manifest.json"
+    }
+  }
+}

@@ -211,7 +211,7 @@ choice is fixed:
     - Selected sample CSV for 5-12:
       `reports/tables/stage5_5_11_finbert_fg_condition_analysis_selected_samples_for_5_12.csv`.
 
-- [ ] 5-12. Grad-CAM and FiLM modulation export
+- [x] 5-12. Grad-CAM and FiLM modulation export
   - For selected correction/regression samples, export:
     Stage2 Grad-CAM,
     Stage5 Grad-CAM,
@@ -219,6 +219,12 @@ choice is fixed:
     news window text,
     embedding/FinBERT/prompt features,
     probability change.
+  - 5-12 result: [Grad-CAM and FiLM modulation export](checklist_results/5-12_gradcam_modulation_export.md)
+    - Exported `30` Grad-CAM/report artifacts and `40` selected modulation rows.
+    - Correction/regression panels both show very small bounded modulation:
+      gamma mean about `1.0003`, beta mean about `0.00008`.
+    - Probability effect is mainly a downward `prob_up` calibration, explaining
+      both corrections on false-Up samples and regressions on true-Up samples.
 
 - [ ] 5-13. Final Stage 5 report and thesis-title decision
   - Decide whether the final thesis can claim LLM/news context contribution.
@@ -435,7 +441,7 @@ Stage 5는 LLM에서 만든 뉴스 표현을 FiLM context로 넣는 실험입니
     - 5-12 입력 sample:
       `reports/tables/stage5_5_11_finbert_fg_condition_analysis_selected_samples_for_5_12.csv`.
 
-- [ ] 5-12. Grad-CAM and FiLM modulation export
+- [x] 5-12. Grad-CAM and FiLM modulation export
   - 선택된 correction/regression sample에 대해 export:
     Stage2 Grad-CAM,
     Stage5 Grad-CAM,
@@ -443,6 +449,12 @@ Stage 5는 LLM에서 만든 뉴스 표현을 FiLM context로 넣는 실험입니
     news window text,
     embedding/FinBERT/prompt features,
     probability change.
+  - 5-12 결과: [Grad-CAM and FiLM modulation export](checklist_results/5-12_gradcam_modulation_export.md)
+    - Grad-CAM/report artifact `30`개와 selected modulation row `40`개 export.
+    - correction/regression 모두 modulation이 매우 작음:
+      gamma mean 약 `1.0003`, beta mean 약 `0.00008`.
+    - 핵심 효과는 `prob_up`을 아래로 살짝 보정하는 방향이라 false-Up은
+      correction하지만 true-Up에서는 regression을 만들 수 있음.
 
 - [ ] 5-13. Final Stage 5 report and thesis-title decision
   - 최종 논문에서 LLM/news context contribution을 주장할 수 있는지 결정.

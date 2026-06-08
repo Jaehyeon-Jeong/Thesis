@@ -100,14 +100,19 @@ used as an interpretation layer, not as the main prediction model.
 - `5-9E` result: FinBERT + F&G bounded FiLM completed. Mean accuracy
   `0.580569`, ROC-AUC `0.585843`, AP `0.611899`, Brier `0.272701`.
   This is a small positive/near-tie result: `+0.001249` accuracy over Stage2
-  `ohlc_ma_vb` and `+0.000278` over F&G-only, but the margin is too small for a
-  strong performance-improvement claim.
+  `ohlc_ma_vb` and `+0.000278` over F&G-only.
+- `5-11` result: conditional correction/regression analysis completed.
+  Across `7,205` matched decisions, corrections are `95`, regressions are
+  `86`, and net corrections are `+9`.
+- `5-12` result: targeted Grad-CAM and FiLM modulation export completed.
+  The export contains `30` Grad-CAM/report artifacts and `40` selected
+  modulation rows. Gamma/beta changes are very small, supporting the
+  interpretation that FinBERT+F&G acts as a conservative calibration layer.
 - Current reading: F&G remains the strongest compact external regime source;
   FinBERT sentiment can be combined with it without destabilizing the frozen
   Stage2 + bounded FiLM setup, but headline-level sentiment is still too weak
-  to be the headline contribution. Next useful work is correction/regression
-  analysis or prompt/event labels if a richer interpretable news feature is
-  required.
+  to be the headline contribution. Next useful work is `5-13`: final Stage5
+  report and thesis-title decision.
 
 ## Output Policy
 

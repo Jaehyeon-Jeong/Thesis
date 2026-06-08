@@ -1,0 +1,65 @@
+{
+  "raw_path": "stage4_film_conditioning/data_inventory/crypto_derivatives/binance_btcusdt_premium_index/raw/binance_btcusdt_premium_index_1d_2019_2024.csv",
+  "daily_path": "stage4_film_conditioning/data_inventory/crypto_derivatives/binance_btcusdt_premium_index/processed/binance_btcusdt_premium_index_daily_2019_2024.csv",
+  "rows": 1835,
+  "date_min": "2019-12-24",
+  "date_max": "2024-12-31",
+  "first_rows": [
+    {
+      "Date": "2019-12-24",
+      "premium_open": -0.00050071,
+      "premium_high": 0.00092997,
+      "premium_low": -0.00266185,
+      "premium_close": -0.00083972,
+      "premium_range": 0.00359182,
+      "premium_abs_close": 0.00083972
+    },
+    {
+      "Date": "2019-12-25",
+      "premium_open": -0.00070996,
+      "premium_high": 0.00078192,
+      "premium_low": -0.00112962,
+      "premium_close": -0.00036747,
+      "premium_range": 0.00191154,
+      "premium_abs_close": 0.00036747
+    },
+    {
+      "Date": "2019-12-26",
+      "premium_open": -0.00026717,
+      "premium_high": 0.00034363,
+      "premium_low": -0.00172671,
+      "premium_close": -0.00047461,
+      "premium_range": 0.00207034,
+      "premium_abs_close": 0.00047461
+    }
+  ],
+  "last_rows": [
+    {
+      "Date": "2024-12-29",
+      "premium_open": -0.00048719,
+      "premium_high": 0.00015865,
+      "premium_low": -0.0014846,
+      "premium_close": -0.00032558,
+      "premium_range": 0.00164325,
+      "premium_abs_close": 0.00032558
+    },
+    {
+      "Date": "2024-12-30",
+      "premium_open": -0.00032947,
+      "premium_high": 0.00057806,
+      "premium_low": -0.00195698,
+      "premium_close": -0.00040261,
+      "premium_range": 0.00253504,
+      "premium_abs_close": 0.00040261
+    },
+    {
+      "Date": "2024-12-31",
+      "premium_open": -0.00039426,
+      "premium_high": 0.00171142,
+      "premium_low": -0.00118905,
+      "premium_close": -0.00028574,
+      "premium_range": 0.00290047,
+      "premium_abs_close": 0.00028574
+    }
+  ]
+}

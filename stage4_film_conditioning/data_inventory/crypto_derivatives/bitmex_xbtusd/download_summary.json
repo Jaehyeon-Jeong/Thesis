@@ -1,0 +1,83 @@
+{
+  "funding_raw_path": "stage4_film_conditioning/data_inventory/crypto_derivatives/bitmex_xbtusd/raw/bitmex_xbtusd_funding_8h_2018_2024.csv",
+  "funding_daily_path": "stage4_film_conditioning/data_inventory/crypto_derivatives/bitmex_xbtusd/processed/bitmex_xbtusd_funding_daily_2018_2024.csv",
+  "trade_raw_path": "stage4_film_conditioning/data_inventory/crypto_derivatives/bitmex_xbtusd/raw/bitmex_xbtusd_trade_bucketed_1d_2018_2024.csv",
+  "trade_daily_path": "stage4_film_conditioning/data_inventory/crypto_derivatives/bitmex_xbtusd/processed/bitmex_xbtusd_derivatives_activity_daily_2018_2024.csv",
+  "funding_rows_8h": 7671,
+  "funding_daily_rows": 2557,
+  "funding_date_min": "2018-01-01",
+  "funding_date_max": "2024-12-31",
+  "funding_count_values": [
+    3
+  ],
+  "funding_stage4_missing_rate": 0.0,
+  "funding_stage4_incomplete_daily_rate": 0.0,
+  "trade_daily_rows": 2557,
+  "trade_date_min": "2018-01-01",
+  "trade_date_max": "2024-12-31",
+  "trade_stage4_missing_rate": 0.0,
+  "first_funding_rows": [
+    {
+      "Date": "2018-01-01",
+      "funding_rate_mean": 0.0010923333333333334,
+      "funding_rate_sum": 0.003277,
+      "funding_rate_abs_mean": 0.0010923333333333332,
+      "funding_rate_min": 0.000815,
+      "funding_rate_max": 0.001293,
+      "funding_rate_daily_mean": 0.003277,
+      "funding_count": 3
+    },
+    {
+      "Date": "2018-01-02",
+      "funding_rate_mean": 0.0007043333333333333,
+      "funding_rate_sum": 0.002113,
+      "funding_rate_abs_mean": 0.0010156666666666667,
+      "funding_rate_min": -0.000467,
+      "funding_rate_max": 0.00198,
+      "funding_rate_daily_mean": 0.002113,
+      "funding_count": 3
+    },
+    {
+      "Date": "2018-01-03",
+      "funding_rate_mean": 0.003266,
+      "funding_rate_sum": 0.009798,
+      "funding_rate_abs_mean": 0.003266,
+      "funding_rate_min": 0.002378,
+      "funding_rate_max": 0.00375,
+      "funding_rate_daily_mean": 0.009798,
+      "funding_count": 3
+    }
+  ],
+  "last_funding_rows": [
+    {
+      "Date": "2024-12-29",
+      "funding_rate_mean": 4.933333333333333e-05,
+      "funding_rate_sum": 0.000148,
+      "funding_rate_abs_mean": 4.933333333333333e-05,
+      "funding_rate_min": 1e-05,
+      "funding_rate_max": 8.9e-05,
+      "funding_rate_daily_mean": 0.000148,
+      "funding_count": 3
+    },
+    {
+      "Date": "2024-12-30",
+      "funding_rate_mean": 5.6000000000000006e-05,
+      "funding_rate_sum": 0.00016800000000000002,
+      "funding_rate_abs_mean": 7.733333333333333e-05,
+      "funding_rate_min": -3.2e-05,
+      "funding_rate_max": 0.0001,
+      "funding_rate_daily_mean": 0.00016800000000000004,
+      "funding_count": 3
+    },
+    {
+      "Date": "2024-12-31",
+      "funding_rate_mean": 0.0001,
+      "funding_rate_sum": 0.00030000000000000003,
+      "funding_rate_abs_mean": 0.0001,
+      "funding_rate_min": 0.0001,
+      "funding_rate_max": 0.0001,
+      "funding_rate_daily_mean": 0.00030000000000000003,
+      "funding_count": 3
+    }
+  ]
+}

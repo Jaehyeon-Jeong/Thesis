@@ -1,0 +1,20 @@
+{
+  "cftc_cme_bitcoin_main_cot": {
+    "path": "stage4_film_conditioning/data_inventory/crypto_derivatives/cftc_cme_bitcoin_cot/processed/cftc_cme_bitcoin_main_cot_daily_release_lag3_ffill_2018_2024.csv",
+    "rows": 2557,
+    "stage4_missing_open_interest_rate": 0.0,
+    "stage4_max_cot_age_days": 10,
+    "stage4_min_cot_age_days": 3,
+    "stage4_first_available_date": "2018-04-29",
+    "stage4_last_available_date": "2024-12-11"
+  },
+  "cftc_cme_bitcoin_main_plus_micro_cot": {
+    "path": "stage4_film_conditioning/data_inventory/crypto_derivatives/cftc_cme_bitcoin_cot/processed/cftc_cme_bitcoin_main_plus_micro_cot_daily_release_lag3_ffill_2018_2024.csv",
+    "rows": 2557,
+    "stage4_missing_open_interest_rate": 0.0,
+    "stage4_max_cot_age_days": 10,
+    "stage4_min_cot_age_days": 3,
+    "stage4_first_available_date": "2018-04-29",
+    "stage4_last_available_date": "2024-12-11"
+  }
+}

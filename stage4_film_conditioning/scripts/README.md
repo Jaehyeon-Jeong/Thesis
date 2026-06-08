@@ -129,6 +129,24 @@ Added in `4-N13-1`:
   a direct RORO index. The BTC direction is not hard-coded; the FiLM/context
   model learns the relationship.
 
+Added in `4-N16-1`:
+- `build_stage4_derivatives_context_features.py`: reads local BitMEX XBTUSD
+  funding/activity and release-lagged CFTC/CME Bitcoin futures COT files,
+  builds funding/activity/open-interest/positioning trailing features, aligns
+  them to Stage 4 BTC sample image-end dates, and writes prebuilt
+  `context_features.csv`, `context_scaler.json`, `context_feature_audit.json`,
+  and `context_feature_summary.csv`.
+- Supported feature sets are `funding_only`, `funding_plus_cftc_oi`,
+  `funding_plus_activity`, `funding_plus_activity_plus_cftc_oi`, and
+  `derivatives_all`.
+
+Added in `4-N16-2`:
+- `build_stage4_n16_2_derivatives_feature_audit.py`: audits the N16
+  derivatives context matrix before model training. It ranks derivatives
+  features using train-only label/future-return signals, reports Stage 2 error
+  correlation as a test diagnostic only, checks internal redundancy, and checks
+  redundancy against prior F&G/technical context.
+
 Planned next scripts:
 - `summarize_stage4_results.py`
 
@@ -252,6 +270,24 @@ Stage 4 script는 구현 단계에서 순차적으로 추가합니다.
   prebuilt news context artifact를 읽을 수 있습니다.
 - prebuilt context loader는 `context_scaler.json`에서 feature order를 읽고,
   `sample_index`로 `context_features.csv`와 BTC sample을 정렬합니다.
+
+`4-N16-1`에서 추가한 script:
+- `build_stage4_derivatives_context_features.py`: local BitMEX XBTUSD
+  funding/activity와 release-lagged CFTC/CME Bitcoin futures COT 파일을 읽고,
+  funding/activity/open-interest/positioning trailing feature를 만든 뒤 Stage 4
+  BTC sample의 image-end date에 맞춰 prebuilt `context_features.csv`,
+  `context_scaler.json`, `context_feature_audit.json`,
+  `context_feature_summary.csv`를 생성합니다.
+- 지원 feature set은 `funding_only`, `funding_plus_cftc_oi`,
+  `funding_plus_activity`, `funding_plus_activity_plus_cftc_oi`,
+  `derivatives_all`입니다.
+
+`4-N16-2`에서 추가한 script:
+- `build_stage4_n16_2_derivatives_feature_audit.py`: N16 derivatives context를
+  모델 학습 전에 audit합니다. Train-only label/future-return signal로 feature를
+  rank하고, Stage 2 error correlation은 test diagnostic으로만 보고하며,
+  derivatives 내부 redundancy와 기존 F&G/technical context와의 redundancy를
+  같이 확인합니다.
 
 다음 예정 script:
 - `summarize_stage4_results.py`

@@ -64,9 +64,24 @@ Expected Kaggle bundle:
 
 ## Status
 
-Prepared and locally syntax-checked. Run the Kaggle cell after attaching the
-latest Stage 4 snapshot plus the existing N8-B/N10 result outputs or a Stage 4
-dataset that contains those outputs.
+Completed and reviewed.
 
-N13-6 should be marked complete only after the bundle is downloaded and the
-matched Grad-CAM/gamma-beta samples are reviewed.
+Main readout:
+
+```text
+F&G N8-B scale 0.02:
+Stage 2 accuracy mean 0.579320
+Stage 4 accuracy mean 0.580291
+delta +0.000972
+corrections 21, regressions 14, net +7
+
+News N10 SVD32 scale 0.02:
+Stage 4 accuracy mean 0.579736
+delta +0.000416
+corrections 27, regressions 24, net +3
+```
+
+The targeted Grad-CAM/gamma-beta review showed that the current bounded FiLM
+path mostly preserves Stage 2 decisions. Its gamma/beta movement is very small,
+so N13-7A tests whether a larger bounded scale can create more useful
+correction without class collapse.

@@ -3,7 +3,8 @@
 Stage 5 tests LLM-derived news representations as FiLM context. The main design
 choice is fixed:
 
-- Use embeddings as the primary performance feature.
+- Use LLM/news-derived numeric context features: OpenAI embeddings first,
+  FinBERT sentiment second, and prompt/event labels only if needed.
 - Use prompt labels only as an auxiliary interpretability feature.
 - Preserve the Stage 2 visual baseline by loading pretrained checkpoints and
   freezing the visual CNN/classifier unless a specific ablation says otherwise.
@@ -99,12 +100,13 @@ choice is fixed:
     with but slightly below Stage2 `ohlc_ma_vb` baseline (`0.5793`, `0.5849`).
   - Result note: [5-8A results](checklist_results/5-8A_embedding_only_bounded_film_results.md)
 
-- [ ] 5-8B. Stage2 frozen + embedding + F&G bounded FiLM
+- [x] 5-8B. Stage2 frozen + embedding + F&G bounded FiLM
   - Context: embedding SVD features + news counts + F&G-only features.
-  - Goal: test whether F&G provides compact regime summary beside rich news
-    representation.
+  - Decision: closed without a separate run. Embedding-only was below the
+    baseline and the stronger combined regime test is now `5-9E`
+    FinBERT + F&G, where the news signal is explicitly sentiment-aligned.
 
-- [ ] 5-8C. Scale and dimension sanity grid
+- [x] 5-8C. Scale and dimension sanity grid
   - Only if 5-8A/B are stable.
   - Candidate scales: `0.02`, `0.05`, `0.10`.
   - Candidate dimensions: best two from 5-7.
@@ -113,6 +115,8 @@ choice is fixed:
     accuracy, F1, and trading metrics, so broad scale/dimension search is not
     the main next step.
   - Result note: [5-8C dim32 scale 0.05](checklist_results/5-8C_dim32_s0p05_embedding_film_results.md)
+  - Closeout: no further embedding scale/dimension expansion before the
+    FinBERT + F&G final comparison.
 
 - [ ] 5-9. FinBERT news sentiment regime proxy
   - Run this before GPT/Claude prompt labels.
@@ -200,7 +204,8 @@ choice is fixed:
 Stage 5는 LLM에서 만든 뉴스 표현을 FiLM context로 넣는 실험입니다. 현재
 큰 방향은 고정합니다.
 
-- 성능 실험의 main feature는 embedding입니다.
+- OpenAI embedding을 먼저 평가했고, 이후 FinBERT sentiment를 평가합니다.
+  Prompt/event label은 필요할 때만 해석 보조로 사용합니다.
 - Prompt label은 해석 보조로만 먼저 사용합니다.
 - Stage 2 visual baseline은 pretrained checkpoint를 load하고 freeze합니다.
 - 별도 ablation이 아니면 CNN/classifier를 다시 흔들지 않습니다.
@@ -293,12 +298,13 @@ Stage 5는 LLM에서 만든 뉴스 표현을 FiLM context로 넣는 실험입니
     `ohlc_ma_vb` baseline (`0.5793`, `0.5849`)과 거의 같지만 약간 낮음.
   - 결과 메모: [5-8A results](checklist_results/5-8A_embedding_only_bounded_film_results.md)
 
-- [ ] 5-8B. Stage2 frozen + embedding + F&G bounded FiLM
+- [x] 5-8B. Stage2 frozen + embedding + F&G bounded FiLM
   - Context: embedding SVD features + news counts + F&G-only features.
-  - 목적: rich news representation 옆에서 F&G가 compact regime summary로
-    추가 도움이 되는지 확인.
+  - 결정: 별도 실행 없이 닫습니다. Embedding-only가 baseline보다 낮았고,
+    더 의미 있는 결합 실험은 sentiment-aligned news signal인 FinBERT와
+    F&G를 합치는 `5-9E`로 진행합니다.
 
-- [ ] 5-8C. Scale and dimension sanity grid
+- [x] 5-8C. Scale and dimension sanity grid
   - 5-8A/B가 안정적일 때만 실행.
   - 후보 scale: `0.02`, `0.05`, `0.10`.
   - 후보 dimension: 5-7에서 좋은 두 개.
@@ -307,6 +313,8 @@ Stage 5는 LLM에서 만든 뉴스 표현을 FiLM context로 넣는 실험입니
     trading metric은 나빠졌으므로 넓은 scale/dimension grid를 계속
     확장하는 것은 우선순위가 낮음.
   - 결과 메모: [5-8C dim32 scale 0.05](checklist_results/5-8C_dim32_s0p05_embedding_film_results.md)
+  - Closeout: FinBERT + F&G 최종 비교 전에는 embedding scale/dimension
+    확장을 더 진행하지 않습니다.
 
 - [ ] 5-9. FinBERT news sentiment regime proxy
   - GPT/Claude prompt label 전에 먼저 실행.

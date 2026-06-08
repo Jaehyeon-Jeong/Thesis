@@ -40,6 +40,9 @@ flowchart LR
     Q --> R[N13-0/1: FSI/RORO source audit + FSI features]
     R --> S[N13-2/4: FSI-only and RORO-proxy-only FiLM]
     S --> T[N13-5/6: macro comparison + interpretability]
+    T --> U[N15: image-spec context-complement checks]
+    U --> V[N16: derivatives/leverage context]
+    V --> W[N14: final Stage 4 report]
 ```
 
 ## Checklist And Review Links
@@ -52,6 +55,7 @@ flowchart LR
 | FiLM insertion design | Where concat/gating/FiLM are attached | [docs/film_insertion_design.md](docs/film_insertion_design.md) |
 | Context/news plan | Structured context and future news track | [docs/condition_track_plan.md](docs/condition_track_plan.md), [docs/news_context_plan.md](docs/news_context_plan.md) |
 | v1 interpretation report | Five-seed v1 interpretation | [reports/stage4_v1_interpretation/stage4_v1_interpretation_report.md](reports/stage4_v1_interpretation/stage4_v1_interpretation_report.md) |
+| Derivatives/leverage context | BitMEX funding/activity and CFTC/CME OI plan | [checklist_results/4-N16_derivatives_leverage_context_plan.md](checklist_results/4-N16_derivatives_leverage_context_plan.md), [data inventory](data_inventory/crypto_derivatives/README.md) |
 
 ## How To Read This Folder
 
@@ -74,12 +78,15 @@ Primary structured context vector:
 | --- | --- |
 | Fear and Greed | `fg_value`, `fg_mean_60`, `fg_delta_60`, `fg_std_60` |
 | Technical context | `bb_percent_b_60`, `bb_bandwidth_60`, `mfi_60`, `rv_60` |
+| Derivatives/leverage | BitMEX funding/activity; release-lagged CFTC/CME open interest and positioning |
 
 Rules:
 - Context is available only at or before image end date `t`.
 - Context is normalized with train-only imputation, clipping, and z-score statistics.
 - Structured numeric context was tested first.
-- News context is now the active second-phase track after V9.
+- News, macro/RORO, technical, F&G, and derivatives/leverage context have all
+  been tested under the current Stage 4 scope; N14 closes this cycle for
+  professor/thesis reporting.
 
 ## Model Variants
 
@@ -123,7 +130,8 @@ Current interpretation:
 - `ohlc_ma_vb` already contains strong visual/technical information.
 - Re-injecting overlapping technical context through full FiLM often adds noise.
 - F&G is image-external context, but full FiLM still causes seed instability.
-- Next architecture work should preserve the strong visual path more explicitly.
+- Baseline-preserving frozen Stage 2 + bounded final-block FiLM is the most
+  stable protocol, but most context sources produce only small corrections.
 
 News-context track:
 
@@ -142,22 +150,27 @@ News-context track:
 | `4-N13-0/1` | Macro/RORO source audit + OFR FSI feature builder | Completed; OFR FSI context artifact built with six train-normalized risk-off proxy features; screening selected compact `FSI-2` and `FSI-3` candidates | [N13-1 result](checklist_results/4-N13-1_ofr_fsi_feature_builder.md), [screening](checklist_results/4-N13-1_fsi_feature_screening.md), [audit](reports/tables/stage4_fsi_context_i60_ohlc_ma_vb_r20_ofr_fsi_lag1_w20_60_seed42_fsi_context_feature_audit.json) |
 | `4-N13-2` | FSI-only frozen bounded FiLM | Completed; best FSI row `fsi_all` accuracy `0.5799`, ROC-AUC `0.5849`, net correction `+4`, zero collapse; stable but not materially stronger than Stage 2/N8-B F&G | [N13-2 result](checklist_results/4-N13-2_fsi_only_pretrained_frozen_bounded_film.md), [comparison](reports/tables/stage4_n13_2_with_prior_context_comparison_compact.csv) |
 | `4-N13-3/4` | KC Fed-inspired public-data RORO proxy + FiLM | Completed; N13-3 artifact built from cached VIX, S&P500, DXY, and US 10Y sources; N13-4 RORO-only five-seed run had zero collapse but only tied Stage 2: best row `roro_3` accuracy `0.5793`, ROC-AUC `0.5847` | [N13-3 builder](checklist_results/4-N13-3_public_roro_proxy_builder.md), [N13-4 result](checklist_results/4-N13-4_roro_proxy_only_pretrained_frozen_bounded_film.md), [N13-4 table](reports/tables/stage4_n13_4_roro_only_pretrained_frozen_bounded_film_mean_std_results.csv), [N13-4 Kaggle cell](notebooks/kaggle_stage4_n13_4_roro_only_pretrained_frozen_bounded_film_one_cell.md) |
-| `4-N13-5/5A/5B/6` | Macro comparison, cross-context feature audit, selected-combo FiLM, interpretability export | N13-5A completed on 2,399 aligned rows and 126 features; N13-5B selected six-feature combo tied Stage 2 accuracy (`0.5793`) with net correction `0`; N13-6 interpretability runner is prepared for matched Stage2 vs F&G/news Grad-CAM and gamma/beta export | [N13-5 result](checklist_results/4-N13-5_macro_context_source_comparison.md), [N13-5A audit](checklist_results/4-N13-5A_cross_context_feature_audit.md), [N13-5B result](checklist_results/4-N13-5B_selected_combo_context_film.md), [N13-6 plan](checklist_results/4-N13-6_interpretability_export.md), [N13-6 Kaggle cell](notebooks/kaggle_stage4_n13_6_interpretability_export_one_cell.md) |
-| `4-N13-7` | Final FiLM constraint/scale ablation | Planned after the best stable context source is selected; test whether Stage 2 frozen FiLM was too conservative by trying bounded scales `0.02/0.05/0.10/0.20` and, only if stable, relaxed-constraint FiLM | [N13-7 plan](checklist_results/4-N13-7_final_film_constraint_ablation_plan.md) |
+| `4-N13-5/5A/5B/6` | Macro comparison, cross-context feature audit, selected-combo FiLM, interpretability export | N13-5A completed on 2,399 aligned rows and 126 features; N13-5B selected six-feature combo tied Stage 2 accuracy (`0.5793`) with net correction `0`; N13-6 matched Stage2 vs F&G/news Grad-CAM and gamma/beta export completed for final interpretation | [N13-5 result](checklist_results/4-N13-5_macro_context_source_comparison.md), [N13-5A audit](checklist_results/4-N13-5A_cross_context_feature_audit.md), [N13-5B result](checklist_results/4-N13-5B_selected_combo_context_film.md), [N13-6 review](checklist_results/4-N13-6_interpretability_export.md), [N13-6 Kaggle cell](notebooks/kaggle_stage4_n13_6_interpretability_export_one_cell.md) |
+| `4-N13-7A` | F&G bounded FiLM scale ablation | Completed. Larger scales `0.10/0.20` did not improve N8-B `0.02`: accuracy means `0.5790/0.5785`, ROC-AUC `0.5848/0.5845`, net correction `-2/-6`; no severe collapse, but extra modulation caused more regressions than corrections | [N13-7 plan](checklist_results/4-N13-7_final_film_constraint_ablation_plan.md), [N13-7A result](checklist_results/4-N13-7A_fg_bounded_scale_grid.md), [N13-7A Kaggle cell](notebooks/kaggle_stage4_n13_7a_fg_bounded_scale_grid_one_cell.md) |
+| `4-N13-7D` | F&G classifier-unfreeze FiLM | Completed. Opening the classifier hurt the baseline: accuracy `0.5743`, ROC-AUC `0.5842`, Brier `0.2802`, net correction `-36`; extra flexibility caused more regressions than corrections, so N8-B `scale=0.02` remains the best F&G setting | [N13-7D result](checklist_results/4-N13-7D_fg_classifier_unfreeze.md), [N13-7D Kaggle cell](notebooks/kaggle_stage4_n13_7d_fg_classifier_unfreeze_one_cell.md) |
 | `4-N13-B` | Optional sentiment/event feature extension | Deferred; only needed if headline TF-IDF/SVD remains weak or hard to interpret | [N12/N13 plan](checklist_results/4-N12_gated_film_and_context_source_plan.md) |
-| `4-N14` | Final Stage 4 interpretability report | Planned final evidence package: metrics, correction/regression, targeted Grad-CAM, gamma/beta/gate summaries | [N12/N14 plan](checklist_results/4-N12_gated_film_and_context_source_plan.md) |
+| `4-N15-A` | Stage 2 I60/R20 four-image checkpoint bundle | Completed and verified. `ohlc`, `ohlc_ma`, `ohlc_vb`, `ohlc_ma_vb` five-seed results exactly reproduce the existing Stage 2 table; reusable local bundle has 20 `best.pt` checkpoints plus metrics/predictions | [N15-A result](checklist_results/4-N15-A_i60_r20_stage2_four_image_checkpoint_bundle.md), [N15-A Kaggle cell](notebooks/kaggle_stage4_n15a_rebuild_i60_r20_four_image_stage2_checkpoints_one_cell.md) |
+| `4-N15-B` | Image-spec context-complement FiLM | Completed. All 20 runs finished, but technical context summaries only preserved same-image Stage 2: acc deltas ranged from `0.000000` to `+0.000416`, changed-decision rates were only `0.2%`-`0.4%`; direct visual encoding remains stronger than compact technical replacement | [N15 plan](checklist_results/4-N15_i60_r20_image_spec_context_complement_plan.md), [N15-B result](checklist_results/4-N15-B_image_missing_feature_complement_film.md), [N15-B Kaggle cell](notebooks/kaggle_stage4_n15b_image_missing_feature_complement_film_one_cell.md) |
+| `4-N15-C` | F&G-only across image specs | Completed. F&G-only frozen bounded FiLM was tested across all four I60/R20 image specs. Same-image deltas were small: `ohlc` -0.0004, `ohlc_ma` -0.0008, `ohlc_vb` +0.0006, `ohlc_ma_vb` +0.0010; volume-aware specs show the only positive but still weak effect | [N15-C result](checklist_results/4-N15-C_fg_only_across_image_specs.md), [N15-C Kaggle cell](notebooks/kaggle_stage4_n15c_fg_only_across_image_specs_one_cell.md) |
+| `4-N16` | Derivatives/leverage context | Completed. On the strongest `ohlc_ma_vb` image this context mostly tied Stage 2, but on the weaker volume-aware `ohlc_vb` image, `funding_plus_cftc_oi` improved same-image accuracy by `+0.002082` with net `+15` corrections. N16-5 shows the FiLM head mainly suppresses weak bullish calls in higher derivatives/leverage regimes | [N16 plan](checklist_results/4-N16_derivatives_leverage_context_plan.md), [N16-4 result](checklist_results/4-N16-4_ohlc_vb_derivatives_repeat.md), [N16-5 interpretation](checklist_results/4-N16-5_derivatives_interpretability_export.md), [data inventory](data_inventory/crypto_derivatives/README.md) |
+| `4-N14` | Final Stage 4 interpretability report | Completed. Summarizes Stage 2 baseline, Stage 4 negative/limited results, N16 positive same-image case, Grad-CAM/gamma-beta interpretation, and final thesis claim | [N14 report](checklist_results/4-N14_final_stage4_interpretability_report.md), [report copy](reports/tables/stage4_n14_final_stage4_interpretability_report.md) |
+| `4-N14-B` | Conditional regime analysis | Prepared. Post-training analysis to test whether context-FiLM improves specific predefined regimes such as high derivatives/leverage, F&G extremes, high volatility, news/macro intense days, and Stage2 uncertainty. N14-B1 merge-table script and Kaggle runner are ready | [N14-B plan](checklist_results/4-N14-B_conditional_regime_analysis_plan.md), [N14-B1 script](scripts/build_stage4_n14b_conditional_merge_table.py), [N14-B1 Kaggle cell](notebooks/kaggle_stage4_n14b1_conditional_merge_table_one_cell.md) |
 
-Next direction:
-- test OFR FSI first as an official financial-stress/risk-off regime proxy;
-- then build a KC Fed-inspired public-data RORO proxy. KC Fed official RORO
-  files are kept for documentation, but the downloaded daily/weekly files start
-  in June 2023 and are not enough for Stage 4 train/validation;
-- compare FSI/RORO against F&G, news, and technical context under the same
-  frozen Stage 2 protocol;
-- use targeted Grad-CAM plus `modulation_gate`, `stage2_prob_up`, gamma, and
-  beta summaries for the thesis interpretation section;
-- keep LLM/sentiment/event extraction as a later extension only if the
-  headline TF-IDF/SVD path remains too weak or hard to interpret.
+Current final direction:
+- present N16 as a small but interpretable same-image context-complement result,
+  not as a new overall best model;
+- use targeted Grad-CAM plus gamma/beta summaries for rows where Stage 2 is
+  corrected or where derivatives/leverage context suppresses weak bullish
+  predictions;
+- ask the advisor whether this Stage 4 scope is sufficient to start the thesis
+  draft, with FinBERT/LLM sentiment/event features left as optional future work;
+- optionally run N14-B conditional regime analysis before the final professor
+  report if a stronger conditional-improvement contribution is needed.
 
 ## Code Map
 
@@ -193,4 +206,4 @@ stage4_film_conditioning/
 
 ## Thesis Position
 
-Stage 4 should be presented as an interpretability and conditional-modulation experiment, not as a simple feature-adding experiment. The strongest current conclusion is that frozen Stage 2 + bounded context-FiLM preserves the visual baseline, but completed context sources produce only tiny improvements. F&G-only is the best compact accuracy candidate; news is more useful for ranking/calibration; chart-derived technical context is mostly redundant. The next defensible source family is macro/RORO market-regime context.
+Stage 4 should be presented as an interpretability and conditional-modulation experiment, not as a simple feature-adding experiment. The strongest current conclusion is that frozen Stage 2 + bounded context-FiLM preserves the visual baseline, but completed context sources produce only tiny improvements. F&G-only is the best compact accuracy candidate on the strongest image baseline; news is more useful for ranking/calibration; chart-derived technical context is mostly redundant. The most useful positive case is N16 `ohlc_vb + funding_plus_cftc_oi`, which gives a small same-image improvement and an interpretable bearish correction pattern in higher derivatives/leverage regimes.

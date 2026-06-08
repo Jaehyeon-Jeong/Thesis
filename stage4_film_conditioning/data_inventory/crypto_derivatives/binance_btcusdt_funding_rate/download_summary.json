@@ -1,0 +1,75 @@
+{
+  "raw_path": "stage4_film_conditioning/data_inventory/crypto_derivatives/binance_btcusdt_funding_rate/raw/binance_btcusdt_funding_rate_2019_2024.csv",
+  "daily_path": "stage4_film_conditioning/data_inventory/crypto_derivatives/binance_btcusdt_funding_rate/processed/binance_btcusdt_funding_daily_2019_2024.csv",
+  "raw_rows": 5757,
+  "daily_rows": 1919,
+  "date_min": "2019-10-01",
+  "date_max": "2024-12-31",
+  "funding_count_values": [
+    3
+  ],
+  "first_rows": [
+    {
+      "Date": "2019-10-01",
+      "funding_rate_mean": 0.0001,
+      "funding_rate_sum": 0.00030000000000000003,
+      "funding_rate_abs_mean": 0.0001,
+      "funding_rate_min": 0.0001,
+      "funding_rate_max": 0.0001,
+      "funding_count": 3,
+      "mark_price_mean": NaN
+    },
+    {
+      "Date": "2019-10-02",
+      "funding_rate_mean": -0.00010819333333333333,
+      "funding_rate_sum": -0.00032458,
+      "funding_rate_abs_mean": 0.00024152666666666666,
+      "funding_rate_min": -0.00052458,
+      "funding_rate_max": 0.0001,
+      "funding_count": 3,
+      "mark_price_mean": NaN
+    },
+    {
+      "Date": "2019-10-03",
+      "funding_rate_mean": -9.698666666666668e-05,
+      "funding_rate_sum": -0.00029096000000000005,
+      "funding_rate_abs_mean": 0.00016365333333333333,
+      "funding_rate_min": -0.0003222,
+      "funding_rate_max": 0.0001,
+      "funding_count": 3,
+      "mark_price_mean": NaN
+    }
+  ],
+  "last_rows": [
+    {
+      "Date": "2024-12-29",
+      "funding_rate_mean": 9.337666666666668e-05,
+      "funding_rate_sum": 0.00028013,
+      "funding_rate_abs_mean": 9.337666666666668e-05,
+      "funding_rate_min": 8.013e-05,
+      "funding_rate_max": 0.0001,
+      "funding_count": 3,
+      "mark_price_mean": 94988.30002364334
+    },
+    {
+      "Date": "2024-12-30",
+      "funding_rate_mean": 6.249666666666667e-05,
+      "funding_rate_sum": 0.00018749,
+      "funding_rate_abs_mean": 6.277666666666666e-05,
+      "funding_rate_min": -4.2e-07,
+      "funding_rate_max": 0.0001,
+      "funding_count": 3,
+      "mark_price_mean": 93162.42762411333
+    },
+    {
+      "Date": "2024-12-31",
+      "funding_rate_mean": 0.0001,
+      "funding_rate_sum": 0.00030000000000000003,
+      "funding_rate_abs_mean": 0.0001,
+      "funding_rate_min": 0.0001,
+      "funding_rate_max": 0.0001,
+      "funding_count": 3,
+      "mark_price_mean": 93656.42842789665
+    }
+  ]
+}

@@ -11,9 +11,10 @@ flowchart LR
     S2[Stage 2<br/>BTC asset extension]
     S3[Stage 3<br/>Linear adapter ablation]
     S4[Stage 4<br/>Market-context conditioning]
-    NEXT[Next work<br/>bounded/residual last-block FiLM<br/>selected robustness runs]
+    S5[Stage 5<br/>LLM news embedding context]
+    NEXT[Next work<br/>final report<br/>thesis draft]
 
-    S0 --> S1 --> S2 --> S3 --> S4 --> NEXT
+    S0 --> S1 --> S2 --> S3 --> S4 --> S5 --> NEXT
 
     S0 --> S0A[Check source files<br/>data format<br/>paper/GitHub reference]
 
@@ -30,6 +31,10 @@ flowchart LR
     S4 --> S4B[Context sources<br/>Fear and Greed<br/>Bollinger features<br/>MFI<br/>realized volatility]
     S4 --> S4C[Conditioning methods<br/>concat<br/>gating<br/>FiLM gamma-only<br/>FiLM full]
     S4 --> S4D[v1/v2 diagnostics<br/>simple context injection not robust yet<br/>need safer modulation]
+
+    S5 --> S5A[News representation<br/>LLM embedding<br/>headline-level vectors<br/>7/20/60-day aggregation]
+    S5 --> S5B[Stage2 frozen FiLM<br/>bounded last-block modulation<br/>embedding context]
+    S5 --> S5C[Prompt labels for interpretation<br/>positive/negative/unknown<br/>GPT/Claude agreement]
 ```
 
 ## 한국어
@@ -41,9 +46,10 @@ flowchart LR
     S2[Stage 2<br/>BTC 자산군 확장]
     S3[Stage 3<br/>Linear adapter ablation]
     S4[Stage 4<br/>Market-context conditioning]
-    NEXT[다음 작업<br/>bounded/residual last-block FiLM<br/>선별 robustness run]
+    S5[Stage 5<br/>LLM news embedding context]
+    NEXT[다음 작업<br/>최종 보고서<br/>논문 초안]
 
-    S0 --> S1 --> S2 --> S3 --> S4 --> NEXT
+    S0 --> S1 --> S2 --> S3 --> S4 --> S5 --> NEXT
 
     S0 --> S0A[원본 파일 확인<br/>데이터 형식 확인<br/>논문/GitHub 근거 확인]
 
@@ -60,4 +66,8 @@ flowchart LR
     S4 --> S4B[Context source<br/>Fear and Greed<br/>Bollinger features<br/>MFI<br/>realized volatility]
     S4 --> S4C[Conditioning method<br/>concat<br/>gating<br/>FiLM gamma-only<br/>FiLM full]
     S4 --> S4D[v1/v2 진단<br/>단순 context injection은 아직 robust하지 않음<br/>더 안전한 modulation 필요]
+
+    S5 --> S5A[News representation<br/>LLM embedding<br/>뉴스별 vector<br/>7/20/60일 aggregation]
+    S5 --> S5B[Stage2 frozen FiLM<br/>bounded last-block modulation<br/>embedding context]
+    S5 --> S5C[해석용 prompt label<br/>positive/negative/unknown<br/>GPT/Claude agreement]
 ```

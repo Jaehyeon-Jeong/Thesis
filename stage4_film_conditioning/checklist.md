@@ -18,19 +18,24 @@ Active work view:
 - Current conclusion: structured numeric context and headline-news context can
   show useful signal in some seeds, but scratch-trained context/FiLM models do
   not robustly beat the Stage 2 visual baseline.
-- Completed current track: `4-N8-A/B`, Stage 2 pretrained
-  baseline-preserving FiLM. Stage 4 now reloads the selected Stage 2
-  checkpoint, reproduces the baseline, freezes the visual CNN/classifier, and
-  trains only the F&G context encoder plus bounded final-block FiLM heads.
-- Current next track: move from crypto/news context to official macro
-  risk-regime context. Use OFR FSI as an official financial-stress/risk-off
-  proxy and a KC Fed-inspired public-data RORO proxy as separate N13 sources.
+- Completed current track: `4-N8-A/B` through N13 context-source comparison and
+  FiLM scale/freeze-policy ablations. The most defensible protocol reloads the
+  selected Stage 2 checkpoint, reproduces the baseline, freezes the visual
+  CNN/classifier, and trains only the context encoder plus bounded final-block
+  FiLM heads.
+- Completed current track: N15 image-spec context-complement checks. Technical
+  replacement context mostly preserved same-image baselines, while F&G showed
+  only tiny positive deltas on volume-aware image specs.
+- Completed current track: N16 derivatives/leverage regime context. The
+  strongest same-image positive case is `ohlc_vb + funding_plus_cftc_oi`,
+  which improves the `ohlc_vb` Stage 2 baseline by `+0.002082` accuracy and
+  net `+15` corrections.
 - First news version: headline-only, non-LLM, train-only TF-IDF/SVD over
   7/20/60-day trailing news windows.
-- Main order now: finish the frozen Stage 2 context-source comparison -> run
-  N13 FSI/RORO source audit -> test FSI-only -> test RORO-proxy-only -> compare
-  FSI/RORO/F&G/news under the same frozen protocol -> prepare final
-  Grad-CAM/gamma-beta interpretation.
+- Main order now: Stage 4 modeling/context-source experiments are complete
+  through FSI/RORO and derivatives/leverage. N14 final interpretation is
+  complete; only optional N14-B conditional-regime analysis remains if a
+  stronger conditional-improvement claim is needed.
 
 Main Stage 4 ablation:
 - [x] 4-A. `CNN + context concat`
@@ -105,19 +110,6 @@ Planning phase:
   - Completion requires the output checker to pass; checkpoint existence alone
     is not enough.
   - Result: [4-8 Kaggle runner and output backup plan](checklist_results/4-8_kaggle_runner_and_output_backup_plan.md)
-
-Advisor confirmation/reporting:
-- [x] 4-R1. Professor meeting direction brief
-  - Purpose: summarize Stage 1-4 progress, explain why Stage 4 is
-    market-context-conditioned feature modulation, and map 4-A/B/C/D to the
-    advisor direction file excerpts.
-  - Result: [Professor meeting direction brief](docs/professor_meeting_stage4_direction_brief.md)
-- [ ] 4-R2. Advisor feedback and final Stage 4 scope lock
-  - Confirm whether Stage 4 should proceed with `matched_window` numeric
-    context first.
-  - Confirm whether news/LLM remains second-phase after numeric context.
-  - Confirm whether 4-A concat, 4-B gating, 4-C gamma-only FiLM, and 4-D full
-    FiLM are the intended ablation set.
 
 Implementation phase:
 - [x] 4-I0. Implementation readiness review
@@ -226,9 +218,10 @@ Implementation phase:
     mean `0.5510` and ROC-AUC mean `0.5677`, below the Stage 2
     `I60/R20/ohlc_ma_vb` baseline.
   - Result prep: [4-I13 Kaggle five-seed runner](checklist_results/4-I13_kaggle_five_seed_runner.md)
-- [ ] 4-I14. Stage 4 result report
+- [x] 4-I14. Stage 4 result report
   - Numeric-context reporting is complete through `4-V9`.
-  - Final Stage 4 result report waits for the news-context track.
+  - Final reporting is merged into:
+    [4-N14 final Stage 4 interpretability report](checklist_results/4-N14_final_stage4_interpretability_report.md).
 
 Stage 4 v2 diagnostic priorities:
 - [x] 4-V0. Priority 1: Stage 4 same-split visual-only baseline,
@@ -509,7 +502,7 @@ News-context extension:
     [check_stage4_n8_stage2_checkpoint_reload.py](scripts/check_stage4_n8_stage2_checkpoint_reload.py)
   - N8-B Kaggle runner:
     [kaggle_stage4_n8b_fg_only_pretrained_frozen_bounded_film_one_cell.md](notebooks/kaggle_stage4_n8b_fg_only_pretrained_frozen_bounded_film_one_cell.md)
-- [ ] 4-N9. News-only and News + F&G pretrained/frozen ablation
+- [x] 4-N9. News-only and News + F&G pretrained/frozen ablation
   - Run after `4-N8` showed that baseline-preserving context-FiLM can reproduce
     and safely modify the Stage 2 baseline.
   - Gamma/beta rule: do not manually set gamma/beta per sample. The model learns
@@ -544,6 +537,9 @@ News-context extension:
     the bounded-FiLM cell: `N9B`, `N9C`, or `N9D`.
   - Design note:
     [4-N9 News pretrained/frozen FiLM design](checklist_results/4-N9_news_pretrained_frozen_film_design.md)
+  - Closeout: news-only pretrained/frozen runs and grid diagnostics are
+    complete for the current Stage 4 scope. `news + F&G` remains explicitly
+    not-run/deferred and is not claimed as a result.
 - [x] 4-N10. News interpretability report
   - First export Stage 2 baseline vs N8-B F&G-only Grad-CAM on matched samples.
   - Then export news titles, news-count features, and FiLM gamma/beta summaries
@@ -578,9 +574,11 @@ News-context extension:
     Stage 2 vs N10 Grad-CAM and N10 FiLM gamma/beta modulation metadata.
   - Design note:
     [4-N10-B targeted Grad-CAM modulation export](checklist_results/4-N10-B_targeted_gradcam_modulation_export.md)
-- [ ] 4-N11. LLM summary/embedding decision
+- [x] 4-N11. LLM summary/embedding decision
   - Deferred until headline-only no-leakage track is stable.
   - If used, record model name, prompt, version/date, cache hash, and runtime.
+  - Closeout decision:
+    [4-N11 LLM embedding deferred](checklist_results/4-N11_llm_embedding_deferred.md).
 - [x] 4-N12. Optional uncertainty-gated FiLM follow-up
   - Run only after N9/N10 interpretation shows that context helps mainly when
     the Stage 2 chart model is uncertain.
@@ -651,7 +649,7 @@ News-context extension:
     comparison table; do not claim a result for it until a five-seed run exists.
   - Result note:
     [4-N12-D context-source comparison](checklist_results/4-N12-D_context_source_comparison.md)
-- [ ] 4-N13. Macro/RORO context extension
+- [x] 4-N13. Macro/RORO context extension
   - Purpose: test image-external macro risk-regime context after F&G/news and
     technical context produced only tiny gains.
   - Thesis question: can official financial stress or risk-on/risk-off regime
@@ -660,7 +658,7 @@ News-context extension:
   - Shared protocol: `I60/R20/ohlc_ma_vb`, five seeds `42-46`, Stage 2
     checkpoints loaded/frozen, classifier frozen, bounded last-block FiLM first
     with conservative scale `0.02`.
-- [ ] 4-N13-0. Macro/RORO source audit and terminology lock
+- [x] 4-N13-0. Macro/RORO source audit and terminology lock
   - Distinguish `OFR FSI` from `RORO`: OFR FSI is not a direct RORO index; it is
     an official financial-stress/risk-off proxy.
   - Record source links, date coverage, CSV load path, missing-date policy, and
@@ -668,6 +666,10 @@ News-context extension:
   - Candidate source 1: OFR Financial Stress Index CSV, covering 2000-present.
   - Candidate source 2: public-data RORO proxy inspired by KC Fed methodology,
     built from FRED/Cboe indicators rather than proprietary/refinitiv series.
+  - Closeout: terminology/source audit is documented in
+    [4-N13-1 OFR FSI feature builder](checklist_results/4-N13-1_ofr_fsi_feature_builder.md)
+    and
+    [4-N13-3 public RORO proxy builder](checklist_results/4-N13-3_public_roro_proxy_builder.md).
 - [x] 4-N13-1. OFR FSI feature builder
   - Raw source: `https://www.financialresearch.gov/financial-stress-index/data/fsi.csv`.
   - Interpretation: higher `OFR FSI` = stronger financial stress = risk-off
@@ -803,7 +805,7 @@ News-context extension:
     stacking is not justified.
   - Review:
     [4-N13-5B selected-combo context FiLM](checklist_results/4-N13-5B_selected_combo_context_film.md).
-- [ ] 4-N13-6. Macro interpretability export
+- [x] 4-N13-6. Macro interpretability export
   - Focus on the strongest compact candidates rather than the selected combo:
     F&G-only `s0.02` and news SVD32 `s0.02`.
   - Target samples: Stage 2 wrong -> context-FiLM correct, Stage 2 correct ->
@@ -816,7 +818,7 @@ News-context extension:
     and writes one downloadable bundle.
   - Review:
     [4-N13-6 interpretability export](checklist_results/4-N13-6_interpretability_export.md).
-- [ ] 4-N13-7. Final FiLM constraint and scale ablation on the selected context
+- [x] 4-N13-7. Final FiLM constraint and scale ablation on the selected context
   source
   - Run only after 4-N13-5/6 select the strongest stable context source
     (`F&G`, `news`, `FSI`, or `RORO`).
@@ -826,6 +828,15 @@ News-context extension:
     classifier frozen, same split, same seeds, same selected context features.
   - A. Same bounded equation, larger scale, no new model code required:
     bounded last-block FiLM scale `0.02`, `0.05`, `0.10`, `0.20`.
+    - N8-B already covers `0.02` and `0.05`.
+    - N13-7A runner is prepared for `0.10` and `0.20`:
+      [kaggle_stage4_n13_7a_fg_bounded_scale_grid_one_cell.md](notebooks/kaggle_stage4_n13_7a_fg_bounded_scale_grid_one_cell.md).
+    - Prep note:
+      [4-N13-7A F&G bounded FiLM scale grid](checklist_results/4-N13-7A_fg_bounded_scale_grid.md).
+    - Result: completed. `0.10` accuracy mean `0.579042`, ROC-AUC
+      `0.584811`, net correction `-2`; `0.20` accuracy mean `0.578487`,
+      ROC-AUC `0.584539`, net correction `-6`. Larger scale did not improve
+      N8-B `0.02`, so keep small-scale F&G as the stronger bounded setting.
   - B. Relax gamma/beta constraint:
     unbounded or weakly regularized last-block FiLM with zero-init
     `gamma/beta` heads.
@@ -836,6 +847,14 @@ News-context extension:
   - D. Classifier-unfreeze variant:
     keep the Stage 2 visual CNN frozen but unfreeze the final classifier,
     training only classifier plus context encoder/FiLM heads.
+    - N13-7D runner is prepared with F&G-only `scale=0.02`:
+      [kaggle_stage4_n13_7d_fg_classifier_unfreeze_one_cell.md](notebooks/kaggle_stage4_n13_7d_fg_classifier_unfreeze_one_cell.md).
+    - Prep note:
+      [4-N13-7D F&G classifier-unfreeze FiLM](checklist_results/4-N13-7D_fg_classifier_unfreeze.md).
+    - Result: completed. Classifier-unfreeze accuracy mean `0.574323`,
+      ROC-AUC `0.584220`, Brier `0.280218`, net correction `-36`.
+      The classifier became too flexible and produced more regressions than
+      corrections, so N8-B `scale=0.02` remains the best F&G setting.
   - Implementation rule: B/C/D require separate implementation and must be
     reported as FiLM/freeze-policy ablations, not as new context sources.
   - Required metrics: accuracy, ROC-AUC, Brier score, predicted-positive rate,
@@ -847,17 +866,199 @@ News-context extension:
   - If none improves the overall metrics, use the same outputs for conditional
     regime analysis: extreme context regimes, high-volatility/high-stress
     regimes, and Stage 2 wrong -> FiLM correct samples.
-- [ ] 4-N13-B. Optional sentiment/event feature extension
-  - Run only if headline TF-IDF/SVD is too weak or hard to interpret after N13
-    macro/RORO planning.
-  - Candidate features: FinBERT-style sentiment score, positive/negative/neutral
-    counts, crypto-regulation/exchange/ETF/macro event tags, or cached
-    headline-level sentiment/event labels.
-  - Leakage rule: sentiment/event extraction must use only headlines available
-    by strict `t-1`; encoder/model/version/date/cache hash must be recorded.
-  - Purpose: test whether explicit news polarity/event type is more useful than
-    unsupervised TF-IDF/SVD vectors for context-FiLM correction.
-- [ ] 4-N14. Final Stage 4 interpretability report
+  - Closeout: A and D were executed and both were weaker than the conservative
+    frozen bounded setup. B/C are deferred because the executed relaxation tests
+    already showed larger FiLM freedom increasing regressions rather than
+    improving the baseline.
+- [x] 4-N13-B. Optional sentiment/event feature extension
+  - Decision: moved out of Stage 4 and into Stage 5.
+  - Reason: Stage 4 has closed the non-LLM context cycle through numeric,
+    TF-IDF/SVD news, FSI/RORO, derivatives/leverage, and image-spec complement
+    checks. FinBERT/GPT/Claude sentiment/event features are now tracked in
+    `stage5_llm_news_embedding`.
+  - Stage 4 status: no longer a blocker for final Stage 4 reporting.
+- [x] 4-N15. I60/R20 image-spec context-complement ablation
+  - Purpose: test whether context-FiLM helps more when the chart image is
+    missing information that is present in richer image specs.
+  - Fixed setup: `I60/R20`, image specs `ohlc`, `ohlc_ma`, `ohlc_vb`,
+    `ohlc_ma_vb`, seed-matched Stage 2 checkpoint for each image spec, frozen
+    visual CNN/classifier, bounded final-block FiLM, scale `0.02`, seeds
+    `42,43,44,45,46`.
+  - Stage 2 reference: `ohlc_ma_vb` accuracy `0.579320`, `ohlc_vb`
+    `0.567384`, `ohlc` `0.558085`, `ohlc_ma` `0.557529`.
+  - N15-A. Same-image Stage 2 reload for all four image specs.
+    - Establish the exact frozen baseline for every image spec before adding
+      context.
+    - Important: each image spec must use its own Stage 2 checkpoint. Do not
+      reuse the `ohlc_ma_vb` checkpoint for other image specs.
+    - Result check: completed. The N15-A mean/std table exactly reproduces the
+      existing Stage 2 I60/R20 four-image five-seed results; observed deltas are
+      only floating-point noise (`~1e-16`).
+    - Local reusable bundle:
+      `/Users/jaehyeonjeong/Desktop/논문/stage2_i60_r20_four_image_full_seed_checkpoints_for_stage4_n15`.
+    - Runner:
+      [kaggle_stage4_n15a_rebuild_i60_r20_four_image_stage2_checkpoints_one_cell.md](notebooks/kaggle_stage4_n15a_rebuild_i60_r20_four_image_stage2_checkpoints_one_cell.md).
+    - Prep note:
+      [4-N15-A I60/R20 four-image Stage 2 checkpoint bundle](checklist_results/4-N15-A_i60_r20_stage2_four_image_checkpoint_bundle.md).
+  - N15-B. Image-missing-feature complement FiLM.
+    - This comes before F&G-across-images.
+    - `ohlc + technical_all`: `bb_percent_b_60`, `bb_bandwidth_60`, `mfi_60`,
+      `rv_60`.
+    - `ohlc_ma + volume_volatility`: `mfi_60`, `rv_60`.
+    - `ohlc_vb + bb_trend`: `bb_percent_b_60`, `bb_bandwidth_60`.
+    - `ohlc_ma_vb + technical_all_control`: same technical vector, expected to
+      be neutral if technical context is redundant with the full image.
+    - Question: can context-FiLM partially replace visual information that was
+      not drawn into the image?
+    - Result: completed. All 20 runs finished, but changes were tiny. Accuracy
+      deltas versus same-image Stage 2 were `0.000000` for `ohlc`,
+      `+0.000139` for `ohlc_ma`, `+0.000139` for `ohlc_vb`, and `+0.000416`
+      for `ohlc_ma_vb`. Changed-decision rates were only about `0.2%`-`0.4%`,
+      so the technical context vectors did not materially replace missing
+      visual information.
+    - Runner:
+      [kaggle_stage4_n15b_image_missing_feature_complement_film_one_cell.md](notebooks/kaggle_stage4_n15b_image_missing_feature_complement_film_one_cell.md).
+    - Result note:
+      [4-N15-B image-missing-feature complement FiLM](checklist_results/4-N15-B_image_missing_feature_complement_film.md).
+  - N15-C. F&G-only across all image specs.
+    - `fg_value`, `fg_mean_60`, `fg_delta_60`, `fg_std_60`.
+    - Question: does external market-regime information help regardless of
+      chart-image information richness?
+    - This is different from N15-B: F&G is external market-regime information,
+      not an OHLCV-derived technical summary.
+    - Runner:
+      [kaggle_stage4_n15c_fg_only_across_image_specs_one_cell.md](notebooks/kaggle_stage4_n15c_fg_only_across_image_specs_one_cell.md).
+    - Prep note:
+      [4-N15-C F&G-only across image specs](checklist_results/4-N15-C_fg_only_across_image_specs.md).
+  - N15-D. Selected hybrid only if N15-B/C show signal.
+    - Candidate rows: `ohlc + technical_all + F&G`,
+      `ohlc_ma + volume_volatility + F&G`, `ohlc_vb + bb_trend + F&G`.
+    - Decision: skip for now. N15-B technical context only preserved the
+      same-image baselines, and N15-C F&G-only produced only tiny positive
+      deltas on volume-aware image specs. A hybrid would be hard to justify
+      before testing a more genuinely external derivatives/leverage context.
+  - Required metrics: accuracy, ROC-AUC, Brier score, predicted-positive rate,
+    same-image Stage 2 delta, gap-to-`ohlc_ma_vb` delta, correction/regression
+    counts, and net correction.
+  - Integrated result summary:
+    [4-N15 integrated result summary](checklist_results/4-N15_integrated_result_summary.md).
+  - Plan:
+    [4-N15 I60/R20 image-spec context-complement plan](checklist_results/4-N15_i60_r20_image_spec_context_complement_plan.md).
+- [x] 4-N16. Derivatives/leverage-regime context
+  - Purpose: test context sources that are less redundant with OHLC/MA/VB chart
+    images than technical indicators, FSI/RORO, or headline TF-IDF/SVD.
+  - Fixed setup: `I60/R20`, Stage 2 checkpoint reload, frozen visual
+    CNN/classifier, bounded final-block FiLM first, scale `0.02`, seeds
+    `42,43,44,45,46`.
+  - Primary image spec: `ohlc_ma_vb`. If a feature set shows signal, repeat the
+    best candidate on `ohlc_vb` because N15-C showed F&G helped only on
+    volume-aware image specs.
+  - Available local sources:
+    - BitMEX XBTUSD funding rate, `2018-01-01` to `2024-12-31`, daily aggregate
+      with Stage 4 missing rate `0%`.
+    - BitMEX XBTUSD derivatives activity/futures volume, `2018-01-01` to
+      `2024-12-31`, Stage 4 missing rate `0%`.
+    - CFTC/CME Bitcoin futures COT open interest and positioning, weekly source
+      from official CFTC files, Stage 4 missing rate `0%` after release-lagged
+      daily forward-fill.
+  - CFTC leakage rule:
+    - Do not attach a COT report on its Tuesday report date.
+    - Use `available_date = report_date + 3 calendar days`, then forward-fill
+      until the next available report.
+    - Keep `cot_source_report_date` and `cot_age_days` in the feature table for
+      audit.
+  - 4-N16-0. Source inventory and coverage lock.
+    - Result: local data downloaded and documented under
+      `data_inventory/crypto_derivatives/`.
+    - Source note:
+      [4-N16 derivatives/leverage context plan](checklist_results/4-N16_derivatives_leverage_context_plan.md).
+  - [x] 4-N16-1. Derivatives context feature builder.
+    - Candidate BitMEX features: `funding_rate_mean/sum/abs_mean/min/max`,
+      derivatives `trades`, `volume`, `turnover`, `homeNotional`,
+      `foreignNotional`.
+    - Candidate CFTC/CME features: `Open_Interest_All`,
+      `Lev_Money_Net_Ratio_All`, `Asset_Mgr_Net_Ratio_All`,
+      `Dealer_Net_Ratio_All`, and open-interest changes/z-scores.
+    - Windows: `7/20/60` for daily BitMEX features; `20/60` and current value
+      for release-lagged weekly CFTC context.
+    - Normalize with train-only imputation/clipping/z-score.
+    - Result: completed locally. Built `derivatives_all`, `funding_only`,
+      `funding_plus_cftc_oi`, `funding_plus_activity`, and
+      `funding_plus_activity_plus_cftc_oi` prebuilt context artifacts for
+      `I60/R20/ohlc_ma_vb`, seeds `42-46`. Context dimensions are `46`, `15`,
+      `33`, `28`, and `46`, respectively. Funding/activity raw missing rate is
+      `0%`; CFTC rolling/change features have early train/validation raw
+      missing below `5%` and are train-median imputed.
+    - Result note:
+      [4-N16-1 derivatives context feature builder](checklist_results/4-N16-1_derivatives_context_feature_builder.md).
+    - Runner:
+      [kaggle_stage4_n16_1_derivatives_context_features_one_cell.md](notebooks/kaggle_stage4_n16_1_derivatives_context_features_one_cell.md).
+  - [x] 4-N16-2. Train-only derivatives feature audit.
+    - Check missing rates, feature-label/future-return correlations,
+      redundancy with F&G and technical context, and Stage 2 error correlation.
+    - Use this audit to avoid throwing every derivatives column into FiLM.
+    - Result: completed locally. BitMEX funding is the strongest train-only
+      derivatives signal (`funding_rate_max_7` score `0.4414`;
+      `funding_rate_max_20` score `0.4041`). BitMEX activity is secondary
+      (`bitmex_foreignnotional_mean_60` score `0.2993`) and CFTC/CME
+      positioning is weaker (`cot_open_interest` score `0.2293`) with stronger
+      time-trend risk. Prior-context redundancy median max absolute correlation
+      is `0.7268`, so N16-3 should test lean feature sets rather than only the
+      full derivatives vector.
+    - Result note:
+      [4-N16-2 derivatives feature audit](checklist_results/4-N16-2_derivatives_feature_audit.md).
+    - Report:
+      [stage4_n16_2_derivatives_feature_audit_report.md](reports/tables/stage4_n16_2_derivatives_feature_audit_report.md).
+  - [x] 4-N16-3. Frozen bounded FiLM feature-set grid on `ohlc_ma_vb`.
+    - Priority from N16-2: `funding_only`, `funding_plus_activity`,
+      `funding_plus_cftc_oi`, `funding_plus_activity_plus_cftc_oi`.
+    - Required metrics: accuracy, ROC-AUC, Brier, F1, predicted-Up rate,
+      correction/regression/net correction, changed-decision rate, collapse
+      warning.
+    - Runner prepared:
+      [kaggle_stage4_n16_3_derivatives_feature_set_grid_one_cell.md](notebooks/kaggle_stage4_n16_3_derivatives_feature_set_grid_one_cell.md).
+    - Result: completed. Best row, `funding_plus_cftc_oi`, tied the same-image
+      Stage 2 baseline accuracy (`0.579320`) but did not improve net
+      corrections; `funding_only` was similarly stable but slightly below
+      baseline. No seed-collapse issue appeared.
+    - Result note:
+      [4-N16-3 derivatives feature-set grid](checklist_results/4-N16-3_derivatives_feature_set_grid_prepared.md).
+    - Report:
+      [stage4_n16_3_derivatives_feature_set_grid_mean_std_results.csv](reports/tables/stage4_n16_3_derivatives_feature_set_grid_mean_std_results.csv).
+  - [x] 4-N16-4. Selected volume-aware repeat.
+    - Run the selected N16-3 candidates on `ohlc_vb`.
+    - Purpose: test whether derivatives context complements volume-aware but
+      visually weaker images better than the already strongest `ohlc_ma_vb`.
+    - Selected feature sets: `funding_plus_cftc_oi` and `funding_only`.
+    - Runner prepared:
+      [kaggle_stage4_n16_4_ohlc_vb_derivatives_repeat_one_cell.md](notebooks/kaggle_stage4_n16_4_ohlc_vb_derivatives_repeat_one_cell.md).
+    - Result: completed. `ohlc_vb + funding_plus_cftc_oi` improved the
+      same-image Stage 2 `ohlc_vb` baseline from `0.567384` to `0.569466`
+      (`+0.002082`) with net correction `+15`; `funding_only` was nearly tied
+      (`+0.000278`, net correction `+2`). This is a small same-image positive
+      result, not an overall-best result over `ohlc_ma_vb`.
+    - Result note:
+      [4-N16-4 OHLC-VB derivatives repeat](checklist_results/4-N16-4_ohlc_vb_derivatives_repeat.md).
+    - Report:
+      [stage4_n16_4_ohlc_vb_derivatives_repeat_mean_std_results.csv](reports/tables/stage4_n16_4_ohlc_vb_derivatives_repeat_mean_std_results.csv).
+  - [x] 4-N16-5. Interpretability export.
+    - Target panels: extreme funding, high/low CFTC OI, high leveraged-money
+      short/long imbalance, Stage 2 wrong -> FiLM correct, and Stage 2 correct
+      -> FiLM wrong.
+    - Export Grad-CAM, context values, gamma/beta summaries, and `prob_up`
+      changes.
+    - Result: completed for tabular interpretation. The selected
+      `ohlc_vb + funding_plus_cftc_oi` FiLM model improves the same-image
+      Stage 2 `ohlc_vb` baseline by `+0.002082` accuracy and net `+15`
+      corrections, mainly by reducing weak bullish predictions in higher
+      derivatives/leverage regimes. Five-seed targeted Stage2/Stage4
+      Grad-CAM and Stage4 gamma/beta export completed locally; Kaggle
+      reproduction cell is prepared.
+    - Result note:
+      [4-N16-5 derivatives interpretability export](checklist_results/4-N16-5_derivatives_interpretability_export.md).
+    - Report:
+      [stage4_n16_5_ohlc_vb_derivatives_interpretability_report.md](reports/tables/stage4_n16_5_ohlc_vb_derivatives_interpretability_report.md).
+- [x] 4-N14. Final Stage 4 interpretability report
   - Purpose: turn the selected Stage 4 model into thesis-ready evidence, not
     just another metric table.
   - Required content: Stage 2 baseline vs selected context-FiLM metrics,
@@ -867,6 +1068,49 @@ News-context extension:
     samples.
   - Output: compact report for GitHub and professor update; large bundles stay
     local/Kaggle dataset only.
+  - Result:
+    [4-N14 final Stage 4 interpretability report](checklist_results/4-N14_final_stage4_interpretability_report.md).
+- [ ] 4-N14-B. Conditional regime analysis
+  - Purpose: analyze whether context-FiLM helps in predefined market regimes
+    even when average full-test accuracy does not substantially improve.
+  - This is a post-training analysis track. Do not train a new model here.
+  - Primary first case: same-image N16 comparison,
+    `stage2_i60_ohlc_vb_r20` vs
+    `stage4_film_full_bounded_last_block_i60_ohlc_vb_r20_c60_n16d_funding_plus_cftc_oi_pretrained_frozen_s0p02`.
+  - Candidate regimes: F&G extreme fear/greed, high volatility, high
+    derivatives/leverage, high news/macro intensity, and Stage2 uncertainty.
+  - Use predefined bucket rules only; do not choose buckets after seeing which
+    ones look good.
+  - Minimum report threshold: at least `100` seed-decisions and `30` unique
+    samples per bucket; smaller buckets are diagnostic only.
+  - Plan:
+    [4-N14-B conditional regime analysis plan](checklist_results/4-N14-B_conditional_regime_analysis_plan.md).
+  - [x] 4-N14-B1. Prediction/context merge table preparation.
+    - Build one long decision-level table with Stage2 predictions, Stage4
+      predictions, context features, `prob_up_delta`, `true_prob_delta`, and
+      transition type.
+    - Prepared script:
+      [build_stage4_n14b_conditional_merge_table.py](scripts/build_stage4_n14b_conditional_merge_table.py).
+    - Prepared Kaggle runner:
+      [kaggle_stage4_n14b1_conditional_merge_table_one_cell.md](notebooks/kaggle_stage4_n14b1_conditional_merge_table_one_cell.md).
+  - [ ] 4-N14-B2. Predefined regime bucket builder.
+    - Build F&G, volatility, derivatives/leverage, news/macro, and Stage2
+      uncertainty buckets from the N14-B1 merged table.
+  - [ ] 4-N14-B3. Bucket-level metrics.
+    - For each bucket, compute Stage2 accuracy, Stage4 accuracy, delta,
+      correction/regression/net correction, changed-decision rate, and
+      probability deltas.
+  - [ ] 4-N14-B4. Representative correction/regression samples.
+    - Select Stage2 wrong -> Stage4 correct, Stage2 correct -> Stage4 wrong,
+      high-confidence wrong, and large `prob_up_delta` samples per useful
+      bucket.
+  - [ ] 4-N14-B5. Targeted Grad-CAM/gamma-beta linkage.
+    - Link selected samples to Stage2/Stage4 Grad-CAM, context values,
+      gamma/beta summaries, and probability shifts.
+  - [ ] 4-N14-B6. Conditional-regime report.
+    - Write the thesis-ready conclusion: whether the context-FiLM correction is
+      regime-specific, interpretable, and strong enough to claim conditional
+      improvement.
 
 Important:
 - Do not draw the context values into the chart image for the main Stage 4
@@ -897,18 +1141,23 @@ Stage 4는 이제 **market context를 고정된 BTC chart-image CNN에 어떻게
 - 현재 결론: structured numeric context와 headline-news context는 일부 seed에서
   signal을 보였지만, scratch-trained context/FiLM 모델은 Stage 2 visual
   baseline을 안정적으로 넘지 못했습니다.
-- 완료된 현재 track: `4-N8-A/B`, Stage 2 pretrained baseline-preserving
-  FiLM입니다. Stage 4 code path에서 선택된 Stage 2 checkpoint를 불러와 baseline을
-  재현했고, visual CNN/classifier를 freeze한 뒤 F&G context encoder와 bounded
-  final-block FiLM head만 학습했습니다.
-- 현재 다음 track: 같은 pretrained/frozen FiLM path로 news-only를 먼저 테스트하고,
-  이후 필요하면 F&G + news combined context와 Stage 2 vs N8-B 해석 비교로
-  넘어갑니다.
+- 완료된 현재 track: `4-N8-A/B` 이후 N13 context-source comparison과
+  FiLM scale/freeze-policy ablation까지 진행했습니다. Stage 4 code path에서
+  선택된 Stage 2 checkpoint를 불러와 baseline을 재현했고,
+  visual CNN/classifier를 freeze한 protocol이 가장 방어 가능했습니다.
+- 완료된 현재 track: N15 image-spec context-complement check입니다. Technical
+  replacement context는 대부분 same-image baseline을 보존하는 수준이었고,
+  F&G는 volume-aware image spec에서만 아주 작은 positive delta를 보였습니다.
+- 완료된 현재 track: N16 derivatives/leverage regime context입니다. 가장 쓸 수
+  있는 same-image positive case는 `ohlc_vb + funding_plus_cftc_oi`이며,
+  `ohlc_vb` Stage 2 baseline 대비 accuracy `+0.002082`, net correction `+15`를
+  보였습니다.
 - 첫 news version: headline-only, non-LLM, train-only TF-IDF/SVD를 7/20/60-day
   trailing news window에 적용합니다.
-- 현재 순서: N8-B 결과 반영 -> news-only pretrained/frozen FiLM 실행 가능 여부 결정
-  -> news-only가 유망하면 F&G + news combined context -> Grad-CAM/gamma-beta 해석
-  -> Stage 4 최종 보고와 교수님 보고 정리.
+- 현재 순서: Stage 4 modeling/context-source 실험은 FSI/RORO와
+  derivatives/leverage까지 완료했습니다. N14 최종 해석 보고서도 완료했으며,
+  더 강한 조건부 개선 claim이 필요할 때만 선택적으로 N14-B conditional-regime
+  분석을 진행합니다.
 
 Stage 4 main ablation:
 - [x] 4-A. `CNN + context concat`
@@ -981,18 +1230,6 @@ Stage 4 main ablation:
   - 완료 판정은 output checker 통과 기준입니다. Checkpoint 존재만으로는 완료가
     아닙니다.
   - 결과: [4-8 Kaggle runner and output backup plan](checklist_results/4-8_kaggle_runner_and_output_backup_plan.md)
-
-교수님 확인/보고:
-- [x] 4-R1. 교수님 미팅용 방향성 brief
-  - 목적: Stage 1-4 진행 현황, Stage 4를 market-context-conditioned feature
-    modulation으로 해석한 이유, 4-A/B/C/D가 교수님 방향성 파일의 어떤 발췌와
-    연결되는지 정리합니다.
-  - 결과: [Professor meeting direction brief](docs/professor_meeting_stage4_direction_brief.md)
-- [ ] 4-R2. 교수님 피드백 반영과 Stage 4 최종 scope lock
-  - Stage 4를 `matched_window` numeric context부터 진행하는 것이 맞는지 확인합니다.
-  - news/LLM을 numeric context 이후 second-phase로 두는 것이 맞는지 확인합니다.
-  - 4-A concat, 4-B gating, 4-C gamma-only FiLM, 4-D full FiLM이 의도한
-    ablation set인지 확인합니다.
 
 구현 단계:
 - [x] 4-I0. 구현 readiness review
@@ -1102,9 +1339,10 @@ Stage 4 main ablation:
     `0.5510`, ROC-AUC mean `0.5677`로 Stage 2 `I60/R20/ohlc_ma_vb` baseline보다
     낮았습니다.
   - 준비 결과: [4-I13 Kaggle five-seed runner](checklist_results/4-I13_kaggle_five_seed_runner.md)
-- [ ] 4-I14. Stage 4 결과 보고
+- [x] 4-I14. Stage 4 결과 보고
   - Numeric-context reporting은 `4-V9`까지 완료됐습니다.
-  - 최종 Stage 4 결과 보고는 news-context track 이후 작성합니다.
+  - 최종 보고는 다음 문서로 통합했습니다:
+    [4-N14 final Stage 4 interpretability report](checklist_results/4-N14_final_stage4_interpretability_report.md).
 
 Stage 4 v2 진단 우선순위:
 - [x] 4-V0. 우선순위 1: Stage 4 same-split visual-only baseline,
@@ -1381,7 +1619,7 @@ News-context 확장:
     [check_stage4_n8_stage2_checkpoint_reload.py](scripts/check_stage4_n8_stage2_checkpoint_reload.py)
   - N8-B Kaggle runner:
     [kaggle_stage4_n8b_fg_only_pretrained_frozen_bounded_film_one_cell.md](notebooks/kaggle_stage4_n8b_fg_only_pretrained_frozen_bounded_film_one_cell.md)
-- [ ] 4-N9. News-only와 News + F&G pretrained/frozen ablation
+- [x] 4-N9. News-only와 News + F&G pretrained/frozen ablation
   - `4-N8`에서 baseline-preserving context-FiLM이 Stage 2 baseline을 재현하고
     안전하게 수정할 수 있음을 확인했으므로 실행 후보입니다.
   - Gamma/beta 원칙: sample별 gamma/beta를 사람이 직접 정하지 않습니다. 모델이
@@ -1415,6 +1653,9 @@ News-context 확장:
     `N9B`, `N9C`, `N9D`로 바꿔서 실행합니다.
   - 설계 노트:
     [4-N9 News pretrained/frozen FiLM design](checklist_results/4-N9_news_pretrained_frozen_film_design.md)
+  - Closeout: 현재 Stage 4 scope에서는 news-only pretrained/frozen run과 grid
+    diagnostic까지 완료로 닫습니다. `news + F&G`는 명시적으로 not-run/deferred이며
+    결과로 주장하지 않습니다.
 - [x] 4-N10. News interpretability report
   - 먼저 같은 sample에 대해 Stage 2 baseline vs N8-B F&G-only Grad-CAM을
     비교합니다.
@@ -1451,10 +1692,12 @@ News-context 확장:
     export합니다.
   - 설계 노트:
     [4-N10-B targeted Grad-CAM modulation export](checklist_results/4-N10-B_targeted_gradcam_modulation_export.md)
-- [ ] 4-N11. LLM summary/embedding decision
+- [x] 4-N11. LLM summary/embedding decision
   - Headline-only no-leakage track이 안정화된 뒤로 미룹니다.
   - 사용한다면 model name, prompt, version/date, cache hash, runtime을
     기록해야 합니다.
+  - Closeout decision:
+    [4-N11 LLM embedding deferred](checklist_results/4-N11_llm_embedding_deferred.md).
 - [x] 4-N12. Optional uncertainty-gated FiLM follow-up
   - N9/N10 해석에서 context가 주로 Stage 2 chart model이 애매한 sample에서
     도움이 된다는 근거가 보일 때만 실행합니다.
@@ -1522,7 +1765,7 @@ News-context 확장:
     기록합니다. five-seed run 전에는 결과로 주장하지 않습니다.
   - 결과 노트:
     [4-N12-D context-source comparison](checklist_results/4-N12-D_context_source_comparison.md)
-- [ ] 4-N13. Macro/RORO context extension
+- [x] 4-N13. Macro/RORO context extension
   - 목적: F&G/news/technical context가 작은 개선만 보였기 때문에, 이미지 밖
     macro risk-regime context를 frozen Stage 2 FiLM 구조에 넣어봅니다.
   - thesis question: 공식 financial stress 또는 risk-on/risk-off regime이 BTC
@@ -1531,7 +1774,7 @@ News-context 확장:
   - shared protocol: `I60/R20/ohlc_ma_vb`, seeds `42-46`, Stage 2 checkpoint
     loaded/frozen, classifier frozen, bounded last-block FiLM, 우선 conservative
     scale `0.02`.
-- [ ] 4-N13-0. Macro/RORO source audit and terminology lock
+- [x] 4-N13-0. Macro/RORO source audit and terminology lock
   - `OFR FSI`와 `RORO`를 명확히 구분합니다. OFR FSI는 직접 RORO가 아니라
     공식 financial-stress/risk-off proxy입니다.
   - source link, date coverage, CSV load path, missing-date policy, image end
@@ -1539,6 +1782,11 @@ News-context 확장:
   - source 1: OFR Financial Stress Index CSV, 2000-present coverage.
   - source 2: KC Fed methodology를 참고한 public-data RORO proxy. KC Fed의
     proprietary/full input을 복제한다고 쓰지 않습니다.
+  - Closeout: terminology/source audit는
+    [4-N13-1 OFR FSI feature builder](checklist_results/4-N13-1_ofr_fsi_feature_builder.md)
+    와
+    [4-N13-3 public RORO proxy builder](checklist_results/4-N13-3_public_roro_proxy_builder.md)
+    에 기록했습니다.
 - [x] 4-N13-1. OFR FSI feature builder
   - raw source: `https://www.financialresearch.gov/financial-stress-index/data/fsi.csv`.
   - 해석: 높은 `OFR FSI` = 높은 financial stress = risk-off proxy. BTC가 반드시
@@ -1673,7 +1921,7 @@ News-context 확장:
     stacking은 정당화하기 어렵습니다.
   - 리뷰:
     [4-N13-5B selected-combo context FiLM](checklist_results/4-N13-5B_selected_combo_context_film.md).
-- [ ] 4-N13-6. Macro interpretability export
+- [x] 4-N13-6. Macro interpretability export
   - selected combo가 아니라 가장 강한 compact 후보인 F&G-only `s0.02`와
     news SVD32 `s0.02`를 중심으로 봅니다.
   - target sample: Stage 2 wrong -> context-FiLM correct, Stage 2 correct ->
@@ -1686,7 +1934,7 @@ News-context 확장:
     export하고 bundle로 묶습니다.
   - 리뷰:
     [4-N13-6 interpretability export](checklist_results/4-N13-6_interpretability_export.md).
-- [ ] 4-N13-7. 선택된 context source에 대한 최종 FiLM constraint/scale ablation
+- [x] 4-N13-7. 선택된 context source에 대한 최종 FiLM constraint/scale ablation
   - 4-N13-5/6에서 가장 안정적인 context source(`F&G`, `news`, `FSI`, `RORO`)를
     고른 뒤에만 실행합니다.
   - 목적: Stage 2 frozen protocol에서는 현재 bounded FiLM이 너무 보수적이었는지
@@ -1695,6 +1943,15 @@ News-context 확장:
     split, 같은 seeds, 같은 selected context feature.
   - A. 같은 bounded equation에서 scale만 키우는 grid, 새 모델 코드 불필요:
     bounded last-block FiLM scale `0.02`, `0.05`, `0.10`, `0.20`.
+    - N8-B에서 이미 `0.02`, `0.05`를 수행했습니다.
+    - N13-7A runner는 `0.10`, `0.20` 실행용으로 준비했습니다:
+      [kaggle_stage4_n13_7a_fg_bounded_scale_grid_one_cell.md](notebooks/kaggle_stage4_n13_7a_fg_bounded_scale_grid_one_cell.md).
+    - 준비 메모:
+      [4-N13-7A F&G bounded FiLM scale grid](checklist_results/4-N13-7A_fg_bounded_scale_grid.md).
+    - 결과: 완료. `0.10` accuracy mean `0.579042`, ROC-AUC `0.584811`,
+      net correction `-2`; `0.20` accuracy mean `0.578487`, ROC-AUC
+      `0.584539`, net correction `-6`. 큰 scale은 N8-B `0.02`를 이기지
+      못했으므로 small-scale F&G 설정을 더 강한 bounded setting으로 유지합니다.
   - B. gamma/beta constraint 완화:
     zero-init `gamma/beta` head를 쓰는 unbounded 또는 weakly regularized
     last-block FiLM.
@@ -1705,6 +1962,14 @@ News-context 확장:
   - D. classifier-unfreeze variant:
     Stage 2 visual CNN은 freeze하고 final classifier만 열어서 classifier +
     context encoder/FiLM head만 학습합니다.
+    - N13-7D runner는 F&G-only `scale=0.02`로 준비했습니다:
+      [kaggle_stage4_n13_7d_fg_classifier_unfreeze_one_cell.md](notebooks/kaggle_stage4_n13_7d_fg_classifier_unfreeze_one_cell.md).
+    - 준비 메모:
+      [4-N13-7D F&G classifier-unfreeze FiLM](checklist_results/4-N13-7D_fg_classifier_unfreeze.md).
+    - 결과: 완료. Classifier-unfreeze accuracy mean `0.574323`,
+      ROC-AUC `0.584220`, Brier `0.280218`, net correction `-36`.
+      classifier가 너무 자유로워져 regression이 correction보다 많아졌으므로
+      N8-B `scale=0.02`를 가장 좋은 F&G setting으로 유지합니다.
   - 구현 규칙: B/C/D는 별도 구현이 필요하며, 새 context source가 아니라
     FiLM/freeze-policy ablation으로 보고합니다.
   - 필수 metric: accuracy, ROC-AUC, Brier score, predicted-positive rate,
@@ -1715,17 +1980,174 @@ News-context 확장:
   - 전체 metric 개선이 없으면 같은 output으로 조건부 regime 분석을 수행합니다:
     extreme context regime, high-volatility/high-stress regime, Stage 2 wrong ->
     FiLM correct sample.
-- [ ] 4-N13-B. Optional sentiment/event feature extension
-  - N13 macro/RORO planning 이후에도 headline TF-IDF/SVD가 너무 약하거나
-    해석하기 어려울 때만 실행합니다.
-  - 후보 feature: FinBERT-style sentiment score, positive/negative/neutral count,
-    crypto regulation/exchange/ETF/macro event tag, 또는 cached headline-level
-    sentiment/event label.
-  - Leakage rule: sentiment/event extraction은 strict `t-1`까지 사용 가능한
-    headline만 써야 하며 encoder/model/version/date/cache hash를 기록해야 합니다.
-  - 목적: 명시적 news polarity/event type이 unsupervised TF-IDF/SVD vector보다
-    context-FiLM correction에 더 유용한지 확인합니다.
-- [ ] 4-N14. Final Stage 4 interpretability report
+  - Closeout: A와 D를 실행했고 둘 다 conservative frozen bounded setup보다
+    약했습니다. 실행된 relaxation test에서 이미 FiLM 자유도가 커질수록
+    regression이 늘어나는 패턴이 확인되어 B/C는 deferred로 닫습니다.
+- [x] 4-N13-B. Optional sentiment/event feature extension
+  - 결정: Stage 4에서 더 진행하지 않고 Stage 5로 이관했습니다.
+  - 이유: Stage 4는 numeric context, TF-IDF/SVD news, FSI/RORO,
+    derivatives/leverage, image-spec complement check까지 non-LLM context
+    cycle을 닫았습니다. FinBERT/GPT/Claude sentiment/event feature는
+    `stage5_llm_news_embedding`에서 관리합니다.
+  - Stage 4 상태: 최종 Stage 4 보고의 blocker가 아닙니다.
+- [x] 4-N15. I60/R20 image-spec context-complement ablation
+  - 목적: chart image에 빠진 정보가 있을 때 context-FiLM이 그 정보를 보완할 수
+    있는지 확인합니다.
+  - 고정 조건: `I60/R20`, image spec `ohlc`, `ohlc_ma`, `ohlc_vb`,
+    `ohlc_ma_vb`, 각 image spec에 대응하는 seed-matched Stage 2 checkpoint,
+    frozen visual CNN/classifier, bounded final-block FiLM, scale `0.02`, seeds
+    `42,43,44,45,46`.
+  - Stage 2 기준선: `ohlc_ma_vb` accuracy `0.579320`, `ohlc_vb`
+    `0.567384`, `ohlc` `0.558085`, `ohlc_ma` `0.557529`.
+  - N15-A. 네 가지 image spec의 same-image Stage 2 reload.
+    - context 추가 전 각 image spec의 frozen baseline을 정확히 고정합니다.
+    - 중요: 각 image spec은 자기 Stage 2 checkpoint를 써야 합니다.
+      `ohlc_ma_vb` checkpoint를 다른 image spec에 재사용하지 않습니다.
+    - Runner:
+      [kaggle_stage4_n15a_rebuild_i60_r20_four_image_stage2_checkpoints_one_cell.md](notebooks/kaggle_stage4_n15a_rebuild_i60_r20_four_image_stage2_checkpoints_one_cell.md).
+    - 준비 메모:
+      [4-N15-A I60/R20 four-image Stage 2 checkpoint bundle](checklist_results/4-N15-A_i60_r20_stage2_four_image_checkpoint_bundle.md).
+  - N15-B. Image-missing-feature complement FiLM.
+    - F&G-across-images보다 먼저 실행합니다.
+    - `ohlc + technical_all`: `bb_percent_b_60`, `bb_bandwidth_60`, `mfi_60`,
+      `rv_60`.
+    - `ohlc_ma + volume_volatility`: `mfi_60`, `rv_60`.
+    - `ohlc_vb + bb_trend`: `bb_percent_b_60`, `bb_bandwidth_60`.
+    - `ohlc_ma_vb + technical_all_control`: 같은 technical vector를 붙입니다.
+      full image에서는 technical context가 중복이면 neutral할 것으로 예상합니다.
+    - 질문: context-FiLM이 이미지에 직접 그리지 않은 chart-derived information을
+      일부 대체할 수 있는가?
+  - N15-C. F&G-only across all image specs.
+    - `fg_value`, `fg_mean_60`, `fg_delta_60`, `fg_std_60`.
+    - 질문: image 정보량과 무관하게 외부 market-regime 정보가 도움이 되는가?
+    - 완료: same-image Stage 2 대비 `ohlc` -0.0004, `ohlc_ma` -0.0008,
+      `ohlc_vb` +0.0006, `ohlc_ma_vb` +0.0010. Volume-aware image spec에서만
+      작은 positive delta가 나왔지만 효과 크기는 약함.
+    - 결과:
+      [4-N15-C F&G-only across image specs](checklist_results/4-N15-C_fg_only_across_image_specs.md).
+  - N15-D. B/C에서 signal이 있을 때만 selected hybrid 실행.
+    - 후보: `ohlc + technical_all + F&G`,
+      `ohlc_ma + volume_volatility + F&G`, `ohlc_vb + bb_trend + F&G`.
+    - 결정: 일단 skip합니다. N15-B technical context는 same-image baseline
+      보존 수준이었고, N15-C F&G-only는 volume-aware image spec에서만 작은
+      positive delta를 보였습니다. 더 genuinely external한 derivatives/leverage
+      context를 먼저 테스트하는 편이 더 방어 가능합니다.
+  - 필수 metric: accuracy, ROC-AUC, Brier score, predicted-positive rate,
+    same-image Stage 2 delta, `ohlc_ma_vb` gap delta, correction/regression,
+    net correction.
+  - 통합 결과 요약:
+    [4-N15 integrated result summary](checklist_results/4-N15_integrated_result_summary.md).
+  - 계획:
+    [4-N15 I60/R20 image-spec context-complement plan](checklist_results/4-N15_i60_r20_image_spec_context_complement_plan.md).
+- [x] 4-N16. Derivatives/leverage-regime context
+  - 목적: OHLC/MA/VB chart image나 technical indicator와 덜 중복되는
+    leverage/positioning context를 테스트합니다.
+  - 고정 조건: `I60/R20`, Stage 2 checkpoint reload, visual CNN/classifier
+    freeze, bounded final-block FiLM first, scale `0.02`, seeds
+    `42,43,44,45,46`.
+  - Primary image spec: `ohlc_ma_vb`. Signal이 보이면 N15-C에서 positive
+    delta가 있었던 volume-aware weaker image인 `ohlc_vb`에 best candidate를
+    반복합니다.
+  - 사용 가능한 local source:
+    - BitMEX XBTUSD funding rate: `2018-01-01`부터 `2024-12-31`, Stage 4
+      missing rate `0%`.
+    - BitMEX XBTUSD derivatives activity/futures volume: `2018-01-01`부터
+      `2024-12-31`, Stage 4 missing rate `0%`.
+    - CFTC/CME Bitcoin futures COT open interest/positioning: 공식 CFTC 주간
+      source. Release-lagged daily forward-fill 후 Stage 4 missing rate `0%`.
+  - CFTC leakage rule:
+    - COT report를 화요일 report date에 바로 붙이지 않습니다.
+    - `available_date = report_date + 3 calendar days`로 둔 뒤 다음 available
+      report 전까지 forward-fill합니다.
+    - feature table에 `cot_source_report_date`, `cot_age_days`를 남겨 audit
+      가능하게 합니다.
+  - 4-N16-0. Source inventory and coverage lock.
+    - 결과: local data는 `data_inventory/crypto_derivatives/`에 저장하고
+      문서화했습니다.
+    - Source note:
+      [4-N16 derivatives/leverage context plan](checklist_results/4-N16_derivatives_leverage_context_plan.md).
+  - [x] 4-N16-1. Derivatives context feature builder.
+    - BitMEX 후보: `funding_rate_mean/sum/abs_mean/min/max`, derivatives
+      `trades`, `volume`, `turnover`, `homeNotional`, `foreignNotional`.
+    - CFTC/CME 후보: `Open_Interest_All`, `Lev_Money_Net_Ratio_All`,
+      `Asset_Mgr_Net_Ratio_All`, `Dealer_Net_Ratio_All`, OI change/z-score.
+    - Window: BitMEX daily feature는 `7/20/60`; release-lagged weekly CFTC
+      context는 current, `20/60` change/level 중심.
+    - train-only imputation/clipping/z-score로 normalize합니다.
+    - 결과: local에서 완료했습니다. `I60/R20/ohlc_ma_vb`, seeds `42-46` 기준
+      `derivatives_all`, `funding_only`, `funding_plus_cftc_oi`,
+      `funding_plus_activity`, `funding_plus_activity_plus_cftc_oi` prebuilt
+      context artifact를 만들었습니다. Context dimension은 각각 `46`, `15`,
+      `33`, `28`, `46`입니다. Funding/activity는 raw missing `0%`; CFTC
+      rolling/change feature는 train/validation 초반 raw missing이 `5%`보다
+      낮고 train median으로 impute됩니다.
+    - 결과:
+      [4-N16-1 derivatives context feature builder](checklist_results/4-N16-1_derivatives_context_feature_builder.md).
+    - Runner:
+      [kaggle_stage4_n16_1_derivatives_context_features_one_cell.md](notebooks/kaggle_stage4_n16_1_derivatives_context_features_one_cell.md).
+  - [x] 4-N16-2. Train-only derivatives feature audit.
+    - missing rate, feature-label/future-return correlation, F&G/technical
+      context와의 redundancy, Stage 2 error correlation을 확인합니다.
+    - 모든 derivatives column을 한 번에 넣지 않고 audit로 compact set을
+      고릅니다.
+    - 결과: 로컬 완료. BitMEX funding이 가장 강한 train-only derivatives
+      signal입니다(`funding_rate_max_7` score `0.4414`,
+      `funding_rate_max_20` score `0.4041`). BitMEX activity는 2순위이고
+      CFTC/CME positioning은 더 약하며 time-trend risk가 더 큽니다.
+      F&G/technical prior context와의 median max abs correlation은 `0.7268`라서
+      N16-3에서는 full vector만 넣지 말고 lean feature set을 비교합니다.
+    - 결과 노트:
+      [4-N16-2 derivatives feature audit](checklist_results/4-N16-2_derivatives_feature_audit.md).
+    - Report:
+      [stage4_n16_2_derivatives_feature_audit_report.md](reports/tables/stage4_n16_2_derivatives_feature_audit_report.md).
+  - [x] 4-N16-3. `ohlc_ma_vb` frozen bounded FiLM feature-set grid.
+    - N16-2 우선순위: `funding_only`, `funding_plus_activity`,
+      `funding_plus_cftc_oi`, `funding_plus_activity_plus_cftc_oi`.
+    - 필수 metric: accuracy, ROC-AUC, Brier, F1, predicted-Up rate,
+      correction/regression/net correction, changed-decision rate, collapse
+      warning.
+    - Runner 준비:
+      [kaggle_stage4_n16_3_derivatives_feature_set_grid_one_cell.md](notebooks/kaggle_stage4_n16_3_derivatives_feature_set_grid_one_cell.md).
+    - 결과: 완료. 최고 row인 `funding_plus_cftc_oi`는 같은 image Stage 2
+      baseline accuracy (`0.579320`)와 동률이었지만 net correction은 개선되지
+      않았습니다. `funding_only`도 안정적이지만 baseline보다 아주 낮았습니다.
+      seed collapse는 없었습니다.
+    - 결과 노트:
+      [4-N16-3 derivatives feature-set grid](checklist_results/4-N16-3_derivatives_feature_set_grid_prepared.md).
+    - Report:
+      [stage4_n16_3_derivatives_feature_set_grid_mean_std_results.csv](reports/tables/stage4_n16_3_derivatives_feature_set_grid_mean_std_results.csv).
+  - [x] 4-N16-4. Selected volume-aware repeat.
+    - N16-3의 selected candidate를 `ohlc_vb`에 반복합니다.
+    - 목적: derivatives context가 가장 강한 `ohlc_ma_vb`보다, volume-aware지만
+      시각적으로 약한 `ohlc_vb`에 더 잘 보완되는지 확인합니다.
+    - 선택 feature set: `funding_plus_cftc_oi`, `funding_only`.
+    - Runner 준비:
+      [kaggle_stage4_n16_4_ohlc_vb_derivatives_repeat_one_cell.md](notebooks/kaggle_stage4_n16_4_ohlc_vb_derivatives_repeat_one_cell.md).
+    - 결과: 완료. `ohlc_vb + funding_plus_cftc_oi`는 같은 image Stage 2
+      `ohlc_vb` baseline을 `0.567384`에서 `0.569466`으로 개선했습니다
+      (`+0.002082`, net correction `+15`). `funding_only`는 거의 동률입니다
+      (`+0.000278`, net correction `+2`). 이는 small same-image positive
+      result이지, `ohlc_ma_vb` 전체 최고 baseline을 넘은 것은 아닙니다.
+    - 결과 노트:
+      [4-N16-4 OHLC-VB derivatives repeat](checklist_results/4-N16-4_ohlc_vb_derivatives_repeat.md).
+    - Report:
+      [stage4_n16_4_ohlc_vb_derivatives_repeat_mean_std_results.csv](reports/tables/stage4_n16_4_ohlc_vb_derivatives_repeat_mean_std_results.csv).
+  - [x] 4-N16-5. Interpretability export.
+    - target panel: extreme funding, high/low CFTC OI, leveraged-money long/short
+      imbalance, Stage 2 wrong -> FiLM correct, Stage 2 correct -> FiLM wrong.
+    - Grad-CAM, context value, gamma/beta summary, `prob_up` change를 export합니다.
+    - 결과: tabular interpretation 완료. 선택된
+      `ohlc_vb + funding_plus_cftc_oi` FiLM model은 같은 image Stage 2
+      `ohlc_vb` baseline 대비 accuracy `+0.002082`, net correction `+15`를
+      만들었습니다. 주된 패턴은 higher derivatives/leverage regime에서 약한
+      bullish prediction을 낮추는 방향입니다. five-seed targeted
+      Stage2/Stage4 Grad-CAM과 Stage4 gamma/beta export도 로컬에서
+      완료했고, Kaggle 재현 cell도 준비했습니다.
+    - 결과 노트:
+      [4-N16-5 derivatives interpretability export](checklist_results/4-N16-5_derivatives_interpretability_export.md).
+    - Report:
+      [stage4_n16_5_ohlc_vb_derivatives_interpretability_report.md](reports/tables/stage4_n16_5_ohlc_vb_derivatives_interpretability_report.md).
+- [x] 4-N14. Final Stage 4 interpretability report
   - 목적: 선택된 Stage 4 model을 단순 metric table이 아니라 논문에 넣을 수 있는
     해석 evidence로 정리합니다.
   - 필수 내용: Stage 2 baseline vs selected context-FiLM metric,
@@ -1734,6 +2156,46 @@ News-context 확장:
     및 `Stage2 correct -> Stage4 wrong` sample.
   - output: GitHub와 교수님 보고용 compact report. 큰 bundle/checkpoint는
     local 또는 Kaggle dataset에만 보관합니다.
+  - 결과:
+    [4-N14 final Stage 4 interpretability report](checklist_results/4-N14_final_stage4_interpretability_report.md).
+- [ ] 4-N14-B. Conditional regime analysis
+  - 목적: 전체 test 평균 accuracy가 크게 오르지 않았더라도, 특정 market regime에서
+    context-FiLM이 Stage2 visual-only prediction을 보정했는지 분석합니다.
+  - 이 단계는 post-training analysis입니다. 새 모델을 학습하지 않습니다.
+  - 첫 번째 분석 대상은 N16 same-image 비교입니다:
+    `stage2_i60_ohlc_vb_r20` vs
+    `stage4_film_full_bounded_last_block_i60_ohlc_vb_r20_c60_n16d_funding_plus_cftc_oi_pretrained_frozen_s0p02`.
+  - 후보 regime: F&G extreme fear/greed, high volatility,
+    high derivatives/leverage, high news/macro intensity, Stage2 uncertainty.
+  - 좋아 보이는 bucket을 사후에 고르지 않고, 미리 정한 bucket rule만 사용합니다.
+  - 보고 기준: bucket당 `100`개 이상 seed-decision, `30`개 이상 unique sample.
+    더 작은 bucket은 diagnostic only로 표시합니다.
+  - 계획:
+    [4-N14-B conditional regime analysis plan](checklist_results/4-N14-B_conditional_regime_analysis_plan.md).
+  - [x] 4-N14-B1. Prediction/context merge table preparation.
+    - Stage2 prediction, Stage4 prediction, context feature,
+      `prob_up_delta`, `true_prob_delta`, transition type을 포함한 long
+      decision-level table을 만듭니다.
+    - 준비된 script:
+      [build_stage4_n14b_conditional_merge_table.py](scripts/build_stage4_n14b_conditional_merge_table.py).
+    - 준비된 Kaggle runner:
+      [kaggle_stage4_n14b1_conditional_merge_table_one_cell.md](notebooks/kaggle_stage4_n14b1_conditional_merge_table_one_cell.md).
+  - [ ] 4-N14-B2. Predefined regime bucket builder.
+    - N14-B1 merged table에서 F&G, volatility, derivatives/leverage,
+      news/macro, Stage2 uncertainty bucket을 생성합니다.
+  - [ ] 4-N14-B3. Bucket-level metrics.
+    - bucket별 Stage2 accuracy, Stage4 accuracy, delta,
+      correction/regression/net correction, changed-decision rate,
+      probability delta를 계산합니다.
+  - [ ] 4-N14-B4. Representative correction/regression samples.
+    - 유용한 bucket마다 Stage2 wrong -> Stage4 correct, Stage2 correct ->
+      Stage4 wrong, high-confidence wrong, 큰 `prob_up_delta` sample을 고릅니다.
+  - [ ] 4-N14-B5. Targeted Grad-CAM/gamma-beta linkage.
+    - 선택 sample을 Stage2/Stage4 Grad-CAM, context value, gamma/beta summary,
+      probability shift와 연결합니다.
+  - [ ] 4-N14-B6. Conditional-regime report.
+    - context-FiLM correction이 특정 regime에서 해석 가능하게 작동했는지,
+      논문에서 conditional improvement로 주장할 수 있는지 정리합니다.
 
 중요:
 - Main Stage 4 실험에서 context 값을 chart image 위에 추가로 그리지 않습니다.

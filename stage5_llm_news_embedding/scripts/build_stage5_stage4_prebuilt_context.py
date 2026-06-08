@@ -37,14 +37,28 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--dimension", type=int, default=16)
     parser.add_argument(
         "--feature-source",
-        choices=["embedding_svd", "finbert"],
+        choices=["embedding_svd", "finbert", "finbert_fg"],
         default="embedding_svd",
         help="How to select context feature columns from --feature-table.",
     )
     parser.add_argument(
         "--feature-prefix",
         default="finbert_",
-        help="Feature prefix used when --feature-source=finbert.",
+        help="Feature prefix used when --feature-source is finbert or finbert_fg.",
+    )
+    parser.add_argument(
+        "--fg-feature-table",
+        default="",
+        help=(
+            "Stage4 context_features.csv containing raw F&G features. Required "
+            "for --feature-source=finbert_fg unless the default Stage4 context path exists."
+        ),
+    )
+    parser.add_argument(
+        "--fg-features",
+        nargs="+",
+        default=["fg_value", "fg_mean_60", "fg_delta_60", "fg_std_60"],
+        help="Raw F&G features to append when --feature-source=finbert_fg.",
     )
     parser.add_argument("--run-seeds", type=int, nargs="+", default=[42, 43, 44, 45, 46])
     parser.add_argument(
@@ -94,6 +108,73 @@ def read_feature_table(path: Path) -> pd.DataFrame:
     if path.suffix == ".parquet":
         return pd.read_parquet(path)
     return pd.read_csv(path)
+
+
+def default_fg_context_name(args: argparse.Namespace) -> str:
+    return (
+        f"stage4_context_i{int(args.image_window)}_{args.image_spec}_"
+        f"r{int(args.return_horizon)}_c{int(args.context_window)}"
+    )
+
+
+def resolve_fg_feature_table(args: argparse.Namespace, stage4_root: Path) -> Path:
+    if str(args.fg_feature_table).strip():
+        explicit = Path(str(args.fg_feature_table)).expanduser()
+        if not explicit.exists():
+            raise FileNotFoundError(f"Explicit F&G feature table missing: {explicit}")
+        return explicit
+
+    first_seed = int(args.run_seeds[0])
+    default_path = (
+        stage4_root
+        / "outputs/stage4/context"
+        / default_fg_context_name(args)
+        / f"seed_{first_seed}"
+        / "context_features.csv"
+    )
+    if default_path.exists():
+        return default_path
+
+    context_root = stage4_root / "outputs/stage4/context"
+    if context_root.exists():
+        wanted = set(str(feature) for feature in args.fg_features)
+        for candidate in context_root.rglob("context_features.csv"):
+            try:
+                columns = set(pd.read_csv(candidate, nrows=1).columns)
+            except Exception:
+                continue
+            if wanted.issubset(columns):
+                return candidate
+
+    raise FileNotFoundError(
+        "Could not find a Stage4 F&G context feature table. Run "
+        "scripts/build_stage4_context_features.py first or pass --fg-feature-table. "
+        f"Expected default path: {default_path}"
+    )
+
+
+def append_fg_features(
+    frame: pd.DataFrame,
+    *,
+    args: argparse.Namespace,
+    stage4_root: Path,
+) -> tuple[pd.DataFrame, dict[str, Any]]:
+    fg_table = resolve_fg_feature_table(args, stage4_root)
+    fg_frame = read_feature_table(fg_table)
+    fg_features = [str(feature) for feature in args.fg_features]
+    required = ["sample_index", *fg_features]
+    missing = [column for column in required if column not in fg_frame.columns]
+    if missing:
+        raise KeyError("F&G feature table missing column(s): " + ", ".join(missing))
+    if "sample_index" not in frame.columns:
+        raise KeyError("Stage5 feature table missing required sample_index column.")
+
+    fg_slice = fg_frame[required].drop_duplicates("sample_index")
+    merged = frame.merge(fg_slice, on="sample_index", how="left", validate="one_to_one")
+    return merged, {
+        "fg_feature_table": str(fg_table),
+        "fg_features": fg_features,
+    }
 
 
 def select_feature_order(
@@ -228,6 +309,7 @@ def feature_groups(feature_order: list[str]) -> dict[str, list[str]]:
         "finbert_sentiment": [],
         "finbert_proxy": [],
         "finbert_other": [],
+        "fear_greed": [],
     }
     for feature in feature_order:
         if feature.startswith("stage5_news_count_"):
@@ -242,6 +324,8 @@ def feature_groups(feature_order: list[str]) -> dict[str, list[str]]:
             groups["finbert_sentiment"].append(feature)
         elif "fg_proxy" in feature:
             groups["finbert_proxy"].append(feature)
+        elif feature.startswith("fg_"):
+            groups["fear_greed"].append(feature)
         elif "_7d_" in feature:
             groups["embedding_7d"].append(feature)
         elif "_20d_" in feature:
@@ -285,6 +369,7 @@ def build_audit(
     feature_order: list[str],
     scaler: dict[str, Any],
     args: argparse.Namespace,
+    extra_metadata: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     split_counts = {
         str(split): int(count)
@@ -296,7 +381,7 @@ def build_audit(
             feature: float(pd.to_numeric(frame[feature], errors="coerce").isna().mean())
             for feature in feature_order
         }
-    return {
+    audit = {
         "status": "ok",
         "stage": "stage5-prebuilt-context-build",
         "context_name": context_name,
@@ -317,6 +402,9 @@ def build_audit(
         "missing_rate_by_split": missing_rate_by_split,
         "warnings": [],
     }
+    if extra_metadata:
+        audit.update(extra_metadata)
+    return audit
 
 
 def write_context_for_seed(
@@ -368,13 +456,20 @@ def main() -> None:
     tables_root.mkdir(parents=True, exist_ok=True)
 
     frame = read_feature_table(feature_table)
+    extra_metadata: dict[str, Any] = {}
+    selection_source = str(args.feature_source)
+    if selection_source == "finbert_fg":
+        frame, extra_metadata = append_fg_features(frame, args=args, stage4_root=stage4_root)
+        selection_source = "finbert"
     feature_order = select_feature_order(
         frame,
         aggregation=str(args.aggregation),
         dimension=int(args.dimension),
-        feature_source=str(args.feature_source),
+        feature_source=selection_source,
         feature_prefix=str(args.feature_prefix),
     )
+    if str(args.feature_source) == "finbert_fg":
+        feature_order = [*feature_order, *[str(feature) for feature in args.fg_features]]
     context, scaler = fit_normalize_context(frame, feature_order)
     summary = build_summary(context, feature_order)
     context_name = context_name_from_args(args)
@@ -385,6 +480,7 @@ def main() -> None:
         feature_order=feature_order,
         scaler=scaler,
         args=args,
+        extra_metadata=extra_metadata,
     )
 
     written_by_seed = {

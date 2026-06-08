@@ -151,6 +151,11 @@ choice is fixed:
     - Main issue: test-period FinBERT sentiment/news-count features are shifted
       positive and create Up-bias; mean predicted positive rate is `0.637196`
       vs true positive rate `0.541291`.
+  - 5-9E prepared: [FinBERT + F&G bounded FiLM runner](checklist_results/5-9E_finbert_fg_bounded_film_prepared.md)
+    - Context dimension verified locally: `83` = `79` FinBERT numeric features
+      + `4` F&G raw regime features.
+    - Kaggle one-cell:
+      `notebooks/kaggle_stage5_9e_finbert_fg_film_ablation_one_cell.md`.
 
 - [ ] 5-10. Prompt/event auxiliary features
   - Execute only if FinBERT sentiment is insufficient or if a richer
@@ -339,6 +344,11 @@ Stage 5는 LLM에서 만든 뉴스 표현을 FiLM context로 넣는 실험입니
     - 핵심 문제: test 구간의 FinBERT sentiment/news-count feature가 positive
       방향으로 shift되어 Up-bias를 만듦. 평균 predicted positive rate는
       `0.637196`, 실제 positive rate는 `0.541291`.
+  - 5-9E 준비 완료: [FinBERT + F&G bounded FiLM runner](checklist_results/5-9E_finbert_fg_bounded_film_prepared.md)
+    - 로컬 검증 context dimension: `83` = FinBERT numeric feature `79`개
+      + F&G raw regime feature `4`개.
+    - Kaggle one-cell:
+      `notebooks/kaggle_stage5_9e_finbert_fg_film_ablation_one_cell.md`.
 
 - [ ] 5-10. Prompt/event auxiliary features
   - FinBERT sentiment가 부족하거나 더 풍부한 해석 layer가 필요할 때 실행.

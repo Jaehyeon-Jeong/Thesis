@@ -34,6 +34,13 @@ four, but only by a very small margin:
 - `+0.000981` ROC-AUC over Stage2 baseline.
 - `+0.000913` ROC-AUC over F&G-only.
 
+Correction/regression counting against Stage2 confirms the same small effect:
+
+- Corrections: `95`.
+- Regressions: `86`.
+- Net corrections: `+9`.
+- Changed predictions: `181 / 7205 = 2.51%`.
+
 This does not support a strong performance-improvement claim. It does support a
 more cautious thesis claim: explicit news sentiment can be added as a numeric
 context without destabilizing the baseline-preserving FiLM structure, but
@@ -82,6 +89,13 @@ FinBERT + F&G가 이 네 가지 중 평균 accuracy는 가장 높다. 하지만 
 - F&G-only 대비 accuracy `+0.000278`.
 - Stage2 baseline 대비 ROC-AUC `+0.000981`.
 - F&G-only 대비 ROC-AUC `+0.000913`.
+
+Stage2와 직접 correction/regression을 세어도 효과는 같은 방향으로 작다.
+
+- Corrections: `95`.
+- Regressions: `86`.
+- Net corrections: `+9`.
+- Changed predictions: `181 / 7205 = 2.51%`.
 
 따라서 강한 성능 개선이라고 쓰면 안 된다. 더 방어 가능한 표현은 다음이다.
 

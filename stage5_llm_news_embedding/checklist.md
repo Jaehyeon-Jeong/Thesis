@@ -196,6 +196,14 @@ choice is fixed:
     high prompt-confidence,
     positive/negative FinBERT regimes,
     positive/negative/unknown prompt regimes.
+  - 5-11A partial result: [Stage2 vs FinBERT + F&G correction counts](checklist_results/5-11A_finbert_fg_correction_counts.md)
+    - Total matched decisions: `7,205`.
+    - Corrections: `95`.
+    - Regressions: `86`.
+    - Net corrections: `+9`.
+    - Changed predictions: `181`, or `2.51%`.
+    - Interpretation: small but real net correction; bounded FiLM remains
+      conservative and changes only a small subset of Stage2 decisions.
 
 - [ ] 5-12. Grad-CAM and FiLM modulation export
   - For selected correction/regression samples, export:
@@ -406,6 +414,14 @@ Stage 5는 LLM에서 만든 뉴스 표현을 FiLM context로 넣는 실험입니
     high prompt-confidence,
     positive/negative FinBERT regime,
     positive/negative/unknown prompt regime.
+  - 5-11A 부분 결과: [Stage2 vs FinBERT + F&G correction counts](checklist_results/5-11A_finbert_fg_correction_counts.md)
+    - 전체 matched decision: `7,205`.
+    - Corrections: `95`.
+    - Regressions: `86`.
+    - Net corrections: `+9`.
+    - Changed predictions: `181`, 즉 `2.51%`.
+    - 해석: 작지만 실제 net correction이 있으며, bounded FiLM은 Stage2
+      decision 중 일부만 보수적으로 바꾸는 방식으로 작동했다.
 
 - [ ] 5-12. Grad-CAM and FiLM modulation export
   - 선택된 correction/regression sample에 대해 export:

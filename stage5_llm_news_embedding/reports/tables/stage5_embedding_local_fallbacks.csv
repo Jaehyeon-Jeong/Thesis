@@ -1,0 +1,3 @@
+run_id,provider,model,role,default_dimensions,reason
+bge_small_en_v1_5,local_huggingface,BAAI/bge-small-en-v1.5,reproducible_local_fallback,384,No paid API dependency; useful if OpenAI/Voyage access is blocked.
+all_minilm_l6_v2,local_huggingface,sentence-transformers/all-MiniLM-L6-v2,lightweight_local_fallback,384,"Very light sentence-transformer baseline, not the main thesis model."

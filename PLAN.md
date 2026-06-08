@@ -6,11 +6,15 @@
   1. Re-image 논문 파이프라인 재현
   2. BTC 자산군 확장
   3. Linear 추가
-  4. FiLM + News/LLM conditioning
+  4. FiLM + structured/news conditioning
+  5. LLM-derived news embedding context
 - GitHub를 따른다는 뜻은 “프로젝트 목적을 바꾼다”가 아니라, **모델의 핵심 구현 디테일을 해당 repo와 최대한 동일하게 맞춘다**는 뜻이다.
 - 따라서 1단계 CNN 모델은 `lich99/Stock_CNN`의 중요한 구현을 최대한 그대로 따른다.
 - 4단계 FiLM 모델은 `ethanjperez/film`의 중요한 구현을 최대한 그대로 따른다.
 - 단, 연구 목적, 실험 단계, BTC 확장, Linear 비교, News/LLM-FiLM 비교는 사용자가 정한 논문 계획 그대로 유지한다.
+- 5단계는 Stage 4의 news/context track을 확장하지만, 별도 단계로 관리한다.
+  - 목적은 LLM을 직접 BTC 방향 예측기로 쓰는 것이 아니다.
+  - 목적은 LLM-derived news representation을 chart CNN의 FiLM context로 쓰는 것이다.
 
 ## 모든 작업 시작 전 고정 확인 규칙
 - 새 작업을 시작하기 전에 반드시 이 `PLAN.md`를 먼저 확인한다.
@@ -70,7 +74,7 @@
   - 이유: 다음 horizon/model 실행 때 `PROJECT_ROOT`를 새 code snapshot으로 다시 만들면
     이전 run의 checkpoint, prediction, metric, Grad-CAM이 삭제될 수 있기 때문이다.
   - 이 backup은 실험 로직 변경이 아니라 output 보존을 위한 실행 안정성 장치다.
-- 4단계 News/LLM처럼 Hugging Face/LLM cache가 중요한 작업은 Colab도 후보가 될 수 있지만, 기본 원칙은 여전히 단일 코드베이스 + 환경별 runner다.
+- 4/5단계 News/LLM처럼 Hugging Face/LLM/API cache가 중요한 작업은 Colab도 후보가 될 수 있지만, 기본 원칙은 여전히 단일 코드베이스 + 환경별 runner다.
 
 ## 0단계: 자료/데이터/참고 구현 확인
 - Re-image 근거:
@@ -398,6 +402,48 @@
   - layer/channel/date별 분석
   - regime/confidence/correctness별 분석
 
+## 5단계: LLM News Embedding Context
+- 목적:
+  - Stage 4에서 hand-built numeric context가 대부분 약하거나 중복적이었으므로,
+    뉴스 텍스트 자체에서 더 풍부한 market-context representation을 추출해
+    FiLM context로 사용할 수 있는지 확인한다.
+- 핵심 경계:
+  - LLM은 최종 예측기가 아니다.
+  - LLM은 news text를 numerical representation으로 바꾸는 feature extractor다.
+  - Prompt-based positive/negative/unknown label은 해석 보조로만 우선 사용한다.
+- 방법론 근거:
+  - Chen/Kelly/Xiu 방식:
+    financial news text를 pretrained language model representation으로 바꾸고
+    downstream return prediction에 사용하는 구조를 참고한다.
+  - Lopez-Lira/Tang 방식:
+    GPT가 금융뉴스를 positive/negative/unknown으로 분류하는 prompt 구조를
+    해석 보조 label로 참고한다.
+- 기본 모델 프로토콜:
+  - Stage 2 `I60/R20/ohlc_ma_vb` checkpoint를 load한다.
+  - Visual CNN/classifier는 freeze한다.
+  - News embedding context만 MLP를 통해 bounded last-block FiLM의 gamma/beta를 만든다.
+  - 기본 FiLM 제한은 Stage 4와 동일하게 시작한다:
+    `gamma = 1 + scale * tanh(raw_gamma)`,
+    `beta = scale * tanh(raw_beta)`.
+  - 첫 scale은 `0.02`로 두고, 안정성이 확인될 때만 키운다.
+- News representation 설계:
+  - 뉴스 item 단위로 text embedding을 만든다.
+  - 각 BTC sample date에 대해 7/20/60일 trailing window를 만든다.
+  - Window별 embedding mean/time-decay mean/count를 만들고 train-only SVD/PCA로
+    8/16/32차원 후보를 비교한다.
+  - 모든 alignment는 `image_end_date` 이전 정보만 사용한다.
+- 비교:
+  - Stage 2 visual baseline
+  - Stage 5 embedding-only FiLM
+  - Stage 5 embedding + F&G FiLM
+  - Optional: prompt-label auxiliary features
+- 필수 해석:
+  - Stage2 wrong -> Stage5 correct
+  - Stage2 correct -> Stage5 wrong
+  - high-news-count/high-confidence news regime
+  - prompt label positive/negative/unknown regime
+  - Grad-CAM, gamma/beta, news text, probability change를 같은 sample 기준으로 저장한다.
+
 ## 코드 작성 원칙
 - 모델 핵심 구현은 GitHub를 최대한 동일하게 따른다.
 - 연구 설계, 단계 순서, 비교 구조는 임의로 바꾸지 않는다.
@@ -458,5 +504,5 @@ Grad-CAM 예시 주석:
 
 ## Assumptions
 - GitHub를 따른다는 것은 모델 구현 핵심을 맞춘다는 뜻이지, 연구 설계를 바꾸는 것이 아니다.
-- 논문 전체 계획은 사용자가 정한 1-4단계 구조 그대로 유지한다.
+- 논문 전체 계획은 사용자가 정한 1-5단계 구조 그대로 유지한다.
 - Grad-CAM은 stock/BTC/baseline/Linear/FiLM 전 단계에서 필수 해석 산출물이다.

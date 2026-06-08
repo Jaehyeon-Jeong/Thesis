@@ -1,0 +1,60 @@
+{
+  "status": "ok",
+  "stage": "5-2",
+  "source_stage4_artifacts": {
+    "source_audit": "/Users/jaehyeonjeong/Desktop/논문/stage4_film_conditioning/reports/tables/stage4_news_source_audit.json",
+    "alignment_policy": "/Users/jaehyeonjeong/Desktop/논문/stage4_film_conditioning/reports/tables/stage4_news_alignment_policy.json",
+    "headline_manifest": "/Users/jaehyeonjeong/Desktop/논문/stage4_film_conditioning/reports/tables/stage4_news_headline_windows_manifest.json",
+    "alignment_by_split": "/Users/jaehyeonjeong/Desktop/논문/stage4_film_conditioning/reports/tables/stage4_news_alignment_by_split.csv",
+    "sample_counts": "/Users/jaehyeonjeong/Desktop/논문/stage4_film_conditioning/reports/tables/stage4_news_alignment_sample_counts.csv",
+    "headline_summary": "/Users/jaehyeonjeong/Desktop/논문/stage4_film_conditioning/reports/tables/stage4_news_headline_windows_summary.csv"
+  },
+  "news_dataset": {
+    "name": "edaschau/bitcoin_news",
+    "rows": 30626,
+    "date_min": "2011-06-22",
+    "date_max": "2025-06-03",
+    "title_coverage_rate": 1.0,
+    "article_text_coverage_rate": 1.0
+  },
+  "stage5_sample_range": {
+    "btc_source": "/Users/jaehyeonjeong/Desktop/논문/데이터셋/BTC _OHLCV/btc_1d_data_2018_to_2025.csv",
+    "image_window": 60,
+    "return_horizon": 20,
+    "num_samples": 2399,
+    "date_min": "2018-04-29",
+    "date_max": "2024-12-11",
+    "split_counts": {
+      "train": 671,
+      "validation": 287,
+      "test": 1441
+    }
+  },
+  "leakage_policy": {
+    "name": "strict_t_minus_1_calendar_date",
+    "allowed_news": "news calendar date <= image_end_date - 1 day",
+    "excluded_news": "same-calendar-day news and all later news",
+    "window_rule": "for window W, use news dates from t-W through t-1 inclusive",
+    "reason": "date-only news publication timestamps are not sufficient to defend same-day availability; t-1 prevents same-day future leakage."
+  },
+  "stage5_decision": {
+    "coverage_ready": true,
+    "preferred_embedding_unit": "news_item",
+    "preferred_embedding_reason": "7/20/60-day whole-window headline text can be long, especially test 60-day windows; item-level embeddings avoid truncation and preserve news count.",
+    "windows": [
+      7,
+      20,
+      60
+    ],
+    "single_day_t_minus_1_missing_policy": "keep sample; window embeddings still have coverage, and count/missing indicators can record sparse prior-day news."
+  },
+  "outputs": {
+    "coverage_by_split": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_news_coverage_by_split.csv",
+    "headline_window_summary": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_news_headline_window_summary.csv",
+    "missing_t_minus_1_dates": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_news_missing_t_minus_1_dates.csv",
+    "sample_counts": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_news_alignment_sample_counts.csv",
+    "policy": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_news_leakage_policy.json",
+    "inventory": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/data_inventory/stage5_news_source_inventory.json",
+    "report": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_news_coverage_leakage_audit_report.md"
+  }
+}

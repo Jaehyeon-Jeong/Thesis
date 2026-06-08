@@ -1,0 +1,109 @@
+# Stage 5 embedding backend plan.
+#
+# Do not write API keys here. Use environment variables only.
+# 5-4 locks the order and cache metadata before any paid/API embedding call.
+
+embedding_input:
+  manifest: data_inventory/stage5_embedding_input_manifest.json
+  unit: news_item
+  template: headline_only_v1
+  text_column: embedding_input_text
+  hash_column: embedding_input_hash
+  item_id_column: news_item_id
+  item_count: 24281
+
+execution_order:
+  - openai_text_embedding_3_small_primary
+  - voyage_4_anthropic_side_comparison
+  - openai_text_embedding_3_large_optional
+  - voyage_4_large_optional
+
+backends:
+  openai_text_embedding_3_small_primary:
+    provider: openai
+    model: text-embedding-3-small
+    role: primary
+    api_key_env: OPENAI_API_KEY
+    default_dimensions: 1536
+    requested_dimensions: 1536
+    use_dimensions_parameter: false
+    batch_size: 128
+    artifact_root: outputs/stage5/embeddings/openai_text_embedding_3_small
+    cache_manifest: data_inventory/openai_text_embedding_3_small_cache_manifest.json
+    reason: first-pass balance of quality, cost, and sufficient dimension before train-only SVD
+
+  voyage_4_anthropic_side_comparison:
+    provider: voyageai
+    model: voyage-4
+    role: anthropic_side_comparison
+    api_key_env: VOYAGE_API_KEY
+    default_dimensions: 1024
+    requested_dimensions: 1024
+    use_dimensions_parameter: false
+    batch_size: 128
+    artifact_root: outputs/stage5/embeddings/voyage_4
+    cache_manifest: data_inventory/voyage_4_cache_manifest.json
+    reason: Anthropic documentation recommends Voyage AI because Claude does not provide native embeddings
+
+  openai_text_embedding_3_large_optional:
+    provider: openai
+    model: text-embedding-3-large
+    role: optional_stronger_openai_check
+    api_key_env: OPENAI_API_KEY
+    default_dimensions: 3072
+    requested_dimensions: 3072
+    use_dimensions_parameter: false
+    batch_size: 128
+    artifact_root: outputs/stage5/embeddings/openai_text_embedding_3_large
+    cache_manifest: data_inventory/openai_text_embedding_3_large_cache_manifest.json
+    reason: optional OpenAI upper-bound comparison if small results are promising or inconclusive
+
+  voyage_4_large_optional:
+    provider: voyageai
+    model: voyage-4-large
+    role: optional_stronger_anthropic_side_check
+    api_key_env: VOYAGE_API_KEY
+    default_dimensions: 1024
+    requested_dimensions: 1024
+    use_dimensions_parameter: false
+    batch_size: 128
+    artifact_root: outputs/stage5/embeddings/voyage_4_large
+    cache_manifest: data_inventory/voyage_4_large_cache_manifest.json
+    reason: optional higher-quality Voyage comparison if voyage-4 is promising or inconclusive
+
+local_fallbacks:
+  bge_small_en_v1_5:
+    provider: local_huggingface
+    model: BAAI/bge-small-en-v1.5
+    role: reproducible_local_fallback
+    default_dimensions: 384
+    artifact_root: outputs/stage5/embeddings/bge_small_en_v1_5
+    reason: no paid API dependency; useful if OpenAI/Voyage access is blocked
+
+  all_minilm_l6_v2:
+    provider: local_huggingface
+    model: sentence-transformers/all-MiniLM-L6-v2
+    role: lightweight_local_fallback
+    default_dimensions: 384
+    artifact_root: outputs/stage5/embeddings/all_minilm_l6_v2
+    reason: very light sentence-transformer baseline, not the main thesis model
+
+cache_policy:
+  never_store_api_keys: true
+  api_key_storage: environment_variables_only
+  required_manifest_fields:
+    - provider
+    - model
+    - requested_dimensions
+    - input_manifest_path
+    - input_manifest_sha256
+    - input_template
+    - input_hash_column
+    - item_count
+    - created_utc
+    - embedding_array_path
+    - item_manifest_path
+    - failure_log_path
+  rerun_rule: skip existing matching input_hash/model/dim rows
+  failure_rule: write failed item ids and retry only failures
+  github_policy: commit small manifests only; never commit embedding matrices

@@ -1,0 +1,28 @@
+{
+  "status": "ok",
+  "stage": "5-9C",
+  "created_utc": "2026-06-08T13:40:31Z",
+  "run_id": "finbert_prosusai_headline_v1",
+  "windows": [
+    7,
+    20,
+    60
+  ],
+  "strict_lag": "same-day news excluded; newest allowed news date is image_end_date - 1 day",
+  "high_confidence_threshold": 0.8,
+  "num_finbert_items": 24281,
+  "num_samples": 2399,
+  "num_context_features": 91,
+  "inputs": {
+    "finbert_items": "/Users/jaehyeonjeong/Desktop/논문/5_9a_results/outputs/stage5/finbert_sentiment/finbert_prosusai_headline_v1/stage5_finbert_sentiment_items.csv",
+    "sample_table": "/Users/jaehyeonjeong/Desktop/논문/stage4_film_conditioning/outputs/stage4/news/stage4_news_headline_windows_i60_r20/sample_headline_windows.parquet"
+  },
+  "outputs": {
+    "context_features": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/outputs/stage5/finbert_context/finbert_prosusai_headline_v1/stage5_finbert_context_features.csv",
+    "scaler": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/outputs/stage5/finbert_context/finbert_prosusai_headline_v1/stage5_finbert_context_scaler.json",
+    "split_summary": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_9c_finbert_sentiment_context_split_summary.csv",
+    "feature_summary": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_9c_finbert_sentiment_context_feature_summary.csv",
+    "report": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_9c_finbert_sentiment_context_report.md",
+    "manifest": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/data_inventory/stage5_9c_finbert_sentiment_context_manifest.json"
+  }
+}

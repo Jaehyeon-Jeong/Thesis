@@ -1,0 +1,5 @@
+split,num_samples,sample_date_min,sample_date_max,strict_t_minus_1_missing_samples,strict_t_minus_1_coverage_rate,trailing_7d_missing_samples,trailing_7d_coverage_rate,trailing_20d_missing_samples,trailing_20d_coverage_rate,trailing_60d_missing_samples,trailing_60d_coverage_rate,mean_news_count_7d,mean_news_count_20d,mean_news_count_60d,same_day_news_excluded_samples,stage5_embedding_window_ready
+train,671,2018-04-29,2020-12-10,23,0.9657228017883756,0,1.0,0,1.0,0,1.0,51.788375558867365,147.15946348733237,438.10134128166914,649,True
+validation,287,2018-04-30,2020-12-11,8,0.9721254355400696,0,1.0,0,1.0,0,1.0,54.397212543554005,155.72473867595818,457.1010452961672,278,True
+test,1441,2021-01-01,2024-12-11,64,0.95558639833449,0,1.0,0,1.0,0,1.0,85.01734906315059,241.9097848716169,720.6030534351145,1377,True
+all,2399,2018-04-29,2024-12-11,95,0.96040016673614,0,1.0,0,1.0,0,1.0,72.06002501042101,205.09754064193413,610.0637765735723,2304,True

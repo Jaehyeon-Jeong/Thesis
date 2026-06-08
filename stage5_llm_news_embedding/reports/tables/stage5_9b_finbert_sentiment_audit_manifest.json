@@ -1,0 +1,28 @@
+{
+  "status": "ok",
+  "stage": "5-9B",
+  "created_utc": "2026-06-08T13:32:17Z",
+  "input_items": "/Users/jaehyeonjeong/Desktop/논문/5_9a_results/outputs/stage5/finbert_sentiment/finbert_prosusai_headline_v1/stage5_finbert_sentiment_items.csv",
+  "run_id": "finbert_prosusai_headline_v1",
+  "sample_size": 60,
+  "random_seed": 42,
+  "quality_summary": {
+    "num_rows": 24281,
+    "mean_confidence": 0.8133278487904124,
+    "median_confidence": 0.8659228,
+    "low_confidence_rows": 771,
+    "low_confidence_share": 0.03175322268440344,
+    "mean_sentiment_score": 0.030384670834287215,
+    "std_sentiment_score": 0.5726705613084855,
+    "warnings": []
+  },
+  "outputs": {
+    "audit_samples": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_9b_finbert_sentiment_audit_audit_samples.csv",
+    "label_distribution": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_9b_finbert_sentiment_audit_label_distribution.csv",
+    "year_summary": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_9b_finbert_sentiment_audit_year_summary.csv",
+    "daily_summary": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_9b_finbert_sentiment_audit_daily_summary.csv",
+    "quantiles": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_9b_finbert_sentiment_audit_quantiles.csv",
+    "manifest": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/data_inventory/stage5_9b_finbert_sentiment_audit_manifest.json",
+    "report": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_9b_finbert_sentiment_audit_report.md"
+  }
+}

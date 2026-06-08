@@ -1,0 +1,37 @@
+# Stage 5 OpenAI embedding backend config.
+#
+# Do not write API keys here. Use the OPENAI_API_KEY environment variable.
+
+embedding:
+  backend: openai
+  model: text-embedding-3-small
+  api_key_env: OPENAI_API_KEY
+  output_dimensions: 1536
+  use_openai_dimensions_parameter: false
+  batch_size: 128
+  max_retries: 5
+  cache:
+    input_manifest: data_inventory/stage5_embedding_input_manifest.json
+    output_manifest: data_inventory/openai_embedding_cache_manifest.json
+    artifact_root: outputs/stage5/embeddings/openai_text_embedding_3_small
+
+news_input:
+  unit: news_item
+  text_template: |
+    {title}
+  fallback_summary: ""
+  metadata_kept_outside_embedding_text: [date, source, url]
+  daily_lag_days: 1
+  windows: [7, 20, 60]
+
+dimension_reduction:
+  method: svd
+  fit_on: train
+  dimensions: [8, 16, 32]
+
+model_protocol:
+  visual_baseline: stage2_i60_ohlc_ma_vb_r20
+  context_method: film_full_bounded_last_block
+  pretrained_policy: stage2_frozen
+  film_scale: 0.02
+  seeds: [42, 43, 44, 45, 46]

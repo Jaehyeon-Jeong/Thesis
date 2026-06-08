@@ -1,0 +1,15 @@
+{
+  "status": "dry_run",
+  "stage": "5-5",
+  "run_id": "openai_text_embedding_3_small_primary",
+  "provider": "openai",
+  "model": "text-embedding-3-small",
+  "requested_dimensions": 1536,
+  "input_template": "headline_only_v1",
+  "item_count": 24281,
+  "batch_size": 128,
+  "planned_batches": 190,
+  "input_items_path": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/outputs/stage5/embedding_inputs/stage5_embedding_input_items.csv",
+  "artifact_root": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/outputs/stage5/embeddings/openai_text_embedding_3_small",
+  "cache_manifest_path": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/data_inventory/openai_text_embedding_3_small_cache_manifest.json"
+}

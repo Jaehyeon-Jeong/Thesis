@@ -1,0 +1,31 @@
+{
+  "status": "ok",
+  "stage": "5-6",
+  "created_utc": "2026-06-08T02:52:17Z",
+  "embedding_provider": "openai",
+  "embedding_model": "text-embedding-3-small",
+  "embedding_shape": [
+    24281,
+    1536
+  ],
+  "num_samples": 2399,
+  "sample_table": "/Users/jaehyeonjeong/Desktop/논문/stage4_film_conditioning/outputs/stage4/news/stage4_news_headline_windows_i60_r20/sample_headline_windows.parquet",
+  "windows": [
+    7,
+    20,
+    60
+  ],
+  "aggregation": {
+    "mean": "simple arithmetic mean over items in [t-window, t-1]",
+    "time_decay_mean": "exponential half-life = window_days / 2, using item age in days",
+    "strict_lag": "same-day news excluded; newest allowed news date is image_end_date - 1 day"
+  },
+  "outputs": {
+    "metadata": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/outputs/stage5/embedding_context/openai_text_embedding_3_small/stage5_news_embedding_context_metadata.csv",
+    "mean_vectors": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/outputs/stage5/embedding_context/openai_text_embedding_3_small/stage5_news_embedding_window_mean_vectors.npy",
+    "time_decay_mean_vectors": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/outputs/stage5/embedding_context/openai_text_embedding_3_small/stage5_news_embedding_window_decay_mean_vectors.npy",
+    "summary": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_news_embedding_context_summary.csv",
+    "report": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_news_embedding_context_report.md",
+    "manifest": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/data_inventory/stage5_news_embedding_context_manifest.json"
+  }
+}

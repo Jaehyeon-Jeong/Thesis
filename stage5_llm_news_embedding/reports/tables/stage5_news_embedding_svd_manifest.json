@@ -1,0 +1,49 @@
+{
+  "status": "ok",
+  "stage": "5-7",
+  "created_utc": "2026-06-08T03:02:51Z",
+  "context_root": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/outputs/stage5/embedding_context/openai_text_embedding_3_small",
+  "output_root": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/outputs/stage5/embedding_svd/openai_text_embedding_3_small",
+  "fit_split": "train",
+  "num_rows": 2399,
+  "train_rows": 671,
+  "windows": [
+    7,
+    20,
+    60
+  ],
+  "aggregations": [
+    "mean",
+    "decay_mean"
+  ],
+  "dimensions": [
+    8,
+    16,
+    32
+  ],
+  "method": "train-centered PCA via numpy SVD; reducers fit on train split only",
+  "count_features": [
+    "stage5_news_count_7d",
+    "stage5_news_count_z_7d",
+    "stage5_news_missing_7d",
+    "stage5_news_count_20d",
+    "stage5_news_count_z_20d",
+    "stage5_news_missing_20d",
+    "stage5_news_count_60d",
+    "stage5_news_count_z_60d",
+    "stage5_news_missing_60d"
+  ],
+  "outputs": {
+    "summary": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_news_embedding_svd_grid_summary.csv",
+    "combined_summary": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_news_embedding_svd_grid_combined_summary.csv",
+    "feature_tables": {
+      "mean_dim_8": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/outputs/stage5/embedding_svd/openai_text_embedding_3_small/features/mean/dim_8/stage5_news_embedding_svd_context_features.csv",
+      "mean_dim_16": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/outputs/stage5/embedding_svd/openai_text_embedding_3_small/features/mean/dim_16/stage5_news_embedding_svd_context_features.csv",
+      "mean_dim_32": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/outputs/stage5/embedding_svd/openai_text_embedding_3_small/features/mean/dim_32/stage5_news_embedding_svd_context_features.csv",
+      "decay_mean_dim_8": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/outputs/stage5/embedding_svd/openai_text_embedding_3_small/features/decay_mean/dim_8/stage5_news_embedding_svd_context_features.csv",
+      "decay_mean_dim_16": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/outputs/stage5/embedding_svd/openai_text_embedding_3_small/features/decay_mean/dim_16/stage5_news_embedding_svd_context_features.csv",
+      "decay_mean_dim_32": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/outputs/stage5/embedding_svd/openai_text_embedding_3_small/features/decay_mean/dim_32/stage5_news_embedding_svd_context_features.csv"
+    },
+    "reducer_root": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/outputs/stage5/embedding_svd/openai_text_embedding_3_small/reducers"
+  }
+}

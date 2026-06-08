@@ -1,0 +1,63 @@
+{
+  "status": "ok",
+  "stage": "5-4",
+  "created_utc": "2026-06-08T01:51:11Z",
+  "config": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/configs/stage5_embedding_backends.yaml",
+  "input_stats": {
+    "item_count": 24281,
+    "input_template": "headline_only_v1",
+    "input_items_path": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/outputs/stage5/embedding_inputs/stage5_embedding_input_items.csv",
+    "input_items_sha256": "75e511a7cf8bd2a85c96beec03031c24c367ff5be62c436c60c51a0528140b0c",
+    "total_chars": 1721517,
+    "rough_token_estimate": 430380,
+    "mean_chars": 70.9,
+    "max_chars": 279,
+    "duplicate_embedding_hashes": 0
+  },
+  "primary_backend": "openai_text_embedding_3_small_primary",
+  "anthropic_side_comparison": "voyage_4_anthropic_side_comparison",
+  "optional_backends": [
+    "openai_text_embedding_3_large_optional",
+    "voyage_4_large_optional"
+  ],
+  "cache_policy": {
+    "never_store_api_keys": true,
+    "api_key_storage": "environment_variables_only",
+    "cache_key": [
+      "embedding_input_hash",
+      "provider",
+      "model",
+      "requested_dimensions"
+    ],
+    "rerun_rule": "skip existing matching input_hash/provider/model/dim rows",
+    "failure_rule": "write failed item ids and retry only failures",
+    "github_policy": "commit small manifests only; never commit embedding matrices",
+    "required_manifest_fields": [
+      "provider",
+      "model",
+      "requested_dimensions",
+      "input_manifest_path",
+      "input_manifest_sha256",
+      "input_template",
+      "input_hash_column",
+      "item_count",
+      "created_utc",
+      "embedding_array_path",
+      "item_manifest_path",
+      "failure_log_path"
+    ]
+  },
+  "sources": {
+    "openai_embeddings_guide": "https://platform.openai.com/docs/guides/embeddings",
+    "openai_pricing": "https://platform.openai.com/docs/pricing",
+    "anthropic_embeddings": "https://platform.claude.com/docs/en/docs/build-with-claude/embeddings",
+    "voyage_docs": "https://docs.voyageai.com/"
+  },
+  "outputs": {
+    "backend_plan": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_embedding_backend_plan.csv",
+    "local_fallbacks": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_embedding_local_fallbacks.csv",
+    "cache_policy": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/data_inventory/stage5_embedding_cache_policy.json",
+    "cache_policy_report_copy": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_embedding_cache_policy.json",
+    "report": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_embedding_backend_cache_policy_report.md"
+  }
+}

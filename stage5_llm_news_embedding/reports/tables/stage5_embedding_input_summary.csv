@@ -1,0 +1,10 @@
+metric,value
+raw_rows,30626
+deduped_rows,29208
+usable_rows,24281
+usable_news_date_min,2018-02-28
+usable_news_date_max,2024-12-10
+usable_unique_news_dates,2371
+mean_input_chars,70.9
+max_input_chars,279
+duplicate_embedding_hashes,0

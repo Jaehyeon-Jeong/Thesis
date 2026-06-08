@@ -1,0 +1,29 @@
+{
+  "status": "ok",
+  "stage": "5-5",
+  "run_id": "openai_text_embedding_3_small_primary",
+  "provider": "openai",
+  "model": "text-embedding-3-small",
+  "requested_dimensions": 1536,
+  "input_manifest_path": "/kaggle/working/stage5_llm_news_embedding/data_inventory/stage5_embedding_input_manifest.json",
+  "input_manifest_sha256": "75e511a7cf8bd2a85c96beec03031c24c367ff5be62c436c60c51a0528140b0c",
+  "input_template": "headline_only_v1",
+  "input_hash_column": "embedding_input_hash",
+  "item_count": 24281,
+  "completed_count": 24281,
+  "created_utc": "2026-06-08T02:42:20Z",
+  "artifact_root": "/kaggle/working/stage5_llm_news_embedding/outputs/stage5/embeddings/openai_text_embedding_3_small",
+  "embedding_array_path": "/kaggle/working/stage5_llm_news_embedding/outputs/stage5/embeddings/openai_text_embedding_3_small/embedding_vectors.npy",
+  "embedding_shape": [
+    24281,
+    1536
+  ],
+  "item_manifest_path": "/kaggle/working/stage5_llm_news_embedding/outputs/stage5/embeddings/openai_text_embedding_3_small/embedding_item_manifest.csv",
+  "failure_log_path": "/kaggle/working/stage5_llm_news_embedding/outputs/stage5/embeddings/openai_text_embedding_3_small/embedding_failures.csv",
+  "cache_manifest_path": "/kaggle/working/stage5_llm_news_embedding/data_inventory/openai_text_embedding_3_small_cache_manifest.json",
+  "batch_count": 190,
+  "api_usage": {
+    "prompt_tokens": 390148,
+    "total_tokens": 390148
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "status": "ok",
+  "stage": "5-3",
+  "source_file": "/Users/jaehyeonjeong/.cache/huggingface/hub/datasets--edaschau--bitcoin_news/snapshots/b436ba3f8af941a3bc125b8cb1d7c5297fd01e13/BTC_match_title.csv",
+  "dedupe_policy": {
+    "sort_keys": [
+      "news_time",
+      "url_text",
+      "normalized_title"
+    ],
+    "drop_duplicate_non_empty_url": true,
+    "drop_duplicate_normalized_title": true,
+    "audit": {
+      "initial_rows": 30626,
+      "after_title_filter_rows": 30626,
+      "dropped_empty_title_rows": 0,
+      "dropped_duplicate_url_rows": 0,
+      "dropped_duplicate_title_rows": 1418,
+      "deduped_rows": 29208
+    }
+  },
+  "input_policy": {
+    "embedding_template": "headline_only_v1",
+    "embedding_input_text": "headline_text only",
+    "excluded_from_embedding_text": [
+      "news_date",
+      "source_text",
+      "url_text"
+    ],
+    "exclusion_reason": "Date/source/url are retained as metadata but excluded from embedding text to reduce time/source leakage and keep the representation content-based.",
+    "usable_news_date_min": "2018-02-28",
+    "usable_news_date_max": "2024-12-10",
+    "stage_sample_date_min": "2018-04-29",
+    "stage_sample_date_max": "2024-12-11",
+    "windows": [
+      7,
+      20,
+      60
+    ],
+    "strict_lag": {
+      "name": "strict_t_minus_1_calendar_date",
+      "allowed_news": "news calendar date <= image_end_date - 1 day",
+      "excluded_news": "same-calendar-day news and all later news",
+      "window_rule": "for window W, use news dates from t-W through t-1 inclusive",
+      "reason": "date-only news publication timestamps are not sufficient to defend same-day availability; t-1 prevents same-day future leakage."
+    }
+  },
+  "embedding_backend_target": {
+    "backend": "openai",
+    "model": "text-embedding-3-small",
+    "api_call_performed": false
+  },
+  "outputs": {
+    "embedding_input_items": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/outputs/stage5/embedding_inputs/stage5_embedding_input_items.csv",
+    "embedding_input_examples": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_embedding_input_examples.csv",
+    "embedding_input_summary": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_embedding_input_summary.csv",
+    "manifest": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/data_inventory/stage5_embedding_input_manifest.json",
+    "report": "/Users/jaehyeonjeong/Desktop/논문/stage5_llm_news_embedding/reports/tables/stage5_embedding_input_construction_report.md"
+  }
+}

@@ -114,6 +114,10 @@ used as an interpretation layer, not as the main prediction model.
 - `5-13` result: Stage5 final report and title decision completed. Stage5 is
   closed for the first thesis draft. The final Stage5 claim is small positive
   / conditional calibration, not a large LLM/news performance breakthrough.
+- `5-14` result: gamma-relaxed and beta-relaxed FinBERT+F&G FiLM ablations
+  completed. They reduce accuracy relative to the conservative bounded FiLM
+  result and are treated as diagnostic support for the bounded-modulation
+  design, not as independent positive result rows.
 - Current reading: F&G remains the strongest compact external regime source;
   FinBERT sentiment can be combined with it without destabilizing the frozen
   Stage2 + bounded FiLM setup, but headline-level sentiment is still too weak

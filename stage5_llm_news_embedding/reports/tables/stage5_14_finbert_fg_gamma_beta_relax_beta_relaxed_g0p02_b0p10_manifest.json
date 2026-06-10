@@ -1,0 +1,29 @@
+{
+  "status": "ok",
+  "stage": "5-14",
+  "stage4_experiment_name": "stage4_film_full_bounded_last_block_i60_ohlc_ma_vb_r20_c60_stage5_finbert_fg_sentiment_v1_pretrained_frozen_beta_relaxed_g0p02_b0p10",
+  "context_name": "stage5_finbert_fg_context_i60_ohlc_ma_vb_r20_stage5_finbert_fg_sentiment_v1",
+  "feature_set_name": "stage5_finbert_fg_sentiment_v1",
+  "feature_source": "finbert_fg",
+  "fg_features": [
+    "fg_value",
+    "fg_mean_60",
+    "fg_delta_60",
+    "fg_std_60"
+  ],
+  "finbert_run_id": "finbert_prosusai_headline_v1",
+  "relaxation_variant": "beta_relaxed_g0p02_b0p10",
+  "modulation_scale": 0.1,
+  "gamma_modulation_scale": 0.02,
+  "beta_modulation_scale": 0.1,
+  "run_seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+  ],
+  "stage2_checkpoint_bundle_root": "/kaggle/input/datasets/moskow/stage22/stage2_i60_r20_four_image_full_seed_checkpoints_for_stage4_n15/stage2_i60_r20_four_image_full_seed_checkpoints_for_stage4_n15",
+  "seed_csv": "/kaggle/working/stage4_film_conditioning/reports/tables/stage5_14_finbert_fg_gamma_beta_relax_beta_relaxed_g0p02_b0p10_seed_results.csv",
+  "mean_std_csv": "/kaggle/working/stage4_film_conditioning/reports/tables/stage5_14_finbert_fg_gamma_beta_relax_beta_relaxed_g0p02_b0p10_mean_std_results.csv"
+}

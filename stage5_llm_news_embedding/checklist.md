@@ -242,6 +242,21 @@ choice is fixed:
     - Recommended title:
       `Context-Conditioned FiLM for Bitcoin Direction Prediction from Price Charts`.
 
+- [x] 5-14. FinBERT + F&G gamma/beta relaxation ablation
+  - Purpose: test whether the final bounded FiLM protocol was too conservative.
+  - Variants:
+    - gamma relaxed: `gamma_scale=0.10`, `beta_scale=0.02`;
+    - beta relaxed: `gamma_scale=0.02`, `beta_scale=0.10`.
+  - Result: both variants completed for five seeds but produced identical
+    seed-level metrics. They are therefore treated as diagnostic ablations, not
+    independent positive result rows.
+  - Mean accuracy `0.569466`, ROC-AUC `0.588825`, Brier `0.270900`.
+  - Interpretation: one-sided stronger modulation did not improve over the
+    standard FinBERT + F&G bounded FiLM accuracy `0.580569`; this supports
+    keeping conservative bounded FiLM in the thesis.
+  - Result note:
+    [5-14 FinBERT + F&G gamma/beta relaxation](checklist_results/5-14_finbert_fg_gamma_beta_relaxation.md)
+
 ## 한국어
 
 Stage 5는 LLM에서 만든 뉴스 표현을 FiLM context로 넣는 실험입니다. 현재

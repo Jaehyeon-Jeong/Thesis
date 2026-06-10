@@ -1,0 +1,128 @@
+{
+  "status": "ok",
+  "stage": "4-N16-1",
+  "context_name": "stage4_derivatives_context_i60_ohlc_ma_vb_r20_n16_funding_plus_cftc_oi",
+  "context_source": "crypto_derivatives_leverage",
+  "feature_set": "funding_plus_cftc_oi",
+  "terminology": {
+    "funding": "perpetual swap funding pressure / long-short crowding proxy",
+    "activity": "BitMEX futures trading activity and notional participation",
+    "cftc": "release-lagged CFTC/CME Bitcoin futures open interest and positioning",
+    "btc_direction": "not hard-coded; learned by context-FiLM"
+  },
+  "source": {
+    "btc_source": "/Users/jaehyeonjeong/Desktop/\ub17c\ubb38/\ub370\uc774\ud130\uc14b/BTC _OHLCV/btc_1d_data_2018_to_2025.csv",
+    "funding_source": "/Users/jaehyeonjeong/Desktop/\ub17c\ubb38/stage4_film_conditioning/data_inventory/crypto_derivatives/bitmex_xbtusd/processed/bitmex_xbtusd_funding_daily_2018_2024.csv",
+    "activity_source": "/Users/jaehyeonjeong/Desktop/\ub17c\ubb38/stage4_film_conditioning/data_inventory/crypto_derivatives/bitmex_xbtusd/processed/bitmex_xbtusd_derivatives_activity_daily_2018_2024.csv",
+    "cftc_source": "/Users/jaehyeonjeong/Desktop/\ub17c\ubb38/stage4_film_conditioning/data_inventory/crypto_derivatives/cftc_cme_bitcoin_cot/processed/cftc_cme_bitcoin_main_plus_micro_cot_daily_release_lag3_ffill_2018_2024.csv"
+  },
+  "alignment": {
+    "daily_asof_lag_days": 1,
+    "daily_policy": "use latest BitMEX daily source date <= BTC image end date minus lag",
+    "cftc_policy": "use release-lagged CFTC daily forward-filled file; no extra lag applied",
+    "age_summary": {
+      "funding_age_days": {
+        "max": 1.0,
+        "mean": 1.0
+      },
+      "activity_age_days": {
+        "max": 1.0,
+        "mean": 1.0
+      },
+      "cot_age_days": {
+        "max": 10.0,
+        "mean": 6.000416840350146
+      }
+    }
+  },
+  "image_window": 60,
+  "image_spec": "ohlc_ma_vb",
+  "return_horizon": 20,
+  "context_dim": 33,
+  "feature_order": [
+    "funding_rate_mean_7",
+    "funding_rate_sum_7",
+    "funding_rate_abs_mean_7",
+    "funding_rate_min_7",
+    "funding_rate_max_7",
+    "funding_rate_mean_20",
+    "funding_rate_sum_20",
+    "funding_rate_abs_mean_20",
+    "funding_rate_min_20",
+    "funding_rate_max_20",
+    "funding_rate_mean_60",
+    "funding_rate_sum_60",
+    "funding_rate_abs_mean_60",
+    "funding_rate_min_60",
+    "funding_rate_max_60",
+    "cot_open_interest",
+    "cot_lev_money_net_ratio",
+    "cot_asset_mgr_net_ratio",
+    "cot_dealer_net_ratio",
+    "cot_other_rept_net_ratio",
+    "cot_nonrept_net_ratio",
+    "cot_age_days",
+    "cot_open_interest_change_20",
+    "cot_open_interest_pct_change_20",
+    "cot_open_interest_change_60",
+    "cot_open_interest_pct_change_60",
+    "cot_open_interest_zscore_60",
+    "cot_lev_money_net_ratio_change_20",
+    "cot_lev_money_net_ratio_change_60",
+    "cot_asset_mgr_net_ratio_change_20",
+    "cot_asset_mgr_net_ratio_change_60",
+    "cot_dealer_net_ratio_change_20",
+    "cot_dealer_net_ratio_change_60"
+  ],
+  "normalized_feature_columns": [
+    "funding_rate_mean_7_normalized",
+    "funding_rate_sum_7_normalized",
+    "funding_rate_abs_mean_7_normalized",
+    "funding_rate_min_7_normalized",
+    "funding_rate_max_7_normalized",
+    "funding_rate_mean_20_normalized",
+    "funding_rate_sum_20_normalized",
+    "funding_rate_abs_mean_20_normalized",
+    "funding_rate_min_20_normalized",
+    "funding_rate_max_20_normalized",
+    "funding_rate_mean_60_normalized",
+    "funding_rate_sum_60_normalized",
+    "funding_rate_abs_mean_60_normalized",
+    "funding_rate_min_60_normalized",
+    "funding_rate_max_60_normalized",
+    "cot_open_interest_normalized",
+    "cot_lev_money_net_ratio_normalized",
+    "cot_asset_mgr_net_ratio_normalized",
+    "cot_dealer_net_ratio_normalized",
+    "cot_other_rept_net_ratio_normalized",
+    "cot_nonrept_net_ratio_normalized",
+    "cot_age_days_normalized",
+    "cot_open_interest_change_20_normalized",
+    "cot_open_interest_pct_change_20_normalized",
+    "cot_open_interest_change_60_normalized",
+    "cot_open_interest_pct_change_60_normalized",
+    "cot_open_interest_zscore_60_normalized",
+    "cot_lev_money_net_ratio_change_20_normalized",
+    "cot_lev_money_net_ratio_change_60_normalized",
+    "cot_asset_mgr_net_ratio_change_20_normalized",
+    "cot_asset_mgr_net_ratio_change_60_normalized",
+    "cot_dealer_net_ratio_change_20_normalized",
+    "cot_dealer_net_ratio_change_60_normalized"
+  ],
+  "feature_group_counts": {
+    "bitmex_funding": 15,
+    "bitmex_activity": 0,
+    "cftc_cme_oi_positioning": 18
+  },
+  "split_counts": {
+    "train": 671,
+    "validation": 287,
+    "test": 1441
+  },
+  "date_min": "2018-04-29",
+  "date_max": "2024-12-11",
+  "fit_on": "train",
+  "normalization": "train_median_impute_train_quantile_clip_train_zscore",
+  "finite_normalized": true,
+  "warnings": []
+}

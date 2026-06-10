@@ -1,0 +1,2 @@
+num_test_rows,stage2_coverage,stage2_correct_rate_mean,stage2_error_rate_mean,stage2_prob_up_mean,stage2_pred_up_rate_mean,stage2_seed_count_min,stage2_seed_count_max
+1441,1.0,0.5793199167244969,0.42068008327550316,0.5979350360324974,0.6643997224149896,5,5

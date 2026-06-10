@@ -1,0 +1,93 @@
+{
+  "status": "ok",
+  "stage": "4-N16-2",
+  "marker": "N16-2 train-only derivatives feature audit",
+  "workspace_root": "/Users/jaehyeonjeong/Desktop/\u1102\u1169\u11ab\u1106\u116e\u11ab",
+  "project_root": "/Users/jaehyeonjeong/Desktop/\u1102\u1169\u11ab\u1106\u116e\u11ab/stage4_film_conditioning",
+  "context_name": "stage4_derivatives_context_i60_ohlc_ma_vb_r20_n16_derivatives_all",
+  "run_seed": 42,
+  "split_counts": {
+    "test": 1441,
+    "train": 671,
+    "validation": 287
+  },
+  "num_derivatives_features": 46,
+  "stage2_predictions_root": "/Users/jaehyeonjeong/Desktop/\u1102\u1169\u11ab\u1106\u116e\u11ab/stage2_i60_r20_four_image_full_seed_checkpoints_for_stage4_n15/outputs/stage2/predictions/stage2_i60_ohlc_ma_vb_r20",
+  "prior_contexts": {
+    "fear_greed": "/Users/jaehyeonjeong/Desktop/\u1102\u1169\u11ab\u1106\u116e\u11ab/stage4_film_conditioning/outputs/stage4/context/stage4_context_i60_ohlc_ma_vb_r20_c60_fg_only/seed_42/context_features.csv",
+    "technical": "/Users/jaehyeonjeong/Desktop/\u1102\u1169\u11ab\u1106\u116e\u11ab/stage4_film_conditioning/outputs/stage4/context/stage4_context_i60_ohlc_ma_vb_r20_c60/seed_42/context_features.csv"
+  },
+  "selection_policy": {
+    "feature_selection_split": "train only",
+    "train_only_candidate_score": "max(abs(pearson/spearman label), abs(pearson/spearman future_return), 2*abs(univariate_auc-0.5))",
+    "stage2_error_correlation": "test diagnostic only",
+    "time_trend_correlation": "train end_index Spearman diagnostic only",
+    "internal_redundancy_threshold": 0.85,
+    "selection_max_internal_abs_corr": 0.85,
+    "selection_max_prior_abs_corr": 0.85,
+    "selection_max_total": 12,
+    "selection_max_per_group": 4
+  },
+  "top_features": [
+    {
+      "feature": "funding_rate_max_7",
+      "group": "bitmex_funding",
+      "train_only_candidate_score": 0.44144970596336996
+    },
+    {
+      "feature": "funding_rate_max_20",
+      "group": "bitmex_funding",
+      "train_only_candidate_score": 0.4041143908867412
+    },
+    {
+      "feature": "funding_rate_sum_20",
+      "group": "bitmex_funding",
+      "train_only_candidate_score": 0.3479154327967121
+    },
+    {
+      "feature": "funding_rate_mean_20",
+      "group": "bitmex_funding",
+      "train_only_candidate_score": 0.34789748559737255
+    },
+    {
+      "feature": "funding_rate_mean_7",
+      "group": "bitmex_funding",
+      "train_only_candidate_score": 0.30871874943915
+    },
+    {
+      "feature": "funding_rate_sum_7",
+      "group": "bitmex_funding",
+      "train_only_candidate_score": 0.30870080223981045
+    },
+    {
+      "feature": "bitmex_foreignnotional_mean_60",
+      "group": "bitmex_activity",
+      "train_only_candidate_score": 0.29925160178754107
+    },
+    {
+      "feature": "bitmex_volume_mean_60",
+      "group": "bitmex_activity",
+      "train_only_candidate_score": 0.29925160178754107
+    },
+    {
+      "feature": "funding_rate_max_60",
+      "group": "bitmex_funding",
+      "train_only_candidate_score": 0.27485238428543224
+    },
+    {
+      "feature": "funding_rate_mean_60",
+      "group": "bitmex_funding",
+      "train_only_candidate_score": 0.266974989590623
+    }
+  ],
+  "outputs": {
+    "feature_audit": "/Users/jaehyeonjeong/Desktop/\u1102\u1169\u11ab\u1106\u116e\u11ab/stage4_film_conditioning/reports/tables/stage4_n16_2_derivatives_feature_audit.csv",
+    "group_summary": "/Users/jaehyeonjeong/Desktop/\u1102\u1169\u11ab\u1106\u116e\u11ab/stage4_film_conditioning/reports/tables/stage4_n16_2_derivatives_group_summary.csv",
+    "internal_redundancy_pairs": "/Users/jaehyeonjeong/Desktop/\u1102\u1169\u11ab\u1106\u116e\u11ab/stage4_film_conditioning/reports/tables/stage4_n16_2_derivatives_internal_redundancy_pairs.csv",
+    "prior_context_redundancy": "/Users/jaehyeonjeong/Desktop/\u1102\u1169\u11ab\u1106\u116e\u11ab/stage4_film_conditioning/reports/tables/stage4_n16_2_derivatives_prior_context_redundancy.csv",
+    "selected_candidates": "/Users/jaehyeonjeong/Desktop/\u1102\u1169\u11ab\u1106\u116e\u11ab/stage4_film_conditioning/reports/tables/stage4_n16_2_derivatives_selected_feature_candidates.csv",
+    "stage2_error_diagnostics": "/Users/jaehyeonjeong/Desktop/\u1102\u1169\u11ab\u1106\u116e\u11ab/stage4_film_conditioning/reports/tables/stage4_n16_2_derivatives_stage2_error_diagnostics.csv",
+    "report": "/Users/jaehyeonjeong/Desktop/\u1102\u1169\u11ab\u1106\u116e\u11ab/stage4_film_conditioning/reports/tables/stage4_n16_2_derivatives_feature_audit_report.md",
+    "manifest": "/Users/jaehyeonjeong/Desktop/\u1102\u1169\u11ab\u1106\u116e\u11ab/stage4_film_conditioning/reports/tables/stage4_n16_2_derivatives_manifest.json"
+  }
+}

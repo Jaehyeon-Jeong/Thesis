@@ -1,0 +1,57 @@
+{
+  "raw_json": "stage4_film_conditioning/data_inventory/crypto_onchain/coinmetrics_btc_community/raw/coinmetrics_btc_community_asset_metrics_2018_2024.json",
+  "daily_path": "stage4_film_conditioning/data_inventory/crypto_onchain/coinmetrics_btc_community/processed/coinmetrics_btc_community_onchain_daily_2018_2024.csv",
+  "metrics_downloaded": [
+    "AdrActCnt",
+    "TxCnt",
+    "HashRate"
+  ],
+  "rows": 2557,
+  "date_min": "2018-01-01",
+  "date_max": "2024-12-31",
+  "missing_rate": {
+    "AdrActCnt": 0.0,
+    "TxCnt": 0.0,
+    "HashRate": 0.0
+  },
+  "first_rows": [
+    {
+      "Date": "2018-01-01",
+      "AdrActCnt": 972783,
+      "TxCnt": 241625,
+      "HashRate": 14923655.7184224
+    },
+    {
+      "Date": "2018-01-02",
+      "AdrActCnt": 1142721,
+      "TxCnt": 343664,
+      "HashRate": 16415540.6673567
+    },
+    {
+      "Date": "2018-01-03",
+      "AdrActCnt": 1130917,
+      "TxCnt": 396942,
+      "HashRate": 15071578.273538
+    }
+  ],
+  "last_rows": [
+    {
+      "Date": "2024-12-29",
+      "AdrActCnt": 727603,
+      "TxCnt": 432661,
+      "HashRate": 853362734.1174871
+    },
+    {
+      "Date": "2024-12-30",
+      "AdrActCnt": 812462,
+      "TxCnt": 362074,
+      "HashRate": 867710158.6044941
+    },
+    {
+      "Date": "2024-12-31",
+      "AdrActCnt": 780332,
+      "TxCnt": 315699,
+      "HashRate": 703991256.0098306
+    }
+  ]
+}

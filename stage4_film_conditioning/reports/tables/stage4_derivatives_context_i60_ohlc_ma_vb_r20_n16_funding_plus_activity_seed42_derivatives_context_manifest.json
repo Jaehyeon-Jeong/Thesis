@@ -1,0 +1,104 @@
+{
+  "status": "ok",
+  "stage": "4-N16-1",
+  "context_source": "crypto_derivatives_leverage",
+  "feature_set": "funding_plus_activity",
+  "context_dim": 28,
+  "feature_order": [
+    "funding_rate_mean_7",
+    "funding_rate_sum_7",
+    "funding_rate_abs_mean_7",
+    "funding_rate_min_7",
+    "funding_rate_max_7",
+    "funding_rate_mean_20",
+    "funding_rate_sum_20",
+    "funding_rate_abs_mean_20",
+    "funding_rate_min_20",
+    "funding_rate_max_20",
+    "funding_rate_mean_60",
+    "funding_rate_sum_60",
+    "funding_rate_abs_mean_60",
+    "funding_rate_min_60",
+    "funding_rate_max_60",
+    "bitmex_trades_mean_7",
+    "bitmex_trades_mean_20",
+    "bitmex_trades_mean_60",
+    "bitmex_volume_mean_7",
+    "bitmex_volume_mean_20",
+    "bitmex_volume_mean_60",
+    "bitmex_turnover_mean_7",
+    "bitmex_turnover_mean_20",
+    "bitmex_turnover_mean_60",
+    "bitmex_homenotional_mean_20",
+    "bitmex_homenotional_mean_60",
+    "bitmex_foreignnotional_mean_20",
+    "bitmex_foreignnotional_mean_60"
+  ],
+  "normalized_feature_columns": [
+    "funding_rate_mean_7_normalized",
+    "funding_rate_sum_7_normalized",
+    "funding_rate_abs_mean_7_normalized",
+    "funding_rate_min_7_normalized",
+    "funding_rate_max_7_normalized",
+    "funding_rate_mean_20_normalized",
+    "funding_rate_sum_20_normalized",
+    "funding_rate_abs_mean_20_normalized",
+    "funding_rate_min_20_normalized",
+    "funding_rate_max_20_normalized",
+    "funding_rate_mean_60_normalized",
+    "funding_rate_sum_60_normalized",
+    "funding_rate_abs_mean_60_normalized",
+    "funding_rate_min_60_normalized",
+    "funding_rate_max_60_normalized",
+    "bitmex_trades_mean_7_normalized",
+    "bitmex_trades_mean_20_normalized",
+    "bitmex_trades_mean_60_normalized",
+    "bitmex_volume_mean_7_normalized",
+    "bitmex_volume_mean_20_normalized",
+    "bitmex_volume_mean_60_normalized",
+    "bitmex_turnover_mean_7_normalized",
+    "bitmex_turnover_mean_20_normalized",
+    "bitmex_turnover_mean_60_normalized",
+    "bitmex_homenotional_mean_20_normalized",
+    "bitmex_homenotional_mean_60_normalized",
+    "bitmex_foreignnotional_mean_20_normalized",
+    "bitmex_foreignnotional_mean_60_normalized"
+  ],
+  "feature_group_counts": {
+    "bitmex_funding": 15,
+    "bitmex_activity": 13,
+    "cftc_cme_oi_positioning": 0
+  },
+  "split_counts": {
+    "train": 671,
+    "validation": 287,
+    "test": 1441
+  },
+  "fit_on": "train",
+  "normalization": "train_median_impute_train_quantile_clip_train_zscore",
+  "alignment": {
+    "daily_asof_lag_days": 1,
+    "daily_policy": "use latest BitMEX daily source date <= BTC image end date minus lag",
+    "cftc_policy": "use release-lagged CFTC daily forward-filled file; no extra lag applied",
+    "age_summary": {
+      "funding_age_days": {
+        "max": 1.0,
+        "mean": 1.0
+      },
+      "activity_age_days": {
+        "max": 1.0,
+        "mean": 1.0
+      },
+      "cot_age_days": {
+        "max": 10.0,
+        "mean": 6.000416840350146
+      }
+    }
+  },
+  "terminology": {
+    "funding": "perpetual swap funding pressure / long-short crowding proxy",
+    "activity": "BitMEX futures trading activity and notional participation",
+    "cftc": "release-lagged CFTC/CME Bitcoin futures open interest and positioning",
+    "btc_direction": "not hard-coded; learned by context-FiLM"
+  }
+}

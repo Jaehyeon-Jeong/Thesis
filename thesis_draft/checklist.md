@@ -24,12 +24,14 @@
 - [x] `5-12`: Grad-CAM + gamma/beta + news/F&G context export
 - [x] `5-13`: Stage5 final report and thesis title decision
 - [x] `5-14`: FinBERT+F&G gamma/beta relaxation ablation
+- [x] `5-15`: FinBERT+F&G sample-level FiLM interpretation
 - [x] `4-N14B2-B6`: N16 derivatives/leverage context 조건부 해석
 - [x] thesis draft v0: chapter별 본문 확장
 - [x] LaTeX/PDF preview 재작성
   - `thesis_draft.tex`
   - `thesis_draft.pdf`
-  - 현재 preview는 32쪽으로, bachelor 권장 30-40쪽 범위에 진입
+  - 최종 preview는 48쪽이며, appendix를 제외한 본문은 bachelor 권장
+    30-40쪽 범위에 진입
   - Abstract는 단독 페이지, Contents는 별도 페이지, Abbreviations는 표 형식
 - [x] thesis draft v1: academic thesis 구조로 재작성
   - Abstract 추가
@@ -147,6 +149,24 @@ Target chapter structure:
     `0.580569`에서 `0.569466`으로 낮춤.
   - Thesis 반영 위치: 4.3의 bounded FiLM 제한식 근거, 6.6의 robustness
     discussion.
+- [x] `5-15`: FinBERT+F&G sample-level FiLM interpretation
+  - 목적: `Stage2 chart-only wrong -> FinBERT+F&G FiLM correct` 사례에서
+    context 값, `P(up)` 변화, gamma/beta modulation, Grad-CAM을 연결해
+    해석 가능성을 설명.
+  - 중요 정정: correction sample은 `95`개이고 regression은 `86`개이며,
+    `+9`는 net correction count임.
+  - [x] 5-15A: correction 4개, regression 4개 대표 case table 생성
+  - [x] 5-15B: F&G/FinBERT/news-count context explanation table 생성
+  - [x] 5-15C: correction vs regression gamma/beta modulation summary 생성
+  - [x] 5-15D: gamma/beta plot 및 correction Grad-CAM figure 정리
+  - [x] 5-15E: 4.x interpretability protocol과 6.4 sample-level
+    interpretation에 반영
+  - Thesis 반영 위치:
+    - 4.6 Interpretability protocol
+    - 6.4 Interpretability of FiLM modulation
+    - 7.2 RQ3 answer
+  - Figure 7 최종 사용본:
+    `figures/gradcam_finbert_fg_corrections_chronological.png`
 
 ### Stage4
 
@@ -181,6 +201,7 @@ Target chapter structure:
   - FinBERT+F&G Grad-CAM panel 1개
   - visual baseline, context summary, correction/regression figure 포함
 - [ ] optional gamma/beta channel-level audit
+  - 5-15 결과를 먼저 반영한 뒤 필요할 때만 추가.
   - context-feature vs gamma/beta correlation
   - correction vs regression modulation 비교
 

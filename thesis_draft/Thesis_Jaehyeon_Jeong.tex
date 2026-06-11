@@ -434,10 +434,18 @@ The original Re-Imagining Price Trends study evaluates both statistical predicti
 
 Correction/regression analysis is used to compare a context model with the chart-only baseline. A correction occurs when the baseline is wrong and the context model is correct. A regression occurs when the baseline is correct and the context model is wrong. Net correction is the difference between corrections and regressions. This is especially useful when the global accuracy gain is small, because it shows whether context adds targeted corrections or merely changes decisions at random.
 
-\enlargethispage{2\baselineskip}
+\clearpage
 \subsection{Interpretability protocol}
 
-Interpretability is based on three views. First, Grad-CAM shows the chart regions that support a prediction. Second, gamma and beta summaries show how strongly context modulates visual channels. Third, conditional bucket analysis shows where the context model helps or harms: uncertain baseline samples, sentiment regimes, news-intensity regimes, and leverage regimes.
+The interpretability analysis in this thesis is diagnostic rather than causal. It does not try to prove that a particular news item or sentiment value caused a Bitcoin move. Instead, it inspects how the context branch changes the decision of a fixed chart-image model. Four connected views are used: prediction transitions, context values, FiLM modulation statistics, and Grad-CAM visualizations.
+
+First, test samples are divided into four transition groups. A correction means that the chart-only model is wrong and the context-FiLM model is correct. A regression means that the chart-only model is correct and the context-FiLM model becomes wrong. The remaining samples are both-correct or both-wrong. This view is useful because a small aggregate accuracy change can hide where context helps and where it harms.
+
+Second, selected correction and regression samples are inspected together with their context values. For each selected sample, the analysis reports the true direction, both model predictions, both upward probabilities, and the probability change. The same table reports Fear and Greed values, rolling sentiment statistics, FinBERT positive/neutral/negative ratios, and recent news counts. This makes it possible to interpret a probability shift against the market-context regime rather than as an isolated model output.
+
+Third, FiLM modulation is summarized through $\Delta\gamma=\gamma-1$ and $\beta$. The mean values indicate the average signed direction of modulation, while the L2 norms measure its overall magnitude. A positive $\Delta\gamma$ increases the scale of a visual feature channel, while a negative $\Delta\gamma$ decreases it. A positive or negative $\beta$ shifts the corresponding activation upward or downward. These values are not treated as named economic features, because CNN channels do not have direct semantic labels. They only show that the context branch changed the frozen visual representation in a bounded and measurable way.
+
+Finally, Grad-CAM compares chart-only and context-conditioned saliency maps on selected transition samples. It is not causal; it only indicates which chart regions are salient for the model output. A sample-level interpretation is accepted only when the context regime, probability shift, bounded $\gamma/\beta$ modulation, and Grad-CAM change are mutually consistent.
 
 \clearpage
 
@@ -724,9 +732,9 @@ This explains why \code{ohlc\_ma\_vb} is strong and why technical FiLM does not 
 
 F\&G, FinBERT sentiment, funding, and open interest are different. They represent market psychology, news tone, leverage, and positioning. These variables are not fully visible in the chart image. They can therefore calibrate the final prediction in conditions where the chart pattern is ambiguous.
 
-The correction/regression evidence supports this interpretation. The FinBERT+F\&G model improves more in uncertain visual samples and in active sentiment/news regimes: the strongest positive buckets are near-threshold chart-only predictions, greed regimes, and high-news-count windows. The derivatives model provides a related same-image case: selected correction examples and transition summaries show that funding plus CFTC open-interest context tends to lower some weak bullish predictions. In both cases, the model behaves as a small correction layer rather than a new dominant predictor.
+The correction/regression evidence supports this interpretation. FinBERT+F\&G helps most in uncertain visual samples and active sentiment/news regimes. The derivatives model provides a related same-image case: funding plus CFTC open-interest context tends to lower weak bullish predictions. In both cases, context behaves as a small correction layer, not as a new dominant predictor.
 
-The predefined N16 bucket analysis makes this derivatives result more precise. It should be read as a conditional analysis of the controlled \code{ohlc\_vb} setting, not as a replacement for the strongest \code{ohlc\_ma\_vb} visual model. The full-test same-image improvement is small, but the correction is concentrated in samples where the visual model is uncertain and the funding context is high. Table 9 reports the main predefined buckets. These buckets were defined before looking at their accuracy deltas, which reduces the risk of selecting only favorable regimes after the fact.
+The predefined N16 bucket analysis makes this derivatives result more precise. It is a conditional analysis of the controlled \code{ohlc\_vb} setting, not a replacement for the strongest \code{ohlc\_ma\_vb} visual model. The full-test same-image gain is small, but corrections concentrate where the visual model is uncertain and funding is high. Table 9 reports the predefined buckets.
 
 \begin{table}[H]
 \caption{Conditional derivatives/leverage buckets}
@@ -747,21 +755,66 @@ Uncertain chart + high funding & 303 & +0.039604 & 24 & 12 & +12 & -0.010123\\
 \end{center}
 \end{table}
 
-The largest conditional gain appears in the intersection of visual uncertainty and high funding. In that bucket, the context model reduces the average upward probability and converts more false-Up predictions into correct Down predictions than it creates new errors. This does not make the derivatives model the best overall predictor, because it still uses a weaker \code{ohlc\_vb} visual baseline. It does, however, support the narrower interpretation that leverage context can be useful when the chart-only decision is ambiguous.
+The largest conditional gain appears in the intersection of visual uncertainty and high funding. In that bucket, the context model reduces the average upward probability and converts more false-Up predictions into correct Down predictions than it creates new errors. This supports the narrower interpretation that leverage context is useful when the chart-only decision is ambiguous.
 
-These conditional counts should also be read cautiously. Across all derivative-model decision changes in Table 9, the sign-test evidence is weak: the all-test transition count gives $p\approx0.195$. The uncertain-chart and high-funding bucket is more suggestive, with 24 corrections and 12 regressions ($p\approx0.065$ two-sided), but it is still a conditional diagnostic rather than a final significance claim. In addition, 20-day forward-return labels are sampled daily and therefore overlap, so the effective number of independent observations is smaller than the raw row count.
+These counts are diagnostic, not a final significance claim. Across all derivative-model decision changes, the sign-test evidence is weak ($p\approx0.195$); the uncertain-chart and high-funding bucket is more suggestive, with 24 corrections and 12 regressions ($p\approx0.065$ two-sided). The 20-day labels also overlap, so the effective number of independent observations is smaller than the raw row count.
 
 \subsection{Interpretability of FiLM modulation}
 
-The interpretability claim in this thesis is diagnostic rather than causal. Grad-CAM shows which chart regions are salient for the CNN, correction/regression tables show when context changes a hard decision, and FiLM gamma/beta summaries show the magnitude and direction of channel-wise modulation. These artifacts make the context path inspectable, but they do not prove that a particular news item caused the market move.
+A central reason for using FiLM is interpretability in addition to prediction. Because the context branch produces explicit $\gamma$ and $\beta$ modulation values, it is possible to examine how market context changes a fixed chart-image decision. The five-seed transition table contains 95 corrections and 86 regressions, giving a net improvement of +9 decisions. Table 10 reports selected examples from both sides; $N_{20}$ denotes the 20-day news count and $\Delta_{60}$ denotes the F\&G change from 60 days earlier.
 
-Grad-CAM is most useful when it is paired with a decision transition or with a visible probability shift. If the hard prediction is unchanged, the heatmap is only a saliency sanity check. Therefore, the main evidence in Section 6 is the correction/regression and conditional-bucket analysis. Figure 7 is kept as a compact qualitative example, while the near-identity gamma/beta values support the interpretation that bounded FiLM acts mainly as conservative probability calibration.
+\begin{table}[H]
+\caption{Representative FinBERT+F\&G FiLM correction and regression cases}
+\begin{center}
+\tiny
+\setlength{\tabcolsep}{2.8pt}
+\renewcommand{\arraystretch}{0.72}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.13\textwidth}>{\raggedright\arraybackslash}p{0.07\textwidth}>{\raggedright\arraybackslash}p{0.12\textwidth}>{\raggedright\arraybackslash}p{0.20\textwidth}>{\raggedright\arraybackslash}p{0.39\textwidth}}
+\toprule
+\textbf{Date} & \textbf{Type} & \textbf{$P(up)$} & \textbf{Key context} & \textbf{Short reading}\\
+\midrule
+2021-04-20 & Corr. & 0.54$\rightarrow$0.49 & F\&G=73; $\Delta_{60}$=-20; $N_{20}$=288 & Greed remains high, but sentiment cooled from the earlier extreme-greed regime.\\
+2021-05-19 & Corr. & 0.53$\rightarrow$0.49 & F\&G=23; $\Delta_{60}$=-52; neg$\geq$pos & Fear transition; false-Up chart decision changes into Down.\\
+2021-07-02 & Corr. & 0.53$\rightarrow$0.48 & F\&G=21; neg=.36$>$.23; $N_{20}$=366 & Clean fear and negative-news case; bullish probability is reduced.\\
+2021-06-26 & Corr. & 0.51$\rightarrow$0.49 & F\&G=20; neg=.32$>$.21; $N_{20}$=422 & Borderline false-Up case; small bounded adjustment changes the class.\\
+2021-10-22 & Regr. & 0.53$\rightarrow$0.44 & F\&G=75; pos=.41$>$.13; $N_{20}$=391 & Positive-context over-correction; correct weak-Up signal is suppressed.\\
+2021-10-26 & Regr. & 0.51$\rightarrow$0.43 & F\&G=76; pos=.39$>$.14; $\Delta_{60}$=+5 & Greed-regime regression; downward calibration becomes harmful.\\
+2024-11-25 & Regr. & 0.51$\rightarrow$0.44 & F\&G=82; pos=.46$>$.11; $\Delta_{60}$=+32 & Extreme-greed and positive-news regime, but FiLM still pushes Down.\\
+2021-02-24 & Regr. & 0.55$\rightarrow$0.49 & F\&G=76; $\Delta_{60}$=-17; pos=.33$>$.16 & Mixed positive-leaning case; $P(up)$ is pushed below threshold.\\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+The selected cases show that the final context branch mainly acts as a conservative downward calibration layer. In the correction examples, this behavior is useful because the chart-only model is weakly bullish while the context regime is deteriorating, fearful, or negative-news leaning. In the regression examples, the same mechanism becomes harmful because the true outcome is Up and the context still pushes the model below the 0.5 threshold. This is why correction/regression analysis is more informative than only reporting the small five-seed accuracy delta.
+
+The gamma/beta summaries support the same interpretation. Table 11 shows that the average modulation is very close to the identity transformation. Regression panels have slightly larger norms than correction panels, but both groups remain small in absolute terms. Therefore, bounded FiLM does not rewrite the visual representation. It makes small channel-wise shifts that can move borderline probabilities across the decision threshold.
+
+\begin{table}[H]
+\caption{Gamma/beta modulation summary for selected panels}
+\begin{center}
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Panel group} & \textbf{Mean $\Delta\gamma$} & \textbf{$\|\Delta\gamma\|_2$} & \textbf{Mean $\beta$} & \textbf{$\|\beta\|_2$}\\
+\midrule
+Corrections & 0.000334 & 0.0521 & 0.000079 & 0.0556\\
+Regressions & 0.000349 & 0.0557 & 0.000082 & 0.0590\\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+Figure 7 gives a qualitative view of three correction cases. The chart image is identical between the chart-only and context-FiLM rows, but the predicted probability and Grad-CAM saliency pattern change after context conditioning. The figure should not be read as a causal explanation of why Bitcoin moved down. It only shows that, in these cases, the context-conditioned model used a different visual evidence pattern while applying a bounded gamma/beta modulation.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.96\textwidth]{gradcam_finbert_fg_corrections_clean.png}
-\caption{Example Grad-CAM comparison for selected samples}
+\includegraphics[width=0.96\textwidth]{gradcam_finbert_fg_corrections_chronological.png}
+\caption{Correction examples with Grad-CAM and context-FiLM modulation}
 \end{figure}
+
+The limitation is important. Gamma and beta are model-internal modulation values, not event labels. A channel with positive $\Delta\gamma$ cannot be translated directly into ``fear'', ``volume'', or ``bad news''. The interpretation is therefore limited to the connection among context regime, probability transition, bounded modulation strength, and Grad-CAM saliency. This is diagnostic interpretability rather than a causal market explanation.
 
 \clearpage
 
@@ -775,7 +828,7 @@ Another robustness check is the comparison between same-image and cross-image im
 
 A fully trainable context model has more capacity, and it was tested before the final protocol was chosen. The early context experiments used joint training with concatenation, gating, and FiLM-style context branches. These models allowed the visual CNN, the context branch, and the classifier to change together, but they did not provide a stable improvement over the chart-only baseline. Later ablations also tested stronger modulation and partial unfreezing. The useful lesson from these checks is that additional modulation freedom changes calibration more readily than it improves hard decisions. For this reason, the final protocol keeps the visual model fixed and uses bounded context modulation as a diagnostic correction mechanism.
 
-For this reason, the final protocol freezes the trained CNN and classifier and trains only the context encoder and FiLM heads. The goal is not to maximize capacity, but to isolate the marginal role of context. If the output probability changes under this protocol, the change is attributable to the bounded context-modulation path rather than to a newly learned visual filter. This makes the interpretation cleaner, especially when the measured effects are small.
+The final protocol therefore freezes the trained CNN and classifier and trains only the context encoder and FiLM heads. The goal is not to maximize capacity, but to isolate the marginal role of context. If the output probability changes under this protocol, the change is attributable to the bounded context-modulation path rather than to a newly learned visual filter. This makes the interpretation cleaner, especially when the measured effects are small.
 
 \subsection{Practical interpretation of small effects}
 
@@ -811,7 +864,7 @@ The strongest chart-only baseline is \code{ohlc\_ma\_vb}. Most chart-derived tec
 
 \textbf{RQ2.} The baseline-preserving FiLM design is more interpretable than unrestricted fusion because it keeps the visual CNN and classifier fixed. Earlier joint-training variants with concatenation, gating, and unrestricted FiLM were more flexible, but they did not provide a stable improvement and made it harder to separate context usefulness from changes in visual filters. The final frozen bounded FiLM protocol gives a cleaner answer: context is allowed to make small channel-wise corrections, and those corrections can be inspected through gamma/beta summaries.
 
-\textbf{RQ3.} Context helps mainly in selected regimes rather than uniformly across the whole test set. The strongest effects appear near uncertain chart-only predictions, active sentiment or news regimes, and some leverage-pressure conditions. Grad-CAM examples, correction/regression tables, and gamma/beta summaries suggest that bounded FiLM usually behaves as conservative probability calibration: it slightly adjusts the visual model's confidence and occasionally changes borderline decisions.
+\textbf{RQ3.} Context helps mainly in selected regimes rather than uniformly across the whole test set. The strongest effects appear near uncertain chart-only predictions, active sentiment or news regimes, and some leverage-pressure conditions. Grad-CAM examples, correction/regression tables, and gamma/beta summaries suggest that bounded FiLM usually behaves as conservative probability calibration: in these context regimes it slightly adjusts the visual model's confidence and occasionally changes borderline decisions. This should be read as diagnostic interpretability, not as a causal explanation that news or F\&G directly caused the subsequent return.
 
 \subsection{Future work}
 

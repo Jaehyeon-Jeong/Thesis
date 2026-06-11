@@ -362,7 +362,7 @@ Technical context includes features such as Bollinger statistics, Money Flow Ind
 
 Derivatives context is constructed separately from macro risk-on/risk-off context. It contains two feature families. The first family is based on BitMEX XBTUSD perpetual-swap data [13]. It includes funding-rate summaries over trailing windows, such as mean, sum, absolute mean, minimum, and maximum funding, together with derivatives-activity variables such as trades, volume, turnover, home notional, and foreign notional. Funding is included because perpetual-swap funding reflects the balance between leveraged long and short demand. Persistently high positive funding can indicate crowded long exposure, while negative funding can indicate short-side pressure or stress.
 
-The second family is based on official CFTC/CME Bitcoin futures Commitment of Traders data [14]. It includes open interest and net-positioning ratios for trader groups such as leveraged money, asset managers, and dealers. These weekly variables are used as slower positioning context from the regulated futures market. To avoid lookahead, CFTC values are treated as available only after the report-release lag and are then forward-filled to daily samples. All normalization and clipping statistics are fitted on the training split only.
+The second family is based on official CFTC/CME Bitcoin futures Commitments of Traders data [14]. It includes open interest and net-positioning ratios for trader groups such as leveraged money, asset managers, and dealers. These weekly variables are used as slower positioning context from the regulated futures market. To avoid lookahead, CFTC values are treated as available only after the report-release lag and are then forward-filled to daily samples. All normalization and clipping statistics are fitted on the training split only.
 
 The final derivative feature sets are selected from this inventory after the feature audit. The two main variants are \code{funding\_only} and \code{funding\_plus\_cftc\_oi}. They are conceptually different from chart-derived technical indicators because leverage pressure and futures positioning are not directly visible in an OHLCV image. The best structured-context positive case in the thesis comes from adding funding plus CFTC open-interest context to the volume-aware chart baseline.
 
@@ -743,7 +743,7 @@ The predefined N16 bucket analysis makes this derivatives result more precise. I
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{p{0.34\textwidth}rrrrrr}
 \toprule
-\textbf{Bucket} & \textbf{N} & \textbf{$\Delta$ Acc.} & \textbf{Corr.} & \textbf{Regr.} & \textbf{Net} & \textbf{$\Delta p_{up}$}\\
+\textbf{Bucket} & \textbf{N} & \textbf{$\Delta$ Acc.} & \textbf{Corr.} & \textbf{Regr.} & \textbf{Net} & \textbf{$\Delta P(up)$}\\
 \midrule
 All test decisions & 7205 & +0.002082 & 66 & 51 & +15 & -0.005918\\
 Chart uncertainty 45--55 & 1237 & +0.012126 & 66 & 51 & +15 & -0.006800\\
@@ -761,7 +761,7 @@ These counts are diagnostic, not a final significance claim. Across all derivati
 
 \subsection{Interpretability of FiLM modulation}
 
-A central reason for using FiLM is interpretability in addition to prediction. Because the context branch produces explicit $\gamma$ and $\beta$ modulation values, it is possible to examine how market context changes a fixed chart-image decision. The five-seed transition table contains 95 corrections and 86 regressions, giving a net improvement of +9 decisions. Table 10 reports selected examples from both sides; $N_{20}$ denotes the 20-day news count and $\Delta_{60}$ denotes the F\&G change from 60 days earlier.
+A central reason for using FiLM is interpretability in addition to prediction. Because the context branch produces explicit $\gamma$ and $\beta$ modulation values, it is possible to examine how market context changes a fixed chart-image decision. The five-seed transition table contains 95 corrections and 86 regressions, giving a net improvement of +9 decisions. Table 10 reports selected examples from both sides; $N_{20}$ denotes the 20-day news count, $\Delta_{60}$ denotes the F\&G change from 60 days earlier, and expressions such as \code{neg=.36>.23} compare the FinBERT negative share with the opposite positive share.
 
 \begin{table}[H]
 \caption{Representative FinBERT+F\&G FiLM correction and regression cases}
@@ -786,7 +786,13 @@ A central reason for using FiLM is interpretability in addition to prediction. B
 \end{center}
 \end{table}
 
-The selected cases show that the final context branch mainly acts as a conservative downward calibration layer. Across the matched test decisions, the average change in upward probability is negative ($\Delta P(up)=-0.0162$). The effect is therefore not a symmetric bullish/bearish controller. It is a context-conditioned downward recalibration whose magnitude varies by regime: the average shift is larger in greed and extreme-greed F\&G buckets than in fear buckets. In the correction examples, this behavior is useful because the chart-only model is weakly bullish while the context regime is deteriorating, fearful, or negative-news leaning. In the regression examples, the same mechanism becomes harmful because the true outcome is Up and the context still pushes the model below the 0.5 threshold. This is why correction/regression analysis is more informative than only reporting the small five-seed accuracy delta.
+The selected cases show that the final context branch mainly acts as a conservative downward calibration layer. Across the matched test decisions, the average change in upward probability is negative ($\Delta P(up)=-0.0162$). The effect is therefore not a symmetric bullish/bearish controller. It is a context-conditioned downward recalibration whose magnitude varies by regime: the average shift is larger in greed and extreme-greed F\&G buckets than in fear buckets. Figure 7 shows this diagnostic pattern over all matched test decisions. The model mostly lowers $P(up)$, but the magnitude is not a constant offset; it becomes stronger in higher F\&G regimes. In the correction examples, this behavior is useful because the chart-only model is weakly bullish while the context regime is deteriorating, fearful, or negative-news leaning. In the regression examples, the same mechanism becomes harmful because the true outcome is Up and the context still pushes the model below the 0.5 threshold. This is why correction/regression analysis is more informative than only reporting the small five-seed accuracy delta.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.90\textwidth]{delta_pup_vs_fg_diagnostic.png}
+\caption{Change in $P(up)$ by Fear \& Greed regime}
+\end{figure}
 
 The gamma/beta summaries support the same interpretation. Table 11 summarizes four selected correction cases and four selected regression cases across five seeds, giving 20 panel observations per group. The average modulation is very close to the identity transformation. Regression panels have slightly larger norms than correction panels, but both groups remain small in absolute terms. Therefore, bounded FiLM does not rewrite the visual representation. It makes small channel-wise shifts that can move borderline probabilities across the decision threshold.
 
@@ -806,7 +812,7 @@ Regressions & 0.000349 & 0.0557 & 0.000082 & 0.0590\\
 \end{center}
 \end{table}
 
-Figure 7 gives a qualitative view of three correction cases. The chart image is identical between the chart-only and context-FiLM rows, but the predicted probability and Grad-CAM saliency pattern change after context conditioning. Grad-CAM is computed for the predicted class in each row, and each heatmap is normalized per image; therefore, visible saliency differences should not be interpreted as proportional to the small $\gamma/\beta$ magnitudes. The figure should not be read as a causal explanation of why Bitcoin moved down. It only shows that, in these cases, the context-conditioned model used a different visual evidence pattern while applying a bounded gamma/beta modulation.
+Figure 8 gives a qualitative view of three correction cases. The chart image is identical between the chart-only and context-FiLM rows, but the predicted probability and Grad-CAM saliency pattern change after context conditioning. Grad-CAM is computed for the predicted class in each row, and each heatmap is normalized per image; therefore, visible saliency differences should not be interpreted as proportional to the small $\gamma/\beta$ magnitudes. The figure should not be read as a causal explanation of why Bitcoin moved down. It only shows that, in these cases, the context-conditioned model used a different visual evidence pattern while applying a bounded gamma/beta modulation.
 
 \begin{figure}[H]
 \centering

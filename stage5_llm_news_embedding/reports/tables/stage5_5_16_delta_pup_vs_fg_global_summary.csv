@@ -1,0 +1,2 @@
+n,mean_prob_up_delta,median_prob_up_delta,min_prob_up_delta,max_prob_up_delta,corr_delta_vs_fg_value,corr_delta_vs_news_count_20d,stage2_pred_up_rate,film_pred_up_rate,changed_predictions
+7205,-0.016157808041589068,-0.0130973756313323,-0.0856867730617523,-8.696317672740594e-05,-0.16538666764165227,-0.30508656748889457,0.6643997224149896,0.6392782789729354,181

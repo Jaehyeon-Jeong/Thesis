@@ -2,7 +2,16 @@
 
 ## Status
 
-Prepared. This is a post-training analysis track. It does not train a new model.
+Completed for the N16 derivatives/leverage same-image case. This is a
+post-training analysis track and does not train a new model. Compact summaries
+are tracked in `reports/tables`; the large merged-decision CSV remains
+local/Kaggle-only.
+
+Main result artifacts:
+
+- `reports/tables/stage4_n14b1_n16_derivatives_conditional_merge_report.md`
+- `reports/tables/stage4_n14b2_b6_n16_derivatives_conditional_buckets_report.md`
+- `reports/tables/stage4_n14b2_b6_n16_derivatives_conditional_buckets_bucket_summary.csv`
 
 ## Purpose
 

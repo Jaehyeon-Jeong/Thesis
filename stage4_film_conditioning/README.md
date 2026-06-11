@@ -159,18 +159,16 @@ News-context track:
 | `4-N15-C` | F&G-only across image specs | Completed. F&G-only frozen bounded FiLM was tested across all four I60/R20 image specs. Same-image deltas were small: `ohlc` -0.0004, `ohlc_ma` -0.0008, `ohlc_vb` +0.0006, `ohlc_ma_vb` +0.0010; volume-aware specs show the only positive but still weak effect | [N15-C result](checklist_results/4-N15-C_fg_only_across_image_specs.md), [N15-C Kaggle cell](notebooks/kaggle_stage4_n15c_fg_only_across_image_specs_one_cell.md) |
 | `4-N16` | Derivatives/leverage context | Completed. On the strongest `ohlc_ma_vb` image this context mostly tied Stage 2, but on the weaker volume-aware `ohlc_vb` image, `funding_plus_cftc_oi` improved same-image accuracy by `+0.002082` with net `+15` corrections. N16-5 shows the FiLM head mainly suppresses weak bullish calls in higher derivatives/leverage regimes | [N16 plan](checklist_results/4-N16_derivatives_leverage_context_plan.md), [N16-4 result](checklist_results/4-N16-4_ohlc_vb_derivatives_repeat.md), [N16-5 interpretation](checklist_results/4-N16-5_derivatives_interpretability_export.md), [data inventory](data_inventory/crypto_derivatives/README.md) |
 | `4-N14` | Final Stage 4 interpretability report | Completed. Summarizes Stage 2 baseline, Stage 4 negative/limited results, N16 positive same-image case, Grad-CAM/gamma-beta interpretation, and final thesis claim | [N14 report](checklist_results/4-N14_final_stage4_interpretability_report.md), [report copy](reports/tables/stage4_n14_final_stage4_interpretability_report.md) |
-| `4-N14-B` | Conditional regime analysis | Prepared. Post-training analysis to test whether context-FiLM improves specific predefined regimes such as high derivatives/leverage, F&G extremes, high volatility, news/macro intense days, and Stage2 uncertainty. N14-B1 merge-table script and Kaggle runner are ready | [N14-B plan](checklist_results/4-N14-B_conditional_regime_analysis_plan.md), [N14-B1 script](scripts/build_stage4_n14b_conditional_merge_table.py), [N14-B1 Kaggle cell](notebooks/kaggle_stage4_n14b1_conditional_merge_table_one_cell.md) |
+| `4-N14-B` | Conditional regime analysis | Completed for the N16 derivatives/leverage same-image case. Small summary/report artifacts are tracked; the large merged-decision CSV remains local/Kaggle-only. Main thesis result: uncertain chart + high funding bucket has `+0.039604` accuracy delta with `24` corrections vs `12` regressions | [N14-B plan](checklist_results/4-N14-B_conditional_regime_analysis_plan.md), [merge report](reports/tables/stage4_n14b1_n16_derivatives_conditional_merge_report.md), [bucket report](reports/tables/stage4_n14b2_b6_n16_derivatives_conditional_buckets_report.md), [bucket summary](reports/tables/stage4_n14b2_b6_n16_derivatives_conditional_buckets_bucket_summary.csv) |
 
-Current final direction:
+Current final thesis use:
 - present N16 as a small but interpretable same-image context-complement result,
   not as a new overall best model;
 - use targeted Grad-CAM plus gamma/beta summaries for rows where Stage 2 is
   corrected or where derivatives/leverage context suppresses weak bullish
   predictions;
-- ask the advisor whether this Stage 4 scope is sufficient to start the thesis
-  draft, with FinBERT/LLM sentiment/event features left as optional future work;
-- optionally run N14-B conditional regime analysis before the final professor
-  report if a stronger conditional-improvement contribution is needed.
+- use the completed N14-B conditional-regime summaries as supporting evidence,
+  not as a new model branch.
 
 ## Code Map
 

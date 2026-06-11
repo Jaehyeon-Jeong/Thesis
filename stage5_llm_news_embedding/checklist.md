@@ -257,6 +257,35 @@ choice is fixed:
   - Result note:
     [5-14 FinBERT + F&G gamma/beta relaxation](checklist_results/5-14_finbert_fg_gamma_beta_relaxation.md)
 
+- [x] 5-15. Sample-level FiLM interpretation
+  - Purpose: explain how the final FinBERT+F&G FiLM model changes individual
+    Stage2 decisions through context values, probability transition,
+    gamma/beta modulation, and Grad-CAM.
+  - Result: selected `C1-C4` correction cases and `R1-R4` regression cases
+    were exported with context values and modulation summaries.
+  - Key interpretation: the final model mainly performs conservative downward
+    calibration. It corrects some false-Up chart-only predictions, but the same
+    mechanism can over-correct true-Up cases.
+  - Outputs:
+    [sample-level interpretation result](checklist_results/5-15_sample_level_film_interpretation_results.md),
+    [selected cases](reports/tables/stage5_5_15_selected_film_interpretation_cases.csv),
+    [gamma/beta summary](reports/tables/stage5_5_15_gamma_beta_correction_vs_regression_summary.csv),
+    [Grad-CAM figure](reports/figures/gradcam/stage5_5_15_gradcam_correction_cases.png).
+
+- [x] 5-16. Delta P(up) versus F&G diagnostic
+  - Purpose: answer the defense-risk question of whether the final model is
+    context-responsive calibration or only a learned bearish shift.
+  - Result: `Delta P(up)` is negative across the full matched test set
+    (mean `-0.016158`), so the model is not a symmetric bullish/bearish
+    controller. The downward magnitude varies with context and is larger in
+    greed/extreme-greed F&G regimes.
+  - Thesis interpretation: describe FinBERT+F&G FiLM as context-dependent
+    conservative downward calibration.
+  - Outputs:
+    [F&G bucket summary](reports/tables/stage5_5_16_delta_pup_vs_fg_summary.csv),
+    [global summary](reports/tables/stage5_5_16_delta_pup_vs_fg_global_summary.csv),
+    [diagnostic plot](reports/figures/stage5_5_16_delta_pup_vs_fg.png).
+
 ## 한국어
 
 Stage 5는 LLM에서 만든 뉴스 표현을 FiLM context로 넣는 실험입니다. 현재
@@ -493,3 +522,46 @@ Stage 5는 LLM에서 만든 뉴스 표현을 FiLM context로 넣는 실험입니
       conditional calibration.
     - 추천 제목:
       `Context-Conditioned FiLM for Bitcoin Direction Prediction from Price Charts`.
+
+- [x] 5-14. FinBERT + F&G gamma/beta relaxation ablation
+  - 목적: 최종 bounded FiLM이 너무 보수적인지 확인.
+  - 변형:
+    - gamma relaxed: `gamma_scale=0.10`, `beta_scale=0.02`;
+    - beta relaxed: `gamma_scale=0.02`, `beta_scale=0.10`.
+  - 결과: 두 변형 모두 five-seed 실행 완료. Seed-level metric이 동일하게
+    나왔으므로 독립적인 positive result가 아니라 diagnostic ablation으로만
+    사용.
+  - 평균 accuracy `0.569466`, ROC-AUC `0.588825`, Brier `0.270900`.
+  - 해석: 더 강한 한쪽 modulation은 표준 FinBERT+F&G bounded FiLM accuracy
+    `0.580569`를 개선하지 못했으므로, 논문에서는 conservative bounded
+    FiLM을 유지하는 근거로 사용.
+  - 결과:
+    [5-14 FinBERT + F&G gamma/beta relaxation](checklist_results/5-14_finbert_fg_gamma_beta_relaxation.md)
+
+- [x] 5-15. Sample-level FiLM interpretation
+  - 목적: 최종 FinBERT+F&G FiLM이 개별 Stage2 decision을 어떻게 바꾸는지
+    context 값, probability transition, gamma/beta modulation, Grad-CAM으로
+    연결해서 설명.
+  - 결과: `C1-C4` correction case와 `R1-R4` regression case를 context 값과
+    modulation summary로 export.
+  - 핵심 해석: 최종 모델은 주로 conservative downward calibration으로
+    작동한다. 일부 false-Up chart-only prediction은 고치지만, 같은 메커니즘이
+    true-Up case에서는 regression을 만들 수 있다.
+  - 산출물:
+    [sample-level interpretation result](checklist_results/5-15_sample_level_film_interpretation_results.md),
+    [selected cases](reports/tables/stage5_5_15_selected_film_interpretation_cases.csv),
+    [gamma/beta summary](reports/tables/stage5_5_15_gamma_beta_correction_vs_regression_summary.csv),
+    [Grad-CAM figure](reports/figures/gradcam/stage5_5_15_gradcam_correction_cases.png).
+
+- [x] 5-16. Delta P(up) versus F&G diagnostic
+  - 목적: 최종 모델이 context-responsive calibration인지, 단순 bearish shift인지
+    방어 질문에 대비.
+  - 결과: matched test 전체에서 `Delta P(up)` 평균은 `-0.016158`로 음수.
+    따라서 모델은 대칭적인 bullish/bearish controller가 아니다. 다만 하향
+    조정 폭은 context에 따라 달라지며 greed/extreme-greed F&G regime에서 더 큼.
+  - 논문 해석: FinBERT+F&G FiLM은 context-dependent conservative downward
+    calibration으로 표현.
+  - 산출물:
+    [F&G bucket summary](reports/tables/stage5_5_16_delta_pup_vs_fg_summary.csv),
+    [global summary](reports/tables/stage5_5_16_delta_pup_vs_fg_global_summary.csv),
+    [diagnostic plot](reports/figures/stage5_5_16_delta_pup_vs_fg.png).

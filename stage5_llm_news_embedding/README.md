@@ -118,11 +118,30 @@ used as an interpretation layer, not as the main prediction model.
   completed. They reduce accuracy relative to the conservative bounded FiLM
   result and are treated as diagnostic support for the bounded-modulation
   design, not as independent positive result rows.
+- `5-15` result: sample-level FiLM interpretation completed. The selected
+  C1-C4/R1-R4 cases, gamma/beta summaries, and Grad-CAM artifacts support the
+  thesis claim that the final model is a diagnostic calibration mechanism, not
+  a causal news explanation.
+- `5-16` result: full-test `Delta P(up)` versus F&G diagnostic completed.
+  The final context branch lowers `P(up)` across the test set on average, with
+  larger downward magnitude in greed/extreme-greed regimes. This is reported as
+  context-dependent conservative downward calibration, not symmetric
+  bullish/bearish control.
 - Current reading: F&G remains the strongest compact external regime source;
   FinBERT sentiment can be combined with it without destabilizing the frozen
   Stage2 + bounded FiLM setup, but headline-level sentiment is still too weak
-  to be the headline contribution. The next work is thesis draft v0 plus the
-  supplementary Stage4 `4-N14B2-B6` derivatives/leverage conditional analysis.
+  to be a large standalone performance contribution.
+
+## Final Interpretation Artifacts
+
+- [5-15 result note](checklist_results/5-15_sample_level_film_interpretation_results.md)
+- [Selected interpretation cases](reports/tables/stage5_5_15_selected_film_interpretation_cases.csv)
+- [Compact selected cases](reports/tables/stage5_5_15_selected_film_interpretation_cases_compact.csv)
+- [Gamma/beta summary](reports/tables/stage5_5_15_gamma_beta_correction_vs_regression_summary.csv)
+- [Gamma/beta plot](reports/figures/stage5_5_15_gamma_beta_correction_vs_regression_plot.png)
+- [Grad-CAM correction cases](reports/figures/gradcam/stage5_5_15_gradcam_correction_cases.png)
+- [Delta P(up) vs F&G summary](reports/tables/stage5_5_16_delta_pup_vs_fg_summary.csv)
+- [Delta P(up) vs F&G plot](reports/figures/stage5_5_16_delta_pup_vs_fg.png)
 
 ## Output Policy
 

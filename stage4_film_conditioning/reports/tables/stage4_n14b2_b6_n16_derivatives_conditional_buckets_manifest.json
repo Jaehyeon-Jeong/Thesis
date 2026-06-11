@@ -1,0 +1,75 @@
+{
+  "merged_decisions": "N14_b1_results/reports/tables/stage4_n14b1_n16_derivatives_conditional_merge_merged_decisions.csv",
+  "num_rows": 7205,
+  "num_bucket_specs": 15,
+  "bucket_specs": [
+    [
+      "stage2_uncertain_45_55",
+      "bucket__stage2_uncertain_45_55"
+    ],
+    [
+      "stage2_uncertain_40_60",
+      "bucket__stage2_uncertain_40_60"
+    ],
+    [
+      "funding_mean_20_high20",
+      "bucket__funding_mean_20_high20"
+    ],
+    [
+      "funding_mean_20_low20",
+      "bucket__funding_mean_20_low20"
+    ],
+    [
+      "funding_max_7_high20",
+      "bucket__funding_max_7_high20"
+    ],
+    [
+      "funding_abs_mean_20_high20",
+      "bucket__funding_abs_mean_20_high20"
+    ],
+    [
+      "cftc_oi_change_20_high20",
+      "bucket__cftc_oi_change_20_high20"
+    ],
+    [
+      "cftc_oi_change_20_low20",
+      "bucket__cftc_oi_change_20_low20"
+    ],
+    [
+      "cftc_oi_zscore_60_high20",
+      "bucket__cftc_oi_zscore_60_high20"
+    ],
+    [
+      "lev_money_net_ratio_high20",
+      "bucket__lev_money_net_ratio_high20"
+    ],
+    [
+      "lev_money_net_ratio_low20",
+      "bucket__lev_money_net_ratio_low20"
+    ],
+    [
+      "lev_money_net_ratio_change_20_high20",
+      "bucket__lev_money_net_ratio_change_20_high20"
+    ],
+    [
+      "hot_funding_and_oi_change",
+      "bucket__hot_funding_and_oi_change"
+    ],
+    [
+      "hot_funding_or_oi_change",
+      "bucket__hot_funding_or_oi_change"
+    ],
+    [
+      "uncertain_and_high_funding",
+      "bucket__uncertain_and_high_funding"
+    ]
+  ],
+  "min_decisions": 100,
+  "min_unique_samples": 30,
+  "outputs": {
+    "bucket_summary": "N14_b1_results/reports/tables/stage4_n14b2_b6_n16_derivatives_conditional_buckets_bucket_summary.csv",
+    "representative_samples": "N14_b1_results/reports/tables/stage4_n14b2_b6_n16_derivatives_conditional_buckets_representative_samples.csv",
+    "transition_context_summary": "N14_b1_results/reports/tables/stage4_n14b2_b6_n16_derivatives_conditional_buckets_transition_context_summary.csv",
+    "report": "N14_b1_results/reports/tables/stage4_n14b2_b6_n16_derivatives_conditional_buckets_report.md"
+  }
+}

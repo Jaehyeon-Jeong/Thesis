@@ -1,0 +1,86 @@
+{
+  "status": "ok",
+  "inputs": {
+    "selected_samples": "stage5_llm_news_embedding/reports/tables/stage5_5_11_finbert_fg_condition_analysis_selected_samples_for_5_12.csv",
+    "modulation_summary": "stage5_llm_news_embedding/reports/tables/stage5_5_12_finbert_fg_targeted_gradcam_modulation_summary.csv",
+    "merged_decisions": "stage5_llm_news_embedding/reports/tables/stage5_5_11_finbert_fg_condition_analysis_merged_decisions.csv"
+  },
+  "outputs": {
+    "selected_cases": "stage5_llm_news_embedding/reports/tables/stage5_5_15_selected_film_interpretation_cases.csv",
+    "selected_cases_compact": "stage5_llm_news_embedding/reports/tables/stage5_5_15_selected_film_interpretation_cases_compact.csv",
+    "gamma_beta_summary": "stage5_llm_news_embedding/reports/tables/stage5_5_15_gamma_beta_correction_vs_regression_summary.csv",
+    "gamma_beta_summary_compact": "stage5_llm_news_embedding/reports/tables/stage5_5_15_gamma_beta_correction_vs_regression_summary_compact.csv",
+    "gamma_beta_plot": "stage5_llm_news_embedding/reports/figures/stage5_5_15_gamma_beta_correction_vs_regression_plot.png",
+    "thesis_gamma_beta_plot": "Thesis/thesis_draft/figures/gamma_beta_correction_vs_regression_plot.png",
+    "gradcam_correction_cases": "stage5_llm_news_embedding/reports/figures/gradcam/stage5_5_15_gradcam_correction_cases.png",
+    "thesis_gradcam_correction_cases": "Thesis/thesis_draft/figures/gradcam_correction_cases.png"
+  },
+  "selected_case_counts": {
+    "C": 4,
+    "R": 4
+  },
+  "transition_counts_all": {
+    "both_correct": 4088,
+    "both_wrong": 2936,
+    "correction": 95,
+    "regression": 86
+  },
+  "selected_case_ids": [
+    {
+      "case_id": "C1",
+      "run_seed": 43,
+      "sample_index": 1087,
+      "Date_key": "2021-04-20",
+      "case_type": "Stage2 wrong -> FiLM correct"
+    },
+    {
+      "case_id": "C2",
+      "run_seed": 43,
+      "sample_index": 1116,
+      "Date_key": "2021-05-19",
+      "case_type": "Stage2 wrong -> FiLM correct"
+    },
+    {
+      "case_id": "C3",
+      "run_seed": 43,
+      "sample_index": 1160,
+      "Date_key": "2021-07-02",
+      "case_type": "Stage2 wrong -> FiLM correct"
+    },
+    {
+      "case_id": "C4",
+      "run_seed": 42,
+      "sample_index": 1154,
+      "Date_key": "2021-06-26",
+      "case_type": "Stage2 wrong -> FiLM correct"
+    },
+    {
+      "case_id": "R1",
+      "run_seed": 43,
+      "sample_index": 1272,
+      "Date_key": "2021-10-22",
+      "case_type": "Stage2 correct -> FiLM wrong"
+    },
+    {
+      "case_id": "R2",
+      "run_seed": 43,
+      "sample_index": 1276,
+      "Date_key": "2021-10-26",
+      "case_type": "Stage2 correct -> FiLM wrong"
+    },
+    {
+      "case_id": "R3",
+      "run_seed": 44,
+      "sample_index": 2402,
+      "Date_key": "2024-11-25",
+      "case_type": "Stage2 correct -> FiLM wrong"
+    },
+    {
+      "case_id": "R4",
+      "run_seed": 43,
+      "sample_index": 1032,
+      "Date_key": "2021-02-24",
+      "case_type": "Stage2 correct -> FiLM wrong"
+    }
+  ]
+}

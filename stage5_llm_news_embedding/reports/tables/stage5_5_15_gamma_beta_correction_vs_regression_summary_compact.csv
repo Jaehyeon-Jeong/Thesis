@@ -1,0 +1,3 @@
+transition_group,n_samples,block4_delta_gamma_mean_mean,block4_delta_gamma_l2_mean,block4_beta_mean_mean,block4_beta_l2_mean,block4_raw_gamma_mean_mean,block4_raw_beta_mean_mean
+correction,20,0.0003341,0.052070037,7.9095e-05,0.055608481,0.016873728,0.003998982
+regression,20,0.000349144,0.055658046,8.1803e-05,0.058997104,0.017737455,0.004158837

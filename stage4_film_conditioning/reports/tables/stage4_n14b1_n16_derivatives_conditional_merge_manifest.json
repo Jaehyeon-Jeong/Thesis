@@ -1,0 +1,27 @@
+{
+  "analysis_name": "n16_ohlc_vb_funding_plus_cftc_oi",
+  "stage2_experiment": "stage2_i60_ohlc_vb_r20",
+  "stage4_experiment": "stage4_film_full_bounded_last_block_i60_ohlc_vb_r20_c60_n16d_funding_plus_cftc_oi_pretrained_frozen_s0p02",
+  "context_name": "stage4_derivatives_context_i60_ohlc_vb_r20_n16d_funding_plus_cftc_oi",
+  "split": "test",
+  "run_seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+  ],
+  "num_rows": 7205,
+  "num_missing_inputs": 0,
+  "stage2_output_root": "/kaggle/input/datasets/moskow/stage22/stage2_i60_r20_four_image_full_seed_checkpoints_for_stage4_n15/stage2_i60_r20_four_image_full_seed_checkpoints_for_stage4_n15/outputs/stage2",
+  "stage4_output_root": "/kaggle/working/stage4_film_conditioning/outputs/stage4",
+  "written": {
+    "merged_decisions": "/kaggle/working/stage4_film_conditioning/reports/tables/stage4_n14b1_n16_derivatives_conditional_merge_merged_decisions.csv",
+    "seed_summary": "/kaggle/working/stage4_film_conditioning/reports/tables/stage4_n14b1_n16_derivatives_conditional_merge_seed_summary.csv",
+    "transition_summary": "/kaggle/working/stage4_film_conditioning/reports/tables/stage4_n14b1_n16_derivatives_conditional_merge_transition_summary.csv",
+    "context_feature_inventory": "/kaggle/working/stage4_film_conditioning/reports/tables/stage4_n14b1_n16_derivatives_conditional_merge_context_feature_inventory.csv",
+    "missing_inputs": "/kaggle/working/stage4_film_conditioning/reports/tables/stage4_n14b1_n16_derivatives_conditional_merge_missing_inputs.csv",
+    "report": "/kaggle/working/stage4_film_conditioning/reports/tables/stage4_n14b1_n16_derivatives_conditional_merge_report.md",
+    "manifest": "/kaggle/working/stage4_film_conditioning/reports/tables/stage4_n14b1_n16_derivatives_conditional_merge_manifest.json"
+  }
+}

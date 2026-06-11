@@ -33,9 +33,9 @@ Active work view:
 - First news version: headline-only, non-LLM, train-only TF-IDF/SVD over
   7/20/60-day trailing news windows.
 - Main order now: Stage 4 modeling/context-source experiments are complete
-  through FSI/RORO and derivatives/leverage. N14 final interpretation is
-  complete; only optional N14-B conditional-regime analysis remains if a
-  stronger conditional-improvement claim is needed.
+  through FSI/RORO, derivatives/leverage, N14 final interpretation, and N14-B
+  conditional-regime analysis. N14-B is used as supporting evidence for the
+  N16 same-image derivatives/leverage case, not as a new model branch.
 
 Main Stage 4 ablation:
 - [x] 4-A. `CNN + context concat`
@@ -1070,7 +1070,7 @@ News-context extension:
     local/Kaggle dataset only.
   - Result:
     [4-N14 final Stage 4 interpretability report](checklist_results/4-N14_final_stage4_interpretability_report.md).
-- [ ] 4-N14-B. Conditional regime analysis
+- [x] 4-N14-B. Conditional regime analysis
   - Purpose: analyze whether context-FiLM helps in predefined market regimes
     even when average full-test accuracy does not substantially improve.
   - This is a post-training analysis track. Do not train a new model here.
@@ -1085,32 +1085,40 @@ News-context extension:
     samples per bucket; smaller buckets are diagnostic only.
   - Plan:
     [4-N14-B conditional regime analysis plan](checklist_results/4-N14-B_conditional_regime_analysis_plan.md).
-  - [x] 4-N14-B1. Prediction/context merge table preparation.
+  - [x] 4-N14-B1. Prediction/context merge table.
     - Build one long decision-level table with Stage2 predictions, Stage4
       predictions, context features, `prob_up_delta`, `true_prob_delta`, and
       transition type.
-    - Prepared script:
+    - Script:
       [build_stage4_n14b_conditional_merge_table.py](scripts/build_stage4_n14b_conditional_merge_table.py).
-    - Prepared Kaggle runner:
+    - Kaggle runner:
       [kaggle_stage4_n14b1_conditional_merge_table_one_cell.md](notebooks/kaggle_stage4_n14b1_conditional_merge_table_one_cell.md).
-  - [ ] 4-N14-B2. Predefined regime bucket builder.
+    - Result summary:
+      [stage4_n14b1_n16_derivatives_conditional_merge_report.md](reports/tables/stage4_n14b1_n16_derivatives_conditional_merge_report.md).
+    - Note: the full merged-decision CSV is large and remains local/Kaggle-only;
+      compact summaries are tracked.
+  - [x] 4-N14-B2. Predefined regime bucket builder.
     - Build F&G, volatility, derivatives/leverage, news/macro, and Stage2
       uncertainty buckets from the N14-B1 merged table.
-  - [ ] 4-N14-B3. Bucket-level metrics.
+  - [x] 4-N14-B3. Bucket-level metrics.
     - For each bucket, compute Stage2 accuracy, Stage4 accuracy, delta,
       correction/regression/net correction, changed-decision rate, and
       probability deltas.
-  - [ ] 4-N14-B4. Representative correction/regression samples.
+  - [x] 4-N14-B4. Representative correction/regression samples.
     - Select Stage2 wrong -> Stage4 correct, Stage2 correct -> Stage4 wrong,
       high-confidence wrong, and large `prob_up_delta` samples per useful
       bucket.
-  - [ ] 4-N14-B5. Targeted Grad-CAM/gamma-beta linkage.
+  - [x] 4-N14-B5. Targeted Grad-CAM/gamma-beta linkage.
     - Link selected samples to Stage2/Stage4 Grad-CAM, context values,
       gamma/beta summaries, and probability shifts.
-  - [ ] 4-N14-B6. Conditional-regime report.
+  - [x] 4-N14-B6. Conditional-regime report.
     - Write the thesis-ready conclusion: whether the context-FiLM correction is
       regime-specific, interpretable, and strong enough to claim conditional
       improvement.
+    - Result:
+      [stage4_n14b2_b6_n16_derivatives_conditional_buckets_report.md](reports/tables/stage4_n14b2_b6_n16_derivatives_conditional_buckets_report.md).
+    - Key thesis row: uncertain chart + high funding has `+0.039604` accuracy
+      delta with `24` corrections and `12` regressions.
 
 Important:
 - Do not draw the context values into the chart image for the main Stage 4
@@ -1154,10 +1162,10 @@ Stage 4는 이제 **market context를 고정된 BTC chart-image CNN에 어떻게
   보였습니다.
 - 첫 news version: headline-only, non-LLM, train-only TF-IDF/SVD를 7/20/60-day
   trailing news window에 적용합니다.
-- 현재 순서: Stage 4 modeling/context-source 실험은 FSI/RORO와
-  derivatives/leverage까지 완료했습니다. N14 최종 해석 보고서도 완료했으며,
-  더 강한 조건부 개선 claim이 필요할 때만 선택적으로 N14-B conditional-regime
-  분석을 진행합니다.
+- 현재 순서: Stage 4 modeling/context-source 실험은 FSI/RORO,
+  derivatives/leverage, N14 최종 해석 보고서, N14-B conditional-regime
+  분석까지 완료했습니다. N14-B는 N16 same-image derivatives/leverage case를
+  뒷받침하는 근거로 사용하고, 새로운 model branch로 주장하지 않습니다.
 
 Stage 4 main ablation:
 - [x] 4-A. `CNN + context concat`
@@ -2158,7 +2166,7 @@ News-context 확장:
     local 또는 Kaggle dataset에만 보관합니다.
   - 결과:
     [4-N14 final Stage 4 interpretability report](checklist_results/4-N14_final_stage4_interpretability_report.md).
-- [ ] 4-N14-B. Conditional regime analysis
+- [x] 4-N14-B. Conditional regime analysis
   - 목적: 전체 test 평균 accuracy가 크게 오르지 않았더라도, 특정 market regime에서
     context-FiLM이 Stage2 visual-only prediction을 보정했는지 분석합니다.
   - 이 단계는 post-training analysis입니다. 새 모델을 학습하지 않습니다.
@@ -2172,30 +2180,38 @@ News-context 확장:
     더 작은 bucket은 diagnostic only로 표시합니다.
   - 계획:
     [4-N14-B conditional regime analysis plan](checklist_results/4-N14-B_conditional_regime_analysis_plan.md).
-  - [x] 4-N14-B1. Prediction/context merge table preparation.
+  - [x] 4-N14-B1. Prediction/context merge table.
     - Stage2 prediction, Stage4 prediction, context feature,
       `prob_up_delta`, `true_prob_delta`, transition type을 포함한 long
       decision-level table을 만듭니다.
-    - 준비된 script:
+    - script:
       [build_stage4_n14b_conditional_merge_table.py](scripts/build_stage4_n14b_conditional_merge_table.py).
-    - 준비된 Kaggle runner:
+    - Kaggle runner:
       [kaggle_stage4_n14b1_conditional_merge_table_one_cell.md](notebooks/kaggle_stage4_n14b1_conditional_merge_table_one_cell.md).
-  - [ ] 4-N14-B2. Predefined regime bucket builder.
+    - 결과 summary:
+      [stage4_n14b1_n16_derivatives_conditional_merge_report.md](reports/tables/stage4_n14b1_n16_derivatives_conditional_merge_report.md).
+    - 참고: full merged-decision CSV는 커서 local/Kaggle-only로 두고, compact
+      summary만 GitHub에 올립니다.
+  - [x] 4-N14-B2. Predefined regime bucket builder.
     - N14-B1 merged table에서 F&G, volatility, derivatives/leverage,
       news/macro, Stage2 uncertainty bucket을 생성합니다.
-  - [ ] 4-N14-B3. Bucket-level metrics.
+  - [x] 4-N14-B3. Bucket-level metrics.
     - bucket별 Stage2 accuracy, Stage4 accuracy, delta,
       correction/regression/net correction, changed-decision rate,
       probability delta를 계산합니다.
-  - [ ] 4-N14-B4. Representative correction/regression samples.
+  - [x] 4-N14-B4. Representative correction/regression samples.
     - 유용한 bucket마다 Stage2 wrong -> Stage4 correct, Stage2 correct ->
       Stage4 wrong, high-confidence wrong, 큰 `prob_up_delta` sample을 고릅니다.
-  - [ ] 4-N14-B5. Targeted Grad-CAM/gamma-beta linkage.
+  - [x] 4-N14-B5. Targeted Grad-CAM/gamma-beta linkage.
     - 선택 sample을 Stage2/Stage4 Grad-CAM, context value, gamma/beta summary,
       probability shift와 연결합니다.
-  - [ ] 4-N14-B6. Conditional-regime report.
+  - [x] 4-N14-B6. Conditional-regime report.
     - context-FiLM correction이 특정 regime에서 해석 가능하게 작동했는지,
       논문에서 conditional improvement로 주장할 수 있는지 정리합니다.
+    - 결과:
+      [stage4_n14b2_b6_n16_derivatives_conditional_buckets_report.md](reports/tables/stage4_n14b2_b6_n16_derivatives_conditional_buckets_report.md).
+    - 논문 핵심 row: uncertain chart + high funding bucket에서 accuracy delta
+      `+0.039604`, corrections `24`, regressions `12`.
 
 중요:
 - Main Stage 4 실험에서 context 값을 chart image 위에 추가로 그리지 않습니다.

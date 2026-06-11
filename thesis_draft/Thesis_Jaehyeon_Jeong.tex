@@ -774,7 +774,7 @@ A central reason for using FiLM is interpretability in addition to prediction. B
 \textbf{Date} & \textbf{Type} & \textbf{$P(up)$} & \textbf{Key context} & \textbf{Short reading}\\
 \midrule
 2021-04-20 & Corr. & 0.54$\rightarrow$0.49 & F\&G=73; $\Delta_{60}$=-20; $N_{20}$=288 & Greed remains high, but sentiment cooled from the earlier extreme-greed regime.\\
-2021-05-19 & Corr. & 0.53$\rightarrow$0.49 & F\&G=23; $\Delta_{60}$=-52; neg$\geq$pos & Fear transition; false-Up chart decision changes into Down.\\
+2021-05-19 & Corr. & 0.53$\rightarrow$0.49 & F\&G=23; $\Delta_{60}$=-52; neg=.25$>$.23 & Fear transition; false-Up chart decision changes into Down.\\
 2021-07-02 & Corr. & 0.53$\rightarrow$0.48 & F\&G=21; neg=.36$>$.23; $N_{20}$=366 & Clean fear and negative-news case; bullish probability is reduced.\\
 2021-06-26 & Corr. & 0.51$\rightarrow$0.49 & F\&G=20; neg=.32$>$.21; $N_{20}$=422 & Borderline false-Up case; small bounded adjustment changes the class.\\
 2021-10-22 & Regr. & 0.53$\rightarrow$0.44 & F\&G=75; pos=.41$>$.13; $N_{20}$=391 & Positive-context over-correction; correct weak-Up signal is suppressed.\\
@@ -786,12 +786,12 @@ A central reason for using FiLM is interpretability in addition to prediction. B
 \end{center}
 \end{table}
 
-The selected cases show that the final context branch mainly acts as a conservative downward calibration layer. In the correction examples, this behavior is useful because the chart-only model is weakly bullish while the context regime is deteriorating, fearful, or negative-news leaning. In the regression examples, the same mechanism becomes harmful because the true outcome is Up and the context still pushes the model below the 0.5 threshold. This is why correction/regression analysis is more informative than only reporting the small five-seed accuracy delta.
+The selected cases show that the final context branch mainly acts as a conservative downward calibration layer. Across the matched test decisions, the average change in upward probability is negative ($\Delta P(up)=-0.0162$). The effect is therefore not a symmetric bullish/bearish controller. It is a context-conditioned downward recalibration whose magnitude varies by regime: the average shift is larger in greed and extreme-greed F\&G buckets than in fear buckets. In the correction examples, this behavior is useful because the chart-only model is weakly bullish while the context regime is deteriorating, fearful, or negative-news leaning. In the regression examples, the same mechanism becomes harmful because the true outcome is Up and the context still pushes the model below the 0.5 threshold. This is why correction/regression analysis is more informative than only reporting the small five-seed accuracy delta.
 
-The gamma/beta summaries support the same interpretation. Table 11 shows that the average modulation is very close to the identity transformation. Regression panels have slightly larger norms than correction panels, but both groups remain small in absolute terms. Therefore, bounded FiLM does not rewrite the visual representation. It makes small channel-wise shifts that can move borderline probabilities across the decision threshold.
+The gamma/beta summaries support the same interpretation. Table 11 summarizes four selected correction cases and four selected regression cases across five seeds, giving 20 panel observations per group. The average modulation is very close to the identity transformation. Regression panels have slightly larger norms than correction panels, but both groups remain small in absolute terms. Therefore, bounded FiLM does not rewrite the visual representation. It makes small channel-wise shifts that can move borderline probabilities across the decision threshold.
 
 \begin{table}[H]
-\caption{Gamma/beta modulation summary for selected panels}
+\caption{Gamma/beta modulation summary for selected Grad-CAM panels ($n=20$ per group)}
 \begin{center}
 \small
 \setlength{\tabcolsep}{5pt}
@@ -806,7 +806,7 @@ Regressions & 0.000349 & 0.0557 & 0.000082 & 0.0590\\
 \end{center}
 \end{table}
 
-Figure 7 gives a qualitative view of three correction cases. The chart image is identical between the chart-only and context-FiLM rows, but the predicted probability and Grad-CAM saliency pattern change after context conditioning. The figure should not be read as a causal explanation of why Bitcoin moved down. It only shows that, in these cases, the context-conditioned model used a different visual evidence pattern while applying a bounded gamma/beta modulation.
+Figure 7 gives a qualitative view of three correction cases. The chart image is identical between the chart-only and context-FiLM rows, but the predicted probability and Grad-CAM saliency pattern change after context conditioning. Grad-CAM is computed for the predicted class in each row, and each heatmap is normalized per image; therefore, visible saliency differences should not be interpreted as proportional to the small $\gamma/\beta$ magnitudes. The figure should not be read as a causal explanation of why Bitcoin moved down. It only shows that, in these cases, the context-conditioned model used a different visual evidence pattern while applying a bounded gamma/beta modulation.
 
 \begin{figure}[H]
 \centering
@@ -823,6 +823,8 @@ The limitation is important. Gamma and beta are model-internal modulation values
 Several robustness checks are included to clarify what kind of context is useful. Technical context is the main redundancy check: it tests whether variables derived from the same OHLCV history add information after the chart image has already been processed by the CNN. The result is close to zero, which supports the interpretation that the visual representation already captures much of this information. Generic news embeddings serve a similar role for text: they test whether semantic headline vectors are sufficient without financial sentiment alignment. Their limited effect motivates the move toward FinBERT sentiment and F\&G.
 
 Another robustness check is the comparison between same-image and cross-image improvements. The strongest chart-only baseline uses \code{ohlc\_ma\_vb}. The derivative/leverage context improves \code{ohlc\_vb}, but it does not exceed \code{ohlc\_ma\_vb}. This does not invalidate the result; it defines its role. It is a same-image context effect and an interpretability case, while \code{ohlc\_ma\_vb} remains the strongest visual baseline.
+
+Macro-stress controls provide a negative robustness check. The best OFR FSI row reaches accuracy 0.579875, ROC-AUC 0.584859, and net correction +4, while the best public RORO proxy row reaches accuracy 0.579320, ROC-AUC 0.584748, and net correction 0. These results are stable but weaker than the sentiment and derivatives cases, so they are reported as controls rather than final model candidates.
 
 \subsection{Why not use a fully trainable context model as the final model?}
 
@@ -926,6 +928,8 @@ Future work can extend this study in several directions. First, the sample size 
 
 The final repository should connect each numerical claim in the thesis to a summarized artifact. The working materials include visual baseline tables, image-specification comparisons, structured-context experiments, news-context experiments, correction/regression tables, and targeted Grad-CAM/modulation exports. These files are not copied into the thesis text directly; they are used to construct final tables and figures. Appendix B summarizes the experimental logic with compact code-style protocol blocks rather than full implementation code.
 
+Repository: \url{https://github.com/Jaehyeon-Jeong/Thesis}.
+
 \begin{center}
 \begin{longtable}{p{0.30\textwidth}p{0.52\textwidth}}
 \toprule
@@ -937,6 +941,7 @@ Context-source comparison & Separates redundant chart-derived context from exter
 News/sentiment report & Supports the FinBERT + F\&G calibration result\\
 Correction/regression tables & Quantify where context corrects or harms chart-only predictions\\
 Grad-CAM and modulation exports & Provide qualitative explanation for selected samples\\
+Delta-$P(up)$ versus F\&G diagnostic & Checks whether the final FiLM branch is a constant shift or context-dependent downward calibration\\
 \bottomrule
 \end{longtable}
 \end{center}
